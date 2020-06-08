@@ -1,0 +1,103 @@
+package com.fanfull.libhard.uhf;
+
+public class UhfController implements IUhfOperation {
+  private IUhfOperation uhfOperation;
+
+  private UhfController(IUhfOperation uhfOperation) {
+    this.uhfOperation = uhfOperation;
+  }
+
+  @Override
+  public boolean open() {
+    return uhfOperation.open();
+  }
+
+  @Override
+  public boolean isOpen() {
+    return uhfOperation.isOpen();
+  }
+
+  @Override
+  public boolean isScanning() {
+    return uhfOperation.isScanning();
+  }
+
+  @Override
+  public void release() {
+    uhfOperation.release();
+  }
+
+  @Override public boolean send(byte[] data) {
+    return uhfOperation.send(data);
+  }
+
+  @Override
+  public void setListener(IUhfListener listener) {
+    uhfOperation.setListener(listener);
+  }
+
+  @Override public byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
+    byte[] read = uhfOperation.read(mb, sa, readLen, filter, mmb, msa);
+    byte[] parseData = UhfCmd.parseData(read);
+    return parseData;
+  }
+
+  @Override public void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
+    uhfOperation.readAsync(mb, sa, readLen, filter, mmb, msa);
+  }
+
+  @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    return uhfOperation.write(mb, sa, data, filter, mmb, msa);
+  }
+
+  @Override public void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    uhfOperation.writeAsync(mb, sa, data, filter, mmb, msa);
+  }
+
+  @Override public boolean writeEpc(int sa, byte[] data) {
+    return uhfOperation.writeEpc(sa, data);
+  }
+
+  @Override
+  public boolean writeUse(int sa, byte[] data) {
+    return uhfOperation.writeUse(sa, data);
+  }
+
+  @Override public byte[] fastEpc(int timeout) {
+    return uhfOperation.fastEpc(timeout);
+  }
+
+  @Override public byte[] fastTid(int sa, int len) {
+    return uhfOperation.fastTid(sa, len);
+  }
+
+  @Override public byte[] readEpc(int sa, int len) {
+    return uhfOperation.readEpc(sa, len);
+  }
+
+  @Override public byte[] readTid(int sa, int len) {
+    return uhfOperation.readTid(sa, len);
+  }
+
+  @Override public byte[] readUse(int sa, int len) {
+    return uhfOperation.readUse(sa, len);
+  }
+
+  @Override
+  public boolean setPower(int readPower, int writePower, int id, boolean isSave,
+      boolean isClosed) {
+    return uhfOperation.setPower(readPower, writePower, id, isSave, isClosed);
+  }
+
+  @Override public byte[] getPower() {
+    return uhfOperation.getPower();
+  }
+
+  private static class SingletonHolder {
+    private static final UhfController instance = new UhfController(new UhfOperationRd());
+  }
+
+  public static UhfController getInstance() {
+    return UhfController.SingletonHolder.instance;
+  }
+}
