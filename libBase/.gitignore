@@ -70,7 +70,3 @@ fastlane/readme.md
 # module
 */build/
 */*.iml
-
-# custom
-/apk
-/.svn
