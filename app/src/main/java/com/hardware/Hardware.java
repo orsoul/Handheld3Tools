@@ -1,8 +1,9 @@
-package com.fanfull.handheldtools;
+package com.hardware;
 
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.fanfull.handheldtools.BaseApplication;
 import com.finger.ArrayUtils;
 import com.finger.FingerPrint;
 import com.finger.LogsUtil;

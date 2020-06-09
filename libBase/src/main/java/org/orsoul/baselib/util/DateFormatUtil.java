@@ -40,17 +40,11 @@ import java.util.Date;
  */
 public class DateFormatUtil {
 
-    /**
-     * 默认 时间的 字符串格式
-     */
+    /** 默认 时间的 字符串格式 */
     public final static String FORMAT_NORMAL = "yyyy-MM-dd HH:mm:ss";
-    /**
-     * MM-dd
-     */
+    /** MM-dd */
     public final static String FORMAT_DATE = "MM-dd";
-    /**
-     * HH:mm:ss
-     */
+    /** HH:mm:ss */
     public final static String FORMAT_TIME = "HH:mm:ss";
 
     /**
@@ -102,7 +96,7 @@ public class DateFormatUtil {
      * @param format  时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
      * @return Date
      */
-    public static Date parseString2Time(String strTime, String format) {
+    public static Date parseString2Date(String strTime, String format) {
         SimpleDateFormat formatter = new SimpleDateFormat(format);
         // 从 第0个字符开始解析
         ParsePosition pos = new ParsePosition(0);
@@ -115,8 +109,29 @@ public class DateFormatUtil {
      * @return Date
      * @des 默认格式:yyyy-MM-dd HH:mm:ss
      */
-    public static Date parseString2Time(String strTime) {
-        return parseString2Time(strTime, FORMAT_NORMAL);
+    public static Date parseString2Date(String strTime) {
+        return parseString2Date(strTime, FORMAT_NORMAL);
+    }
+
+    /**
+     * 将字符串形式的时间 转成 milliseconds
+     *
+     * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
+     * @param format  时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
+     * @return milliseconds
+     */
+    public static long parseString2Long(String strTime, String format) {
+        return parseString2Date(strTime, format).getTime();
+    }
+
+    /**
+     * 将字符串形式的时间 转成 milliseconds
+     *
+     * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
+     * @return milliseconds
+     */
+    public static long parseString2Long(String strTime) {
+        return parseString2Long(strTime, FORMAT_NORMAL);
     }
 
     /**

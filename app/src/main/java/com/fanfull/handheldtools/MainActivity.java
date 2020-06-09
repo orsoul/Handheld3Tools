@@ -1,9 +1,12 @@
 package com.fanfull.handheldtools;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.finger.FingerPrint;
+
+import org.orsoul.baselib.util.DeviceInfo;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,6 +14,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DeviceInfo.showDeviceInfo();
 
         FingerPrint.getInstance().open();
         FingerPrint.getInstance().startSearchFinger();

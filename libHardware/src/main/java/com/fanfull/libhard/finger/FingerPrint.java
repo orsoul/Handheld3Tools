@@ -1,4 +1,4 @@
-package com.finger;
+package com.fanfull.libhard.finger;
 
 import android.content.Context;
 import android.os.SystemClock;
