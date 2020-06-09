@@ -3,18 +3,20 @@ package com.hardware;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.fanfull.handheldtools.BaseApplication;
-import com.finger.ArrayUtils;
+import com.blankj.utilcode.util.Utils;
 import com.finger.FingerPrint;
 import com.finger.LogsUtil;
 import com.halio.IRfidParam;
-import com.huayu.io.CByteRecord;
-import com.huayu.io.CTranslate;
+import com.halio.Rfid;
+import com.io.CByteRecord;
+import com.io.CTranslate;
 import com.rd.barcodeScanTest.ScanApi;
 import com.rd.barcodeScanTest.ScanApiFactory;
 import com.rd.io.EMgpio;
 import com.rd.io.Platform;
 import com.rd.io.SerialPort;
+
+import org.orsoul.baselib.util.ArrayUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public class Hardware {
     private int keyOled = (int) 0x0;
 
     public int openSPI() {
-        s_trans = new CTranslate(BaseApplication.getContext());
+        s_trans = new CTranslate(Utils.getApp());
         return 101;
     }
 
@@ -86,7 +88,7 @@ public class Hardware {
         for (int i = 0; i < 320; i++) {
             bData[i + 3] = (byte) (bDataRotate[i] & 0xff);
         }
-        com.halio.Rfid.cmdTrancevice(0x2000, bData, 324, bRecData, iRecLenth);
+        Rfid.cmdTrancevice(0x2000, bData, 324, bRecData, iRecLenth);
     }
 
     public void OledShowAll(int back_color, int draw_color, String str) {
@@ -114,7 +116,7 @@ public class Hardware {
                 bData[i + 3] = (byte) back_color;
             }
         }
-        com.halio.Rfid.cmdTrancevice(0x2002, bData, 2564, bRecData, iRecLenth);
+        Rfid.cmdTrancevice(0x2002, bData, 2564, bRecData, iRecLenth);
     }
 
     public int transferString(int fd_spi, char len, char XSpos, char YSpos, char CharWidth, char CharHeight, long BackColor, long TextColor, byte[] buffer) {
@@ -234,7 +236,8 @@ public class Hardware {
             scanApi = scanApiFactory.createApi(1);
             if (scanApi != null) {
                 scanApi.setDecodeCallback(new CallBack());
-                scanApi.init(BaseApplication.getContext());
+                scanApi.init(Utils.getApp());
+                
                 scanApi.powerOn();
             }
             return fd;
@@ -248,8 +251,8 @@ public class Hardware {
     }
 
     public boolean initHF() {
-        com.halio.Rfid.closeCommPort();
-        com.halio.Rfid.openPort((byte) 2, (int) 115200);
+        Rfid.closeCommPort();
+        Rfid.openPort((byte) 2, (int) 115200);
         Platform.initIO();
         Platform.SetGpioMode(6, 0);
         Platform.SetGpioOutput(6);
@@ -257,21 +260,21 @@ public class Hardware {
 
         try {
             Thread.sleep(50);
-        } catch (java.lang.InterruptedException ie) {
+        } catch (InterruptedException ie) {
         }
         Platform.SetGpioDataHigh(6);
         try {
             Thread.sleep(120);
-        } catch (java.lang.InterruptedException ie) {
+        } catch (InterruptedException ie) {
         }
-        Log.e("test", "zhi: " + com.halio.Rfid.notifyBootStart());
+        Log.e("test", "zhi: " + Rfid.notifyBootStart());
         try {
             Thread.sleep(200);
-        } catch (java.lang.InterruptedException ie) {
+        } catch (InterruptedException ie) {
         }
 
         byte[] bVersion = new byte[16];
-        int iVersionLength = com.halio.Rfid.getHwVersion(bVersion);
+        int iVersionLength = Rfid.getHwVersion(bVersion);
         if (iVersionLength > 0) {
             return true;
         } else {
@@ -485,7 +488,7 @@ public class Hardware {
             serialPort = null;
         }
 
-        //		com.halio.Rfid.closeCommPort();
+        //		Rfid.closeCommPort();
         //
         //		Platform.SetGpioDataLow(6);
         Log.i(TAG, "exit the port");
@@ -705,58 +708,58 @@ public class Hardware {
     }
 
     public byte[] findM1() {
-        if (!com.halio.Rfid.PcdConfigISOType((byte) 'A')) {
+        if (!Rfid.PcdConfigISOType((byte) 'A')) {
             return null;
         }
 
         byte[] tagType = new byte[2];
-        if (!com.halio.Rfid.PcdRequest((byte) 0x52, tagType)) {
+        if (!Rfid.PcdRequest((byte) 0x52, tagType)) {
             return null;
         }
         byte[] cardNumber = new byte[4];
-        if (!com.halio.Rfid.PcdAnticoll(cardNumber)) {
+        if (!Rfid.PcdAnticoll(cardNumber)) {
             return null;
         }
         return cardNumber;
     }
 
     public byte[] findNFC() {
-        if (!com.halio.Rfid.PcdConfigISOType((byte) 'A')) {
+        if (!Rfid.PcdConfigISOType((byte) 'A')) {
             return null;
         }
 
         byte[] tagType = new byte[2];
-        if (!com.halio.Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
+        if (!Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
             return null;
         }
 
         byte[] cardNumber = new byte[7];
-        if (!com.halio.Rfid.ULPcdAnticoll(cardNumber)) {
+        if (!Rfid.ULPcdAnticoll(cardNumber)) {
             return null;
         }
         return cardNumber;
     }
 
     public byte[] readNFCData(byte sa) {
-        if (!com.halio.Rfid.PcdConfigISOType((byte) 'A')) {
+        if (!Rfid.PcdConfigISOType((byte) 'A')) {
             Log.i(TAG, "readNFCData PcdConfigISOType failed");
             return null;
         }
 
         byte[] tagType = new byte[2];
-        if (!com.halio.Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
+        if (!Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
             Log.i(TAG, "readNFCData PcdRequest failed");
             return null;
         }
         byte[] cardNumber = new byte[7];
-        if (!com.halio.Rfid.ULPcdAnticoll(cardNumber)) {
+        if (!Rfid.ULPcdAnticoll(cardNumber)) {
             Log.i(TAG, "readNFCData ULPcdAnticoll failed");
             return null;
         }
         byte[] blockData = new byte[16];
         for (int i = 0; i < 4; i++) {
             byte[] b = new byte[4];
-            if (!com.halio.Rfid.ULPcdRead((byte) (i + sa), b)) {
+            if (!Rfid.ULPcdRead((byte) (i + sa), b)) {
                 Log.i(TAG, "readNFCData ULPcdRead failed");
                 return null;
             }
@@ -768,22 +771,22 @@ public class Hardware {
     }
 
     public boolean writeNFCData(byte sa, byte[] data) {
-        if (!com.halio.Rfid.PcdConfigISOType((byte) 'A')) {
+        if (!Rfid.PcdConfigISOType((byte) 'A')) {
             Log.i(TAG, "writeNFCData PcdConfigISOType failed");
             return false;
         }
 
         byte[] tagType = new byte[2];
-        if (!com.halio.Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
+        if (!Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType)) {
             Log.i(TAG, "writeNFCData PcdRequest failed");
             return false;
         }
         byte[] cardNumber = new byte[7];
-        if (!com.halio.Rfid.ULPcdAnticoll(cardNumber)) {
+        if (!Rfid.ULPcdAnticoll(cardNumber)) {
             Log.i(TAG, "writeNFCData ULPcdAnticoll failed");
             return false;
         }
-        if (!com.halio.Rfid.ULPcdWrite(sa, data)) {
+        if (!Rfid.ULPcdWrite(sa, data)) {
             Log.i(TAG, "writeNFCData ULPcdWrite failed");
             return false;
         }

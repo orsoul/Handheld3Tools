@@ -1,4 +1,4 @@
-package com.fanfull.libhard.io;
+package com.io;
 
 public class CByteRecord {
     public byte[] m_bData;
