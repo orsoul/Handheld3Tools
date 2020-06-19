@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">HandheldTools</string>
+    <string name="app_name">手持测试</string>
+
+    <string name="main_barcode">二维码、条码</string>
 </resources>
