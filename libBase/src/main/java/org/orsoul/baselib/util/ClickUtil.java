@@ -6,14 +6,23 @@ package org.orsoul.baselib.util;
 public class ClickUtil {
     private static final long TIME_GAP = 2500;
     private static final long FAST_TIME_GAP = 1000;
-    private static long sLastClickTime = 0;
+    //    private static long sLastClickTime = 0;
+
+    private static final ThreadLocal<Long> lastClickTimeThreadLocal = new ThreadLocal<Long>() {
+        @Override
+        protected Long initialValue() {
+            // 第一次get()方法调用时会进行初始化（如果set方法没有调用）
+            return System.currentTimeMillis();
+        }
+    };
 
     /**
-     * @return 本次 click() 与 上一次click() 之间的 时间隔。第一次运行返回 当前时间
+     * @return 本次 click() 与 上一次click() 之间的 时间隔。第一次运行返回 0
      */
     public static long click() {
-        long reVal = System.currentTimeMillis() - sLastClickTime;
-        sLastClickTime = System.currentTimeMillis();
+        long reVal = System.currentTimeMillis() - lastClickTimeThreadLocal.get();
+        //        sLastClickTime = System.currentTimeMillis();
+        lastClickTimeThreadLocal.set(System.currentTimeMillis());
         return reVal;
     }
 

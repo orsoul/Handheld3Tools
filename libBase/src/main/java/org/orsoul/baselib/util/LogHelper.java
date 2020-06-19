@@ -26,7 +26,7 @@ public class LogHelper {
                 .configAllowLog(allowLog)
                 .configShowBorders(false)
                 .configTagPrefix(TAG_LOG)
-                .configFormatTag("%d{HH:mm:ss:SSS} %t %c{-4}");
+                .configFormatTag("%t %c{-4}");
     }
 
     /**
