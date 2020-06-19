@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.hardware.Hardware;
+import com.rd.Hardware2;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,7 +59,7 @@ public class FingerPrint {
     private CharSequence temp = "NULL";
     private int cmd_num;// 命令编号
     private int len;
-    private Hardware hardware;
+    private Hardware2 hardware;
     private FingerManager fManager;
     private FingerPrintTask mFingerPrintTask;
     private boolean isInit = false;
@@ -69,7 +69,7 @@ public class FingerPrint {
 
     // 启动模块
     public FingerPrint() {
-        hardware = Hardware.getInstance();
+        hardware = Hardware2.getInstance();
         fManager = FingerManager.getInstance();
     }
 
@@ -157,7 +157,7 @@ public class FingerPrint {
      * @Description: 打开串口连接
      */
     public boolean connection() {
-        LogsUtil.d("Hardware", "connection ...");
+        LogsUtil.d("Hardware2", "connection ...");
         mFd = hardware.openSerialPortTest(mChooseSerial[1], mChooseBuad, 8, 1);// 打开串口2(指纹模块只可使用第二个串口？）
         if (mFd == -1) {
             mFd = hardware.openSerialPortTest(mChooseSerial[1], mChooseBuad, 8, 1);// 打开串口
