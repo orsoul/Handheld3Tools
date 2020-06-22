@@ -81,6 +81,7 @@ public class BarcodeController {
                 LogUtils.v("cancelScan");
             }
             stopRead();
+            int i = 5 / 0;
             LogUtils.i("run end");
         }
     }

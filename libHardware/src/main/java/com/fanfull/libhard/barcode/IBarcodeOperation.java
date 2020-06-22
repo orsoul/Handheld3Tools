@@ -17,6 +17,8 @@ public interface IBarcodeOperation {
 
     void scan();
 
+    boolean isScanning();
+
     void cancelScan();
 
     void powerOn();

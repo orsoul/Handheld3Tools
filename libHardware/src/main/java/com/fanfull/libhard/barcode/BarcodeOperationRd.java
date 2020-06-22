@@ -18,39 +18,11 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     private ScanApi scanApi;
     private IBarcodeListener barcodeListener;
     private boolean isOpen;
+    private boolean isScanning;
 
     public BarcodeOperationRd() {
         //        this.scanApi = new NewApiService();
         this.scanApi = new NewApiBroadcast();
-    }
-
-    @Override
-    public void setBarcodeListener(final IBarcodeListener listener) {
-        this.barcodeListener = listener;
-    }
-
-    @Override
-    public synchronized boolean open(Context context) {
-        if (isOpen) {
-            return true;
-        }
-        init(context);
-        SystemClock.sleep(500);
-        powerOn();
-        SystemClock.sleep(3000);
-        for (int i = 0; i < 3; i++) {
-            scan();
-            SystemClock.sleep(500);
-            cancelScan();
-        }
-        SystemClock.sleep(300);
-        //        scan();
-        //        SystemClock.sleep(500);
-        //        cancelScan();
-        //        SystemClock.sleep(2000);
-
-        isOpen = true;
-
         scanApi.setDecodeCallback(new ScanApi.DecodeCallback() {
             @Override
             public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
@@ -80,8 +52,38 @@ public class BarcodeOperationRd implements IBarcodeOperation {
                 LogUtils.d("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
             }
         });
+    }
 
-        return isOpen;
+    @Override
+    public void setBarcodeListener(final IBarcodeListener listener) {
+        this.barcodeListener = listener;
+    }
+
+    @Override
+    public synchronized boolean open(Context context) {
+        if (isOpen) {
+            return true;
+        }
+        init(context);
+        SystemClock.sleep(500);
+        powerOn();
+        SystemClock.sleep(5000);
+        if (barcodeListener != null) {
+            barcodeListener.onOpen();
+        }
+        //        for (int i = 0; i < 3; i++) {
+        //            scan();
+        //            SystemClock.sleep(500);
+        //            cancelScan();
+        //        }
+        //        SystemClock.sleep(300);
+        //        scan();
+        //        SystemClock.sleep(500);
+        //        cancelScan();
+        //        SystemClock.sleep(2000);
+
+        isOpen = true;
+        return true;
     }
 
     @Override
@@ -109,11 +111,24 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     @Override
     public void scan() {
         scanApi.doScan();
+        isScanning = true;
+        if (barcodeListener != null) {
+            barcodeListener.onScan();
+        }
+    }
+
+    @Override
+    public boolean isScanning() {
+        return isScanning;
     }
 
     @Override
     public void cancelScan() {
         scanApi.cancelScan();
+        isScanning = false;
+        if (barcodeListener != null) {
+            barcodeListener.onStopScan();
+        }
     }
 
     @Override
