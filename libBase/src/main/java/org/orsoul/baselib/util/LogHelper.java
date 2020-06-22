@@ -11,7 +11,7 @@ import org.orsoul.baselib.util.utilcode.AppUtils;
 
 public class LogHelper {
 
-    public static final String TAG_LOG = "myLog";
+    private static final String TAG_LOG = "myLog";
     public static final String LOG_FILE_PATH;
 
     static {
