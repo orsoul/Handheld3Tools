@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
-import com.fanfull.libhard.barcode.BarcodeOperationRd;
+import com.fanfull.libhard.barcode.BarcodeController;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 
@@ -27,9 +27,8 @@ public class ActivityBarcode extends InitModuleActivity {
     private Switch switchRep;
     private Switch switchSound;
 
-    BarcodeOperationRd barcodeOp;
+    private BarcodeController barcodeController;
     private int recCount;
-    //    BarcodeController barcodeController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,11 +54,11 @@ public class ActivityBarcode extends InitModuleActivity {
 
     @Override
     protected void initModule() {
-        barcodeOp = new BarcodeOperationRd();
-        //        barcodeController = BarcodeController.newInstance(barcodeOp);
+        barcodeController = BarcodeController.getInstance();
+        //        barcodeController = BarcodeController.newInstance(barcodeController);
 
         showLoadingView("正在打开二维读头...");
-        barcodeOp.setBarcodeListener(new IBarcodeListener() {
+        barcodeController.setBarcodeListener(new IBarcodeListener() {
             @Override
             public void onOpen() {
                 runOnUi(() -> {
@@ -98,7 +97,7 @@ public class ActivityBarcode extends InitModuleActivity {
                 });
 
                 if (repScan) {
-                    barcodeOp.scan();
+                    barcodeController.scan();
                 }
 
                 if (switchSound.isChecked()) {
@@ -107,7 +106,7 @@ public class ActivityBarcode extends InitModuleActivity {
             }
         });
 
-        ThreadUtil.execute(() -> barcodeOp.open(ActivityBarcode.this));
+        ThreadUtil.execute(() -> barcodeController.open(ActivityBarcode.this));
     }
 
     private void appendShow(String text) {
@@ -123,10 +122,10 @@ public class ActivityBarcode extends InitModuleActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.btn_barcode_scan:
-                barcodeOp.scan();
+                barcodeController.scan();
                 break;
             case R.id.btn_barcode_stopScan:
-                barcodeOp.cancelScan();
+                barcodeController.cancelScan();
                 break;
             case R.id.tv_barcode_show:
                 if (ClickUtil.isFastDoubleClick()) {
@@ -149,31 +148,31 @@ public class ActivityBarcode extends InitModuleActivity {
         );
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:
-                if (barcodeOp.isScanning()) {
+                if (barcodeController.isScanning()) {
                     btnStopScan.performClick();
                 } else if (btnScan.isEnabled()) {
                     btnScan.performClick();
                 }
                 break;
             case KeyEvent.KEYCODE_1:
-                //                barcodeOp.init(this);
+                //                barcodeController.init(this);
                 break;
             case KeyEvent.KEYCODE_2:
-                barcodeOp.powerOn();
+                barcodeController.powerOn();
                 appendShow("\n开始上电");
                 break;
             case KeyEvent.KEYCODE_3:
-                //                barcodeOp.scan();
+                //                barcodeController.scan();
                 break;
             case KeyEvent.KEYCODE_4:
-                //                barcodeOp.uninit();
+                //                barcodeController.uninit();
                 break;
             case KeyEvent.KEYCODE_5:
-                barcodeOp.powerOff();
+                barcodeController.powerOff();
                 appendShow("\n已下电");
                 break;
             case KeyEvent.KEYCODE_6:
-                //                barcodeOp.cancelScan();
+                //                barcodeController.cancelScan();
                 break;
             case KeyEvent.KEYCODE_7:
                 //                barcodeController.startReadThread();
@@ -196,8 +195,8 @@ public class ActivityBarcode extends InitModuleActivity {
 
     @Override
     protected void onDestroy() {
-        barcodeOp.release();
-        barcodeOp = null;
+        barcodeController.release();
+        barcodeController = null;
         super.onDestroy();
     }
 }

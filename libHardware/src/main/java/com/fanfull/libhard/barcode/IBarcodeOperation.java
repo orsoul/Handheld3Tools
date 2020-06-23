@@ -3,7 +3,6 @@ package com.fanfull.libhard.barcode;
 import android.content.Context;
 
 public interface IBarcodeOperation {
-    int BARCODE_DATA_LEN = 23;
 
     boolean open(Context context);
 

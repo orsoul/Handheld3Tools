@@ -1,10 +1,12 @@
-package com.fanfull.libhard.barcode;
+package com.fanfull.libhard.barcode.impl;
 
 
 import android.content.Context;
 import android.os.SystemClock;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libhard.barcode.IBarcodeListener;
+import com.fanfull.libhard.barcode.IBarcodeOperation;
 import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
 
@@ -12,6 +14,9 @@ import org.orsoul.baselib.util.ArrayUtils;
 
 import java.util.Arrays;
 
+/**
+ * 雨滴二维码扫描 实现类
+ */
 public class BarcodeOperationRd implements IBarcodeOperation {
 
     private ScanApi scanApi;
