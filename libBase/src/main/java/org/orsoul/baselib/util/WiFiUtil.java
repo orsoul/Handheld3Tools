@@ -9,9 +9,8 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 
 import com.apkfuns.logutils.LogUtils;
-
-import org.orsoul.baselib.util.utilcode.AppUtil;
-import org.orsoul.baselib.util.utilcode.NetworkUtils;
+import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.Utils;
 
 import java.util.List;
 
@@ -40,12 +39,11 @@ public final class WiFiUtil {
 
     /**
      * 停用当前 wifi 连接。停用后该连接不会重连。
-     *
      * @return
      */
     public static boolean disableNetwork() {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         lastWifiNetId = manager.getConnectionInfo().getNetworkId();
         LogUtils.d("NetworkId: %s", lastWifiNetId);
@@ -54,13 +52,12 @@ public final class WiFiUtil {
 
     /**
      * 启用 指定wifi连接
-     *
      * @param wifiNetId
      * @return
      */
     public static boolean enableNetwork(int wifiNetId) {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         LogUtils.d("enableNetwork: %s", wifiNetId);
         return manager.enableNetwork(wifiNetId, false);
@@ -68,7 +65,6 @@ public final class WiFiUtil {
 
     /**
      * 启用 上一次停用的wifi连接
-     *
      * @return
      */
     public static boolean enableNetwork() {
@@ -81,19 +77,18 @@ public final class WiFiUtil {
 
     /**
      * 断开当前wifi连接，断开后系统会重连。
-     *
      * @return
      */
     public static boolean disconnect() {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         return manager.disconnect();
     }
 
     public static boolean reconnect() {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         return manager.reconnect();
     }
@@ -120,19 +115,18 @@ public final class WiFiUtil {
 
     public static boolean setEnabled(boolean enable) {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return false;
         return manager.setWifiEnabled(enable);
     }
 
     /**
      * 获取已连接 wifi 热点的 SSID
-     *
      * @return 如果wifi已连接返回 SSID，否则返回 ""
      */
     public static String getConnectedSSID() {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return "";
 
         WifiInfo wifiInfo = manager.getConnectionInfo();
@@ -146,13 +140,12 @@ public final class WiFiUtil {
 
     /**
      * 根据ssid获取本机已保存的wifi连接配置
-     *
      * @param SSID
      * @return
      */
     public static WifiConfiguration getWifiConfigBySSID(String SSID) {
         @SuppressLint("WifiManagerLeak")
-        WifiManager manager = (WifiManager) AppUtil.getApp().getSystemService(WIFI_SERVICE);
+        WifiManager manager = (WifiManager) Utils.getApp().getSystemService(WIFI_SERVICE);
         if (manager == null) return null;
 
         List<WifiConfiguration> cfgs = manager.getConfiguredNetworks();

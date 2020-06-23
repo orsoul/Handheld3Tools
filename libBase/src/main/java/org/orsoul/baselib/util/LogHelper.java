@@ -5,9 +5,8 @@ import android.os.Environment;
 import com.apkfuns.log2file.LogFileEngineFactory;
 import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
-
-import org.orsoul.baselib.util.utilcode.AppUtil;
-import org.orsoul.baselib.util.utilcode.AppUtils;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.Utils;
 
 public class LogHelper {
 
@@ -38,6 +37,6 @@ public class LogHelper {
                 .configLog2FilePath(LOG_FILE_PATH)
                 .configLog2FileLevel(LogLevel.TYPE_DEBUG)
                 .configLog2FileNameFormat("%d{yyyyMMdd}.log")
-                .configLogFileEngine(new LogFileEngineFactory(AppUtil.getApp().getApplicationContext()));
+                .configLogFileEngine(new LogFileEngineFactory(Utils.getApp().getApplicationContext()));
     }
 }
