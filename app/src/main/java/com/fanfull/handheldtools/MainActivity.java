@@ -7,7 +7,10 @@ import android.view.View;
 
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.barcode.ActivityBarcode;
+import com.fanfull.handheldtools.base.BaseApplication;
 import com.finger.FingerPrint;
+
+import org.orsoul.baselib.util.SoundUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +21,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.btn_barcode).setOnClickListener(this);
+
+        SoundUtils.loadSounds(BaseApplication.getContext());
 
         //        AutoCompleteTextView autoView = findViewById(R.id.auto);
         //        String[] ips = new String[]{

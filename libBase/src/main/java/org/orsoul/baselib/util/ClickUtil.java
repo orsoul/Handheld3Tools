@@ -12,7 +12,7 @@ public class ClickUtil {
         @Override
         protected Long initialValue() {
             // 第一次get()方法调用时会进行初始化（如果set方法没有调用）
-            return System.currentTimeMillis();
+            return 0L;
         }
     };
 
@@ -21,7 +21,6 @@ public class ClickUtil {
      */
     public static long click() {
         long reVal = System.currentTimeMillis() - lastClickTimeThreadLocal.get();
-        //        sLastClickTime = System.currentTimeMillis();
         lastClickTimeThreadLocal.set(System.currentTimeMillis());
         return reVal;
     }

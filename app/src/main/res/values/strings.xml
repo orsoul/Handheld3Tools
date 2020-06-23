@@ -2,4 +2,6 @@
     <string name="app_name">手持测试</string>
 
     <string name="main_barcode">二维码、条码</string>
+
+    <string name="text_click_again_quit">再次点击退出</string>
 </resources>

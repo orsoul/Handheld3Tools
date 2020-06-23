@@ -34,8 +34,6 @@ public class DialogUtil {
 
     public void destroy() {
         if (loadingPopupView != null) {
-            loadingPopupView.dismiss();
-            loadingPopupView.destroy();
         }
         context = null;
     }

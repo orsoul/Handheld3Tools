@@ -5,8 +5,7 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import com.apkfuns.logutils.LogUtils;
-import com.hardware.Hardware;
-import com.rd.barcodeScanTest.NewApiBroadcast;
+import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
 
 import org.orsoul.baselib.util.ArrayUtils;
@@ -21,27 +20,14 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     private boolean isScanning;
 
     public BarcodeOperationRd() {
-        //        this.scanApi = new NewApiService();
-        this.scanApi = new NewApiBroadcast();
+        // TODO: 2020/6/23 两种 API
+        this.scanApi = new NewApiService();
+        //        this.scanApi = new NewApiBroadcast();
         scanApi.setDecodeCallback(new ScanApi.DecodeCallback() {
             @Override
             public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
-                LogUtils.d("symbology %s dataLen:%s  %s", symbology, data.length,
+                LogUtils.v("symbology %s dataLen:%s  %s", symbology, data.length,
                            ArrayUtils.bytes2HexString(data, 0, length));
-                //jQqgP/-Qt(<aq1UY'8d*
-                //053101001000002010109031317002911101
-                //mHKb`#l7r=<aq1UY'8d*
-                //053101001000009010109031317002911101
-                //+^JRwAk7#)<aq1UY'8d*
-                //053101001000006010109031317002911101
-                if (IBarcodeOperation.BARCODE_DATA_LEN == length) {// 读到正确的数据
-                    byte[] barcodeBuff = new byte[38];
-                    System.arraycopy(data, 0, barcodeBuff, 0, length);
-                    Hardware.decodeBarcode(barcodeBuff);// 解码
-                    LogUtils.d("barcode解码后hex:"
-                                       + ArrayUtils.bytes2HexString(barcodeBuff));
-                    LogUtils.d("barcode:%s", new String(barcodeBuff));
-                }
                 if (barcodeListener != null) {
                     barcodeListener.onReceiveData(Arrays.copyOf(data, length));
                 }
@@ -49,7 +35,7 @@ public class BarcodeOperationRd implements IBarcodeOperation {
 
             @Override
             public void onEvent(int event, int info, byte[] data, ScanApi api) {
-                LogUtils.d("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
+                LogUtils.v("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
             }
         });
     }
@@ -106,6 +92,8 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     @Override
     public void uninit() {
         scanApi.deInit();
+        powerOff();
+        isOpen = false;
     }
 
     @Override
@@ -139,6 +127,7 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     @Override
     public void powerOff() {
         scanApi.powerOff();
+        cancelScan();
         isOpen = false;
     }
 }
