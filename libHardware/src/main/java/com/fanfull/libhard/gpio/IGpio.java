@@ -5,7 +5,7 @@ public interface IGpio {
 
     boolean isInit();
 
-    boolean close();
+    boolean release();
 
     boolean set(int index, boolean high);
 

@@ -1,8 +1,9 @@
-package com.fanfull.libhard.gpio;
+package com.fanfull.libhard.gpio.impl;
 
+import com.fanfull.libhard.gpio.AbsGpio;
 import com.rd.io.EMgpio;
 
-public class GpioControllerRd extends GpioController {
+public class GpioRd extends AbsGpio {
 
     @Override
     public boolean init() {
@@ -12,7 +13,7 @@ public class GpioControllerRd extends GpioController {
 
 
     @Override
-    public boolean close() {
+    public boolean release() {
         boolean unInit = EMgpio.GPIOUnInit();
         if (unInit) {
             isInit = false;
