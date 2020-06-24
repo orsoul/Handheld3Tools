@@ -11,9 +11,9 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
-import com.fanfull.libhard.barcode.BarcodeController;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
+import com.fanfull.libhard.barcode.impl.BarcodeController;
 
 import org.orsoul.baselib.util.ClickUtil;
 import org.orsoul.baselib.util.SoundUtils;

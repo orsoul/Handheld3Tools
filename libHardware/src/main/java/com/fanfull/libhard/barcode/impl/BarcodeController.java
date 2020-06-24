@@ -1,8 +1,9 @@
-package com.fanfull.libhard.barcode;
+package com.fanfull.libhard.barcode.impl;
 
 import android.content.Context;
 
-import com.fanfull.libhard.barcode.impl.BarcodeOperationRd;
+import com.fanfull.libhard.barcode.IBarcodeListener;
+import com.fanfull.libhard.barcode.IBarcodeOperation;
 
 public class BarcodeController implements IBarcodeOperation {
     private IBarcodeOperation barcodeOperation;

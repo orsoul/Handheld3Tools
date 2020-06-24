@@ -5,8 +5,7 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import com.apkfuns.logutils.LogUtils;
-import com.fanfull.libhard.barcode.IBarcodeListener;
-import com.fanfull.libhard.barcode.IBarcodeOperation;
+import com.fanfull.libhard.barcode.AbsBarcodeOperation;
 import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
 
@@ -17,12 +16,9 @@ import java.util.Arrays;
 /**
  * 雨滴二维码扫描 实现类
  */
-public class BarcodeOperationRd implements IBarcodeOperation {
+public class BarcodeOperationRd extends AbsBarcodeOperation {
 
     private ScanApi scanApi;
-    private IBarcodeListener barcodeListener;
-    private boolean isOpen;
-    private boolean isScanning;
 
     public BarcodeOperationRd() {
         // TODO: 2020/6/23 两种 API
@@ -43,11 +39,6 @@ public class BarcodeOperationRd implements IBarcodeOperation {
                 LogUtils.v("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
             }
         });
-    }
-
-    @Override
-    public void setBarcodeListener(final IBarcodeListener listener) {
-        this.barcodeListener = listener;
     }
 
     @Override
@@ -78,11 +69,6 @@ public class BarcodeOperationRd implements IBarcodeOperation {
     }
 
     @Override
-    public boolean isOpen() {
-        return isOpen;
-    }
-
-    @Override
     public void release() {
         cancelScan();
         powerOff();
@@ -108,11 +94,6 @@ public class BarcodeOperationRd implements IBarcodeOperation {
         if (barcodeListener != null) {
             barcodeListener.onScan();
         }
-    }
-
-    @Override
-    public boolean isScanning() {
-        return isScanning;
     }
 
     @Override
