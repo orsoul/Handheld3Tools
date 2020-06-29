@@ -5,9 +5,15 @@ import java.io.OutputStream;
 
 public interface ISerialPort {
 
-    public abstract InputStream getInputStream();
+    boolean send(byte[] data, int off, int len);
 
-    public abstract OutputStream getOutputStream();
+    boolean send(byte[] data);
 
-    public abstract void close();
+    String getSerialPortInfo();
+
+    InputStream getInputStream();
+
+    OutputStream getOutputStream();
+
+    void close();
 }

@@ -1,21 +1,23 @@
-package com.fanfull.libhard.serialport;
+package com.fanfull.libhard.serialport.impl;
+
+import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libhard.serialport.ISerialPort;
+import com.fanfull.libhard.serialport.ISerialPortListener;
+import com.finger.ArrayUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 
-public class SerialPortController {
+public class SerialPortController implements ISerialPort {
     private ISerialPort serialPort;
     private ISerialPortListener serialPortListener;
     private SerialPostReadThread readThread;
 
-    private SerialPortController(ISerialPort serialPort) {
+    public SerialPortController(ISerialPort serialPort) {
         this.serialPort = serialPort;
-    }
-
-    public static SerialPortController newSerialPortHelper(ISerialPort serialPort) {
-        return new SerialPortController(serialPort);
     }
 
     public void setSerialPortListener(ISerialPortListener serialPortListener) {
@@ -37,6 +39,38 @@ public class SerialPortController {
         }
     }
 
+    @Override
+    public boolean send(byte[] data, int off, int len) {
+        boolean send = serialPort.send(data, off, len);
+        return send;
+    }
+
+    @Override
+    public boolean send(byte[] data) {
+        return serialPort.send(data);
+    }
+
+    @Override
+    public String getSerialPortInfo() {
+        return serialPort.getSerialPortInfo();
+    }
+
+    @Override
+    public InputStream getInputStream() {
+        return serialPort.getInputStream();
+    }
+
+    @Override
+    public OutputStream getOutputStream() {
+        return serialPort.getOutputStream();
+    }
+
+    @Override
+    public void close() {
+        stopReadThread();
+        serialPort.close();
+    }
+
     private class SerialPostReadThread extends Thread {
         private boolean stopped;
 
@@ -50,12 +84,14 @@ public class SerialPortController {
 
         @Override
         public void run() {
+            LogUtils.w("run start");
             int len;
-            byte[] buff = new byte[1024 * 8];
+            byte[] buff = new byte[1024 * 16];
             InputStream in = serialPort.getInputStream();
             while (!isStop()) {
                 try {
                     len = in.read(buff);
+                    LogUtils.d("%s rec:%s", getSerialPortInfo(), ArrayUtils.bytes2HexString(buff, 0, len));
                     if (len < 1) {
                         break;
                     }
@@ -67,6 +103,7 @@ public class SerialPortController {
                 }
             }
             stopRead();
+            LogUtils.w("run finish");
         }
     }
 
@@ -143,7 +180,7 @@ public class SerialPortController {
          * @throws IOException
          */
         public SerialPortController build() throws SecurityException, IOException {
-            return new SerialPortController(new SerialPortRd(device, baudrate, flags));
+            return new SerialPortController(new SerialPortRd(device, baudrate, dataBits, parity, stopBits, flags));
         }
     }
 }
