@@ -8,6 +8,7 @@ import android.view.View;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.barcode.ActivityBarcode;
 import com.fanfull.handheldtools.base.BaseApplication;
+import com.fanfull.handheldtools.uhf.ActivityUhf;
 import com.finger.FingerPrint;
 
 import org.orsoul.baselib.util.SoundUtils;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.btn_barcode).setOnClickListener(this);
+        findViewById(R.id.btn_uhf).setOnClickListener(this);
 
         SoundUtils.loadSounds(BaseApplication.getContext());
 
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         );
         switch (keyCode) {
             case KeyEvent.KEYCODE_1:
+                FingerPrint.getInstance().open();
+                break;
             case KeyEvent.KEYCODE_2:
             case KeyEvent.KEYCODE_3:
             case KeyEvent.KEYCODE_4:
@@ -72,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.btn_uhf:
+                startActivity(new Intent(this, ActivityUhf.class));
+                break;
             case R.id.btn_barcode:
                 startActivity(new Intent(this, ActivityBarcode.class));
                 break;
