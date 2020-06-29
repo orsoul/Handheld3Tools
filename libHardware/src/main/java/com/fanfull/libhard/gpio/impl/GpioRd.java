@@ -7,7 +7,9 @@ public class GpioRd extends AbsGpio {
 
     @Override
     public boolean init() {
-        isInit = EMgpio.GPIOInit();
+        if (!isInit) {
+            isInit = EMgpio.GPIOInit();
+        }
         return isInit;
     }
 

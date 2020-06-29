@@ -62,4 +62,12 @@ public class GpioController implements IGpio {
     public static GpioController getInstance() {
         return GpioController.SingletonHolder.instance;
     }
+
+    public static GpioController getInstanceAndInit() {
+        GpioController instance = SingletonHolder.instance;
+        if (!instance.isInit()) {
+            instance.init();
+        }
+        return instance;
+    }
 }
