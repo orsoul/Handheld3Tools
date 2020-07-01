@@ -8,6 +8,7 @@ import android.view.View;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.barcode.ActivityBarcode;
 import com.fanfull.handheldtools.base.BaseApplication;
+import com.fanfull.handheldtools.uhf.ActivityNfc;
 import com.fanfull.handheldtools.uhf.ActivityUhf;
 import com.finger.FingerPrint;
 
@@ -21,8 +22,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn_barcode).setOnClickListener(this);
         findViewById(R.id.btn_uhf).setOnClickListener(this);
+        findViewById(R.id.btn_nfc).setOnClickListener(this);
+        findViewById(R.id.btn_barcode).setOnClickListener(this);
 
         SoundUtils.loadSounds(BaseApplication.getContext());
 
@@ -78,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.btn_uhf:
                 startActivity(new Intent(this, ActivityUhf.class));
+                break;
+            case R.id.btn_nfc:
+                startActivity(new Intent(this, ActivityNfc.class));
                 break;
             case R.id.btn_barcode:
                 startActivity(new Intent(this, ActivityBarcode.class));

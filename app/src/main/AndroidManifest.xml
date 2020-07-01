@@ -6,7 +6,6 @@
     <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
@@ -25,8 +24,11 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:allowBackup">
         <activity
+            android:name=".uhf.ActivityNfc"
+            android:label="@string/main_nfc"></activity>
+        <activity
             android:name=".uhf.ActivityUhf"
-            android:label="@string/main_uhf"></activity>
+            android:label="@string/main_uhf" />
         <activity
             android:name=".barcode.ActivityBarcode"
             android:label="@string/main_barcode" />
