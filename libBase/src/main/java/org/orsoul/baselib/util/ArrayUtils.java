@@ -251,7 +251,6 @@ public class ArrayUtils {
 
     /**
      * 将barcode截成 3个 16byte数组,准备 写入 M1卡的 4,5,6三个块区
-     *
      * @param mBarcodeBuf
      * @return
      */
@@ -356,7 +355,6 @@ public class ArrayUtils {
 
     /**
      * 加密
-     *
      * @param src
      * @param netkey
      * @return
@@ -417,7 +415,6 @@ public class ArrayUtils {
 
     /**
      * 解密
-     *
      * @param src    需要解密的数据
      * @param netkey 密钥
      * @return 返回解完的数据
@@ -479,7 +476,6 @@ public class ArrayUtils {
 
     /**
      * 将基金袋上的袋id通过每两位异或得到检验位，合成新的芯片的袋id
-     *
      * @param originalId
      * @return
      */
@@ -495,5 +491,16 @@ public class ArrayUtils {
             checkBit ^= Integer.parseInt(originalId.substring(i * 2, i * 2 + 2), 16);
         }
         return (originalId + String.format("%2s", Integer.toHexString(checkBit)).replace(' ', '0')).toUpperCase();
+    }
+
+    public static void reverse(byte[] data) {
+        if (data == null) {
+            return;
+        }
+        for (int start = 0, end = data.length - 1; start < end; start++, end--) {
+            byte temp = data[start];
+            data[start] = data[end];
+            data[end] = temp;
+        }
     }
 }

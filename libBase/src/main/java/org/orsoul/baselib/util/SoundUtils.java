@@ -12,10 +12,11 @@ import org.orsoul.baselib.R;
  */
 public class SoundUtils {
 
-    private static final int MAX_STREAMS = 16; // SoundPool对象中允许同时存在的最大流的数量
-    private static final int SRC_QUALITY = 1; // 指定声音品质,目前没有用到，设为1。
+    /** SoundPool对象中允许同时存在的最大流的数量 */
+    private static final int MAX_STREAMS = 32;
 
-    private static final float VOLUME = 2f; // 声道音量
+    /** SoundPool对象中允许同时存在的最大流的数量 */
+    private static final float VOLUME = 1f; // 声道音量
     private static final int PRIORITY = 1; // 指定播放声音的优先级，数值越高，优先级越大。
     private static final int LOOP = 0; // 指定是否循环。-1表示无限循环，0播放1次,n 表示 循环 n次
     private static final float RATE = 1;// 指定播放速率。1.0为原始频率,2.0 为两倍播放
@@ -38,7 +39,7 @@ public class SoundUtils {
     public static boolean FLAG = true;
     public static int INIT_SUCCESS;
     // 声音池
-    private static final SoundPool mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_SYSTEM, SRC_QUALITY);
+    private static final SoundPool mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.USE_DEFAULT_STREAM_TYPE, 0);
     public static int[] mSoundIds = new int[12]; // 数字声音 的 播放id
 
     // 从资源文件 加载 声音资源
@@ -127,11 +128,10 @@ public class SoundUtils {
 
     /**
      * 报数
-     * @param n 需要 播报 的数字, 范围应在 1~999
+     * @param n 需要 播报 的数字, 范围应在 0~999
      */
     public static void playNumber(int n) {
-        int sno = 98;
-        if (n < 1 || 999 < n) {
+        if (n < 0 || 999 < n) {
             return;
         }
         // LogsUtil.s("play:" + n);

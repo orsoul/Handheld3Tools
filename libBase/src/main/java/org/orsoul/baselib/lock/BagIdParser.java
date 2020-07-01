@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.util;
+package org.orsoul.baselib.lock;
 
 public class BagIdParser {
     public static final int BAG_ID_LEN = 24;

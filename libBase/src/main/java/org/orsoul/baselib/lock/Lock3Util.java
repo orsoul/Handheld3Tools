@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.util;
+package org.orsoul.baselib.lock;
 
 /**
  * 封袋、出入库、开袋 会用到的一些方法。
@@ -51,7 +51,6 @@ public class Lock3Util {
 
     /**
      * 获取明文标志位。1~5：对应标志位F1~F5
-     *
      * @param flag           原始密文 标志位
      * @param miyueNum       原始 密钥 编号 A0~A9
      * @param uid            锁内NFC的UID
@@ -59,8 +58,8 @@ public class Lock3Util {
      * @return -1：uid错误； -2：密钥编号错误； -3：解出的标志位错误； 明文1~5：对应标志位F1~F5；
      * ！isPlainFlag： 加密成功返回
      */
-    public static int getFlag(int flag, int miyueNum, byte[] uid,
-                              boolean isGetPlainFlag) {
+    public static int getStatus(int flag, int miyueNum, byte[] uid,
+                                boolean isGetPlainFlag) {
         if (null == uid || uid.length != 7) {
             return -1;
         }
@@ -125,6 +124,33 @@ public class Lock3Util {
             // 生成 密文 标志位
             byte encodeFlag = FLAG_DATA[5 * t + (flag - 1)];
             return encodeFlag ^ key;
+        }
+    }
+
+    public static float getV(byte v) {
+        int t = v & 0xFF;
+        return (2.5f * t) / 128;
+    }
+
+    public static String getStatusDesc(int status) {
+        //		F1：空袋状态（未插锁片，此时可插拔锁片）
+        //		F2：上锁状态（已插锁片，此时可插拔锁片）
+        //		F3：已封袋状态（该袋已成功封签，此时不可插拔锁片，否则触发报警）
+        //		F4：已开袋状态（此时可拆锁片，拆锁片后会回到F1空袋状态）
+        //		F5：袋锁电量不足（该袋无法使用，需返厂维修）
+        switch (status) {
+            case 1:
+                return "F1(空袋)";
+            case 2:
+                return "F2(上锁)";
+            case 3:
+                return "F3(已封袋)";
+            case 4:
+                return "F4(已开袋)";
+            case 5:
+                return "F5(电量低)";
+            default:
+                return String.valueOf(status);
         }
     }
 }
