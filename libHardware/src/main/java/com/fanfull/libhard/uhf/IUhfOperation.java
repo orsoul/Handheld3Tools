@@ -1,12 +1,8 @@
 package com.fanfull.libhard.uhf;
 
-public interface IUhfOperation {
+import com.fanfull.libhard.IOperation;
 
-    boolean open();
-
-    boolean isOpen();
-
-    void release();
+public interface IUhfOperation extends IOperation {
 
     boolean send(byte[] data);
 

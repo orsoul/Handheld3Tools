@@ -3,7 +3,7 @@ package com.fanfull.libhard.uhf;
 public class UhfController implements IUhfOperation {
     private IUhfOperation uhfOperation;
 
-    public UhfController(IUhfOperation uhfOperation) {
+    private UhfController(IUhfOperation uhfOperation) {
         this.uhfOperation = uhfOperation;
     }
 
@@ -15,6 +15,11 @@ public class UhfController implements IUhfOperation {
     @Override
     public boolean isOpen() {
         return uhfOperation.isOpen();
+    }
+
+    @Override
+    public boolean isScanning() {
+        return uhfOperation.isScanning();
     }
 
     @Override
