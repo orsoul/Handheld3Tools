@@ -2,21 +2,17 @@ package com.fanfull.libhard.barcode;
 
 import android.content.Context;
 
-public interface IBarcodeOperation {
+import com.fanfull.libhard.IOperation;
 
-    boolean open(Context context);
-
-    boolean isOpen();
-
-    void release();
+public interface IBarcodeOperation extends IOperation {
 
     void init(Context context);
 
     void uninit();
 
-    void scan();
+    void scanAsync(long timeout);
 
-    boolean isScanning();
+    void scanAsync();
 
     void cancelScan();
 

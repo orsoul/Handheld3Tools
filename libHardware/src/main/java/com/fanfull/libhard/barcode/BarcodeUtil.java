@@ -5,6 +5,8 @@ import com.hardware.Hardware;
 
 import org.orsoul.baselib.util.ArrayUtils;
 
+import java.util.Arrays;
+
 /**
  * 老锁二维码 解密工具
  */
@@ -21,7 +23,7 @@ public abstract class BarcodeUtil {
         //053101001000006010109031317002911101
         if (ORIGINAL_DATA_LEN == length) {// 读到正确的数据
             byte[] barcodeBuff = new byte[DECODE_DATA_LEN];
-            System.arraycopy(data, 0, barcodeBuff, 0, DECODE_DATA_LEN);
+            System.arraycopy(data, 0, barcodeBuff, 0, length);
             Hardware.decodeBarcode(barcodeBuff);// 解码
             LogUtils.d("barcode解码后hex:"
                                + ArrayUtils.bytes2HexString(barcodeBuff));
@@ -36,5 +38,22 @@ public abstract class BarcodeUtil {
             return null;
         }
         return decodeBarcode(data, data.length);
+    }
+
+    /**
+     * 将barcode截成 3个 16byte数组,准备 写入 M1卡的 4,5,6三个块区
+     * @param barcodeBuff
+     * @return
+     */
+    public static byte[][] get3Data(byte[] barcodeBuff) {
+        if ((null == barcodeBuff) || (barcodeBuff.length < 38)) {
+            return null;
+        }
+        byte[][] reVal = new byte[3][];
+        reVal[0] = Arrays.copyOfRange(barcodeBuff, 0, 16);// 0~15
+        reVal[1] = Arrays.copyOfRange(barcodeBuff, 16, 32);// 16~31
+        reVal[2] = new byte[16];
+        System.arraycopy(barcodeBuff, 32, reVal[2], 0, barcodeBuff.length - 32); // 32~mBarcodeBuf.length
+        return reVal;
     }
 }

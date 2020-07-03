@@ -12,6 +12,7 @@ import com.fanfull.handheldtools.uhf.ActivityNfc;
 import com.fanfull.handheldtools.uhf.ActivityUhf;
 import com.finger.FingerPrint;
 
+import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,11 +57,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case KeyEvent.KEYCODE_1:
                 FingerPrint.getInstance().open();
                 break;
-            case KeyEvent.KEYCODE_2:
-            case KeyEvent.KEYCODE_3:
-            case KeyEvent.KEYCODE_4:
-            case KeyEvent.KEYCODE_5:
-            case KeyEvent.KEYCODE_6:
+            case KeyEvent.KEYCODE_7:
+                throw new RuntimeException("test crash");
+            case KeyEvent.KEYCODE_8:
+                CrashLogUtil.logException(new RuntimeException("test log exception"));
                 break;
             default:
                 break;

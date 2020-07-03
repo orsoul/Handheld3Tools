@@ -3,7 +3,8 @@ package com.fanfull.libhard.serialport.impl;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.serialport.ISerialPort;
 import com.fanfull.libhard.serialport.ISerialPortListener;
-import com.finger.ArrayUtils;
+
+import org.orsoul.baselib.util.ArrayUtils;
 
 import java.io.File;
 import java.io.IOException;

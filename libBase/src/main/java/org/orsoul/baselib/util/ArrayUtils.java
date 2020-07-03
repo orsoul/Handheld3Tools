@@ -11,22 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 
-public class ArrayUtils {
-
-    /**
-     * 十套代表F1-->F4的标志 和单片机A版本对接的，请勿修改
-     */
-    public static byte flagData[] = new byte[]{(byte) 0x23, (byte) 0x5f,
-            (byte) 0x8e, (byte) 0x41, (byte) 0x4d, (byte) 0x8c, (byte) 0x3d,
-            (byte) 0x6a, (byte) 0x23, (byte) 0x9c, (byte) 0x95, (byte) 0x3c,
-            (byte) 0x4b, (byte) 0x11, (byte) 0x73, (byte) 0x1c, (byte) 0x3e,
-            (byte) 0x22, (byte) 0x49, (byte) 0x83, (byte) 0x36, (byte) 0x47,
-            (byte) 0x88, (byte) 0x26, (byte) 0x32, (byte) 0x28, (byte) 0x3d,
-            (byte) 0x6f, (byte) 0x78, (byte) 0x7a, (byte) 0x99, (byte) 0x2d,
-            (byte) 0x6c, (byte) 0x24, (byte) 0xa3, (byte) 0x8c, (byte) 0x7f,
-            (byte) 0x9d, (byte) 0x36, (byte) 0xb2, (byte) 0x25, (byte) 0x39,
-            (byte) 0x48, (byte) 0x76, (byte) 0xea, (byte) 0x2c, (byte) 0x36,
-            (byte) 0x47, (byte) 0x79, (byte) 0x29,};
+public abstract class ArrayUtils {
 
     private static final char[] HEX_CHAR = {'0', '1', '2', '3', '4', '5', '6',
             '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',};
@@ -246,23 +231,6 @@ public class ArrayUtils {
         for (int i = 0; i < tmp.length; i++) {
             reVal[1][i] = tmp[i];
         }
-        return reVal;
-    }
-
-    /**
-     * 将barcode截成 3个 16byte数组,准备 写入 M1卡的 4,5,6三个块区
-     * @param mBarcodeBuf
-     * @return
-     */
-    public static byte[][] get3Data(byte[] mBarcodeBuf) {
-        if ((null == mBarcodeBuf) || (mBarcodeBuf.length < 38)) {
-            return null;
-        }
-        byte[][] reVal = new byte[3][];
-        reVal[0] = Arrays.copyOfRange(mBarcodeBuf, 0, 16);// 0~15
-        reVal[1] = Arrays.copyOfRange(mBarcodeBuf, 16, 32);// 16~31
-        reVal[2] = new byte[16];
-        System.arraycopy(mBarcodeBuf, 32, reVal[2], 0, mBarcodeBuf.length - 32); // 32~mBarcodeBuf.length
         return reVal;
     }
 

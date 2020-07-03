@@ -29,9 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:enabled="false"
+        android:enabled="true"
         android:padding="5dp"
-        android:text="扫描"
+        android:text="读456区"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:padding="5dp"
-        android:text="停止"
+        android:text="写456区"
         app:layout_constraintBottom_toBottomOf="@+id/btn_barcode_scan"
         app:layout_constraintEnd_toStartOf="@+id/btn_barcode_scan"
         app:layout_constraintTop_toTopOf="@+id/btn_barcode_scan" />

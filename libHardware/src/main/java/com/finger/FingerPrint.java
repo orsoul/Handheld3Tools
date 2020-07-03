@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.rd.Hardware2;
 
+import org.orsoul.baselib.util.ArrayUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;

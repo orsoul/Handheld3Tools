@@ -167,12 +167,12 @@ public class Hardware2 {
     public int setGPIO(int state, int port) {
         if (scanApi != null) {
             if (state == 0 && port == 1) {
-                Log.i(TAG, "do scan");
+                Log.i(TAG, "do scanAsync");
                 isScanStop = false;
                 scanApi.doScan();
                 return 1021;
             } else if (state == 1 && port == 1) {
-                Log.i(TAG, "cancel scan");
+                Log.i(TAG, "cancel scanAsync");
                 isScanStop = true;
                 scanApi.cancelScan();
                 return 1023;
@@ -452,7 +452,7 @@ public class Hardware2 {
         public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
             if (length > 0) {
                 barCodeData = data;
-                Log.i(TAG, "scan result=" + new String(data));
+                Log.i(TAG, "scanAsync result=" + new String(data));
             }
         }
 

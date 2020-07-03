@@ -1,6 +1,7 @@
 package org.orsoul.baselib.lock;
 
-import com.example.nfc.flag.uhf.ArrayUtils;
+
+import org.orsoul.baselib.util.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;

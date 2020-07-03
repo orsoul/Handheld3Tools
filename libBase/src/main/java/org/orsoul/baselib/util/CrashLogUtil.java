@@ -38,9 +38,13 @@ public class CrashLogUtil {
         //this class is not publicly instantiable
     }
 
-    private static String getCrashLogTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH-mm-ss", Locale.getDefault());
+    private static String getCrashLogTime(String format) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
         return dateFormat.format(new Date());
+    }
+
+    private static String getCrashLogTime() {
+        return getCrashLogTime("yyyyMMdd HH-mm-ss");
     }
 
     public static void saveCrashReport(final Throwable throwable) {
@@ -48,12 +52,11 @@ public class CrashLogUtil {
         writeToFile(CRASH_REPORT_PATH, filename, getStackTrace(throwable));
     }
 
-
     public static void logException(final Exception exception) {
-        ThreadUtil.execute(new Runnable() {
+        ThreadUtil.executeInSingleThread(new Runnable() {
             @Override
             public void run() {
-                final String filename = getCrashLogTime() + EXCEPTION_SUFFIX + FILE_EXTENSION;
+                final String filename = getCrashLogTime("yyyy-MM-dd") + EXCEPTION_SUFFIX + FILE_EXTENSION;
                 writeToFile(CRASH_REPORT_PATH, filename, getStackTrace(exception));
             }
         });
@@ -69,13 +72,12 @@ public class CrashLogUtil {
 
         BufferedWriter bufferedWriter;
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter(
-                    crashReportPath + File.separator + filename));
-
-            bufferedWriter.write(crashLog);
+            bufferedWriter = new BufferedWriter(
+                    new FileWriter(crashReportPath + File.separator + filename, true));
+            bufferedWriter.write(String.format("\n%s", crashLog));
             bufferedWriter.flush();
             bufferedWriter.close();
-            Log.d(TAG, "crash report saved in : " + crashReportPath);
+            Log.d(TAG, "Exception report saved in : " + crashDir.getPath() + "/" + filename);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -86,7 +88,9 @@ public class CrashLogUtil {
         final PrintWriter printWriter = new PrintWriter(result);
 
         e.printStackTrace(printWriter);
-        String crashLog = result.toString();
+        String crashLog = String.format(
+                "================ %s ================\n%s",
+                getCrashLogTime("yyyyMMdd HH:mm:ss.SSS"), result.toString());
         printWriter.close();
         return crashLog;
     }

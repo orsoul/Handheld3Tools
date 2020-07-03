@@ -1,5 +1,7 @@
 package com.finger;
 
+import org.orsoul.baselib.util.ArrayUtils;
+
 import java.util.Arrays;
 
 /**

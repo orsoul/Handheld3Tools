@@ -1,6 +1,7 @@
 package com.fanfull.handheldtools.barcode;
 
 import android.os.Bundle;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
 
 import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 
@@ -54,6 +56,7 @@ public class ActivityBarcode extends InitModuleActivity {
 
     @Override
     protected void initModule() {
+        BarcodeController.initBarcodeController(this);
         barcodeController = BarcodeController.getInstance();
         //        barcodeController = BarcodeController.newInstance(barcodeController);
 
@@ -92,12 +95,14 @@ public class ActivityBarcode extends InitModuleActivity {
                 }
                 boolean repScan = switchRep.isChecked();
                 runOnUi(() -> {
-                    appendShow(String.format("\n%s: %s", ++recCount, barcode));
+                    Spanned colorSpanned = HtmlUtil.getColorSpanned("\n%s: %s", ++recCount, barcode);
+                    appendShow(colorSpanned);
+                    //                    appendShow(String.format("\n%s: %s", ++recCount, barcode));
                     btnScan.setEnabled(!repScan);
                 });
 
                 if (repScan) {
-                    barcodeController.scan();
+                    barcodeController.scanAsync();
                 }
 
                 if (switchSound.isChecked()) {
@@ -106,11 +111,15 @@ public class ActivityBarcode extends InitModuleActivity {
             }
         });
 
-        ThreadUtil.execute(() -> barcodeController.open(ActivityBarcode.this));
+        ThreadUtil.execute(() -> barcodeController.open());
     }
 
-    private void appendShow(String text) {
-        tvShow.append(text);
+    private void appendShow(Object text) {
+        if (text instanceof Spanned) {
+            tvShow.append((Spanned) text);
+        } else {
+            tvShow.append(String.valueOf(text));
+        }
         int offset = tvShow.getLineCount() * tvShow.getLineHeight();
         if (offset > tvShow.getHeight()) {
             tvShow.scrollTo(0, offset - tvShow.getHeight());
@@ -122,7 +131,7 @@ public class ActivityBarcode extends InitModuleActivity {
         super.onClick(v);
         switch (v.getId()) {
             case R.id.btn_barcode_scan:
-                barcodeController.scan();
+                barcodeController.scanAsync();
                 break;
             case R.id.btn_barcode_stopScan:
                 barcodeController.cancelScan();
@@ -162,7 +171,7 @@ public class ActivityBarcode extends InitModuleActivity {
                 appendShow("\n开始上电");
                 break;
             case KeyEvent.KEYCODE_3:
-                //                barcodeController.scan();
+                //                barcodeController.scanAsync();
                 break;
             case KeyEvent.KEYCODE_4:
                 //                barcodeController.uninit();

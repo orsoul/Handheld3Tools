@@ -45,8 +45,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     // crash
+    implementation 'cat.ereza:customactivityoncrash:2.3.0'
     implementation 'com.wanjian:cockroach:0.0.5'
-    debugImplementation 'com.hjq:logcat:6.8'
+//    debugImplementation 'com.hjq:logcat:6.8'
 
     /* view */
     implementation 'com.lxj:xpopup:2.0.3'

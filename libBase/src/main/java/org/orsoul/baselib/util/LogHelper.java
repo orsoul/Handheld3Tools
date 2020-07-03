@@ -36,7 +36,7 @@ public class LogHelper {
                 // targetSdkVersion >= 23 需要确保有写sdcard权限
                 .configLog2FilePath(LOG_FILE_PATH)
                 .configLog2FileLevel(LogLevel.TYPE_DEBUG)
-                .configLog2FileNameFormat("%d{yyyyMMdd}.log")
+                .configLog2FileNameFormat("%d{yyyyMMdd}.txt")
                 .configLogFileEngine(new LogFileEngineFactory(Utils.getApp().getApplicationContext()));
     }
 }

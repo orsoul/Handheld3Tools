@@ -7,10 +7,32 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ThreadUtil {
-    private static ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static ExecutorService threadPool;
+    private static ExecutorService singleThreadPool;
 
     public static void execute(Runnable task) {
+        if (threadPool == null) {
+            synchronized (ThreadUtil.class) {
+                if (threadPool == null) {
+                    threadPool = Executors.newCachedThreadPool(
+                            getNameFormatThreadFactory("CachePool"));
+                }
+            }
+        }
         threadPool.execute(task);
+    }
+
+    public static void executeInSingleThread(Runnable task) {
+        if (singleThreadPool == null) {
+            synchronized (ThreadUtil.class) {
+                if (singleThreadPool == null) {
+                    singleThreadPool = Executors.newSingleThreadExecutor(
+                            getNameFormatThreadFactory("SingleThread")
+                    );
+                }
+            }
+        }
+        singleThreadPool.execute(task);
     }
 
     public static boolean sleep(long millis) {
@@ -86,7 +108,6 @@ public class ThreadUtil {
 
     /**
      * 获取格式化线程名的 ThreadFactory
-     *
      * @param namePrefix 线程名前缀，最终格式：namePrefix-number
      * @return
      */

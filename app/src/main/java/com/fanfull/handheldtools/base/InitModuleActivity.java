@@ -60,7 +60,7 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
             case KeyEvent.KEYCODE_2:
                 break;
             case KeyEvent.KEYCODE_3:
-                //                barcodeController.scan();
+                //                barcodeController.scanAsync();
                 break;
             case KeyEvent.KEYCODE_4:
                 //                barcodeController.uninit();

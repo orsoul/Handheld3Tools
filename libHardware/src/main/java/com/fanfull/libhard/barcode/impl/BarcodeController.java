@@ -6,72 +6,88 @@ import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.IBarcodeOperation;
 
 public class BarcodeController implements IBarcodeOperation {
-    private IBarcodeOperation barcodeOperation;
+    private IBarcodeOperation operation;
 
     private BarcodeController(IBarcodeOperation barcodeOperation) {
-        this.barcodeOperation = barcodeOperation;
+        this.operation = barcodeOperation;
     }
 
     @Override
-    public boolean open(Context context) {
-        return barcodeOperation.open(context);
+    public boolean open() {
+        return operation.open();
     }
 
     @Override
     public boolean isOpen() {
-        return barcodeOperation.isOpen();
+        return operation.isOpen();
     }
 
     @Override
     public void release() {
-        barcodeOperation.release();
+        operation.release();
     }
 
     @Override
     public void init(Context context) {
-        barcodeOperation.init(context);
+        operation.init(context);
     }
 
     @Override
     public void uninit() {
-        barcodeOperation.uninit();
+        operation.uninit();
     }
 
     @Override
-    public void scan() {
-        barcodeOperation.scan();
+    public void scanAsync(long timeout) {
+        operation.scanAsync(timeout);
+    }
+
+    @Override
+    public void scanAsync() {
+        operation.scanAsync();
     }
 
     @Override
     public boolean isScanning() {
-        return barcodeOperation.isScanning();
+        return operation.isScanning();
     }
 
     @Override
     public void cancelScan() {
-        barcodeOperation.cancelScan();
+        operation.cancelScan();
     }
 
     @Override
     public void powerOn() {
-        barcodeOperation.powerOn();
+        operation.powerOn();
     }
 
     @Override
     public void powerOff() {
-        barcodeOperation.powerOff();
+        operation.powerOff();
     }
 
     @Override
     public void setBarcodeListener(IBarcodeListener barcodeListener) {
-        barcodeOperation.setBarcodeListener(barcodeListener);
+        operation.setBarcodeListener(barcodeListener);
     }
 
-    private static class SingletonHolder {
-        private static final BarcodeController instance = new BarcodeController(new BarcodeOperationRd());
-    }
+    //    private static class SingletonHolder {
+    //        private static final BarcodeController instance = new BarcodeController(new BarcodeOperationRd());
+    //    }
 
     public static BarcodeController getInstance() {
-        return SingletonHolder.instance;
+        if (instance == null) {
+            throw new RuntimeException("BarcodeController is not init");
+        }
+        return instance;
+    }
+
+    private static BarcodeController instance;
+
+    public static synchronized void initBarcodeController(Context context) {
+        if (instance == null) {
+            instance = new BarcodeController(new BarcodeOperationRd(context));
+        }
     }
 }

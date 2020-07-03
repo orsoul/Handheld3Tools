@@ -1,6 +1,5 @@
 package com.fanfull.libhard.barcode.impl;
 
-
 import android.content.Context;
 import android.os.SystemClock;
 
@@ -12,15 +11,19 @@ import com.rd.barcodeScanTest.ScanApi;
 import org.orsoul.baselib.util.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * 雨滴二维码扫描 实现类
  */
 public class BarcodeOperationRd extends AbsBarcodeOperation {
 
+    private Context context;
     private ScanApi scanApi;
 
-    public BarcodeOperationRd() {
+    public BarcodeOperationRd(Context context) {
+        this.context = context;
         // TODO: 2020/6/23 两种 API
         this.scanApi = new NewApiService();
         //        this.scanApi = new NewApiBroadcast();
@@ -29,6 +32,8 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
             public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
                 LogUtils.v("symbology %s dataLen:%s  %s", symbology, data.length,
                            ArrayUtils.bytes2HexString(data, 0, length));
+                cancelTimer();
+                isScanning = false;
                 if (barcodeListener != null) {
                     barcodeListener.onReceiveData(Arrays.copyOf(data, length));
                 }
@@ -42,7 +47,7 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
     }
 
     @Override
-    public synchronized boolean open(Context context) {
+    public synchronized boolean open() {
         if (isOpen) {
             return true;
         }
@@ -53,17 +58,6 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
         if (barcodeListener != null) {
             barcodeListener.onOpen();
         }
-        //        for (int i = 0; i < 3; i++) {
-        //            scan();
-        //            SystemClock.sleep(500);
-        //            cancelScan();
-        //        }
-        //        SystemClock.sleep(300);
-        //        scan();
-        //        SystemClock.sleep(500);
-        //        cancelScan();
-        //        SystemClock.sleep(2000);
-
         isOpen = true;
         return true;
     }
@@ -71,7 +65,7 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
     @Override
     public void release() {
         cancelScan();
-        powerOff();
+        //        powerOff();
         uninit();
     }
 
@@ -87,22 +81,53 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
         isOpen = false;
     }
 
+    private Timer scanTimer;
+
+    private void cancelTimer() {
+        if (scanTimer != null) {
+            scanTimer.cancel();
+            scanTimer = null;
+        }
+    }
+
     @Override
-    public void scan() {
+    public void scanAsync(long timeout) {
+        if (isScanning) {
+            return;
+        }
         scanApi.doScan();
         isScanning = true;
         if (barcodeListener != null) {
             barcodeListener.onScan();
         }
+        if (timeout < 500) {
+            timeout = 500;
+        } else if (10_000 < timeout) {
+            timeout = 10_000;
+        }
+        scanTimer = new Timer();
+        scanTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                cancelScan();
+            }
+        }, timeout);
+    }
+
+
+    @Override
+    public synchronized void scanAsync() {
+        scanAsync(5000);
     }
 
     @Override
-    public void cancelScan() {
+    public synchronized void cancelScan() {
         scanApi.cancelScan();
-        isScanning = false;
-        if (barcodeListener != null) {
+        cancelTimer();
+        if (isScanning && barcodeListener != null) {
             barcodeListener.onStopScan();
         }
+        isScanning = false;
     }
 
     @Override
