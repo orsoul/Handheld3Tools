@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.apkfuns.logutils.LogUtils;
 import com.rd.Hardware2;
 
 import org.orsoul.baselib.util.ArrayUtils;
@@ -131,14 +132,14 @@ public class FingerPrint {
         int gpio = hardware.setGPIO(0, 4);
         // 上电到打开串号，需延迟
         SystemClock.sleep(500);
-        LogsUtil.d(TAG, "指纹模块已经上电=" + gpio);
+        LogUtils.d(TAG, "指纹模块已经上电=" + gpio);
 
         int n = 0;
         while (n++ < 10) {
             if (connection()) {
                 // 回调打开指纹串口成功
                 fManager.openFingerSerialPortSuccess(true);
-                LogsUtil.d(TAG, "打开指纹串口成功！");
+                LogUtils.d(TAG, "打开指纹串口成功！");
                 isInit = true;
                 return;
             }
@@ -147,7 +148,7 @@ public class FingerPrint {
         if (n == 11) {
             // 回调打开指纹串口失败
             fManager.openFingerSerialPortSuccess(false);
-            LogsUtil.d(TAG, "打开指纹串口失败！");
+            LogUtils.d(TAG, "打开指纹串口失败！");
         }
     }
 
@@ -159,7 +160,7 @@ public class FingerPrint {
      * @Description: 打开串口连接
      */
     public boolean connection() {
-        LogsUtil.d("Hardware2", "connection ...");
+        LogUtils.d("Hardware2", "connection ...");
         mFd = hardware.openSerialPortTest(mChooseSerial[1], mChooseBuad, 8, 1);// 打开串口2(指纹模块只可使用第二个串口？）
         if (mFd == -1) {
             mFd = hardware.openSerialPortTest(mChooseSerial[1], mChooseBuad, 8, 1);// 打开串口
@@ -168,10 +169,10 @@ public class FingerPrint {
             //			 Settings.Secure.ADB_ENABLED, 0);
             //			 Settings.Secure.putInt(BaseApplication.getContext().getContentResolver(),
             //					 Settings.Secure.ADB_ENABLED,1);
-            //			LogsUtil.d(TAG, "----Reset adb----");
+            //			LogUtils.d(TAG, "----Reset adb----");
             return mFd != -1;
         } else {
-            LogsUtil.d(TAG, "指纹模块已打开！！！");
+            LogUtils.d(TAG, "指纹模块已打开！！！");
             while ((len = hardware.read(mFd, buf, 24)) > 0) ;// clear buf
 
         }
@@ -191,7 +192,7 @@ public class FingerPrint {
         hardware.close(mFd);
         mFd = -1;
         isInit = false;
-        LogsUtil.d(TAG, "---closeFinger 指纹已经关闭----");
+        LogUtils.d(TAG, "---closeFinger 指纹已经关闭----");
     }
 
     /**
@@ -226,7 +227,7 @@ public class FingerPrint {
     public void stopSearchFinger() {
         if (null != mFingerPrintTask) {
             mFingerPrintTask.stop(true);
-            LogsUtil.d(TAG, "stop Search  finger!");
+            LogUtils.d(TAG, "stop Search  finger!");
         }
     }
 
@@ -259,13 +260,13 @@ public class FingerPrint {
         if (hardware.select(mFd, 0, 500) == 1) {
             //***
             len = hardware.read(mFd, buf, 12);
-            LogsUtil.d("PS_Empty:" + ArrayUtils.bytes2HexString(buf));
+            LogUtils.d("PS_Empty:" + ArrayUtils.bytes2HexString(buf));
         } else {
             fManager.emptyFinger(false);
             return;
         }
         if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-            LogsUtil.d(TAG, "Delete all finger successfully!\n");
+            LogUtils.d(TAG, "Delete all finger successfully!\n");
             fManager.emptyFinger(true);
             return;
         }
@@ -288,11 +289,11 @@ public class FingerPrint {
             //***
             len = hardware.read(mFd, buf, 12);
             // EF 01 FF FF FF FF 07 00 05 00 00 03 000000000000000000000000
-            LogsUtil.d(TAG, ArrayUtils.bytes2HexString(buf));
+            LogUtils.d(TAG, ArrayUtils.bytes2HexString(buf));
             if (buf[10] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
 
-                LogsUtil.d(TAG,
-                        "Successfully Get:" + (Integer.valueOf(buf[11] + ""))
+                LogUtils.d(TAG,
+                           "Successfully Get:" + (Integer.valueOf(buf[11] + ""))
                                 + " fingers");
                 return Integer.valueOf(buf[11] + "");
             }
@@ -306,7 +307,7 @@ public class FingerPrint {
      * @return
      */
     public void deleteFingerNmber(int delid, int v) {
-        LogsUtil.d(TAG, "delId=" + delid);
+        LogUtils.d(TAG, "delId=" + delid);
 
         byte[] delchar = {(byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF,
                 (byte) 0xFF, (byte) 0xff, 0x01, 0x00, 0x07, 0x0C, 0x00, 0x01,
@@ -320,7 +321,7 @@ public class FingerPrint {
         delchar[15] = fingerid[1];
 
         // EF01FFFFFFFF 01 00 07 0C 0000 0001 00 16
-        LogsUtil.v(TAG, "del:" + ArrayUtils.bytes2HexString(delchar));
+        LogUtils.v(TAG, "del:" + ArrayUtils.bytes2HexString(delchar));
         while ((len = hardware.read(mFd, buf, 12)) > 0)
             ;// clear buf
         len = hardware.write(mFd, delchar);
@@ -332,9 +333,9 @@ public class FingerPrint {
             fManager.deleteFingerNmber(false);
             return;
         }
-        LogsUtil.v(TAG, "del buf:" + ArrayUtils.bytes2HexString(buf));
+        LogUtils.v(TAG, "del buf:" + ArrayUtils.bytes2HexString(buf));
         if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-            LogsUtil.v(TAG, "Successfully delete:");
+            LogUtils.v(TAG, "Successfully delete:");
             fManager.deleteFingerNmber(true);
             return;
         }
@@ -360,7 +361,7 @@ public class FingerPrint {
             buf[0] = 0x00;
             len = hardware.read(mFd, buf, 12);
         } else {
-            LogsUtil.v(TAG, "1.0 select=0");
+            LogUtils.v(TAG, "1.0 select=0");
             return -4;
         }
         Log.d(TAG, "getImage buf :" + ArrayUtils.bytes2HexString(buf));
@@ -381,7 +382,7 @@ public class FingerPrint {
             buf[0] = 0x00;
             len = hardware.read(mFd, buf, 12);
         } else {
-            LogsUtil.d(TAG, "gen select=0");
+            LogUtils.d(TAG, "gen select=0");
             return -4;
         }
         Log.d(TAG, "GenChar buf :" + ArrayUtils.bytes2HexString(buf));
@@ -389,27 +390,27 @@ public class FingerPrint {
             Log.d(TAG, "Search GenChar succeed!");
             len = hardware.write(mFd, search);
             if (len < 1) {
-                LogsUtil.d("write error");
+                LogUtils.d("write error");
                 return -1;
             }
             SystemClock.sleep(50);
         } else {
-            LogsUtil.d("---builder char failed---");
+            LogUtils.d("---builder char failed---");
             return -5;// 没有成功将手指合成特征码
         }
         if (hardware.select(mFd, 1, 0) == 1) {
             buf[0] = 0x00;
             len = hardware.read(mFd, buf, 24);
-            LogsUtil.v("PS_Search:" + ArrayUtils.bytes2HexString(buf));
+            LogUtils.v("PS_Search:" + ArrayUtils.bytes2HexString(buf));
         } else {
-            LogsUtil.d("---search 1.0---");
+            LogUtils.d("---search 1.0---");
             return -6;
         }
         // [12][13]是匹配的得分，不可能为0
         Log.d(TAG, "Search fingerId buf :" + ArrayUtils.bytes2HexString(buf));
         if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01
                 && (buf[12] != 0x00 || buf[13] != 0x00)) {
-            //LogsUtil.d(TAG,"Search fingerId buf :"+ArrayUtils.bytes2HexString(buf));
+            //LogUtils.d(TAG,"Search fingerId buf :"+ArrayUtils.bytes2HexString(buf));
             int id = byteToInt2(buf[10]) * 256 + byteToInt2(buf[11]);
             temp = "Search Success finger ID : " + id + "\n";
             Log.d(TAG, "Search result temp=" + temp);
@@ -436,7 +437,7 @@ public class FingerPrint {
                 tempbuf[0] = 0x00;
                 SystemClock.sleep(50);
                 len = hardware.read(mFd, tempbuf, 44);
-                LogsUtil.d("readindextable:"
+                LogUtils.d("readindextable:"
                         + ArrayUtils.bytes2HexString(tempbuf));
                 if (tempbuf[9] == 0x00 && tempbuf[0] == (byte) 0xef
                         && tempbuf[1] == 0x01) {
@@ -456,17 +457,17 @@ public class FingerPrint {
                         }
                     }
                 } else {
-                    LogsUtil.d(TAG, "获取编号异常");
+                    LogUtils.d(TAG, "获取编号异常");
                     return -1;
                 }
-                LogsUtil.d("validnum>>>>>>>>:" + validnum[m]);
+                LogUtils.d("validnum>>>>>>>>:" + validnum[m]);
             }
         }
         if (-1 != validnum[0] && validnum[0] == validnum[1]) {
-            LogsUtil.d(TAG, "获取编号:" + Integer.valueOf(validnum[0]));
+            LogUtils.d(TAG, "获取编号:" + Integer.valueOf(validnum[0]));
             return Integer.valueOf(validnum[0]);
         } else {
-            LogsUtil.d(TAG, "获取编号异常");
+            LogUtils.d(TAG, "获取编号异常");
             return -1;
         }
     }
@@ -483,14 +484,14 @@ public class FingerPrint {
     public void addFingerPrint(int fingerID) {
         String temp = "";
         for (int i = 0; i < 3; i++) {
-            LogsUtil.d(ArrayUtils.bytes2HexString(getimage));
+            LogUtils.d(ArrayUtils.bytes2HexString(getimage));
             if (i == 0) {
-                LogsUtil.v(TAG, "please sweep first!" + "\n");
+                LogUtils.v(TAG, "please sweep first!" + "\n");
             } else {
-                LogsUtil.v(TAG, "please sweep second!" + "\n");
+                LogUtils.v(TAG, "please sweep second!" + "\n");
             }
             len = getImage(5);
-            LogsUtil.v(TAG, "len:" + len);
+            LogUtils.v(TAG, "len:" + len);
             if (len != 1) {
                 fManager.addFingerData(-1, null);
                 return;
@@ -500,7 +501,7 @@ public class FingerPrint {
                 len = hardware.write(mFd, genchar);
                 buf[0] = 0x00;
                 if (hardware.select(mFd, 1, 0) == 0) {
-                    LogsUtil.v(TAG, temp);
+                    LogUtils.v(TAG, temp);
                     fManager.addFingerData(-1, null);
                     return;
                 } else {
@@ -510,13 +511,13 @@ public class FingerPrint {
                             && buf[9] == 0x00) {
                         len = hardware.write(mFd, mRegFinger);
                         if (len < 1) {
-                            LogsUtil.v("write error");
+                            LogUtils.v("write error");
                         }
                     } else {
                         continue;
                     }
                     if (hardware.select(mFd, 1, 0) == 0) {
-                        LogsUtil.v(TAG, temp);
+                        LogUtils.v(TAG, temp);
                         fManager.addFingerData(-1, null);
                         return;
                     } else {
@@ -527,8 +528,8 @@ public class FingerPrint {
                     }
                     if (buf[9] == 0x00 && buf[0] == (byte) 0xef
                             && buf[1] == 0x01) {
-                        LogsUtil.v(TAG, "PS_RegModel Success");
-                        LogsUtil.v(TAG, "fingerID:" + fingerID);
+                        LogUtils.v(TAG, "PS_RegModel Success");
+                        LogUtils.v(TAG, "fingerID:" + fingerID);
                         byte fingerNumber[] = intToBytes(fingerID);
                         storechar[10] = (byte) 0x01;
                         storechar[11] = fingerNumber[0];
@@ -537,18 +538,18 @@ public class FingerPrint {
                         storechar[13] = fingerNumber[0];
                         storechar[14] = fingerNumber[1];
                         len = hardware.write(mFd, storechar);
-                        LogsUtil.v(
+                        LogUtils.v(
                                 TAG,
                                 "store:"
                                         + ArrayUtils
                                         .bytes2HexString(storechar));
                         if (len < 1) {
-                            LogsUtil.v("write error");
+                            LogUtils.v("write error");
                         }
                         SystemClock.sleep(30);
                         if (hardware.select(mFd, 1, 0) == 0) {
                             temp = "regmodel failed!" + "\n";
-                            LogsUtil.v(TAG, temp);
+                            LogUtils.v(TAG, temp);
                             fManager.addFingerData(-1, null);
                             return;
                         } else {
@@ -556,7 +557,7 @@ public class FingerPrint {
                             SystemClock.sleep(100);
                             //***
                             len = hardware.read(mFd, buf, 12);
-                            LogsUtil.v("PS_StoreChar:"
+                            LogUtils.v("PS_StoreChar:"
                                     + ArrayUtils.bytes2HexString(buf));
                         }
                         if (len != 12) {
@@ -565,14 +566,14 @@ public class FingerPrint {
                         }
                         if (buf[9] == 0x00 && buf[0] == (byte) 0xef
                                 && buf[1] == 0x01) {
-                            LogsUtil.v("Enroll Success");
-                            LogsUtil.v(
+                            LogUtils.v("Enroll Success");
+                            LogUtils.v(
                                     TAG,
                                     "Enroll Success finger 十六进制 ID : "
                                             + ArrayUtils
                                             .bytes2HexString(intToBytes(fingerID))
                                             + "\n");
-                            LogsUtil.v(TAG, "Enroll Success finger 十进制 ID : "
+                            LogUtils.v(TAG, "Enroll Success finger 十进制 ID : "
                                     + fingerID + "\n");
                             fManager.addFingerData(2, null);
                             //upChar(fingerID);//获取特征数据，将数据保存后发送到前置
@@ -580,13 +581,13 @@ public class FingerPrint {
                             return;
                         } else {
                             temp = "storechar failed!" + "\n";
-                            LogsUtil.v(TAG, temp);
+                            LogUtils.v(TAG, temp);
                             fManager.addFingerData(-1, null);
                             return;
                         }
                     } else {
                         temp = "PS_regmodel failed!" + "\n";
-                        LogsUtil.v(TAG, temp);
+                        LogUtils.v(TAG, temp);
                         fManager.addFingerData(-1, null);
                         return;
                     }
@@ -608,20 +609,20 @@ public class FingerPrint {
         for (int j = 0; j < 3 * times; j++) {
             len = hardware.write(mFd, getimage);
             if (len < 1) {
-                LogsUtil.v(TAG, "write error");
+                LogUtils.v(TAG, "write error");
                 break;
             }
             if (hardware.select(mFd, 1, 0) == 1) {
                 //***
                 len = hardware.read(mFd, buf, 12);
-                LogsUtil.v(TAG, "read len:" + len);
-                LogsUtil.v(TAG, "PS_GetImage:" + ArrayUtils.bytes2HexString(buf));
+                LogUtils.v(TAG, "read len:" + len);
+                LogUtils.v(TAG, "PS_GetImage:" + ArrayUtils.bytes2HexString(buf));
                 if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-                    LogsUtil.v(TAG, "getimage success!");
+                    LogUtils.v(TAG, "getimage success!");
                     return 1;
                 }
             }
-            LogsUtil.v(TAG, "getimage error!");
+            LogUtils.v(TAG, "getimage error!");
         }
         return 0;
     }
@@ -634,7 +635,7 @@ public class FingerPrint {
     public void upChar(int id) {
         /*while ((len = hardware.read(mFd, buf, 24)) > 0)
             ;// clear buf
-		LogsUtil.d(TAG, "**********cmd send PS_LoadChar:" + ArrayUtils.bytes2HexString(loadchar));
+		LogUtils.d(TAG, "**********cmd send PS_LoadChar:" + ArrayUtils.bytes2HexString(loadchar));
 		//len = hardware.write(mFd, getLoadcharCmd(id));
 		len = hardware.write(mFd, loadchar);
 		if (hardware.select(mFd, 1, 0) == 1) {
@@ -644,10 +645,10 @@ public class FingerPrint {
 			len = hardware.read(mFd, buf, 12);
 			LogsUtil.s("PS_LoadChar:" + ArrayUtils.bytes2HexString(buf));
 			if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {*/
-        LogsUtil.d(TAG, "****LoadChar successfully!\n");
+        LogUtils.d(TAG, "****LoadChar successfully!\n");
         while ((len = hardware.read(mFd, buf, 24)) > 0)
             ;// clear buf
-        LogsUtil.d(TAG, "**********cmd send PS_UpChar:" + ArrayUtils.bytes2HexString(upchar));
+        LogUtils.d(TAG, "**********cmd send PS_UpChar:" + ArrayUtils.bytes2HexString(upchar));
         len = hardware.write(mFd, upchar);
 
         if (hardware.select(mFd, 1, 0) == 1) {
@@ -659,30 +660,30 @@ public class FingerPrint {
             byte[] loadbuf = new byte[readNum];
             len = hardware.read(mFd, loadbuf, readNum);
             if (loadbuf[9] == 0x00 && loadbuf[0] == (byte) 0xef && loadbuf[1] == 0x01) {
-                LogsUtil.d(TAG, "****UpChar successfully!\n");
+                LogUtils.d(TAG, "****UpChar successfully!\n");
                 StringBuilder infobBuilder = new StringBuilder();
                 infobBuilder.append(ArrayUtils.bytes2HexString(loadbuf));
-                //LogsUtil.d(TAG, "==========>to sever info:" + infobBuilder.toString());
-                //LogsUtil.d(TAG, "==========>to sever info2:" + infobBuilder.toString().substring(92));
+                //LogUtils.d(TAG, "==========>to sever info:" + infobBuilder.toString());
+                //LogUtils.d(TAG, "==========>to sever info2:" + infobBuilder.toString().substring(92));
                 String sendInfo = (infobBuilder.toString()).substring(24);
-                //LogsUtil.d(TAG, "==========>send info:" + sendInfo);
+                //LogUtils.d(TAG, "==========>send info:" + sendInfo);
                 fManager.addFingerData(1, sendInfo);
                 // 开始将文件保存在手持中
                 writeDataToFile(id, loadbuf);
             } else {
-                LogsUtil.d(TAG, "UpChar failed!\n");
+                LogUtils.d(TAG, "UpChar failed!\n");
                 return;
             }
         } else {
-            LogsUtil.d(TAG, "UpChar failed!\n");
+            LogUtils.d(TAG, "UpChar failed!\n");
             return;
         }
             /*} else {
-                LogsUtil.d(TAG, "LoadChar failed!\n");
+                LogUtils.d(TAG, "LoadChar failed!\n");
 				return;
 			}
 		} else {
-			LogsUtil.d(TAG, "LoadChar failed!\n");
+			LogUtils.d(TAG, "LoadChar failed!\n");
 			return;
 		}*/
     }
@@ -693,7 +694,7 @@ public class FingerPrint {
         File dir = new File(path);
         if (!dir.exists()) {
             dir.mkdirs();
-            LogsUtil.v(TAG, "make dir");
+            LogUtils.v(TAG, "make dir");
         }
         try {
             // 打开一个随机访问文件流，按读写方式
@@ -707,7 +708,7 @@ public class FingerPrint {
             randomFile.close();
         } catch (IOException e) {
 
-            LogsUtil.e(TAG + "  data文件失败");
+            LogUtils.e(TAG + "  data文件失败");
             e.printStackTrace();
         }
     }
@@ -726,7 +727,7 @@ public class FingerPrint {
             byte[] rbuf = new byte[rsize];
             len = hardware.read(mFd, rbuf, rsize);
             if (rbuf[9] == 0x00 && rbuf[0] == (byte) 0xef && rbuf[1] == 0x01) {
-                LogsUtil.d(TAG, "UpChar successfully!\n");
+                LogUtils.d(TAG, "UpChar successfully!\n");
                 int size = 139;
                 byte[] check = new byte[2];
                 int index1 = 0;
@@ -738,18 +739,18 @@ public class FingerPrint {
                     System.arraycopy(loadbuf, 7, b, 0, 2);
                     String lenStr = ArrayUtils.bytes2HexString(b);
                     len = Integer.parseInt(lenStr, 16);
-                    LogsUtil.i(TAG, "len:" + len);
+                    LogUtils.i(TAG, "len:" + len);
                     String result = (ArrayUtils.bytes2HexString(loadbuf)).substring(18, len * 2 + 14);
                     infobBuilder.append(result);
                 }
-                LogsUtil.d(TAG, "==========>Send to sever info:" + infobBuilder.toString());
+                LogUtils.d(TAG, "==========>Send to sever info:" + infobBuilder.toString());
                 fManager.addFingerData(1, infobBuilder.toString());
             } else {
-                LogsUtil.d(TAG, "UpChar failed!\n");
+                LogUtils.d(TAG, "UpChar failed!\n");
             }
 
         } else {
-            LogsUtil.d(TAG, "UpChar failed!\n");
+            LogUtils.d(TAG, "UpChar failed!\n");
             return;
         }
 
@@ -771,7 +772,7 @@ public class FingerPrint {
         fingerNumber = getDownCheckNumber(loadchar);
         loadchar[13] = fingerNumber[0];
         loadchar[14] = fingerNumber[1];
-        LogsUtil.s("PS_getLoadcharCmd:" + ArrayUtils.bytes2HexString(loadchar));
+        LogUtils.i("PS_getLoadcharCmd:" + ArrayUtils.bytes2HexString(loadchar));
         return loadchar;
     }
 
@@ -810,7 +811,7 @@ public class FingerPrint {
                                 String fingerInfo) {
         boolean flag = false;
         fingerInfo = StringUtil.fixFingerInfo(fingerInfo);
-        LogsUtil.i(TAG, "fingerID:" + fingerID + "::fingerInfo:" + fingerInfo);
+        LogUtils.i(TAG, "fingerID:" + fingerID + "::fingerInfo:" + fingerInfo);
         byte[] downchar = {(byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF,
                 (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x04, 0x09, 0x01, 0x00,
                 0x0F};
@@ -823,14 +824,14 @@ public class FingerPrint {
             if (flag)
                 break;
             while ((len = hardware.read(mFd, buf, 24)) > 0) ;// clear buf
-            LogsUtil.d(TAG, "==>PS_DownChar :" + ArrayUtils.bytes2HexString(downchar));
+            LogUtils.d(TAG, "==>PS_DownChar :" + ArrayUtils.bytes2HexString(downchar));
             len = hardware.write(mFd, downchar);
             if (hardware.select(mFd, 1, 0) == 1) {
                 //***
                 len = hardware.read(mFd, buf, 12);
-                LogsUtil.d(TAG, "==>read buf:" + ArrayUtils.bytes2HexString(buf));
+                LogUtils.d(TAG, "==>read buf:" + ArrayUtils.bytes2HexString(buf));
                 if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-                    LogsUtil.d(TAG, "==>PS_DownChar Success");
+                    LogUtils.d(TAG, "==>PS_DownChar Success");
                     for (int i = 0; i < 4; i++) {
                         loadbuf = ArrayUtils.hexString2Bytes(fingerInfo.substring(
                                 i * (fingerInfo.length() / 4), (i + 1)
@@ -840,9 +841,9 @@ public class FingerPrint {
                         } else {
                             ldbuf = getdownData(loadbuf, 139, true);
                         }
-                        LogsUtil.d(TAG, "==>write buf:" + ArrayUtils.bytes2HexString(ldbuf));
+                        LogUtils.d(TAG, "==>write buf:" + ArrayUtils.bytes2HexString(ldbuf));
                         len = hardware.write(mFd, ldbuf);
-                        LogsUtil.i(TAG, "==>write packet len:" + len);
+                        LogUtils.i(TAG, "==>write packet len:" + len);
                     }
                     SystemClock.sleep(100);
                     for (int y = 0; y < 3; y++) {
@@ -856,35 +857,35 @@ public class FingerPrint {
                         storechar[14] = fingerNumber[1];
                         //***
                         while ((len = hardware.read(mFd, buf, 24)) > 0) ;// clear buf
-                        LogsUtil.d(TAG, "==>PS_StoreChar :" + ArrayUtils.bytes2HexString(storechar));
+                        LogUtils.d(TAG, "==>PS_StoreChar :" + ArrayUtils.bytes2HexString(storechar));
                         len = hardware.write(mFd, storechar);
                         if (len < 1) {
-                            LogsUtil.d(TAG, "write error");
+                            LogUtils.d(TAG, "write error");
                         } else {
-                            LogsUtil.d(TAG, "dowload len=" + len);
+                            LogUtils.d(TAG, "dowload len=" + len);
                         }
                         SystemClock.sleep(100);
                         if (hardware.select(mFd, 1, 0) == 1) {
                             //***
                             len = hardware.read(mFd, buf, 12);
-                            LogsUtil.v(TAG, "=========>buf:" + ArrayUtils.bytes2HexString(buf));
+                            LogUtils.v(TAG, "=========>buf:" + ArrayUtils.bytes2HexString(buf));
                             if (buf[9] == 0x00 && buf[0] == (byte) 0xef
                                     && buf[1] == 0x01) {
-                                LogsUtil.v(TAG, "PS_StoreChar Success");
-                                LogsUtil.v(TAG, "PS_StoreChar Success finger 十进制 ID : " + fingerID + "\n");
+                                LogUtils.v(TAG, "PS_StoreChar Success");
+                                LogUtils.v(TAG, "PS_StoreChar Success finger 十进制 ID : " + fingerID + "\n");
                                 // upChar(fingerID);
                                 flag = true;
                                 break;
                             } else {
-                                LogsUtil.v(TAG, "PS_StoreChar Failed\n");
+                                LogUtils.v(TAG, "PS_StoreChar Failed\n");
                                 continue;
                             }
                         } else {
-                            LogsUtil.v(TAG, "PS_StoreChar no data\n");
+                            LogUtils.v(TAG, "PS_StoreChar no data\n");
                         }
                     }
                 } else {
-                    LogsUtil.d(TAG, "==>PS_DownChar Failed\n");
+                    LogUtils.d(TAG, "==>PS_DownChar Failed\n");
                     continue;
                 }
             }
@@ -969,7 +970,7 @@ public class FingerPrint {
         //***
         len = hardware.read(mFd, buf, 12);
         if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-            LogsUtil.d(TAG, "writeText successfully!\n");
+            LogUtils.d(TAG, "writeText successfully!\n");
             return;
         }
     }
@@ -986,9 +987,9 @@ public class FingerPrint {
         }
         //***
         len = hardware.read(mFd, buf, 48);
-        LogsUtil.d("PS_readText:" + ArrayUtils.bytes2HexString(buf));
+        LogUtils.d("PS_readText:" + ArrayUtils.bytes2HexString(buf));
         if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {
-            LogsUtil.d(TAG, "readText successfully!\n");
+            LogUtils.d(TAG, "readText successfully!\n");
             return;
         }
     }
@@ -1026,7 +1027,7 @@ public class FingerPrint {
         public void run() {
             try {
 
-                LogsUtil.w(TAG, FingerPrintTask.class.getSimpleName() + " run");
+                LogUtils.w(TAG, FingerPrintTask.class.getSimpleName() + " run");
                 //stop = false;
                 //close = false;
                 while (!stop) {
@@ -1049,9 +1050,9 @@ public class FingerPrint {
                 }
                 //fManager.stopSearchFinger(true);
                 //stop = true;
-                LogsUtil.w(TAG, FingerPrintTask.class.getSimpleName() + " running finish");
+                LogUtils.w(TAG, FingerPrintTask.class.getSimpleName() + " running finish");
             } catch (Exception e) {
-                LogsUtil.e(TAG, "e:" + e);
+                LogUtils.e(TAG, "e:" + e);
             }
         }
     }
