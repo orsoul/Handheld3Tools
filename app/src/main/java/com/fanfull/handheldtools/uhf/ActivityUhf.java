@@ -1,7 +1,9 @@
 package com.fanfull.handheldtools.uhf;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
+import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.uhf.IUhfListener;
@@ -62,6 +64,46 @@ public class ActivityUhf extends InitModuleActivity {
         if (uhfController.isOpen()) {
             uhfController.send(UhfCmd.CMD_FAST_READ_EPC);
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
+                   KeyEvent.keyCodeToString(keyCode),
+                   event.getRepeatCount(),
+                   event.getAction(),
+                   event.isLongPress(),
+                   event.isShiftPressed(),
+                   event.getMetaState()
+        );
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_1:
+                //                barcodeController.init(this);
+                break;
+            case KeyEvent.KEYCODE_2:
+                break;
+            case KeyEvent.KEYCODE_3:
+                //                barcodeController.scanAsync();
+                break;
+            case KeyEvent.KEYCODE_4:
+                //                barcodeController.uninit();
+                break;
+            case KeyEvent.KEYCODE_5:
+                break;
+            case KeyEvent.KEYCODE_6:
+                //                barcodeController.cancelScan();
+                break;
+            case KeyEvent.KEYCODE_7:
+                //                barcodeController.startReadThread();
+                break;
+            case KeyEvent.KEYCODE_8:
+                //                barcodeController.stopReadThread();
+                break;
+            default:
+                break;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override

@@ -165,6 +165,9 @@ public class ActivityNfc extends InitModuleActivity {
             case KeyEvent.KEYCODE_3:
             case KeyEvent.KEYCODE_4:
             case KeyEvent.KEYCODE_5:
+                int status = keyCode - KeyEvent.KEYCODE_0;
+                nfcController.writeStatus(status);
+                return true;
             case KeyEvent.KEYCODE_6:
             case KeyEvent.KEYCODE_7:
             case KeyEvent.KEYCODE_8:

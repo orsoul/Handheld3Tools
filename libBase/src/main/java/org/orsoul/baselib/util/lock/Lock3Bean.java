@@ -1,4 +1,4 @@
-package org.orsoul.baselib.lock;
+package org.orsoul.baselib.util.lock;
 
 
 import org.orsoul.baselib.util.ArrayUtils;
@@ -6,10 +6,12 @@ import org.orsoul.baselib.util.ArrayUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Lock3Bean {
     public static final int SA_BAG_ID = 0x04;
     public static final int SA_STATUS = 0x10;
-    public static final int SA_SECRET_KEY = 0x14;
+    public static final int SA_WORK_MODE = 0x12;
+    public static final int SA_KEY_NUM = 0x14;
     public static final int SA_VOLTAGE = 0x17;
 
     public Lock3Bean(int sa, int... saArr) {
@@ -50,7 +52,7 @@ public class Lock3Bean {
     }
 
     public void addBaseSa() {
-        addSa(SA_BAG_ID, SA_STATUS, SA_SECRET_KEY, SA_VOLTAGE);
+        addSa(SA_BAG_ID, SA_STATUS, SA_KEY_NUM, SA_VOLTAGE);
     }
 
     public InfoUnit getInfoUnit(int sa) {
@@ -118,11 +120,11 @@ public class Lock3Bean {
 
         public static InfoUnit newInstance(int sa) {
             switch (sa) {
-                case SA_STATUS:
-                case SA_SECRET_KEY:
+                case SA_KEY_NUM:
                 case SA_VOLTAGE:
                     return new InfoUnit(sa, 4);
                 default:
+                case SA_STATUS:
                 case SA_BAG_ID:
                     return new InfoUnit(sa, 12);
             }

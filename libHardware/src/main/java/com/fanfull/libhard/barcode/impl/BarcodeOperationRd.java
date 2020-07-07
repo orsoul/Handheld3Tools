@@ -5,6 +5,7 @@ import android.os.SystemClock;
 
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.barcode.AbsBarcodeOperation;
+import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
 
@@ -21,29 +22,14 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
 
     private Context context;
     private ScanApi scanApi;
+    private ScanApiDecodeCallback callback;
 
     public BarcodeOperationRd(Context context) {
         this.context = context;
         // TODO: 2020/6/23 两种 API
         this.scanApi = new NewApiService();
+        this.callback = new ScanApiDecodeCallback();
         //        this.scanApi = new NewApiBroadcast();
-        scanApi.setDecodeCallback(new ScanApi.DecodeCallback() {
-            @Override
-            public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
-                LogUtils.v("symbology %s dataLen:%s  %s", symbology, data.length,
-                           ArrayUtils.bytes2HexString(data, 0, length));
-                cancelTimer();
-                isScanning = false;
-                if (barcodeListener != null) {
-                    barcodeListener.onReceiveData(Arrays.copyOf(data, length));
-                }
-            }
-
-            @Override
-            public void onEvent(int event, int info, byte[] data, ScanApi api) {
-                LogUtils.v("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
-            }
-        });
     }
 
     @Override
@@ -55,6 +41,7 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
         SystemClock.sleep(500);
         powerOn();
         SystemClock.sleep(5000);
+        scanApi.setDecodeCallback(callback);
         if (barcodeListener != null) {
             barcodeListener.onOpen();
         }
@@ -66,6 +53,7 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
     public void release() {
         cancelScan();
         //        powerOff();
+        scanApi.setDecodeCallback(null);
         uninit();
     }
 
@@ -77,7 +65,6 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
     @Override
     public void uninit() {
         scanApi.deInit();
-        powerOff();
         isOpen = false;
     }
 
@@ -131,6 +118,12 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
     }
 
     @Override
+    public void setBarcodeListener(IBarcodeListener barcodeListener) {
+        this.barcodeListener = barcodeListener;
+        scanApi.setDecodeCallback(callback);
+    }
+
+    @Override
     public void powerOn() {
         scanApi.powerOn();
     }
@@ -140,5 +133,24 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
         scanApi.powerOff();
         cancelScan();
         isOpen = false;
+    }
+
+    private class ScanApiDecodeCallback implements ScanApi.DecodeCallback {
+
+        @Override
+        public void onDecodeComplete(int symbology, int length, byte[] data, ScanApi api) {
+            LogUtils.v("symbology %s dataLen:%s  %s", symbology, data.length,
+                       ArrayUtils.bytes2HexString(data, 0, length));
+            cancelTimer();
+            if (barcodeListener != null) {
+                barcodeListener.onReceiveData(Arrays.copyOf(data, length));
+            }
+            isScanning = false;
+        }
+
+        @Override
+        public void onEvent(int event, int info, byte[] data, ScanApi api) {
+            LogUtils.v("event:%s info:%s %s", event, info, ArrayUtils.bytes2HexString(data));
+        }
     }
 }

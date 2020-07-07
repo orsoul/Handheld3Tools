@@ -1,9 +1,9 @@
-package org.orsoul.baselib.lock;
+package org.orsoul.baselib.util.lock;
 
 /**
  * 封袋、出入库、开袋 会用到的一些方法。
  */
-public class Lock3Util {
+public abstract class Lock3Util {
     /**
      * 十套代表F1-->F4的标志 和单片机A版本对接的，请勿修改
      */
@@ -44,10 +44,10 @@ public class Lock3Util {
      * 双电池，使用第2个
      */
     public static final int CELL_2 = 0x3C;
-    /**
-     * 0xFF 测试模式
-     */
-    public static final int DEBUG_MODE = 0xFF;
+    /** 0xFF 测试模式 */
+    public static final int MODE_DEBUG = 0xFF;
+    /** 0x00 非FF,正常模式 */
+    public static final int MODE_NORMAL = 0x00;
 
     /**
      * 获取明文标志位。1~5：对应标志位F1~F5
@@ -130,6 +130,19 @@ public class Lock3Util {
     public static float getV(byte v) {
         int t = v & 0xFF;
         return (2.5f * t) / 128;
+    }
+
+    public static boolean checkKeyNum(int keyNum) {
+        return 0 <= keyNum && keyNum <= 9;
+    }
+
+    public static int parseKeyNum(int keyNumOriginal) {
+        int keyNum = keyNumOriginal & 0xFF;
+        if (checkKeyNum(keyNum)) {
+            return keyNum;
+        } else {
+            return -1;
+        }
     }
 
     public static String getStatusDesc(int status) {

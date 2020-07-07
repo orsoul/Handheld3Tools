@@ -1,4 +1,4 @@
-package org.orsoul.baselib.lock;
+package org.orsoul.baselib.util.lock;
 
 public class BagIdParser {
     public static final int BAG_ID_LEN = 24;

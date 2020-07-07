@@ -164,7 +164,8 @@ public class ActivityBarcode extends InitModuleActivity {
                 }
                 break;
             case KeyEvent.KEYCODE_1:
-                //                barcodeController.init(this);
+                barcodeController.init(this);
+                appendShow("\n初始化");
                 break;
             case KeyEvent.KEYCODE_2:
                 barcodeController.powerOn();
@@ -174,7 +175,8 @@ public class ActivityBarcode extends InitModuleActivity {
                 //                barcodeController.scanAsync();
                 break;
             case KeyEvent.KEYCODE_4:
-                //                barcodeController.uninit();
+                barcodeController.uninit();
+                appendShow("\n解绑服务");
                 break;
             case KeyEvent.KEYCODE_5:
                 barcodeController.powerOff();
