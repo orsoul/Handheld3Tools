@@ -2,10 +2,10 @@ package com.fanfull.handheldtools.uhf;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.libhard.finger.impl.FingerPrintCmd;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
@@ -79,6 +79,7 @@ public class ActivityUhf extends InitModuleActivity {
         switch (keyCode) {
             case KeyEvent.KEYCODE_1:
                 //                barcodeController.init(this);
+              uhfController.send(FingerPrintCmd.CMD_GET_IMAGE);
                 break;
             case KeyEvent.KEYCODE_2:
                 break;

@@ -2,18 +2,15 @@ package com.fanfull.libhard.barcode.impl;
 
 import android.content.Context;
 import android.os.SystemClock;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.barcode.AbsBarcodeOperation;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
-
-import org.orsoul.baselib.util.ArrayUtils;
-
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import org.orsoul.baselib.util.ArrayUtils;
 
 /**
  * 雨滴二维码扫描 实现类
@@ -64,8 +61,10 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
 
     @Override
     public void uninit() {
+      if (isOpen) {
         scanApi.deInit();
         isOpen = false;
+      }
     }
 
     private Timer scanTimer;
@@ -142,10 +141,10 @@ public class BarcodeOperationRd extends AbsBarcodeOperation {
             LogUtils.v("symbology %s dataLen:%s  %s", symbology, data.length,
                        ArrayUtils.bytes2HexString(data, 0, length));
             cancelTimer();
+          isScanning = false;
             if (barcodeListener != null) {
                 barcodeListener.onReceiveData(Arrays.copyOf(data, length));
             }
-            isScanning = false;
         }
 
         @Override

@@ -57,4 +57,26 @@
         app:layout_constraintStart_toStartOf="@id/btn_nfc"
         app:layout_constraintTop_toBottomOf="@id/btn_nfc" />
 
+  <Button
+      android:id="@+id/btn_finger"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_finger"
+      app:layout_constraintEnd_toEndOf="@id/btn_barcode"
+      app:layout_constraintStart_toStartOf="@id/btn_barcode"
+      app:layout_constraintTop_toBottomOf="@id/btn_barcode"
+      />
+
+  <Button
+      android:id="@+id/btn_old_bag"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_old_bag"
+      app:layout_constraintEnd_toEndOf="@id/btn_finger"
+      app:layout_constraintStart_toStartOf="@id/btn_finger"
+      app:layout_constraintTop_toBottomOf="@id/btn_finger"
+      />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

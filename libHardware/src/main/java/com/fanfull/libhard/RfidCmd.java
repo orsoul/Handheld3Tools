@@ -169,7 +169,7 @@ public class RfidCmd {
 			}*/
         } else {
         }
-        // LogsUtil.d(TAG, "findCard() uid: " +
+      // LogUtils.d( "findCard() uid: " +
         // ArrayUtil.bytesToHexString(reVal));
         return reVal;
     }
@@ -294,7 +294,7 @@ public class RfidCmd {
                 } else {
                     CMD_NFC_WRITE[10 + j] = 0;// 写入数据的长度不被4整除,末尾填充0
                 }
-                // LogsUtil.d(TAG, "for[" + (sa + i) + "," + j + "]: "
+              // LogUtils.d( "for[" + (sa + i) + "," + j + "]: "
                 // + bytesToHexString(CMD_NFC_WRITE, 10, 11 + j));
             }
 
@@ -321,7 +321,7 @@ public class RfidCmd {
         }
         //byte[] b = new byte[16];
         //readNFCInTime(sa, b,500,uid);
-        //LogsUtil.d("CoverNfcNewBagActivity", "send result b:"+bytes2HexString(b));
+      //LogUtils.d("CoverNfcNewBagActivity", "send result b:"+bytes2HexString(b));
         return reVal;
     }
 

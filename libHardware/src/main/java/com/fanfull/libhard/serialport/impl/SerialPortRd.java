@@ -2,7 +2,6 @@ package com.fanfull.libhard.serialport.impl;
 
 import com.fanfull.libhard.serialport.AbsSerialPort;
 import com.rd.io.SerialPort;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,11 @@ public class SerialPortRd extends AbsSerialPort {
 
     @Override
     public void close() {
+      try {
+        serialPort.getInputStream().close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
         serialPort.close();
     }
 }

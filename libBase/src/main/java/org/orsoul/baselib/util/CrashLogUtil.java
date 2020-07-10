@@ -2,9 +2,7 @@ package org.orsoul.baselib.util;
 
 import android.os.Environment;
 import android.util.Log;
-
 import com.blankj.utilcode.util.AppUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -15,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class CrashLogUtil {
+public abstract class CrashLogUtil {
 
     private static final String TAG = CrashLogUtil.class.getSimpleName();
     public static final String CRASH_REPORT_PATH;
@@ -53,12 +51,9 @@ public class CrashLogUtil {
     }
 
     public static void logException(final Exception exception) {
-        ThreadUtil.executeInSingleThread(new Runnable() {
-            @Override
-            public void run() {
-                final String filename = getCrashLogTime("yyyy-MM-dd") + EXCEPTION_SUFFIX + FILE_EXTENSION;
-                writeToFile(CRASH_REPORT_PATH, filename, getStackTrace(exception));
-            }
+      ThreadUtil.executeInSingleThread(() -> {
+        final String filename = getCrashLogTime("yyyy-MM-dd") + EXCEPTION_SUFFIX + FILE_EXTENSION;
+        writeToFile(CRASH_REPORT_PATH, filename, getStackTrace(exception));
         });
     }
 

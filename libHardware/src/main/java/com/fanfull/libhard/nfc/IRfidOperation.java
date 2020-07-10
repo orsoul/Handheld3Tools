@@ -23,4 +23,8 @@ public interface IRfidOperation extends IOperation {
     boolean readNfc(int sa, byte[] buff);
 
     void readNfcAsync(int sa, int dataLen);
+
+  byte[] readM1(int block);
+
+  boolean writeM1(int block, byte[] data16);
 }

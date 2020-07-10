@@ -3,42 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.fanfull.handheldtools">
 
-    <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+  <application
+      android:name=".base.BaseApplication"
+      android:allowBackup="false"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:supportsRtl="true"
+      android:theme="@style/AppTheme"
+      tools:ignore="GoogleAppIndexingWarning"
+      tools:replace="android:allowBackup">
+    <activity
+        android:name=".barcode.OldBagActivity"
+        android:label="@string/main_old_bag"></activity>
+    <activity
+        android:name=".uhf.FingerActivity"
+        android:label="@string/main_finger" />
+    <activity
+        android:name=".uhf.ActivityNfc"
+        android:label="@string/main_nfc" />
+    <activity
+        android:name=".uhf.ActivityUhf"
+        android:label="@string/main_uhf" />
+    <activity
+        android:name=".barcode.ActivityBarcode"
+        android:label="@string/main_barcode" />
+    <activity android:name=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission
-        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
-        tools:ignore="ProtectedPermissions" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
 
-    <application
-        android:name=".base.BaseApplication"
-        android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:allowBackup">
-        <activity
-            android:name=".uhf.ActivityNfc"
-            android:label="@string/main_nfc"></activity>
-        <activity
-            android:name=".uhf.ActivityUhf"
-            android:label="@string/main_uhf" />
-        <activity
-            android:name=".barcode.ActivityBarcode"
-            android:label="@string/main_barcode" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+  <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+  <uses-permission
+      android:name="android.permission.WRITE_SETTINGS"
+      tools:ignore="ProtectedPermissions" />
+  <uses-permission
+      android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
+      tools:ignore="ProtectedPermissions" />
+
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

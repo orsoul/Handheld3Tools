@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.SoundPool;
-
 import com.apkfuns.logutils.LogUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -133,8 +131,8 @@ public class SoundPoolUtil {
 
                 if (!idCache.containsKey(key)) {
                     idCache.put(key, mSoundPool.load(context, entry.getValue(), 1));
-                    LogUtils.d(TAG, "loadR: " + key);
-                    LogUtils.d(TAG, "loadR------------" + idCache.size());
+                  LogUtils.d("loadR: " + key);
+                  LogUtils.d("loadR------------" + idCache.size());
                 }
             }
         }
@@ -162,7 +160,7 @@ public class SoundPoolUtil {
      */
     public int play(String name, int times) {
 
-        LogUtils.i(TAG, "play: ------------------------：" + name);
+      LogUtils.i("play: ------------------------：" + name);
         return this.play(name, 1, 1, 1, times, 1);
     }
 

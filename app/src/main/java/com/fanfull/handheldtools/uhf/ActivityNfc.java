@@ -8,18 +8,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.nfc.IRfidListener;
 import com.fanfull.libhard.nfc.RfidController;
-
-import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.SoundUtils;
-
 import java.util.Arrays;
 import java.util.Random;
+import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.SoundUtils;
 
 public class ActivityNfc extends InitModuleActivity {
 
@@ -59,6 +56,7 @@ public class ActivityNfc extends InitModuleActivity {
             @Override
             public void onOpen() {
                 runOnUi(() -> {
+                  tvShow.setText("初始化成功");
                     dismissLoadingView();
                 });
             }
@@ -119,12 +117,14 @@ public class ActivityNfc extends InitModuleActivity {
                 byte[] block8 = nfcController.read456Block();
                 if (block8 != null) {
                     SoundUtils.playInitSuccessSound();
-                    info = String.format("读8区成功：%s", ArrayUtils.bytes2HexString(block8));
+                  info = String.format("读成功：%s\n%s", ArrayUtils.bytes2HexString(block8),
+                      new String(block8));
                 } else {
                     SoundUtils.playFailedSound();
                     info = "读失败";
                 }
                 appendShow(info);
+              LogUtils.d(info);
                 break;
             case R.id.btn_barcode_stopScan:
                 byte[] data = new byte[48];

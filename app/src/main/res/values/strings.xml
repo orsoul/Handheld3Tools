@@ -1,9 +1,11 @@
 <resources>
-    <string name="app_name">手持测试</string>
+  <string name="app_name">手持测试</string>
 
-    <string name="main_uhf">超高频</string>
-    <string name="main_nfc">高频</string>
-    <string name="main_barcode">二维码、条码</string>
+  <string name="main_uhf">超高频</string>
+  <string name="main_nfc">高频</string>
+  <string name="main_barcode">二维码、条码</string>
+  <string name="main_finger">指纹</string>
+  <string name="main_old_bag">老袋校验</string>
 
-    <string name="text_click_again_quit">再次点击退出</string>
+  <string name="text_click_again_quit">再次点击退出</string>
 </resources>

@@ -3,13 +3,10 @@ package com.fanfull.libhard.nfc;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
-import com.halio.IRfidParam;
 import com.halio.Rfid;
 import com.rd.io.Platform;
-
-import org.orsoul.baselib.util.ArrayUtils;
-
 import java.util.concurrent.Executors;
+import org.orsoul.baselib.util.ArrayUtils;
 
 public class RfidOperationRd extends AbsRfidOperation {
     private final String SERIAL_PORT_PATH = "/dev/ttyMT2";
@@ -47,7 +44,7 @@ public class RfidOperationRd extends AbsRfidOperation {
 
         byte[] buff = new byte[16];
         int len = Rfid.getHwVersion(buff);
-        LogUtils.d("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
+      LogUtils.v("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
         if (len > 0) {
             LogUtils.d("HwVersion:%s", new String(buff, 0, len).trim());
             isOpen = true;
@@ -82,26 +79,44 @@ public class RfidOperationRd extends AbsRfidOperation {
 
 
     private boolean config() {
-        if (!Rfid.PcdConfigISOType(IRfidParam.ISOTYPE_14443A)) {
+      if (!Rfid.PcdConfigISOType(Rfid.ISOTYPE_14443A)) {
             LogUtils.w("PcdConfigISOType() failed ");
             return false;
         }
 
         byte[] tagType = new byte[2];
-        boolean reVal = Rfid.PcdRequest(IRfidParam.CARD_ALL, tagType);
-        LogUtils.d("%s:%s", reVal, ArrayUtils.bytes2HexString(tagType));
+      boolean reVal = Rfid.PcdRequest(Rfid.CARD_ALL, tagType);
+      LogUtils.d("PcdRequest %s:%s", reVal, ArrayUtils.bytes2HexString(tagType));
         return reVal;
     }
 
-    private byte[] findCard(boolean isFindNfc) {
-        if (isScanning()) {
-            return null;
-        } else {
-            setScanning(true);
-        }
+  private boolean authM1(byte[] uid, int block) {
+    if (uid == null) {
+      uid = findCard(false);
+    }
+    if (uid == null) {
+      return false;
+    }
+    byte[] tagSize = new byte[1];
+    if (!Rfid.PcdSelect(uid, tagSize)) {
+      LogUtils.d("PcdSelect failed");
+      return false;
+    }
+    LogUtils.d("%X", tagSize[0]);
+    boolean authSuccess = Rfid.PcdDoAuthen(Rfid.AUTH_KEY_A, (byte) block, Rfid.DEFAULT_KEY);
+    if (!authSuccess) {
+      LogUtils.d("PcdDoAuthen failed");
+      return false;
+    }
+    return true;
+  }
 
+  private boolean authM1(int block) {
+    return authM1(null, block);
+  }
+
+    private byte[] findCard(boolean isFindNfc) {
         if (!config()) {
-            setScanning(false);
             return null;
         }
 
@@ -114,13 +129,13 @@ public class RfidOperationRd extends AbsRfidOperation {
             uid = new byte[4];
             findSuccess = Rfid.PcdAnticoll(uid);
         }
+      byte[] reVal = null;
         if (findSuccess) {
-            ArrayUtils.reverse(uid);
-            setScanning(false);
-            return uid;
+          //            ArrayUtils.reverse(uid);
+          reVal = uid;
         }
-        setScanning(false);
-        return null;
+      LogUtils.d("isFindNfc:%s - %s", isFindNfc, ArrayUtils.bytes2HexString(reVal));
+      return reVal;
     }
 
     @Override
@@ -199,5 +214,28 @@ public class RfidOperationRd extends AbsRfidOperation {
         return readNfc(sa, buff, buff.length);
     }
 
+  @Override
+  public byte[] readM1(int block) {
+    if (!authM1(block)) {
+      return null;
+    }
+    byte[] reVal = null;
+    byte[] data = new byte[16];
+    boolean readSuccess = Rfid.PcdRead((byte) block, data);
+    if (readSuccess) {
+      reVal = data;
+    }
+    LogUtils.wtf("%s 高频卡 %s：%s", readSuccess, block, ArrayUtils.bytes2HexString(data));
+    return reVal;
+  }
 
+  @Override
+  public boolean writeM1(int block, byte[] data16) {
+    if (!authM1(block)) {
+      return false;
+    }
+    boolean writeSuccess = Rfid.PcdWrite((byte) block, data16);
+    LogUtils.d("%s:%s-%s", writeSuccess, block, ArrayUtils.bytes2HexString(data16));
+    return writeSuccess;
+  }
 }

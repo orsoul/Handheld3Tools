@@ -3,26 +3,46 @@ package com.fanfull.libhard.serialport.impl;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.serialport.ISerialPort;
 import com.fanfull.libhard.serialport.ISerialPortListener;
-
-import org.orsoul.baselib.util.ArrayUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import org.orsoul.baselib.util.ArrayUtils;
 
 public class SerialPortController implements ISerialPort {
+  private static Map<String, SerialPortController> sControllerMap;
     private ISerialPort serialPort;
-    private ISerialPortListener serialPortListener;
     private SerialPostReadThread readThread;
+  private Set<ISerialPortListener> listenerSet;
+  private int useCount;
 
     public SerialPortController(ISerialPort serialPort) {
         this.serialPort = serialPort;
     }
 
-    public void setSerialPortListener(ISerialPortListener serialPortListener) {
-        this.serialPortListener = serialPortListener;
+  public boolean addSerialPortListener(ISerialPortListener serialPortListener) {
+    if (serialPortListener == null) {
+      return false;
+    }
+    if (listenerSet == null) {
+      listenerSet = new HashSet<>();
+    }
+    return listenerSet.add(serialPortListener);
+  }
+
+  public boolean removeSerialPortListener(ISerialPortListener serialPortListener) {
+    if (serialPortListener == null) {
+      return false;
+    }
+    if (listenerSet != null) {
+      return false;
+    }
+    return listenerSet.remove(serialPortListener);
     }
 
     public synchronized void startReadThread() {
@@ -43,6 +63,7 @@ public class SerialPortController implements ISerialPort {
     @Override
     public boolean send(byte[] data, int off, int len) {
         boolean send = serialPort.send(data, off, len);
+      LogUtils.d("send:%s", ArrayUtils.bytes2HexString(data, off, off + len));
         return send;
     }
 
@@ -72,6 +93,20 @@ public class SerialPortController implements ISerialPort {
         serialPort.close();
     }
 
+  public synchronized int getUseCount() {
+    return useCount;
+  }
+
+  public synchronized void addUseCount() {
+    ++this.useCount;
+    LogUtils.d("useCount:%s", useCount);
+  }
+
+  public synchronized void minUseCount() {
+    --this.useCount;
+    LogUtils.d("useCount:%s", useCount);
+  }
+
     private class SerialPostReadThread extends Thread {
         private boolean stopped;
 
@@ -85,7 +120,7 @@ public class SerialPortController implements ISerialPort {
 
         @Override
         public void run() {
-            LogUtils.w("run start");
+          LogUtils.i("run start");
             int len;
             byte[] buff = new byte[1024 * 16];
             InputStream in = serialPort.getInputStream();
@@ -96,15 +131,17 @@ public class SerialPortController implements ISerialPort {
                     if (len < 1) {
                         break;
                     }
-                    if (serialPortListener != null) {
-                        serialPortListener.onReceiveData(Arrays.copyOf(buff, len));
+                  if (listenerSet != null) {
+                    for (ISerialPortListener listener : listenerSet) {
+                      listener.onReceiveData(Arrays.copyOf(buff, len));
+                    }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             stopRead();
-            LogUtils.w("run finish");
+          LogUtils.i("run finish");
         }
     }
 
@@ -181,7 +218,18 @@ public class SerialPortController implements ISerialPort {
          * @throws IOException
          */
         public SerialPortController build() throws SecurityException, IOException {
-            return new SerialPortController(new SerialPortRd(device, baudrate, dataBits, parity, stopBits, flags));
+          String path = device.getPath();
+          if (sControllerMap == null) {
+            sControllerMap = new HashMap<>();
+          }
+          if (sControllerMap.containsKey(path)) {
+            return sControllerMap.get(path);
+          }
+
+          SerialPortController controller = new SerialPortController(
+              new SerialPortRd(device, baudrate, dataBits, parity, stopBits, flags));
+          sControllerMap.put(path, controller);
+          return controller;
         }
     }
 }

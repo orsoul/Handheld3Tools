@@ -1,7 +1,6 @@
 package com.fanfull.libhard.barcode.impl;
 
 import android.content.Context;
-
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.IBarcodeOperation;
 
@@ -78,7 +77,7 @@ public class BarcodeController implements IBarcodeOperation {
 
     public static BarcodeController getInstance() {
         if (instance == null) {
-            throw new RuntimeException("BarcodeController is not init");
+          //            throw new RuntimeException("BarcodeController is not init");
         }
         return instance;
     }

@@ -4,10 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-
 import com.blankj.utilcode.util.ToastUtils;
 import com.wanjian.cockroach.Cockroach;
-
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.LogHelper;
 
@@ -23,6 +21,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         context = getApplicationContext();
         LogHelper.initLog(true);
+        LogHelper.initFileLog(true, this);
         initCrashHandler();
     }
 

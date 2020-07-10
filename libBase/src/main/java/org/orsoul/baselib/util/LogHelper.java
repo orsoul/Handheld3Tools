@@ -2,7 +2,6 @@ package org.orsoul.baselib.util;
 
 import android.content.Context;
 import android.os.Environment;
-
 import com.apkfuns.log2file.LogFileEngineFactory;
 import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
@@ -25,7 +24,7 @@ public class LogHelper {
                 .configAllowLog(allowLog)
                 .configShowBorders(false)
                 .configTagPrefix(TAG_LOG)
-                .configFormatTag("%t %c{-4}");
+            .configFormatTag("%t %c{-3}");
     }
 
     /**
@@ -35,7 +34,7 @@ public class LogHelper {
         LogUtils.getLog2FileConfig().configLog2FileEnable(allowLog)
                 // targetSdkVersion >= 23 需要确保有写sdcard权限
                 .configLog2FilePath(LOG_FILE_PATH)
-                .configLog2FileLevel(LogLevel.TYPE_DEBUG)
+            .configLog2FileLevel(LogLevel.TYPE_INFO)
                 .configLog2FileNameFormat("%d{yyyyMMdd}.txt")
                 .configLogFileEngine(new LogFileEngineFactory(context));
     }

@@ -1,10 +1,7 @@
 package com.fanfull.libhard.uhf;
 
 import android.util.Log;
-
 import com.apkfuns.logutils.LogUtils;
-import com.finger.LogsUtil;
-
 import org.orsoul.baselib.util.ArrayUtils;
 
 /**
@@ -197,7 +194,7 @@ public class UhfCmd {
         long time = System.currentTimeMillis();
         do {
             int len = runCmd(cmd_read, buf);
-            LogsUtil.d("ruh", "readUHFInTime(" + mb + ") len=12:" + (len - dataBuf.length));
+          LogUtils.d("ruh", "readUHFInTime(" + mb + ") len=12:" + (len - dataBuf.length));
             if (buf[4] == (byte) 0x85 && buf[5] == 0x01) {
                 // reVal = new byte[readDataLen];
                 // for (int i = 0; i < reVal.length; i++) {
@@ -208,7 +205,7 @@ public class UhfCmd {
                 break;
             }
         } while ((System.currentTimeMillis() - time) < runTime);
-        LogsUtil.d("ruh", "readUHFInTime dataBuf=" + ArrayUtils.bytes2HexString(dataBuf));
+      LogUtils.d("ruh", "readUHFInTime dataBuf=" + ArrayUtils.bytes2HexString(dataBuf));
 
         return reVal;
     }
@@ -331,15 +328,15 @@ public class UhfCmd {
 
             long time = System.currentTimeMillis();
             do {
-                LogsUtil.i("wuh", "cmd_write:" + ArrayUtils.bytes2HexString(cmd_write));
+              LogUtils.i("wuh", "cmd_write:" + ArrayUtils.bytes2HexString(cmd_write));
                 int len = runCmd(cmd_write, buf);
                 LogUtils.tag(TAG).d("writeUHFInTime(" + mb + ") len=10:" + (len));
                 if (buf[4] == (byte) 0x87 && buf[5] == 0x01) {
                     reVal = true;
-                    LogsUtil.d("wuh", "writeUHFInTime()成功 : buf[4] == ");
+                  LogUtils.d("wuh", "writeUHFInTime()成功 : buf[4] == ");
                     break;
                 } else {
-                    LogsUtil.d("wuh", "writeUHFInTime()失败 : buf[4] == " + buf[4]
+                  LogUtils.d("wuh", "writeUHFInTime()失败 : buf[4] == " + buf[4]
                             + " buf[5] == " + buf[5]);
                 }
             } while ((System.currentTimeMillis() - time) < runTime);
@@ -595,10 +592,11 @@ public class UhfCmd {
         }
 
         byte[] buff = new byte[20];
-        LogsUtil.d("SettingPowerActivity", "CMD_GET_POWER:" + ArrayUtils.bytes2HexString(CMD_SET_POWER));
+      LogUtils.d("SettingPowerActivity",
+          "CMD_GET_POWER:" + ArrayUtils.bytes2HexString(CMD_SET_POWER));
         reVal = runCmd(CMD_GET_POWER, buff);
         LogUtils.tag(TAG).d("getPower() len=12:" + (reVal));
-        LogsUtil.d("SettingPowerActivity", "buff:" + ArrayUtils.bytes2HexString(buff));
+      LogUtils.d("SettingPowerActivity", "buff:" + ArrayUtils.bytes2HexString(buff));
         if (14 <= reVal && buff[4] == (byte) 0x13) {
             int h = 0;
             int l = 0;

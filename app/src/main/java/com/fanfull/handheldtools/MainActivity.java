@@ -4,18 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-
+import androidx.appcompat.app.AppCompatActivity;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.barcode.ActivityBarcode;
+import com.fanfull.handheldtools.barcode.OldBagActivity;
 import com.fanfull.handheldtools.base.BaseApplication;
 import com.fanfull.handheldtools.uhf.ActivityNfc;
 import com.fanfull.handheldtools.uhf.ActivityUhf;
+import com.fanfull.handheldtools.uhf.FingerActivity;
 import com.finger.FingerPrint;
-
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_uhf).setOnClickListener(this);
         findViewById(R.id.btn_nfc).setOnClickListener(this);
         findViewById(R.id.btn_barcode).setOnClickListener(this);
+        findViewById(R.id.btn_finger).setOnClickListener(this);
+        findViewById(R.id.btn_old_bag).setOnClickListener(this);
 
         SoundUtils.loadSounds(BaseApplication.getContext());
 
@@ -57,6 +58,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case KeyEvent.KEYCODE_1:
                 FingerPrint.getInstance().open();
                 break;
+            case KeyEvent.KEYCODE_2:
+                FingerPrint.getInstance().startSearchFinger();
+                break;
+            case KeyEvent.KEYCODE_3:
+                FingerPrint.getInstance().stopSearchFinger();
+                break;
             case KeyEvent.KEYCODE_7:
                 throw new RuntimeException("test crash");
             case KeyEvent.KEYCODE_8:
@@ -71,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        LogUtils.getLog2FileConfig().flushAsync();
         FingerPrint.getInstance().stopSearchAndClose();
         super.onDestroy();
     }
@@ -86,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_barcode:
                 startActivity(new Intent(this, ActivityBarcode.class));
+                break;
+            case R.id.btn_finger:
+                startActivity(new Intent(this, FingerActivity.class));
+                break;
+            case R.id.btn_old_bag:
+                startActivity(new Intent(this, OldBagActivity.class));
                 break;
         }
     }
