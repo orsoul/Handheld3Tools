@@ -2,7 +2,6 @@ package com.rd;
 
 import android.os.SystemClock;
 import android.util.Log;
-
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.Utils;
 import com.finger.FingerPrint;
@@ -15,15 +14,13 @@ import com.rd.barcodeScanTest.ScanApiFactory;
 import com.rd.io.EMgpio;
 import com.rd.io.Platform;
 import com.rd.io.SerialPort;
-
-import org.orsoul.baselib.util.ArrayUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.TreeSet;
+import org.orsoul.baselib.util.ArrayUtils;
 
 public class Hardware2 {
 
@@ -217,7 +214,7 @@ public class Hardware2 {
     // "/dev/s3c2410_serial3" 二维码
 
     public int openSerialPortTest(String devName, int baud, int dataBits, int stopBits) {
-        LogUtils.d(TAG, "openPort ... ");
+      LogUtils.d("openPort ... ");
         int fd = -1;
         if ("/dev/ttyUSB0".equals(devName)) {
             if (initHF()) {
@@ -245,7 +242,7 @@ public class Hardware2 {
         }
         if (openPort(fd, "/dev/ttyMT0", 115200, 0)) {
             ports.add(fd);
-            LogUtils.d(TAG, "open port ... ok");
+          LogUtils.d("open port ... ok");
             return fd;
         }
         return -1;
@@ -306,7 +303,7 @@ public class Hardware2 {
     }
 
     public int write(int fd, byte[] data) {
-        LogUtils.d("hd", "w fd:" + fd);
+      LogUtils.d("write:%s", fd);
         if (currentFd == fd) {
 
         } else if (fd == 53) {
@@ -341,7 +338,7 @@ public class Hardware2 {
     boolean hasSelect = false;
 
     public int read(int fd, byte[] buf, int len) {
-        LogUtils.d("hd", "r fd:" + fd);
+      LogUtils.d("read:%s", fd);
         if (fd == 53) {
             if (hasSelect) {
                 int length = -1;
@@ -374,7 +371,7 @@ public class Hardware2 {
     }
 
     public int select(int fd, int sec, int usec) {
-        LogUtils.d("hd", "s fd:" + fd);
+      LogUtils.d("select:%s", fd);
         if (fd == 56) {
             int i = 0;
             while (i < 100 && !isScanStop) {

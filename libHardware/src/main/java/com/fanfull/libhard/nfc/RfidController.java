@@ -1,8 +1,6 @@
 package com.fanfull.libhard.nfc;
 
-import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.barcode.BarcodeUtil;
-import com.halio.Rfid;
 import java.util.Arrays;
 import java.util.List;
 import org.orsoul.baselib.util.ArrayUtils;
@@ -10,77 +8,97 @@ import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
 public class RfidController implements IRfidOperation {
-    private static final RfidController ourInstance = new RfidController(new RfidOperationRd());
+  private static final RfidController ourInstance = new RfidController(new RfidOperationRd());
 
-    public static RfidController getInstance() {
-        return ourInstance;
+  public static RfidController getInstance() {
+    return ourInstance;
+  }
+
+  private RfidController(IRfidOperation uhfOperation) {
+    this.operation = uhfOperation;
+  }
+
+  private IRfidOperation operation;
+
+  @Override
+  public boolean open() {
+    return operation.open();
+  }
+
+  @Override
+  public boolean isOpen() {
+    return operation.isOpen();
+  }
+
+  @Override
+  public boolean isScanning() {
+    return operation.isScanning();
+  }
+
+  @Override
+  public void release() {
+    operation.release();
+  }
+
+  @Override
+  public void setListener(IRfidListener listener) {
+    operation.setListener(listener);
+  }
+
+  @Override
+  public void findNfcAsync() {
+    operation.findNfcAsync();
+  }
+
+  @Override
+  public byte[] findM1() {
+    byte[] uid = operation.findM1();
+    ArrayUtils.reverse(uid);
+    return uid;
+  }
+
+  @Override
+  public void findM1Async() {
+    operation.findM1Async();
+  }
+
+  public byte[] findNfcOrM1() {
+    if (isScanning()) {
+      return null;
     }
-
-    private RfidController(IRfidOperation uhfOperation) {
-        this.operation = uhfOperation;
+    //        setScanning(true);
+    byte[] uid = findNfc();
+    if (uid == null) {
+      uid = findM1();
     }
+    //        setScanning(false);
+    return uid;
+  }
 
-    private IRfidOperation operation;
+  @Override public boolean readNfc4Byte(int sa, byte[] buff) {
+    return operation.readNfc4Byte(sa, buff);
+  }
 
-    @Override
-    public boolean open() {
-        return operation.open();
-    }
+  @Override public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
+    return operation.readNfc(sa, buff, withFindCard);
+  }
 
-    @Override
-    public boolean isOpen() {
-        return operation.isOpen();
-    }
+  @Override public void readNfcAsync(int sa, int dataLen, boolean withFindCard) {
+    operation.readNfcAsync(sa, dataLen, withFindCard);
+  }
 
-    @Override
-    public boolean isScanning() {
-        return operation.isScanning();
-    }
+  @Override public boolean writeNfc4Byte(int sa, byte[] buff) {
+    return operation.writeNfc4Byte(sa, buff);
+  }
 
-    @Override
-    public void release() {
-        operation.release();
-    }
+  @Override public boolean writeNfc(int sa, byte[] buff, boolean withFindCard) {
+    return operation.writeNfc(sa, buff, withFindCard);
+  }
 
-    @Override
-    public void setListener(IRfidListener listener) {
-        operation.setListener(listener);
-    }
-
-    @Override
-    public void findNfcAsync() {
-        operation.findNfcAsync();
-    }
-
-    @Override
-    public byte[] findM1() {
-        return operation.findM1();
-    }
-
-    @Override
-    public void findM1Async() {
-        operation.findM1Async();
-    }
-
-    @Override
-    public byte[] findNfcOrM1() {
-        return operation.findNfcOrM1();
-    }
-
-    @Override
-    public void findNfcOrM1Async() {
-        operation.findNfcOrM1Async();
-    }
-
-    @Override
-    public byte[] findNfc() {
-        return operation.findNfc();
-    }
-
-    @Override
-    public void readNfcAsync(int sa, int dataLen) {
-        operation.readNfcAsync(sa, dataLen);
-    }
+  @Override
+  public byte[] findNfc() {
+    return operation.findNfc();
+  }
 
   @Override
   public byte[] readM1(int block) {
@@ -91,16 +109,6 @@ public class RfidController implements IRfidOperation {
   public boolean writeM1(int block, byte[] data16) {
     return operation.writeM1(block, data16);
   }
-
-    @Override
-    public boolean readNfc(int sa, byte[] buff, int len) {
-        return operation.readNfc(sa, buff, len);
-    }
-
-    @Override
-    public boolean readNfc(int sa, byte[] buff) {
-        return operation.readNfc(sa, buff);
-    }
 
   public boolean write456Block(byte[] barcodeBuf, int WRITE_TIMES) {
     byte[][] datas = BarcodeUtil.get3Data(barcodeBuf);
@@ -125,7 +133,7 @@ public class RfidController implements IRfidOperation {
         break;
       }
     }
-    return allWrite;// 写入数据失败
+    return allWrite;
   }
 
   public boolean check456Block(byte[] barcodeBuf) {
@@ -155,33 +163,6 @@ public class RfidController implements IRfidOperation {
     return threeInOne;
   }
 
-  private boolean readNfcOnly(int sa, byte[] data4) {
-    boolean readSuccess = Rfid.ULPcdRead((byte) sa, data4);
-    LogUtils.d("%s:%s(%s)", readSuccess, sa, ArrayUtils.bytes2HexString(data4));
-    return readSuccess;
-  }
-
-  private byte[] readNfc(int sa, int len) {
-
-    byte[] buff = new byte[len];
-    byte[] oneWord = new byte[4];
-    int wordDataLen = (len - 1) / 4 + 1;
-    for (int i = 0; i < wordDataLen; i++) {
-      byte newStart = (byte) (i + sa);
-      if (!readNfcOnly(newStart, oneWord)) {
-        LogUtils.w("第%s次 读nfc addr[%s]失败", i, newStart);
-        return null;
-      }
-      int destPos = i * 4;
-      int copyLen = len - destPos;
-      if (4 < copyLen) {
-        copyLen = 4;
-      }
-      System.arraycopy(oneWord, 0, buff, destPos, copyLen);
-    }
-    return buff;
-  }
-
   public boolean readLockNfc(Lock3Bean lock3Bean) {
     if (lock3Bean == null) {
       return false;
@@ -196,18 +177,41 @@ public class RfidController implements IRfidOperation {
       return false;
     }
 
+    //boolean reVal = true;
     lock3Bean.uidBuff = uid;
     for (Lock3Bean.InfoUnit infoUnit : willReadList) {
-      infoUnit.buff = readNfc(infoUnit.sa, infoUnit.len);
+      byte[] data = new byte[infoUnit.len];
+      if (readNfc(infoUnit.sa, data, false)) {
+        infoUnit.buff = data;
+      } else {
+        return false;
+      }
     }
-
     return true;
   }
 
-  private boolean writeNfcOnly(int sa, byte[] data) {
-    boolean writeSuccess = Rfid.ULPcdWrite((byte) sa, data);
-    LogUtils.d("%s:%s(%s)", writeSuccess, sa, ArrayUtils.bytes2HexString(data));
-    return writeSuccess;
+  public boolean writeLockNfc(Lock3Bean lock3Bean) {
+    if (lock3Bean == null) {
+      return false;
+    }
+    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillReadList();
+    if (willReadList == null || willReadList.isEmpty()) {
+      return false;
+    }
+
+    byte[] uid = findNfc();
+    if (uid == null) {
+      return false;
+    }
+
+    //boolean reVal = true;
+    lock3Bean.uidBuff = uid;
+    for (Lock3Bean.InfoUnit infoUnit : willReadList) {
+      if (!writeNfc(infoUnit.sa, infoUnit.buff, false)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public boolean writeStatus(int status) {
@@ -217,7 +221,7 @@ public class RfidController implements IRfidOperation {
     }
 
     byte[] buff4 = new byte[4];
-    boolean readSuccess = readNfcOnly(Lock3Bean.SA_KEY_NUM, buff4);
+    boolean readSuccess = readNfc4Byte(Lock3Bean.SA_KEY_NUM, buff4);
     if (!readSuccess) {
       return false;
     }
@@ -226,20 +230,20 @@ public class RfidController implements IRfidOperation {
     if (keyNum < 0) {
       /* 密钥编号 不在合法范围，重设密钥编号为A0 */
       buff4[0] = (byte) 0xA0;
-      boolean writeKeyNumSuccess = writeNfcOnly(Lock3Bean.SA_KEY_NUM, buff4);
+      boolean writeKeyNumSuccess = writeNfc4Byte(Lock3Bean.SA_KEY_NUM, buff4);
       if (!writeKeyNumSuccess) {
         return false;
       }
       keyNum = 0;
     }
 
-    readSuccess = readNfcOnly(Lock3Bean.SA_STATUS, buff4);
+    readSuccess = readNfc4Byte(Lock3Bean.SA_STATUS, buff4);
     if (!readSuccess) {
       return false;
     }
     int statusEncode = Lock3Util.getStatus(status, keyNum, uid, false);
     buff4[0] = (byte) statusEncode;
-    boolean writeSuccess = writeNfcOnly(Lock3Bean.SA_STATUS, buff4);
+    boolean writeSuccess = writeNfc4Byte(Lock3Bean.SA_STATUS, buff4);
     return writeSuccess;
   }
 
@@ -255,7 +259,7 @@ public class RfidController implements IRfidOperation {
     } else {
       buff4[0] = (byte) Lock3Util.MODE_NORMAL;
     }
-    boolean writeSuccess = writeNfcOnly(Lock3Bean.SA_WORK_MODE, buff4);
+    boolean writeSuccess = writeNfc4Byte(Lock3Bean.SA_WORK_MODE, buff4);
     return writeSuccess;
   }
 }

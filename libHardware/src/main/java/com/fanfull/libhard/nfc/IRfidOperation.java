@@ -4,25 +4,25 @@ import com.fanfull.libhard.IOperation;
 
 public interface IRfidOperation extends IOperation {
 
-    void setListener(IRfidListener listener);
+  void setListener(IRfidListener listener);
 
-    byte[] findNfc();
+  byte[] findNfc();
 
-    void findNfcAsync();
+  void findNfcAsync();
 
-    byte[] findM1();
+  byte[] findM1();
 
-    void findM1Async();
+  void findM1Async();
 
-    byte[] findNfcOrM1();
+  boolean readNfc4Byte(int sa, byte[] buff);
 
-    void findNfcOrM1Async();
+  boolean readNfc(int sa, byte[] buff, boolean withFindCard);
 
-    boolean readNfc(int sa, byte[] buff, int len);
+  void readNfcAsync(int sa, int dataLen, boolean withFindCard);
 
-    boolean readNfc(int sa, byte[] buff);
+  boolean writeNfc4Byte(int sa, byte[] buff);
 
-    void readNfcAsync(int sa, int dataLen);
+  boolean writeNfc(int sa, byte[] buff, boolean withFindCard);
 
   byte[] readM1(int block);
 
