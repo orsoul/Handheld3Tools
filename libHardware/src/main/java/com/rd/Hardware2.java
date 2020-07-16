@@ -307,7 +307,7 @@ public class Hardware2 {
         if (currentFd == fd) {
 
         } else if (fd == 53) {
-            //			HF();
+          //      HF();
             currentFd = 53;
         } else if (fd == 54) {
             FP();
@@ -486,9 +486,9 @@ public class Hardware2 {
             serialPort = null;
         }
 
-        //		Rfid.closeCommPort();
+      //    Rfid.closeCommPort();
         //
-        //		Platform.SetGpioDataLow(6);
+      //    Platform.SetGpioDataLow(6);
         Log.i(TAG, "exit the port");
 
     }
@@ -496,15 +496,15 @@ public class Hardware2 {
     private void UHF() {
         //Platform.SetGpioMode(59, 0);            //URXD3  MODE1
         //Platform.SetGpioMode(60, 0);            //UTXD3  MODE1
-        //		Platform.SetGpioMode(57, 0);            //URXD2  MODE1
+      //    Platform.SetGpioMode(57, 0);            //URXD2  MODE1
         //
-        //		Platform.SetGpioOutput(59);                //URXD3   SWITCH B
+      //    Platform.SetGpioOutput(59);                //URXD3   SWITCH B
         //Platform.SetGpioOutput(60);                //UTXD3   UHF_VCC enable
-        //		Platform.SetGpioOutput(57);                //URXD2   SWITCH A
+      //    Platform.SetGpioOutput(57);                //URXD2   SWITCH A
         //
-        //		Platform.SetGpioDataHigh(60);
-        //		Platform.SetGpioDataHigh(59);
-        //		Platform.SetGpioDataHigh(57);
+      //    Platform.SetGpioDataHigh(60);
+      //    Platform.SetGpioDataHigh(59);
+      //    Platform.SetGpioDataHigh(57);
 
         Platform.SetGpioMode(64, 0);
         Platform.SetGpioMode(62, 0);
@@ -520,29 +520,29 @@ public class Hardware2 {
     }
 
     private void HF() {
-        //		//模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成IO模式
-        //		Platform.SetGpioMode(59, 0);            //URXD3  SWITCH B MODE1
-        //		Platform.SetGpioMode(57, 0);            //URXD2  SWITCH A MODE1
-        //		//UHF  HF 的电源使能脚设置成IO模式
-        //		//Platform.SetGpioMode(60, 0);			//UTXD3 UHF_VCC   MODE1
-        //		Platform.SetGpioMode(0, 0);                //HF  POWER
+      //    //模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成IO模式
+      //    Platform.SetGpioMode(59, 0);            //URXD3  SWITCH B MODE1
+      //    Platform.SetGpioMode(57, 0);            //URXD2  SWITCH A MODE1
+      //    //UHF  HF 的电源使能脚设置成IO模式
+      //    //Platform.SetGpioMode(60, 0);      //UTXD3 UHF_VCC   MODE1
+      //    Platform.SetGpioMode(0, 0);                //HF  POWER
         //
-        //		//模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成输出
-        //		Platform.SetGpioOutput(59);                //URXD3   SWITCH B
-        //		Platform.SetGpioOutput(57);                //URXD2   SWITCH A
+      //    //模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成输出
+      //    Platform.SetGpioOutput(59);                //URXD3   SWITCH B
+      //    Platform.SetGpioOutput(57);                //URXD2   SWITCH A
         //
-        //		//UHF  HF 的电源使能脚设置成输出
-        //		//Platform.SetGpioOutput(60);						//UTXD3   UHF_VCC enable
-        //		Platform.SetGpioOutput(0);              //GPIO0_ID HF VCC
+      //    //UHF  HF 的电源使能脚设置成输出
+      //    //Platform.SetGpioOutput(60);            //UTXD3   UHF_VCC enable
+      //    Platform.SetGpioOutput(0);              //GPIO0_ID HF VCC
         //
-        //		//模拟开关的使能脚SWITCH B拉低
-        //		Platform.SetGpioDataLow(59);            //URXD3   SWITCH B
-        //		//模拟开关的使能脚SWITCH A拉高
-        //		Platform.SetGpioDataHigh(57);
+      //    //模拟开关的使能脚SWITCH B拉低
+      //    Platform.SetGpioDataLow(59);            //URXD3   SWITCH B
+      //    //模拟开关的使能脚SWITCH A拉高
+      //    Platform.SetGpioDataHigh(57);
         //
-        //		//HF 的电源使能脚设置成高电平输出，打开电源
-        //		//Platform.SetGpioDataHigh(60);					    //UTXD3   UHF_VCC enable
-        //		Platform.SetGpioDataHigh(0);            //GPIO0_ID HF VCC
+      //    //HF 的电源使能脚设置成高电平输出，打开电源
+      //    //Platform.SetGpioDataHigh(60);              //UTXD3   UHF_VCC enable
+      //    Platform.SetGpioDataHigh(0);            //GPIO0_ID HF VCC
 
         Platform.SetGpioMode(64, 0);
         Platform.SetGpioMode(62, 0);
@@ -560,29 +560,29 @@ public class Hardware2 {
     }
 
     private void FP() {
-        //		//模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成IO模式
-        //		Platform.SetGpioMode(59, 0);            //URXD3  SWITCH B MODE1
-        //		Platform.SetGpioMode(57, 0);            //URXD2  SWITCH A MODE1
-        //		//UHF  HF 的电源使能脚设置成IO模式
-        //		//Platform.SetGpioMode(60, 0);			//UTXD3 UHF_VCC   MODE1
-        //		Platform.SetGpioMode(0, 0);                //HF  FP POWER
+      //    //模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成IO模式
+      //    Platform.SetGpioMode(59, 0);            //URXD3  SWITCH B MODE1
+      //    Platform.SetGpioMode(57, 0);            //URXD2  SWITCH A MODE1
+      //    //UHF  HF 的电源使能脚设置成IO模式
+      //    //Platform.SetGpioMode(60, 0);      //UTXD3 UHF_VCC   MODE1
+      //    Platform.SetGpioMode(0, 0);                //HF  FP POWER
         //
-        //		//模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成输出
-        //		Platform.SetGpioOutput(59);                //URXD3   SWITCH B
-        //		Platform.SetGpioOutput(57);                //URXD2   SWITCH A
+      //    //模拟开关的使能脚SWITCH A  SWITCH B的GPIO设置成输出
+      //    Platform.SetGpioOutput(59);                //URXD3   SWITCH B
+      //    Platform.SetGpioOutput(57);                //URXD2   SWITCH A
         //
-        //		//UHF  HF 的电源使能脚设置成输出
-        //		//Platform.SetGpioOutput(60);						//UTXD3   UHF_VCC enable
-        //		Platform.SetGpioOutput(0);              //GPIO0_ID HF FP  VCC
+      //    //UHF  HF 的电源使能脚设置成输出
+      //    //Platform.SetGpioOutput(60);            //UTXD3   UHF_VCC enable
+      //    Platform.SetGpioOutput(0);              //GPIO0_ID HF FP  VCC
         //
-        //		//模拟开关的使能脚SWITCH B拉低
-        //		Platform.SetGpioDataLow(59);            //URXD3   SWITCH B
-        //		//模拟开关的使能脚SWITCH A拉高
-        //		Platform.SetGpioDataLow(57);
+      //    //模拟开关的使能脚SWITCH B拉低
+      //    Platform.SetGpioDataLow(59);            //URXD3   SWITCH B
+      //    //模拟开关的使能脚SWITCH A拉高
+      //    Platform.SetGpioDataLow(57);
         //
-        //		//HF 的电源使能脚设置成高电平输出，打开电源
-        //		//Platform.SetGpioDataHigh(60);					    //UTXD3   UHF_VCC enable
-        //		Platform.SetGpioDataHigh(0);            //GPIO0_ID HF FP VCC
+      //    //HF 的电源使能脚设置成高电平输出，打开电源
+      //    //Platform.SetGpioDataHigh(60);              //UTXD3   UHF_VCC enable
+      //    Platform.SetGpioDataHigh(0);            //GPIO0_ID HF FP VCC
 
         Platform.SetGpioMode(64, 0);
         Platform.SetGpioMode(62, 0);

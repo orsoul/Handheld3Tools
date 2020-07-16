@@ -162,11 +162,11 @@ public class FingerPrint {
         if (mFd == -1) {
             mFd = hardware.openSerialPortTest(mChooseSerial[1], mChooseBuad, 8, 1);// 打开串口
             // 重启adb.需要系统权限，需定义为系统应用
-            //			 Settings.Secure.putInt(BaseApplication.getContext().getContentResolver(),
-            //			 Settings.Secure.ADB_ENABLED, 0);
-            //			 Settings.Secure.putInt(BaseApplication.getContext().getContentResolver(),
-            //					 Settings.Secure.ADB_ENABLED,1);
-          //			LogUtils.d( "----Reset adb----");
+          //       Settings.Secure.putInt(BaseApplication.getContext().getContentResolver(),
+          //       Settings.Secure.ADB_ENABLED, 0);
+          //       Settings.Secure.putInt(BaseApplication.getContext().getContentResolver(),
+          //           Settings.Secure.ADB_ENABLED,1);
+          //      LogUtils.d( "----Reset adb----");
             return mFd != -1;
         } else {
           LogUtils.d("指纹模块已打开！！！");
@@ -632,16 +632,16 @@ public class FingerPrint {
     public void upChar(int id) {
         /*while ((len = hardware.read(mFd, buf, 24)) > 0)
             ;// clear buf
-		LogUtils.d( "**********cmd send PS_LoadChar:" + ArrayUtils.bytes2HexString(loadchar));
-		//len = hardware.write(mFd, getLoadcharCmd(id));
-		len = hardware.write(mFd, loadchar);
-		if (hardware.select(mFd, 1, 0) == 1) {
-			buf[0] = 0x00;
-			SystemClock.sleep(30);
-			Arrays.fill(buf, (byte) 0);
-			len = hardware.read(mFd, buf, 12);
-			LogsUtil.s("PS_LoadChar:" + ArrayUtils.bytes2HexString(buf));
-			if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {*/
+    LogUtils.d( "**********cmd send PS_LoadChar:" + ArrayUtils.bytes2HexString(loadchar));
+    //len = hardware.write(mFd, getLoadcharCmd(id));
+    len = hardware.write(mFd, loadchar);
+    if (hardware.select(mFd, 1, 0) == 1) {
+      buf[0] = 0x00;
+      SystemClock.sleep(30);
+      Arrays.fill(buf, (byte) 0);
+      len = hardware.read(mFd, buf, 12);
+      LogsUtil.s("PS_LoadChar:" + ArrayUtils.bytes2HexString(buf));
+      if (buf[9] == 0x00 && buf[0] == (byte) 0xef && buf[1] == 0x01) {*/
       LogUtils.d("****LoadChar successfully!\n");
         while ((len = hardware.read(mFd, buf, 24)) > 0)
             ;// clear buf
@@ -677,12 +677,12 @@ public class FingerPrint {
         }
             /*} else {
                 LogUtils.d( "LoadChar failed!\n");
-				return;
-			}
-		} else {
-			LogUtils.d( "LoadChar failed!\n");
-			return;
-		}*/
+        return;
+      }
+    } else {
+      LogUtils.d( "LoadChar failed!\n");
+      return;
+    }*/
     }
 
 

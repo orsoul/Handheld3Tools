@@ -1,11 +1,9 @@
 package org.orsoul.baselib.util;
 
 import android.text.TextUtils;
-
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Locale;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -17,7 +15,7 @@ public abstract class ArrayUtils {
             '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',};
 
     public static String bytes2HexString(byte[] bArray, int start, int end) {
-        if ((bArray == null) || (end <= start) || (bArray.length <= start)) {
+      if ((bArray == null) || (end < start) || (bArray.length < start)) {
             return null;
         }
 

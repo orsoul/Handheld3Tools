@@ -9,7 +9,8 @@ public class RfidCmd {
     /**
      * 关闭RFID电源
      */
-    private final static byte[] CMD_CLOSE_RFID = new byte[]{(byte) 0x00,
+    private static final byte[] CMD_CLOSE_RFID = new byte[] {
+        (byte) 0x00,
             (byte) 0x00, (byte) 0xFF, (byte) 0x04, (byte) 0xFC, (byte) 0xD4,
             (byte) 0x32, (byte) 0x01, (byte) 0x00, (byte) 0xF9, (byte) 0x00};
     /**
@@ -164,9 +165,9 @@ public class RfidCmd {
                 //buf[21], buf[20], buf[19] };
                 sLastUid = reVal;
             }
-			/*for(int i=0; i<reVal.length;i++){
+      /*for(int i=0; i<reVal.length;i++){
 
-			}*/
+      }*/
         } else {
         }
       // LogUtils.d( "findCard() uid: " +

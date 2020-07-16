@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -70,7 +69,7 @@ public class CTranslate {
         Typeface font = Typeface.createFromAsset(this.mContext.getAssets(), "fonts/songti.TTF");
         paint.setColor(Color.BLACK);
         paint.setStyle(Style.FILL_AND_STROKE);
-        //		paint.setStrokeWidth(0.3f);
+      //    paint.setStrokeWidth(0.3f);
         paint.setTextSize(14.0f);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTypeface(font);
@@ -154,7 +153,7 @@ public class CTranslate {
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.WHITE);
         canvas.drawText(number, x, rect.height() - rect.bottom + y, paint);
-        //		saveMyBitmap(bitmap,"ff"+System.currentTimeMillis());
+      //    saveMyBitmap(bitmap,"ff"+System.currentTimeMillis());
         return getCByteRecord(bitmap);
     }
 
@@ -175,7 +174,7 @@ public class CTranslate {
         Canvas canvas = new Canvas(bitmap);
         canvas.drawColor(Color.WHITE);
         canvas.drawBitmap(data, x, y, paint);
-        //		saveMyBitmap(bitmap,"bb"+System.currentTimeMillis());
+      //    saveMyBitmap(bitmap,"bb"+System.currentTimeMillis());
         return getCByteRecord(bitmap);
     }
 
