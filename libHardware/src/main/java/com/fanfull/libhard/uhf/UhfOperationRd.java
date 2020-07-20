@@ -104,24 +104,24 @@ public class UhfOperationRd extends AbsUhfOperation {
     send(readCmd);
   }
 
-  @Override public boolean write(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa) {
-    return false;
-  }
-
-  @Override public void writeAsync(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa) {
-
-  }
-
   @Override public byte[] readEpc(int timeout) {
-    byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
-    byte[] rec = serialPortController.sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
+    //byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
+    //byte[] rec = serialPortController.sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
+    //byte[] parseData = UhfCmd.parseData(rec);
+    //return parseData;
+    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12);
+    byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public byte[] readTid(int sa, int len) {
-    byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
-    byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
+    //byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
+    //byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
+    //byte[] parseData = UhfCmd.parseData(rec);
+    //return parseData;
+    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12);
+    byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
@@ -131,6 +131,27 @@ public class UhfOperationRd extends AbsUhfOperation {
     byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
+  }
+
+  @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
+    byte[] bytes = serialPortController.sendAndWaitReceive(cmd);
+    byte[] parseData = UhfCmd.parseData(bytes);
+    return parseData != null && parseData.length == 0;
+  }
+
+  @Override public void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
+    send(cmd);
+  }
+
+  @Override public boolean writeEpc(int sa, byte[] data) {
+    return write(UhfCmd.MB_EPC, sa, data, null, 0, 0);
+  }
+
+  @Override
+  public boolean writeUse(int sa, byte[] data) {
+    return write(UhfCmd.MB_USE, sa, data, null, 0, 0);
   }
 
   @Override

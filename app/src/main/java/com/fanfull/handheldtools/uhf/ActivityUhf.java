@@ -1,6 +1,7 @@
 package com.fanfull.handheldtools.uhf;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,6 +16,14 @@ import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnInputConfirmListener;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.Random;
 import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.ClickUtil;
 import org.orsoul.baselib.util.ViewUtil;
@@ -28,7 +37,9 @@ public class ActivityUhf extends InitModuleActivity {
   private Button btnGetPower;
 
   private UhfController uhfController;
+  private SocketServiceDemo socketService;
 
+  private byte[] readBuff;
   private boolean fastIdOn;
   private boolean readingLot;
   private int readLotCount;
@@ -80,8 +91,12 @@ public class ActivityUhf extends InitModuleActivity {
           btnGetPower.setEnabled(true);
         });
         uhfController.send(UhfCmd.CMD_GET_DEVICE_VERSION);
+        SystemClock.sleep(50);
         uhfController.send(UhfCmd.CMD_GET_DEVICE_ID);
+        SystemClock.sleep(50);
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
+        socketService = new SocketServiceDemo();
+        socketService.start();
       }
 
       @Override
@@ -144,12 +159,26 @@ public class ActivityUhf extends InitModuleActivity {
                   String.format("%s epc:%s", readLotCount, ArrayUtils.bytes2HexString(parseData));
             }
             break;
+          case UhfCmd.RECEIVE_TYPE_READ:
+            info =
+                String.format("read:%s", ArrayUtils.bytes2HexString(parseData));
+            break;
+          case UhfCmd.RECEIVE_TYPE_WRITE:
+            if (parseData.length == 0) {
+              info = "写成功";
+            } else {
+              info = String.format("写失败,cause:%X", parseData[0]);
+            }
+            break;
           default:
             LogUtils.v("parseData:%s", ArrayUtils.bytes2HexString(parseData));
         }
         if (info != null) {
           Object obj = info;
           runOnUiThread(() -> ViewUtil.appendShow(obj, tvShow));
+          if (socketService != null) {
+            socketService.send(String.valueOf(obj));
+          }
         }
       }
     });
@@ -161,7 +190,6 @@ public class ActivityUhf extends InitModuleActivity {
   public void onClick(View v) {
     v.setEnabled(false);
     Object info;
-    byte[] readBuff;
     switch (v.getId()) {
       case R.id.btn_uhf_read_epc:
         readBuff = uhfController.readEpc(500);
@@ -186,7 +214,7 @@ public class ActivityUhf extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_use:
-        readBuff = uhfController.readUse(0, 12);
+        readBuff = uhfController.readUse(0x12, 32);
         if (readBuff == null) {
           info = "读use失败";
         } else {
@@ -237,16 +265,31 @@ public class ActivityUhf extends InitModuleActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
+        byte[] writeBuff = readBuff;
+        if (writeBuff == null) {
+          writeBuff = new byte[12];
+          Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
+        }
+        uhfController.writeAsync(UhfCmd.MB_EPC, 0x00, writeBuff, null, 0, 0);
         break;
       case KeyEvent.KEYCODE_2:
+        writeBuff = readBuff;
+        if (writeBuff == null) {
+          writeBuff = new byte[12];
+          Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
+        }
+        uhfController.writeAsync(UhfCmd.MB_USE, 0x12, writeBuff, null, 0, 0);
         break;
       case KeyEvent.KEYCODE_3:
         break;
       case KeyEvent.KEYCODE_4:
+        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
         break;
       case KeyEvent.KEYCODE_5:
+        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
         break;
       case KeyEvent.KEYCODE_6:
+        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x12, 32));
         break;
       case KeyEvent.KEYCODE_7:
         new XPopup.Builder(this).asInputConfirm(
@@ -297,9 +340,127 @@ public class ActivityUhf extends InitModuleActivity {
     return super.onKeyDown(keyCode, event);
   }
 
+  private void initSocketService() {
+  }
+
   @Override
   protected void onDestroy() {
+    if (socketService != null) {
+      socketService.closeService();
+    }
     uhfController.release();
     super.onDestroy();
+  }
+
+  static class SocketServiceDemo extends Thread {
+    private ServerSocket serverSocket;
+    private Socket client;
+    private boolean canRun;
+
+    public void init() {
+      try {
+        serverSocket = new ServerSocket(12345, 3);
+        String format = String.format("server %s run", serverSocket.getLocalSocketAddress());
+        LogUtils.d(format);
+        client = serverSocket.accept();
+        format = String.format("%s connected", client.getInetAddress());
+        ToastUtils.showShort(format);
+        LogUtils.d(format);
+      } catch (IOException e) {
+        e.printStackTrace();
+        return;
+      }
+    }
+
+    public void closeService() {
+      canRun = false;
+
+      try {
+        if (client != null) {
+          client.close();
+        }
+        if (serverSocket != null) {
+          serverSocket.close();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      client = null;
+      serverSocket = null;
+    }
+
+    public boolean send(Socket client, byte[] data) throws IOException {
+      if (client == null || !client.isConnected() || data == null) {
+        return false;
+      }
+      OutputStream out = client.getOutputStream();
+      out.write(data);
+      out.flush();
+      return true;
+      //LogUtils.v("socket send:%s", ArrayUtils.bytes2HexString(data));
+    }
+
+    public boolean send(String info) {
+      try {
+        boolean send = send(client, info.getBytes("utf-8"));
+        LogUtils.d("socket send:%s-%s", send, info);
+        return send;
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return false;
+    }
+
+    @Override
+    public void run() {
+      try {
+        serverSocket = new ServerSocket(12345, 3);
+        String format = String.format("server %s run", serverSocket.getLocalSocketAddress());
+        LogUtils.d(format);
+
+        byte[] buff = new byte[1024 * 16];
+        canRun = true;
+        while (canRun) {
+          if (client == null) {
+            client = serverSocket.accept();
+            format = String.format("%s connected", client.getInetAddress());
+            ToastUtils.showShort(format);
+            LogUtils.d(format);
+          }
+          InputStream in = client.getInputStream();
+          int len = in.read(buff);
+          if (len <= 0) {
+            format = String.format("%s disconnected", client.getInetAddress());
+            ToastUtils.showShort(format);
+            LogUtils.d(format);
+            client.close();
+            client = null;
+          } else {
+            handlerRec(buff, len);
+          }
+        }
+      } catch (IOException e) {
+        closeService();
+        e.printStackTrace();
+      }
+      LogUtils.i("rnd end");
+    }
+
+    private void handlerRec(byte[] buff, int len) {
+      try {
+        String rec = new String(buff, 0, len, "utf-8");
+        String[] s = rec.split(" ");
+        switch (s[0]) {
+          case "r":
+            int mb = Integer.parseInt(s[1]);
+            int sa = Integer.parseInt(s[2]);
+            int dl = Integer.parseInt(s[3]);
+            UhfController.getInstance().send(UhfCmd.getReadCmd(mb, sa, dl));
+            break;
+        }
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+    }
   }
 }

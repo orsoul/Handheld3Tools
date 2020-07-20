@@ -46,12 +46,21 @@ public class UhfController implements IUhfOperation {
     uhfOperation.readAsync(mb, sa, readLen, filter, mmb, msa);
   }
 
-  @Override public boolean write(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa) {
-    return false;
+  @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    return uhfOperation.write(mb, sa, data, filter, mmb, msa);
   }
 
-  @Override public void writeAsync(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa) {
+  @Override public void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    uhfOperation.writeAsync(mb, sa, data, filter, mmb, msa);
+  }
 
+  @Override public boolean writeEpc(int sa, byte[] data) {
+    return uhfOperation.writeEpc(sa, data);
+  }
+
+  @Override
+  public boolean writeUse(int sa, byte[] data) {
+    return uhfOperation.writeUse(sa, data);
   }
 
   @Override public byte[] readEpc(int timeout) {

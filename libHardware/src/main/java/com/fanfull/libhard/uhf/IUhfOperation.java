@@ -12,15 +12,19 @@ public interface IUhfOperation extends IOperation {
 
   void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa);
 
-  boolean write(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa);
-
-  void writeAsync(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa);
-
   byte[] readEpc(int timeout);
 
   byte[] readTid(int sa, int len);
 
   byte[] readUse(int sa, int len);
+
+  boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
+
+  void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
+
+  boolean writeEpc(int sa, byte[] data);
+
+  boolean writeUse(int sa, byte[] data);
 
   /**
    * @param readPower 读 功率.范围:5-30

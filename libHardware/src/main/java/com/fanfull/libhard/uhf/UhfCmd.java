@@ -117,139 +117,6 @@ public abstract class UhfCmd {
   }
 
   /**
-   * 读超高频，无过滤
-   *
-   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
-   * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
-   * @param dataBuf 存放读取数据, 长度应为 偶数
-   * @param runTime 执行时间, 设为0只读1次
-   * @return 读到的数据，读取失败返回null
-   */
-  public boolean readUHFInTime(int mb, int sa, byte[] dataBuf, long runTime) {
-    return readUHFInTime(mb, sa, dataBuf, runTime, null, 0, 0);
-  }
-
-  /**
-   * 读超高频，无过滤
-   *
-   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
-   * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
-   * @param dataBuf 存放读取数据, 长度应为 偶数
-   * @param runTime 执行时间, 设为0只读1次
-   * @param filter 过滤数据
-   * @param mmb 过滤的区
-   * @param msa 过滤的起始地址, 单位 字
-   * @return 读到的数据，读取失败返回null
-   */
-  public boolean readUHFInTime(int mb, int sa, byte[] dataBuf, long runTime, byte[] filter, int mmb,
-      int msa) {
-
-    if (null == filter) {
-      filter = new byte[0];
-    }
-
-    int totalLen = 22 + filter.length;
-
-    byte[] cmd_read = new byte[totalLen];
-
-    // 帧头
-    cmd_read[0] = (byte) 0xA5;
-    cmd_read[1] = (byte) 0x5A;
-    // 帧长度
-    if (0xff < totalLen) {
-      cmd_read[2] = (byte) (totalLen >> 8);
-    } else {
-      cmd_read[2] = (byte) 0x00;
-    }
-    cmd_read[3] = (byte) totalLen;
-    // 帧类型
-    cmd_read[4] = (byte) 0x84;
-    // 密码
-    cmd_read[5] = (byte) 0x00;
-    cmd_read[6] = (byte) 0x00;
-    cmd_read[7] = (byte) 0x00;
-    cmd_read[8] = (byte) 0x00;
-
-    // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03
-    // 表示USR，其他值为非法值；//01
-    cmd_read[9] = (byte) mmb;
-
-    // MSA启动过滤操作的起始地址, 单位为 bit // 20
-    int bitMsa = msa << 4;
-    if (0xff < bitMsa) {
-      cmd_read[10] = (byte) (bitMsa >> 8);
-    } else {
-      cmd_read[10] = (byte) 0x00;
-    }
-    cmd_read[11] = (byte) bitMsa;
-
-    // MDL过滤的数据长度, 单位为 bit // 60
-    int bitLen = filter.length << 3;
-    if (0xff < bitLen) {
-      cmd_read[12] = (byte) (bitLen >> 8);
-    } else {
-      cmd_read[12] = (byte) 0x00;
-    }
-    cmd_read[13] = (byte) bitLen;
-
-    // 要读的EPC号
-    int epcLen = filter.length;
-    for (int i = 0; i < epcLen; i++) {
-      cmd_read[14 + i] = filter[i];
-    }
-    //System.arraycopy(filter, 0, cmd_read, 14, epcLen);
-
-    // MB // 0x02
-    cmd_read[epcLen + 14] = (byte) mb;
-
-    // 写入起始位置
-    if (0xff < sa) {
-      cmd_read[15 + epcLen] = (byte) (sa >> 8);
-    } else {
-      cmd_read[15 + epcLen] = (byte) 0x00;
-    }
-    cmd_read[16 + epcLen] = (byte) sa;
-
-    // 读取数据的长度,单位 字
-    int dataLenWord = dataBuf.length >> 1;// 把 字节长度 转为 字长度
-    if (0xff < dataLenWord) {
-      cmd_read[17 + epcLen] = (byte) (dataLenWord >> 8);
-    } else {
-      cmd_read[17 + epcLen] = (byte) 0x00;
-    }
-    cmd_read[18 + epcLen] = (byte) dataLenWord;
-
-    cmd_read[epcLen + 19] = (byte) 0x00; // 校验位
-    for (int i = 2; i < totalLen - 3; i++) {
-      cmd_read[epcLen + 19] ^= cmd_read[i];
-    }
-    // 帧尾
-    cmd_read[epcLen + 20] = 0x0D;
-    cmd_read[epcLen + 21] = 0x0A;
-
-    boolean reVal = false;
-    byte[] buf = new byte[dataBuf.length + 12];// 12byte 存储其他回复信息
-
-    long time = System.currentTimeMillis();
-    do {
-      int len = runCmd(cmd_read, buf);
-      LogUtils.d("ruh", "readUHFInTime(" + mb + ") len=12:" + (len - dataBuf.length));
-      if (buf[4] == (byte) 0x85 && buf[5] == 0x01) {
-        // reVal = new byte[readDataLen];
-        // for (int i = 0; i < reVal.length; i++) {
-        // reVal[i] = buf[9 + i];
-        // }
-        System.arraycopy(buf, 9, dataBuf, 0, dataBuf.length);
-        reVal = true;
-        break;
-      }
-    } while ((System.currentTimeMillis() - time) < runTime);
-    LogUtils.d("ruh", "readUHFInTime dataBuf=" + ArrayUtils.bytes2HexString(dataBuf));
-
-    return reVal;
-  }
-
-  /**
    * 向超高频写入数据，无过滤
    *
    * @param data 需要写入的 数据
@@ -492,7 +359,7 @@ public abstract class UhfCmd {
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
    */
-  public static byte[] getWriteCmd(byte[] data, int mb, int sa, byte[] filter, int mmb, int msa) {
+  public static byte[] getWriteCmd(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
     if (null == data) {
       return null;
     }
@@ -575,7 +442,7 @@ public abstract class UhfCmd {
 
     // 写入的数据 12位
     int dataLen = data.length;
-    for (int i = 0; i < dataLen; i++) {// data.length
+    for (int i = 0; i < dataLen; i++) { // data.length
       cmd_write[19 + filterLen + i] = data[i];
     }
 
@@ -592,8 +459,8 @@ public abstract class UhfCmd {
     return cmd_write;
   }
 
-  public static byte[] getWriteCmd(byte[] data, int mb, int sa) {
-    return getWriteCmd(data, mb, sa, null, 0, 0);
+  public static byte[] getWriteCmd(int mb, int sa, byte[] data) {
+    return getWriteCmd(mb, sa, data, null, 0, 0);
   }
 
   public static byte[] getPowerCmd() {
@@ -791,6 +658,13 @@ public abstract class UhfCmd {
       case RECEIVE_TYPE_GET_FAST_ID:
         if (cmd[5] == 1) {
           // 1:开启， 0：关闭
+          reVal = new byte[] { cmd[6] };
+        }
+        break;
+      case RECEIVE_TYPE_WRITE:
+        if (cmd[5] == 0x01 && cmd[6] == 0x00) {
+          reVal = new byte[] {};
+        } else {
           reVal = new byte[] { cmd[6] };
         }
         break;

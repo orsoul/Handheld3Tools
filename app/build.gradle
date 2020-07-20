@@ -11,7 +11,7 @@ android {
     targetSdkVersion 28
 
     versionCode 1
-    versionName "1.0"
+    versionName "v0.1.0"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     //        multiDexEnabled = true
 
@@ -19,6 +19,27 @@ android {
       abiFilters "armeabi"
     }
   }
+
+  signingConfigs {
+    release {
+      //签名文件信息 保存在 local.properties 文件中
+      Properties properties = new Properties()
+      InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
+      properties.load(inputStream)
+
+      // 自行在 local.properties 文件中添加相应信 如：signing.storeFile=D\:\\workspace\\jks\\fanfull.jks
+      //      signing.storeFile=D\:\\workspace\\jks\\fanfull.jks
+      //      signing.storePassword=123456
+      //      signing.keyAlias=fanfull
+      //      signing.keyPassword=123456
+      storeFile file(properties.getProperty('signing.storeFile'))
+      storePassword properties.getProperty('signing.storePassword')
+      keyAlias properties.getProperty('signing.keyAlias')
+      keyPassword properties.getProperty('signing.keyPassword')
+      //            v2SigningEnabled true
+    }
+  }
+
   buildTypes {
     release {
       minifyEnabled false
@@ -26,6 +47,32 @@ android {
       debuggable = true
     }
   }
+
+  applicationVariants.all { variant ->
+    if (variant.buildType.name != "debug") {
+      // apk 输出路径: rootDir/apk/
+      def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
+
+      // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
+      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
+      def projectName = "手持测试"
+      def apkName = "${projectName}_" +
+          "${defaultConfig.versionName}_" +
+          "${variant.buildType.name}_" +
+          "${releaseTime}.apk"
+      // gradle 3.3+
+      variant.getPackageApplicationProvider().get().outputDirectory = apkDirectory
+      variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { apkData ->
+        apkData.outputFileName = apkName
+      }
+      // gradle 3.0+
+      //            variant.getPackageApplication().outputDirectory = apkDirectory
+      //            variant.getPackageApplication().outputScope.apkDatas.forEach { apkData ->
+      //                apkData.outputFileName = apkName
+      //            }
+    }
+  }
+
   compileOptions {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
