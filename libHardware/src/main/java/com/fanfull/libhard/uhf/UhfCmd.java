@@ -80,6 +80,11 @@ public abstract class UhfCmd {
       0x0A, (byte) 0x82, 0x00, 0x00, (byte) 0x00, 0x0D, 0x0A
   };
 
+  public static final byte[] CMD_STOP_READ_LOT = new byte[] {
+      (byte) 0xA5, (byte) 0x5A,
+      0x00, 0x08, (byte) 0x8C, (byte) 0x84, 0x0D, 0x0A
+  };
+
   /** EPC区大小 12byte. */
   private final int EPC_LEN = 12;
   /** 超高频 最大 读写功率 30. */
@@ -327,7 +332,100 @@ public abstract class UhfCmd {
     cmdRead[16 + epcLen] = (byte) sa;
 
     // 读取数据的长度,单位 字
-    int dataLenWord = readLen >> 1; // 把 字节长度 转为 字长度
+    int dataLenWord = (readLen + 1) >> 1; // 把 字节长度 转为 字长度
+    if (0xff < dataLenWord) {
+      cmdRead[17 + epcLen] = (byte) (dataLenWord >> 8);
+    } else {
+      cmdRead[17 + epcLen] = (byte) 0x00;
+    }
+    cmdRead[18 + epcLen] = (byte) dataLenWord;
+
+    cmdRead[epcLen + 19] = (byte) 0x00; // 校验位
+    for (int i = 2; i < totalLen - 3; i++) {
+      cmdRead[epcLen + 19] ^= cmdRead[i];
+    }
+    // 帧尾
+    cmdRead[epcLen + 20] = 0x0D;
+    cmdRead[epcLen + 21] = 0x0A;
+    return cmdRead;
+  }
+
+  public static byte[] getReadCmd(int mb, int sa, int readLen, int psw, byte[] filter, int mmb,
+      int msa) {
+
+    if (null == filter) {
+      filter = new byte[0];
+    }
+
+    int totalLen = 22 + filter.length;
+
+    byte[] cmdRead = new byte[totalLen];
+
+    // 帧头
+    cmdRead[0] = (byte) 0xA5;
+    cmdRead[1] = (byte) 0x5A;
+    // 帧长度
+    if (0xff < totalLen) {
+      cmdRead[2] = (byte) (totalLen >> 8);
+    } else {
+      cmdRead[2] = (byte) 0x00;
+    }
+    cmdRead[3] = (byte) totalLen;
+    // 帧类型
+    cmdRead[4] = (byte) 0x84;
+
+    // 密码
+    byte[] pwd = ArrayUtils.long2Bytes(psw, 4);
+    if (pwd != null && pwd.length == 4) {
+      cmdRead[5] = pwd[0];
+      cmdRead[6] = pwd[1];
+      cmdRead[7] = pwd[2];
+      cmdRead[8] = pwd[3];
+    } else {
+      cmdRead[5] = (byte) 0x00;
+      cmdRead[6] = (byte) 0x00;
+      cmdRead[7] = (byte) 0x00;
+      cmdRead[8] = (byte) 0x00;
+    }
+
+    // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03
+    // 表示USR，其他值为非法值；//01
+    cmdRead[9] = (byte) mmb;
+
+    // MSA启动过滤操作的起始地址, 单位为 bit // 20
+    int bitMsa = msa << 4;
+    if (0xff < bitMsa) {
+      cmdRead[10] = (byte) (bitMsa >> 8);
+    } else {
+      cmdRead[10] = (byte) 0x00;
+    }
+    cmdRead[11] = (byte) bitMsa;
+
+    // MDL过滤的数据长度, 单位为 bit // 60
+    int bitLen = filter.length << 3;
+    if (0xff < bitLen) {
+      cmdRead[12] = (byte) (bitLen >> 8);
+    } else {
+      cmdRead[12] = (byte) 0x00;
+    }
+    cmdRead[13] = (byte) bitLen;
+
+    // 要读的EPC号
+    int epcLen = filter.length;
+    for (int i = 0; i < epcLen; i++) {
+      cmdRead[14 + i] = filter[i];
+    }
+    //System.arraycopy(filter, 0, cmd_read, 14, epcLen);
+
+    // MB // 0x02
+    cmdRead[epcLen + 14] = (byte) mb;
+
+    // 写入起始位置
+    cmdRead[15 + epcLen] = (byte) (sa >> 8);
+    cmdRead[16 + epcLen] = (byte) sa;
+
+    // 读取数据的长度,单位 字
+    int dataLenWord = (readLen + 1) >> 1; // 把 字节长度 转为 字长度
     if (0xff < dataLenWord) {
       cmdRead[17 + epcLen] = (byte) (dataLenWord >> 8);
     } else {
@@ -585,6 +683,75 @@ public abstract class UhfCmd {
     return CMD_READ_LOT;
   }
 
+  public static byte[] getSetPwdCmd(int pwd, byte[] filter, int mmb, int msa) {
+
+    if (null == filter) {
+      filter = new byte[0];
+    }
+
+    int totalLen = 8 + 12 + filter.length;
+
+    byte[] cmdSetPwd = new byte[totalLen];
+
+    // 帧头
+    cmdSetPwd[0] = (byte) 0xA5;
+    cmdSetPwd[1] = (byte) 0x5A;
+    // 帧长度
+    cmdSetPwd[2] = (byte) (totalLen >> 8);
+    cmdSetPwd[3] = (byte) totalLen;
+    // 帧类型
+    cmdSetPwd[4] = (byte) 0x88;
+    // 密码
+    byte[] pwdBuff = ArrayUtils.long2Bytes(pwd, 4);
+    if (pwdBuff != null && pwdBuff.length == 4) {
+      cmdSetPwd[5] = pwdBuff[0];
+      cmdSetPwd[6] = pwdBuff[1];
+      cmdSetPwd[7] = pwdBuff[2];
+      cmdSetPwd[8] = pwdBuff[3];
+    } else {
+      cmdSetPwd[5] = (byte) 0x00;
+      cmdSetPwd[6] = (byte) 0x00;
+      cmdSetPwd[7] = (byte) 0x00;
+      cmdSetPwd[8] = (byte) 0x00;
+    }
+
+    // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03
+    // 表示USR，其他值为非法值；//01
+    cmdSetPwd[9] = (byte) mmb;
+
+    // MSA启动过滤操作的起始地址, 单位为 bit // 20
+    int bitMsa = msa << 4;
+    if (0xff < bitMsa) {
+      cmdSetPwd[10] = (byte) (bitMsa >> 8);
+    } else {
+      cmdSetPwd[10] = (byte) 0x00;
+    }
+    cmdSetPwd[11] = (byte) bitMsa;
+
+    // MDL过滤的数据长度, 单位为 bit // 60
+    int bitLen = filter.length << 3;
+    if (0xff < bitLen) {
+      cmdSetPwd[12] = (byte) (bitLen >> 8);
+    } else {
+      cmdSetPwd[12] = (byte) 0x00;
+    }
+    cmdSetPwd[13] = (byte) bitLen;
+
+    // 过滤数据
+    for (int i = 0; i < filter.length; i++) {
+      cmdSetPwd[14 + i] = filter[i];
+    }
+    // ld 3byte
+    cmdSetPwd[totalLen - 6] = 0;
+    cmdSetPwd[totalLen - 5] = 0;
+    cmdSetPwd[totalLen - 4] = 0;
+    // 帧尾
+    cmdSetPwd[totalLen - 2] = 0x0D;
+    cmdSetPwd[totalLen - 1] = 0x0A;
+    setCheckByte(cmdSetPwd);
+    return cmdSetPwd;
+  }
+
   public static byte[] parseData(byte[] cmd) {
     if (!isUhfCmd(cmd)) {
       return null;
@@ -832,5 +999,10 @@ public abstract class UhfCmd {
     }
     LogUtils.tag(TAG).d("17：buf[4] == " + buff[4] + ",1：buf[5] == " + buff[5]);
     return reVal;
+  }
+
+  public static void main(String[] args) {
+    byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0);
+    System.out.println(ArrayUtils.bytes2HexString(setPwdCmd));
   }
 }

@@ -63,8 +63,16 @@ public class UhfController implements IUhfOperation {
     return uhfOperation.writeUse(sa, data);
   }
 
-  @Override public byte[] readEpc(int timeout) {
-    return uhfOperation.readEpc(timeout);
+  @Override public byte[] fastEpc(int timeout) {
+    return uhfOperation.fastEpc(timeout);
+  }
+
+  @Override public byte[] fastTid(int sa, int len) {
+    return uhfOperation.fastTid(sa, len);
+  }
+
+  @Override public byte[] readEpc(int sa, int len) {
+    return uhfOperation.readEpc(sa, len);
   }
 
   @Override public byte[] readTid(int sa, int len) {

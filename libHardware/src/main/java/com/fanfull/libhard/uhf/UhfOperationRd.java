@@ -104,12 +104,22 @@ public class UhfOperationRd extends AbsUhfOperation {
     send(readCmd);
   }
 
-  @Override public byte[] readEpc(int timeout) {
-    //byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
-    //byte[] rec = serialPortController.sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
-    //byte[] parseData = UhfCmd.parseData(rec);
-    //return parseData;
-    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12);
+  @Override public byte[] fastEpc(int timeout) {
+    byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
+    byte[] rec = serialPortController.sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
+    byte[] parseData = UhfCmd.parseData(rec);
+    return parseData;
+  }
+
+  @Override public byte[] fastTid(int sa, int len) {
+    byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
+    byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
+    byte[] parseData = UhfCmd.parseData(rec);
+    return parseData;
+  }
+
+  @Override public byte[] readEpc(int sa, int len) {
+    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_EPC, sa, len);
     byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;

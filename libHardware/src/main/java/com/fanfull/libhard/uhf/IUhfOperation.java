@@ -12,7 +12,11 @@ public interface IUhfOperation extends IOperation {
 
   void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa);
 
-  byte[] readEpc(int timeout);
+  byte[] fastEpc(int timeout);
+
+  byte[] fastTid(int sa, int len);
+
+  byte[] readEpc(int sa, int len);
 
   byte[] readTid(int sa, int len);
 

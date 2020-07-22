@@ -192,7 +192,7 @@ public class ActivityUhf extends InitModuleActivity {
     Object info;
     switch (v.getId()) {
       case R.id.btn_uhf_read_epc:
-        readBuff = uhfController.readEpc(500);
+        readBuff = uhfController.fastEpc(500);
         if (readBuff == null) {
           info = "读epc失败";
         } else if (readBuff.length == 24) {
@@ -205,7 +205,7 @@ public class ActivityUhf extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_tid:
-        readBuff = uhfController.readTid(0, 12);
+        readBuff = uhfController.fastTid(0, 12);
         if (readBuff == null) {
           info = "读tid失败";
         } else {
@@ -214,7 +214,7 @@ public class ActivityUhf extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_use:
-        readBuff = uhfController.readUse(0x12, 32);
+        readBuff = uhfController.readUse(0x4, 32);
         if (readBuff == null) {
           info = "读use失败";
         } else {
@@ -270,15 +270,15 @@ public class ActivityUhf extends InitModuleActivity {
           writeBuff = new byte[12];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
         }
-        uhfController.writeAsync(UhfCmd.MB_EPC, 0x00, writeBuff, null, 0, 0);
+        uhfController.writeAsync(UhfCmd.MB_EPC, 0x02, writeBuff, null, 0, 0);
         break;
       case KeyEvent.KEYCODE_2:
         writeBuff = readBuff;
         if (writeBuff == null) {
-          writeBuff = new byte[12];
+          writeBuff = new byte[32];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
         }
-        uhfController.writeAsync(UhfCmd.MB_USE, 0x12, writeBuff, null, 0, 0);
+        uhfController.writeAsync(UhfCmd.MB_USE, 0x4, writeBuff, null, 0, 0);
         break;
       case KeyEvent.KEYCODE_3:
         break;
@@ -289,7 +289,7 @@ public class ActivityUhf extends InitModuleActivity {
         uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
         break;
       case KeyEvent.KEYCODE_6:
-        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x12, 32));
+        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x00, 32));
         break;
       case KeyEvent.KEYCODE_7:
         new XPopup.Builder(this).asInputConfirm(
@@ -402,7 +402,7 @@ public class ActivityUhf extends InitModuleActivity {
 
     public boolean send(String info) {
       try {
-        boolean send = send(client, info.getBytes("utf-8"));
+        boolean send = send(client, info.getBytes("gbk"));
         LogUtils.d("socket send:%s-%s", send, info);
         return send;
       } catch (Exception e) {
@@ -447,19 +447,32 @@ public class ActivityUhf extends InitModuleActivity {
     }
 
     private void handlerRec(byte[] buff, int len) {
+      String rec;
       try {
-        String rec = new String(buff, 0, len, "utf-8");
-        String[] s = rec.split(" ");
-        switch (s[0]) {
-          case "r":
-            int mb = Integer.parseInt(s[1]);
-            int sa = Integer.parseInt(s[2]);
-            int dl = Integer.parseInt(s[3]);
-            UhfController.getInstance().send(UhfCmd.getReadCmd(mb, sa, dl));
-            break;
-        }
+        rec = new String(buff, 0, len, "gbk");
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
+        return;
+      }
+      String[] s = rec.split(" ");
+      if (s.length < 3) {
+        return;
+      }
+      switch (s[0]) {
+        case "r":
+          int mb = Integer.parseInt(s[1]);
+          int sa = Integer.parseInt(s[2]);
+          int dl = Integer.parseInt(s[3]);
+          UhfController.getInstance().send(UhfCmd.getReadCmd(mb, sa, dl));
+          break;
+        case "w":
+          mb = Integer.parseInt(s[1]);
+          sa = Integer.parseInt(s[2]);
+          byte[] data = ArrayUtils.hexString2Bytes(s[3]);
+          UhfController.getInstance().send(UhfCmd.getWriteCmd(mb, sa, data));
+          break;
+        default:
+          LogUtils.d(("Unexpected value: " + rec));
       }
     }
   }
