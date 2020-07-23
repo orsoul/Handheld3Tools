@@ -22,21 +22,23 @@ android {
 
   signingConfigs {
     release {
-      //签名文件信息 保存在 local.properties 文件中
-      Properties properties = new Properties()
-      InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
-      properties.load(inputStream)
 
       // 自行在 local.properties 文件中添加相应信 如：signing.storeFile=D\:\\workspace\\jks\\fanfull.jks
       //      signing.storeFile=D\:\\workspace\\jks\\fanfull.jks
       //      signing.storePassword=123456
       //      signing.keyAlias=fanfull
       //      signing.keyPassword=123456
-      storeFile file(properties.getProperty('signing.storeFile'))
-      storePassword properties.getProperty('signing.storePassword')
-      keyAlias properties.getProperty('signing.keyAlias')
-      keyPassword properties.getProperty('signing.keyPassword')
       //            v2SigningEnabled true
+
+      // 发布版本时无法使用这种方式，否则在JitPack会构建失败
+      //签名文件信息 保存在 local.properties 文件中
+      //      Properties properties = new Properties()
+      //      InputStream inputStream = project.rootProject.file('local.properties').newDataInputStream()
+      //      properties.load(inputStream)
+      //      storeFile file(properties.getProperty('signing.storeFile'))
+      //      storePassword properties.getProperty('signing.storePassword')
+      //      keyAlias properties.getProperty('signing.keyAlias')
+      //      keyPassword properties.getProperty('signing.keyPassword')
     }
   }
 
