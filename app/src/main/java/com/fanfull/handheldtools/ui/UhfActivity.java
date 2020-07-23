@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.uhf;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -28,7 +28,7 @@ import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.ClickUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
-public class ActivityUhf extends InitModuleActivity {
+public class UhfActivity extends InitModuleActivity {
 
   private TextView tvShow;
   private Button btnReadEpc;

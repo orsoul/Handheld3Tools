@@ -48,14 +48,25 @@
         app:layout_constraintTop_toBottomOf="@id/btn_uhf" />
 
     <Button
-        android:id="@+id/btn_barcode"
+        android:id="@+id/btn_init_bag3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/main_barcode"
+        android:text="@string/main_init_bag3"
         app:layout_constraintEnd_toEndOf="@id/btn_nfc"
         app:layout_constraintStart_toStartOf="@id/btn_nfc"
         app:layout_constraintTop_toBottomOf="@id/btn_nfc" />
+
+  <Button
+      android:id="@+id/btn_barcode"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_barcode"
+      app:layout_constraintEnd_toEndOf="@id/btn_init_bag3"
+      app:layout_constraintStart_toStartOf="@id/btn_init_bag3"
+      app:layout_constraintTop_toBottomOf="@id/btn_init_bag3"
+      />
 
   <Button
       android:id="@+id/btn_finger"

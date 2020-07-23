@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.barcode;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.text.Spanned;

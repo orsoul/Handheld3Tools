@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.uhf;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.text.Spanned;
@@ -22,7 +22,7 @@ import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
-public class ActivityNfc extends InitModuleActivity {
+public class NfcActivity extends InitModuleActivity {
 
   private Button btnScan;
   private Button btnStopScan;

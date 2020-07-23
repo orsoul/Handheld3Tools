@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.barcode;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.text.Spanned;
@@ -8,20 +8,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
-
 import org.orsoul.baselib.util.ClickUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 
-public class ActivityBarcode extends InitModuleActivity {
+public class BarcodeActivity extends InitModuleActivity {
 
     private Button btnScan;
     private Button btnStopScan;

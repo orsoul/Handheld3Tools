@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".barcode.ActivityBarcode">
+    tools:context=".ui.BarcodeActivity"
+    >
 
     <TextView
         android:id="@+id/tv_barcode_show"

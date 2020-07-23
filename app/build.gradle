@@ -85,6 +85,7 @@ dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   implementation project(':libBase')
   implementation project(':libHardware')
+  //  implementation 'com.gitee.fan_full:Handheld3Tools:v0.1.0'
 
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'androidx.test.ext:junit:1.1.1'

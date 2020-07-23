@@ -3,6 +3,7 @@
 
   <string name="main_uhf">超高频</string>
   <string name="main_nfc">高频</string>
+  <string name="main_init_bag3">袋初始化</string>
   <string name="main_barcode">二维码、条码</string>
   <string name="main_finger">指纹</string>
   <string name="main_old_bag">老袋校验</string>
