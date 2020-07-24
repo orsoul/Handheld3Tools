@@ -30,7 +30,9 @@
       android:theme="@style/AppTheme"
       tools:ignore="GoogleAppIndexingWarning"
       tools:replace="android:allowBackup">
-    <activity android:name=".ui.InitBag3Activity"></activity>
+    <activity
+        android:name=".ui.InitBag3Activity"
+        android:label="@string/main_init_bag3" />
     <activity
         android:name=".ui.OldBagActivity"
         android:label="@string/main_old_bag" />

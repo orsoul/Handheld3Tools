@@ -137,7 +137,7 @@ public class NfcActivity extends InitModuleActivity {
             byte[] bagIdBuff = lock3Bean.getInfoUnit(Lock3Bean.SA_BAG_ID).buff;
             byte[] uidbuf = lock3Bean.uidBuff;
 
-            float vReal = Lock3Util.getV(mVbuf[3]);
+            float vReal = Lock3Util.parseV(mVbuf[3]);
             int status = Lock3Util.getStatus(readbuf[0], t_14[0] & 0x0F, uidbuf, true);
 
             Spanned colorSpanned = HtmlUtil.getColorSpanned(

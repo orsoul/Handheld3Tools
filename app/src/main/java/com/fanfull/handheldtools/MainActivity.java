@@ -13,6 +13,8 @@ import com.fanfull.handheldtools.ui.InitBag3Activity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
+import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.uhf.UhfController;
 import com.finger.FingerPrint;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
@@ -82,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   protected void onDestroy() {
     LogUtils.getLog2FileConfig().flushAsync();
     FingerPrint.getInstance().stopSearchAndClose();
+
+    if (UhfController.getInstance().isOpen()) {
+      UhfController.getInstance().release();
+    }
+    if (RfidController.getInstance().isOpen()) {
+      RfidController.getInstance().release();
+    }
     super.onDestroy();
   }
 

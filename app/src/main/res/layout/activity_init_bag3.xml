@@ -26,7 +26,7 @@
       />
 
   <Button
-      android:id="@+id/btn_barcode_scan"
+      android:id="@+id/btn_init_bag3_ok"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginEnd="8dp"
@@ -45,9 +45,9 @@
       android:layout_marginEnd="8dp"
       android:padding="5dp"
       android:text="写"
-      app:layout_constraintBottom_toBottomOf="@+id/btn_barcode_scan"
-      app:layout_constraintEnd_toStartOf="@+id/btn_barcode_scan"
-      app:layout_constraintTop_toTopOf="@+id/btn_barcode_scan"
+      app:layout_constraintBottom_toBottomOf="@id/btn_init_bag3_ok"
+      app:layout_constraintEnd_toStartOf="@id/btn_init_bag3_ok"
+      app:layout_constraintTop_toTopOf="@id/btn_init_bag3_ok"
       />
 
   <Switch
