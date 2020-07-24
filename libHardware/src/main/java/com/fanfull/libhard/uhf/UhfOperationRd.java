@@ -19,6 +19,9 @@ public class UhfOperationRd extends AbsUhfOperation {
   @Override
   public boolean open() throws SecurityException {
     if (isOpen) {
+      if (uhfListener != null) {
+        uhfListener.onOpen();
+      }
       return true;
     }
     try {

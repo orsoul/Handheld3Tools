@@ -317,36 +317,36 @@ public abstract class UhfCmd {
     }
     cmdRead[13] = (byte) bitLen;
 
-    // 要读的EPC号
-    int epcLen = filter.length;
-    for (int i = 0; i < epcLen; i++) {
+    // 过滤数据
+    int filterLen = filter.length;
+    for (int i = 0; i < filterLen; i++) {
       cmdRead[14 + i] = filter[i];
     }
     //System.arraycopy(filter, 0, cmd_read, 14, epcLen);
 
     // MB // 0x02
-    cmdRead[epcLen + 14] = (byte) mb;
+    cmdRead[filterLen + 14] = (byte) mb;
 
     // 写入起始位置
-    cmdRead[15 + epcLen] = (byte) (sa >> 8);
-    cmdRead[16 + epcLen] = (byte) sa;
+    cmdRead[15 + filterLen] = (byte) (sa >> 8);
+    cmdRead[16 + filterLen] = (byte) sa;
 
     // 读取数据的长度,单位 字
     int dataLenWord = (readLen + 1) >> 1; // 把 字节长度 转为 字长度
     if (0xff < dataLenWord) {
-      cmdRead[17 + epcLen] = (byte) (dataLenWord >> 8);
+      cmdRead[17 + filterLen] = (byte) (dataLenWord >> 8);
     } else {
-      cmdRead[17 + epcLen] = (byte) 0x00;
+      cmdRead[17 + filterLen] = (byte) 0x00;
     }
-    cmdRead[18 + epcLen] = (byte) dataLenWord;
+    cmdRead[18 + filterLen] = (byte) dataLenWord;
 
-    cmdRead[epcLen + 19] = (byte) 0x00; // 校验位
+    cmdRead[filterLen + 19] = (byte) 0x00; // 校验位
     for (int i = 2; i < totalLen - 3; i++) {
-      cmdRead[epcLen + 19] ^= cmdRead[i];
+      cmdRead[filterLen + 19] ^= cmdRead[i];
     }
     // 帧尾
-    cmdRead[epcLen + 20] = 0x0D;
-    cmdRead[epcLen + 21] = 0x0A;
+    cmdRead[filterLen + 20] = 0x0D;
+    cmdRead[filterLen + 21] = 0x0A;
     return cmdRead;
   }
 
