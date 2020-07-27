@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".uhf.ActivityNfc">
+    tools:context=".ui.NfcActivity"
+    >
 
     <TextView
         android:id="@+id/tv_barcode_show"

@@ -14,6 +14,8 @@ public interface IRfidOperation extends IOperation {
 
   void findM1Async();
 
+  boolean findCard(byte[] uidBuff);
+
   boolean readNfc4Byte(int sa, byte[] buff);
 
   boolean readNfc(int sa, byte[] buff, boolean withFindCard);

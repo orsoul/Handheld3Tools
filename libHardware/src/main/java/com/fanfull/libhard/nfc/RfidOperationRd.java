@@ -44,9 +44,9 @@ public class RfidOperationRd extends AbsRfidOperation {
 
     byte[] buff = new byte[16];
     int len = Rfid.getHwVersion(buff);
-    LogUtils.v("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
+    LogUtils.tag(TAG).v("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
     if (len > 0) {
-      LogUtils.d("HwVersion:%s", new String(buff, 0, len).trim());
+      LogUtils.tag(TAG).v("HwVersion:%s", new String(buff, 0, len).trim());
       isOpen = true;
       if (nfcListener != null) {
         nfcListener.onOpen();
@@ -61,6 +61,7 @@ public class RfidOperationRd extends AbsRfidOperation {
   @Override
   public void release() {
     Rfid.closeCommPort();
+    isOpen = false;
   }
 
   private boolean setGpioUhfMode() {
@@ -84,7 +85,7 @@ public class RfidOperationRd extends AbsRfidOperation {
 
     byte[] tagType = new byte[2];
     boolean reVal = Rfid.PcdRequest(Rfid.CARD_ALL, tagType);
-    LogUtils.d("PcdRequest %s:%s", reVal, ArrayUtils.bytes2HexString(tagType));
+    LogUtils.tag(TAG).v("PcdRequest %s:%s", reVal, ArrayUtils.bytes2HexString(tagType));
     return reVal;
   }
 
@@ -97,13 +98,13 @@ public class RfidOperationRd extends AbsRfidOperation {
     }
     byte[] tagSize = new byte[1];
     if (!Rfid.PcdSelect(uid, tagSize)) {
-      LogUtils.d("PcdSelect failed");
+      LogUtils.tag(TAG).v("PcdSelect failed");
       return false;
     }
-    LogUtils.d("%X", tagSize[0]);
+    //LogUtils.tag(TAG).v("%X", tagSize[0]);
     boolean authSuccess = Rfid.PcdDoAuthen(Rfid.AUTH_KEY_A, (byte) block, Rfid.DEFAULT_KEY);
     if (!authSuccess) {
-      LogUtils.d("PcdDoAuthen failed");
+      LogUtils.tag(TAG).v("PcdDoAuthen failed");
       return false;
     }
     return true;
@@ -119,19 +120,16 @@ public class RfidOperationRd extends AbsRfidOperation {
     }
 
     byte[] uid;
-    boolean findSuccess;
     if (isFindNfc) {
       uid = new byte[7];
-      findSuccess = Rfid.ULPcdAnticoll(uid);
     } else {
       uid = new byte[4];
-      findSuccess = Rfid.PcdAnticoll(uid);
     }
+    boolean findSuccess = findCard(uid);
     byte[] reVal = null;
     if (findSuccess) {
       reVal = uid;
     }
-    LogUtils.d("isFindNfc:%s - %s", isFindNfc, ArrayUtils.bytes2HexString(reVal));
     return reVal;
   }
 
@@ -171,17 +169,37 @@ public class RfidOperationRd extends AbsRfidOperation {
     return findCard(false);
   }
 
+  /**
+   * M1、NFC寻卡.
+   *
+   * @param uidBuff 传入4byte寻卡M1，传入7byte寻卡NFC
+   * @return 寻卡成功 返回true
+   */
+  @Override public boolean findCard(byte[] uidBuff) {
+    if (uidBuff == null || !config()) {
+      return false;
+    }
+    boolean findSuccess = false;
+    if (uidBuff.length == 4) {
+      findSuccess = Rfid.PcdAnticoll(uidBuff);
+    } else if (uidBuff.length == 7) {
+      findSuccess = Rfid.ULPcdAnticoll(uidBuff);
+    }
+    LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, ArrayUtils.bytes2HexString(uidBuff));
+    return findSuccess;
+  }
+
   @Override
   public boolean readNfc4Byte(int sa, byte[] data4) {
     boolean readSuccess = Rfid.ULPcdRead((byte) sa, data4);
-    LogUtils.d("%s:%s(%s)", readSuccess, sa, ArrayUtils.bytes2HexString(data4));
+    LogUtils.tag(TAG).v("%s:%02X(%s)", readSuccess, sa, ArrayUtils.bytes2HexString(data4));
     return readSuccess;
   }
 
   @Override
   public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
     if (sa < 0 || buff == null || buff.length < 1) {
-      LogUtils.w("check failed sa:%s buff:%s len:%s", sa, buff);
+      LogUtils.w("check failed sa:%s buff:%s", sa, buff);
       return false;
     }
 
@@ -215,7 +233,7 @@ public class RfidOperationRd extends AbsRfidOperation {
   @Override
   public boolean writeNfc4Byte(int sa, byte[] data4) {
     boolean writeSuccess = Rfid.ULPcdWrite((byte) sa, data4);
-    LogUtils.d("%s:%s(%s)", writeSuccess, sa, ArrayUtils.bytes2HexString(data4));
+    LogUtils.tag(TAG).v("%s:%02X(%s)", writeSuccess, sa, ArrayUtils.bytes2HexString(data4));
     return writeSuccess;
   }
 
@@ -238,17 +256,18 @@ public class RfidOperationRd extends AbsRfidOperation {
     int len = buff.length;
     int wordDataLen = (len - 1) / 4 + 1;
     for (int i = 0; i < wordDataLen; i++) {
-      byte newStart = (byte) (i + sa);
-      if (!writeNfc4Byte(newStart, oneWord)) {
-        LogUtils.w("第%s次 写nfc addr[%s]失败", i, newStart);
-        return false;
-      }
       int destPos = i * 4;
       int copyLen = len - destPos;
       if (4 < copyLen) {
         copyLen = 4;
       }
-      System.arraycopy(oneWord, 0, buff, destPos, copyLen);
+      System.arraycopy(buff, destPos, oneWord, 0, copyLen);
+
+      byte newStart = (byte) (i + sa);
+      if (!writeNfc4Byte(newStart, oneWord)) {
+        LogUtils.w("第%s次 写nfc addr[%02X]失败", i, newStart);
+        return false;
+      }
     }
     return true;
   }
@@ -274,7 +293,7 @@ public class RfidOperationRd extends AbsRfidOperation {
       return false;
     }
     boolean writeSuccess = Rfid.PcdWrite((byte) block, data16);
-    LogUtils.d("%s:%s-%s", writeSuccess, block, ArrayUtils.bytes2HexString(data16));
+    LogUtils.tag(TAG).v("%s:%s-%s", writeSuccess, block, ArrayUtils.bytes2HexString(data16));
     return writeSuccess;
   }
 }

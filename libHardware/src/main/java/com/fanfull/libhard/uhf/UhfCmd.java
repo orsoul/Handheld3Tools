@@ -48,25 +48,25 @@ public abstract class UhfCmd {
       (byte) 0x5A, 0x00, 0x08, (byte) 0x12, 0x1A, 0x0D, 0x0A
   };
   /** 设置发射功率 14byte. */
-  public static final byte[] CMD_SET_POWER = new byte[] {
+  private static final byte[] CMD_SET_POWER = new byte[] {
       (byte) 0xA5, 0x5A,
       0x00, 0x0E, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
       0x0A,
   };
   /** 单次寻标签 命令; [5] = 帧类型 = 0x80 [6,7] timeOut, 时间到或寻到标签 回传应答帧. */
-  public static final byte[] CMD_FAST_READ_EPC = new byte[] {
+  private static final byte[] CMD_FAST_READ_EPC = new byte[] {
       (byte) 0xA5,
       (byte) 0x5A, 0x00, 0x0A, (byte) 0x80, 0x00, 0x64, (byte) 0xEE,
       0x0D, 0x0A
   };
   /** 快速读取 TID. */
-  public static final byte[] CMD_FAST_READ_TID = new byte[] {
+  private static final byte[] CMD_FAST_READ_TID = new byte[] {
       (byte) 0xA5,
       (byte) 0x5A, 0x00, 0x0C, (byte) 0x8E, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x0D, 0x0A
   };
-  /** 快速读取 TID. */
-  public static final byte[] CMD_SET_FAST_ID = new byte[] {
+  /** 设置 快速读取 TID. */
+  private static final byte[] CMD_SET_FAST_ID = new byte[] {
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x0A, (byte) 0x5C, (byte) 0x01, (byte) 0x00,
       (byte) 0x57, (byte) 0x0D, (byte) 0x0A,
   };
@@ -268,9 +268,12 @@ public abstract class UhfCmd {
    * @param msa 过滤的起始地址, 单位 字
    */
   public static byte[] getReadCmd(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
-
+    LogUtils.tag(TAG).i("read mb-sa-len:%s-0x%02X-%s", mb, sa, readLen);
     if (null == filter) {
       filter = new byte[0];
+    } else {
+      LogUtils.tag(TAG).i("filter mmb-msa-len:%s-0x%02X-%s",
+          mmb, msa, ArrayUtils.bytes2HexString(filter));
     }
 
     int totalLen = 22 + filter.length;
@@ -317,36 +320,36 @@ public abstract class UhfCmd {
     }
     cmdRead[13] = (byte) bitLen;
 
-    // 要读的EPC号
-    int epcLen = filter.length;
-    for (int i = 0; i < epcLen; i++) {
+    // 过滤数据
+    int filterLen = filter.length;
+    for (int i = 0; i < filterLen; i++) {
       cmdRead[14 + i] = filter[i];
     }
     //System.arraycopy(filter, 0, cmd_read, 14, epcLen);
 
     // MB // 0x02
-    cmdRead[epcLen + 14] = (byte) mb;
+    cmdRead[filterLen + 14] = (byte) mb;
 
     // 写入起始位置
-    cmdRead[15 + epcLen] = (byte) (sa >> 8);
-    cmdRead[16 + epcLen] = (byte) sa;
+    cmdRead[15 + filterLen] = (byte) (sa >> 8);
+    cmdRead[16 + filterLen] = (byte) sa;
 
     // 读取数据的长度,单位 字
     int dataLenWord = (readLen + 1) >> 1; // 把 字节长度 转为 字长度
     if (0xff < dataLenWord) {
-      cmdRead[17 + epcLen] = (byte) (dataLenWord >> 8);
+      cmdRead[17 + filterLen] = (byte) (dataLenWord >> 8);
     } else {
-      cmdRead[17 + epcLen] = (byte) 0x00;
+      cmdRead[17 + filterLen] = (byte) 0x00;
     }
-    cmdRead[18 + epcLen] = (byte) dataLenWord;
+    cmdRead[18 + filterLen] = (byte) dataLenWord;
 
-    cmdRead[epcLen + 19] = (byte) 0x00; // 校验位
+    cmdRead[filterLen + 19] = (byte) 0x00; // 校验位
     for (int i = 2; i < totalLen - 3; i++) {
-      cmdRead[epcLen + 19] ^= cmdRead[i];
+      cmdRead[filterLen + 19] ^= cmdRead[i];
     }
     // 帧尾
-    cmdRead[epcLen + 20] = 0x0D;
-    cmdRead[epcLen + 21] = 0x0A;
+    cmdRead[filterLen + 20] = 0x0D;
+    cmdRead[filterLen + 21] = 0x0A;
     return cmdRead;
   }
 
@@ -458,13 +461,20 @@ public abstract class UhfCmd {
    * @param msa 过滤的起始地址, 单位 字
    */
   public static byte[] getWriteCmd(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+    LogUtils.tag(TAG).i("read mb-sa-len:%s-0x%02X-%s",
+        mb, sa, ArrayUtils.bytes2HexString(data));
+
     if (null == data) {
       return null;
     }
 
     if (null == filter) {
       filter = new byte[0];
+    } else {
+      LogUtils.tag(TAG).i("filter mmb-msa-len:%s-0x%02X-%s",
+          mmb, msa, ArrayUtils.bytes2HexString(filter));
     }
+
     // 总长度 = 22其他信息 + 过滤数据 + 50写入数据
     int totalLen = 22 + filter.length + data.length;
 
@@ -574,6 +584,8 @@ public abstract class UhfCmd {
    */
   public static byte[] getSetPowerCmd(int readPower, int writePower, int id, boolean isSave,
       boolean isClosed) {
+    LogUtils.tag(TAG).i("rw:%s-%s, id:%s, isSave:%s, isClose:%s",
+        readPower, writePower, id, isSave, isClosed);
 
     if (readPower < 0 || writePower < 0 || id < 0) {
       return null;
@@ -628,6 +640,7 @@ public abstract class UhfCmd {
    * 获取EPC区后12字节数据,无法进行过滤.epc区共16byte,前4个byte不可改.
    */
   public static byte[] getFastReadEpcCmd(int timeout) {
+    LogUtils.tag(TAG).i("timeout:%s", timeout);
     CMD_FAST_READ_EPC[6] = (byte) (timeout & 0xFF); // 低位
     timeout >>= 8;
     CMD_FAST_READ_EPC[5] = (byte) (timeout & 0xFF); // 高位
@@ -652,6 +665,8 @@ public abstract class UhfCmd {
    * @param len 获取数据长度
    */
   public static byte[] getFastReadTidCmd(int sa, int len) {
+    LogUtils.tag(TAG).i("getFastReadTidCmd sa-len:0x%02X-%s", sa, len);
+
     // 起始地址, 单位为 字
     int wordLen = sa >> 1; // 字节 转 字
     CMD_FAST_READ_TID[5] = (byte) (wordLen >> 8);
@@ -770,7 +785,7 @@ public abstract class UhfCmd {
           id <<= 8;
           id |= (cmd[i] & 0xFF);
         }
-        LogUtils.d("id:%s=%s", id, Integer.toHexString(id));
+        //LogUtils.d("id:%s=%s", id, Integer.toHexString(id));
         break;
       case RECEIVE_TYPE_FAST_EPC:
         if (cmd[3] == 0x25) {
@@ -837,6 +852,8 @@ public abstract class UhfCmd {
         break;
     }
 
+    LogUtils.tag(TAG).d("cmdType:%02X, parseData:%s, rec cmd:%s",
+        cmdType, ArrayUtils.bytes2HexString(reVal), ArrayUtils.bytes2HexString(cmd));
     return reVal;
   }
 

@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.uhf;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.view.KeyEvent;

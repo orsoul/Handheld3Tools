@@ -62,6 +62,10 @@ public class RfidController implements IRfidOperation {
     operation.findM1Async();
   }
 
+  @Override public boolean findCard(byte[] uidBuff) {
+    return operation.findCard(uidBuff);
+  }
+
   public byte[] findNfcOrM1() {
     if (isScanning()) {
       return null;
@@ -163,26 +167,33 @@ public class RfidController implements IRfidOperation {
     return threeInOne;
   }
 
-  public boolean readLockNfc(Lock3Bean lock3Bean) {
+  /**
+   * 读nfc.
+   *
+   * @param withFindCard true:读之前执行寻卡；false:不寻卡
+   */
+  public boolean readLockNfc(Lock3Bean lock3Bean, boolean withFindCard) {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillReadList();
+    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
 
-    byte[] uid = findNfc();
-    if (uid == null) {
-      return false;
+    if (withFindCard) {
+      byte[] uid = findNfc();
+      if (uid == null) {
+        return false;
+      }
+      lock3Bean.uidBuff = uid;
     }
 
-    //boolean reVal = true;
-    lock3Bean.uidBuff = uid;
     for (Lock3Bean.InfoUnit infoUnit : willReadList) {
       byte[] data = new byte[infoUnit.len];
       if (readNfc(infoUnit.sa, data, false)) {
         infoUnit.buff = data;
+        infoUnit.setDoSuccess(true);
       } else {
         return false;
       }
@@ -190,28 +201,44 @@ public class RfidController implements IRfidOperation {
     return true;
   }
 
-  public boolean writeLockNfc(Lock3Bean lock3Bean) {
+  /** 读nfc，读之前执行寻卡. */
+  public boolean readLockNfc(Lock3Bean lock3Bean) {
+    return readLockNfc(lock3Bean, true);
+  }
+
+  /**
+   * 写nfc.
+   *
+   * @param withFindCard true:写之前执行寻卡；false:不寻卡
+   */
+  public boolean writeLockNfc(Lock3Bean lock3Bean, boolean withFindCard) {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillReadList();
+    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
 
-    byte[] uid = findNfc();
-    if (uid == null) {
-      return false;
+    if (withFindCard) {
+      byte[] uid = findNfc();
+      if (uid == null) {
+        return false;
+      }
+      lock3Bean.uidBuff = uid;
     }
-
-    //boolean reVal = true;
-    lock3Bean.uidBuff = uid;
     for (Lock3Bean.InfoUnit infoUnit : willReadList) {
       if (!writeNfc(infoUnit.sa, infoUnit.buff, false)) {
         return false;
       }
+      infoUnit.setDoSuccess(true);
     }
     return true;
+  }
+
+  /** 写nfc，写之前执行寻卡. */
+  public boolean writeLockNfc(Lock3Bean lock3Bean) {
+    return writeLockNfc(lock3Bean, true);
   }
 
   public boolean writeStatus(int status) {

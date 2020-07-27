@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.uhf;
+package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.text.Spanned;
@@ -22,7 +22,7 @@ import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
-public class ActivityNfc extends InitModuleActivity {
+public class NfcActivity extends InitModuleActivity {
 
   private Button btnScan;
   private Button btnStopScan;
@@ -137,7 +137,7 @@ public class ActivityNfc extends InitModuleActivity {
             byte[] bagIdBuff = lock3Bean.getInfoUnit(Lock3Bean.SA_BAG_ID).buff;
             byte[] uidbuf = lock3Bean.uidBuff;
 
-            float vReal = Lock3Util.getV(mVbuf[3]);
+            float vReal = Lock3Util.parseV(mVbuf[3]);
             int status = Lock3Util.getStatus(readbuf[0], t_14[0] & 0x0F, uidbuf, true);
 
             Spanned colorSpanned = HtmlUtil.getColorSpanned(

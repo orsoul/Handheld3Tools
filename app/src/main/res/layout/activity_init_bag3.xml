@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".ui.FingerActivity"
+    tools:context=".ui.InitBag3Activity"
     >
 
   <TextView
-      android:id="@+id/tv_barcode_show"
+      android:id="@+id/tv_init_bag_show"
       android:layout_width="match_parent"
       android:layout_height="0dp"
       android:layout_marginStart="8dp"
@@ -19,21 +19,21 @@
       android:layout_marginBottom="8dp"
       android:padding="5dp"
       android:text="正在初始化..."
-      app:layout_constraintBottom_toTopOf="@+id/switch_barcode_rep"
+      app:layout_constraintBottom_toTopOf="@id/switch_nfc_mode"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       />
 
   <Button
-      android:id="@+id/btn_barcode_scan"
+      android:id="@+id/btn_init_bag3_ok"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginEnd="8dp"
       android:layout_marginBottom="8dp"
       android:enabled="true"
       android:padding="5dp"
-      android:text="读456区"
+      android:text="读"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       />
@@ -44,19 +44,19 @@
       android:layout_height="wrap_content"
       android:layout_marginEnd="8dp"
       android:padding="5dp"
-      android:text="写456区"
-      app:layout_constraintBottom_toBottomOf="@+id/btn_barcode_scan"
-      app:layout_constraintEnd_toStartOf="@+id/btn_barcode_scan"
-      app:layout_constraintTop_toTopOf="@+id/btn_barcode_scan"
+      android:text="写"
+      app:layout_constraintBottom_toBottomOf="@id/btn_init_bag3_ok"
+      app:layout_constraintEnd_toStartOf="@id/btn_init_bag3_ok"
+      app:layout_constraintTop_toTopOf="@id/btn_init_bag3_ok"
       />
 
   <Switch
-      android:id="@+id/switch_barcode_rep"
+      android:id="@+id/switch_nfc_mode"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginBottom="5dp"
       android:checked="true"
-      android:text="重复扫描"
+      android:text="NFC模式"
       app:layout_constraintBottom_toTopOf="@+id/switch_barcode_sound"
       app:layout_constraintStart_toStartOf="@+id/switch_barcode_sound"
       />
