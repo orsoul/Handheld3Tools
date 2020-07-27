@@ -16,6 +16,8 @@ import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.ClickUtil;
 
 public class SerialPortController implements ISerialPort {
+  protected String TAG = this.getClass().getSimpleName();
+
   private static Map<String, SerialPortController> sControllerMap;
   private ISerialPort serialPort;
   private SerialPostReadThread readThread;
@@ -83,7 +85,6 @@ public class SerialPortController implements ISerialPort {
   @Override
   public boolean send(byte[] data, int off, int len) {
     boolean send = serialPort.send(data, off, len);
-    LogUtils.d("send:%s", ArrayUtils.bytes2HexString(data, off, off + len));
     return send;
   }
 
@@ -102,14 +103,14 @@ public class SerialPortController implements ISerialPort {
 
     synchronized (onceListener) {
       try {
-        LogUtils.v("click1:%s", ClickUtil.click());
+        LogUtils.tag(TAG).d("click1:%s", ClickUtil.click());
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
-        LogUtils.d("InterruptedException");
+        LogUtils.tag(TAG).i("InterruptedException");
       }
     }
     onceListener = null;
-    LogUtils.v("click2:%s", ClickUtil.click());
+    LogUtils.tag(TAG).d("click2:%s", ClickUtil.click());
     return onceRecBuff;
   }
 
@@ -145,12 +146,12 @@ public class SerialPortController implements ISerialPort {
 
   public synchronized void addUseCount() {
     ++this.useCount;
-    LogUtils.d("useCount:%s", useCount);
+    LogUtils.tag(TAG).d("useCount:%s", useCount);
   }
 
   public synchronized void minUseCount() {
     --this.useCount;
-    LogUtils.d("useCount:%s", useCount);
+    LogUtils.tag(TAG).d("useCount:%s", useCount);
   }
 
   private class SerialPostReadThread extends Thread {
@@ -166,18 +167,19 @@ public class SerialPortController implements ISerialPort {
 
     @Override
     public void run() {
-      LogUtils.i("run start");
+      LogUtils.tag(TAG).i("run start");
       int len;
       byte[] buff = new byte[1024 * 16];
       InputStream in = serialPort.getInputStream();
       while (!isStop()) {
         try {
           len = in.read(buff);
-          LogUtils.d("%s rec:%s", getSerialPortInfo(), ArrayUtils.bytes2HexString(buff, 0, len));
+          LogUtils.tag(TAG)
+              .i("rec:%s, %s", ArrayUtils.bytes2HexString(buff, 0, len), getSerialPortInfo());
           if (len < 1) {
             break;
           }
-          LogUtils.v("onceListener:%s", onceListener);
+          LogUtils.tag(TAG).d("onceListener:%s", onceListener);
           if (onceListener != null) {
             onceListener.onReceiveData(Arrays.copyOf(buff, len));
             synchronized (onceListener) {
@@ -195,7 +197,7 @@ public class SerialPortController implements ISerialPort {
         }
       }
       stopRead();
-      LogUtils.i("run finish");
+      LogUtils.tag(TAG).i("run finish");
     }
   }
 

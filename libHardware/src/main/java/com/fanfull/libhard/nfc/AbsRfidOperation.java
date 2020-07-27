@@ -4,7 +4,7 @@ import com.apkfuns.logutils.LogUtils;
 import java.util.concurrent.ExecutorService;
 
 public abstract class AbsRfidOperation implements IRfidOperation {
-
+  protected String TAG = this.getClass().getSimpleName();
   protected IRfidListener nfcListener;
   protected boolean isOpen;
   protected boolean isScanning;

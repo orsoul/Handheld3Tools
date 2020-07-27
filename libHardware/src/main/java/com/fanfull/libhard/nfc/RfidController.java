@@ -236,6 +236,11 @@ public class RfidController implements IRfidOperation {
     return true;
   }
 
+  /** 写nfc，写之前执行寻卡. */
+  public boolean writeLockNfc(Lock3Bean lock3Bean) {
+    return writeLockNfc(lock3Bean, true);
+  }
+
   public boolean writeStatus(int status) {
     byte[] uid = findNfc();
     if (uid == null) {
@@ -267,11 +272,6 @@ public class RfidController implements IRfidOperation {
     buff4[0] = (byte) statusEncode;
     boolean writeSuccess = writeNfc4Byte(Lock3Bean.SA_STATUS, buff4);
     return writeSuccess;
-  }
-
-  /** 写nfc，写之前执行寻卡. */
-  public boolean writeLockNfc(Lock3Bean lock3Bean) {
-    return writeLockNfc(lock3Bean, true);
   }
 
   public boolean writeWorkMode(boolean isTestMode) {
