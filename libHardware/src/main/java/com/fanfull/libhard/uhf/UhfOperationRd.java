@@ -20,7 +20,7 @@ public class UhfOperationRd extends AbsUhfOperation {
   public boolean open() throws SecurityException {
     if (isOpen) {
       if (uhfListener != null) {
-        uhfListener.onOpen();
+        uhfListener.onOpen(true);
       }
       return true;
     }
@@ -36,15 +36,18 @@ public class UhfOperationRd extends AbsUhfOperation {
       serialPortController.addUseCount();
     } catch (IOException e) {
       e.printStackTrace();
+      if (uhfListener != null) {
+        uhfListener.onOpen(false);
+      }
       return false;
     }
 
     boolean init = GpioController.getInstance().init();
-    LogUtils.d("init:%s", init);
+    LogUtils.tag(TAG).d("init:%s", init);
 
     isOpen = true;
     if (uhfListener != null) {
-      uhfListener.onOpen();
+      uhfListener.onOpen(true);
     }
     return true;
   }
@@ -91,7 +94,7 @@ public class UhfOperationRd extends AbsUhfOperation {
     res[3] = GpioController.getInstance().setIO(62, false);
     res[4] = GpioController.getInstance().set(64, true);
     res[5] = GpioController.getInstance().set(62, false);
-    LogUtils.v("%s", Arrays.toString(res));
+    LogUtils.tag(TAG).v("%s", Arrays.toString(res));
 
     return true;
   }
@@ -133,7 +136,7 @@ public class UhfOperationRd extends AbsUhfOperation {
     //byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
     //byte[] parseData = UhfCmd.parseData(rec);
     //return parseData;
-    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12);
+    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_TID, sa, len);
     byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
@@ -162,21 +165,25 @@ public class UhfOperationRd extends AbsUhfOperation {
     return write(UhfCmd.MB_EPC, sa, data, null, 0, 0);
   }
 
-  @Override
-  public boolean writeUse(int sa, byte[] data) {
+  @Override public boolean writeUse(int sa, byte[] data) {
     return write(UhfCmd.MB_USE, sa, data, null, 0, 0);
   }
 
   @Override
   public boolean setPower(int readPower, int writePower, int id, boolean isSave, boolean isClosed) {
     byte[] powerCmd = UhfCmd.getSetPowerCmd(readPower, writePower, id, isSave, isClosed);
-    byte[] bytes = serialPortController.sendAndWaitReceive(powerCmd, 1000);
+    byte[] bytes = serialPortController.sendAndWaitReceive(powerCmd);
     byte[] parseData = UhfCmd.parseData(bytes);
     return parseData != null
         && parseData.length == 1
         && parseData[0] == 1;
   }
 
+  /**
+   * 获取读写功率.
+   *
+   * @return 获取失败返回null；否则[0]为读功率，[1]为写功率，[2]天线id，[3]是否闭环：1是、0否
+   */
   @Override public byte[] getPower() {
     byte[] powerCmd = UhfCmd.getPowerCmd();
     byte[] bytes = serialPortController.sendAndWaitReceive(powerCmd);

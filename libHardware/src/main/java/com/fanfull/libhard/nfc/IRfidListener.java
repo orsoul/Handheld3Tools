@@ -1,11 +1,6 @@
 package com.fanfull.libhard.nfc;
 
-public interface IRfidListener {
-    void onOpen();
+import com.fanfull.libhard.IOperationListener;
 
-    void onScan();
-
-    void onStopScan();
-
-    void onReceiveData(byte[] data);
+public interface IRfidListener extends IOperationListener {
 }

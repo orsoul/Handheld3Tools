@@ -1,24 +1,24 @@
 package com.fanfull.libhard.uhf;
 
 public abstract class AbsUhfOperation implements IUhfOperation {
+  protected String TAG = this.getClass().getSimpleName();
+  protected IUhfListener uhfListener;
 
-    protected IUhfListener uhfListener;
+  protected boolean isOpen;
+  protected boolean isScanning;
 
-    protected boolean isOpen;
-    protected boolean isScanning;
+  @Override
+  public boolean isOpen() {
+    return isOpen;
+  }
 
-    @Override
-    public boolean isOpen() {
-        return isOpen;
-    }
+  @Override
+  public boolean isScanning() {
+    return isScanning;
+  }
 
-    @Override
-    public boolean isScanning() {
-        return isScanning;
-    }
-
-    @Override
-    public void setListener(IUhfListener listener) {
-        uhfListener = listener;
-    }
+  @Override
+  public void setListener(IUhfListener listener) {
+    uhfListener = listener;
+  }
 }

@@ -42,20 +42,22 @@ public class RfidOperationRd extends AbsRfidOperation {
     } catch (java.lang.InterruptedException ie) {
     }
 
+    boolean reVal;
     byte[] buff = new byte[16];
     int len = Rfid.getHwVersion(buff);
     LogUtils.tag(TAG).v("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
     if (len > 0) {
       LogUtils.tag(TAG).v("HwVersion:%s", new String(buff, 0, len).trim());
       isOpen = true;
-      if (nfcListener != null) {
-        nfcListener.onOpen();
-      }
       executor = Executors.newSingleThreadExecutor();
-      return true;
+      reVal = true;
     } else {
-      return false;
+      reVal = false;
     }
+    if (nfcListener != null) {
+      nfcListener.onOpen(reVal);
+    }
+    return reVal;
   }
 
   @Override

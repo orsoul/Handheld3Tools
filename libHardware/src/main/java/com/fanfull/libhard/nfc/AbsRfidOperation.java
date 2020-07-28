@@ -15,18 +15,6 @@ public abstract class AbsRfidOperation implements IRfidOperation {
     return isOpen;
   }
 
-  protected synchronized void setScanning(boolean scanning) {
-    isScanning = scanning;
-    LogUtils.d("isScanning:%s", isScanning);
-    if (nfcListener != null) {
-      if (scanning) {
-        nfcListener.onScan();
-      } else {
-        nfcListener.onStopScan();
-      }
-    }
-  }
-
   @Override
   public synchronized boolean isScanning() {
     return isScanning;

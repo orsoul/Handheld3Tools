@@ -8,8 +8,29 @@ public interface IUhfOperation extends IOperation {
 
   void setListener(IUhfListener listener);
 
+  /**
+   * 读 超高频.
+   *
+   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+   * @param sa 读取 数据的 起始地址, 单位：字（字长: 2byte）
+   * @param readLen 读取数据,单位：byte；应设为偶数，如为奇数等同于（len + 1）
+   * @param filter 过滤数据
+   * @param mmb 过滤的区
+   * @param msa 过滤的起始地址, 单位 字
+   */
   byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa);
 
+  /**
+   * 读 超高频.
+   * 数据通过回调方法返回
+   *
+   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+   * @param sa 读取 数据的 起始地址, 单位：字（字长: 2byte）
+   * @param readLen 读取数据,单位：byte；应设为偶数，如为奇数等同于（len + 1）
+   * @param filter 过滤数据
+   * @param mmb 过滤的区
+   * @param msa 过滤的起始地址, 单位 字
+   */
   void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa);
 
   /**
@@ -28,6 +49,16 @@ public interface IUhfOperation extends IOperation {
 
   byte[] readUse(int sa, int len);
 
+  /**
+   * 写 超高频.
+   *
+   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+   * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
+   * @param data 待写入数据, 长度应为 偶数
+   * @param filter 过滤数据
+   * @param mmb 过滤的区
+   * @param msa 过滤的起始地址, 单位 字
+   */
   boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
 
   void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
@@ -46,5 +77,10 @@ public interface IUhfOperation extends IOperation {
   boolean setPower(int readPower, int writePower, int id, boolean isSave,
       boolean isClosed);
 
+  /**
+   * 获取读写功率.
+   *
+   * @return 获取失败返回null；否则[0]为读功率，[1]为写功率，[2]天线id，[3]是否闭环：1是、0否
+   */
   byte[] getPower();
 }

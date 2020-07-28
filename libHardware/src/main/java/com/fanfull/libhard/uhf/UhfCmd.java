@@ -256,13 +256,12 @@ public abstract class UhfCmd {
     }
     return reVal;
   }
-
   /**
-   * 获取读 超高频 指令
+   * 获取读 超高频 指令.
    *
    * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
-   * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
-   * @param readLen 读取数据, 长度应为 偶数
+   * @param sa 读取 数据的 起始地址, 单位：字（字长: 2byte）
+   * @param readLen 读取数据,单位：byte；应设为偶数，如为奇数等同于（len + 1）
    * @param filter 过滤数据
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
@@ -449,9 +448,8 @@ public abstract class UhfCmd {
   public static byte[] getReadCmd(int mb, int sa, int readLen) {
     return getReadCmd(mb, sa, readLen, null, 0, 0);
   }
-
   /**
-   * 获取写 超高频 指令
+   * 获取写 超高频 指令.
    *
    * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
    * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
@@ -659,16 +657,16 @@ public abstract class UhfCmd {
   }
 
   /**
-   * 快速获取TID区数据, 无法进行过滤, TID区总大小 : 12字节； 获取唯一TID参数选择(0x06, 6)
+   * 快速获取TID区数据, 无法进行过滤, TID区总大小 : 12字节； 获取唯一TID参数选择(0x03, 6)
    *
-   * @param sa 获取数据 起始地址
-   * @param len 获取数据长度
+   * @param sa  起始地址，单位 字（2byte）
+   * @param len 获取数据长度，单位 byte；应设为偶数，如为奇数等同于（len + 1）
    */
   public static byte[] getFastReadTidCmd(int sa, int len) {
     LogUtils.tag(TAG).i("getFastReadTidCmd sa-len:0x%02X-%s", sa, len);
 
     // 起始地址, 单位为 字
-    int wordLen = sa >> 1; // 字节 转 字
+    int wordLen = sa;
     CMD_FAST_READ_TID[5] = (byte) (wordLen >> 8);
     CMD_FAST_READ_TID[6] = (byte) wordLen;
 
