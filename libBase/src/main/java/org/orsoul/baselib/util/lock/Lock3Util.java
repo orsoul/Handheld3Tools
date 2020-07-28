@@ -142,7 +142,7 @@ public abstract class Lock3Util {
   /** 解析 电压值. */
   public static String parseV2String(byte v) {
     float vf = parseV(v);
-    return String.format("%s0.3f", vf);
+    return String.format("%.3f", vf);
   }
 
   public static boolean checkKeyNum(int keyNum) {

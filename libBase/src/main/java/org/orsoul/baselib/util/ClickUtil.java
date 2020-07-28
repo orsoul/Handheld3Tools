@@ -18,11 +18,13 @@ public class ClickUtil {
 
   private static long sRunTime = 0;
 
+  /** 开始计时. */
   public static long resetRunTime() {
     sRunTime = System.currentTimeMillis();
     return sRunTime;
   }
 
+  /** 从开始计时 到此时的时间隔 . */
   public static long runTime() {
     return System.currentTimeMillis() - sRunTime;
   }
