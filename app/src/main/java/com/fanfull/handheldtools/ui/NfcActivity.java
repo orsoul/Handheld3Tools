@@ -19,6 +19,7 @@ import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.ClickUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.ViewUtil;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
@@ -65,21 +66,15 @@ public class NfcActivity extends InitModuleActivity {
     nfcController = RfidController.getInstance();
     nfcController.setListener(new IRfidListener() {
       @Override
-      public void onOpen() {
+      public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
-          tvShow.setText("初始化成功");
           dismissLoadingView();
+          if (openSuccess) {
+            tvShow.setText("初始化成功\n按键1 -> 写39\n按键2 -> 读39");
+          } else {
+            tvShow.setText("初始化失败\n");
+          }
         });
-      }
-
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
       }
 
       @Override
@@ -216,12 +211,24 @@ public class NfcActivity extends InitModuleActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_0:
+      case KeyEvent.KEYCODE_1:
         byte[] bytes = new byte[16];
         Arrays.fill(bytes, (byte) 0x39);
-        nfcController.writeM1(9, bytes);
+        boolean b = nfcController.writeM1(9, bytes);
+        if (b) {
+          ViewUtil.appendShow("写第9区39 成功", tvShow);
+        } else {
+          ViewUtil.appendShow("写第9区 失败", tvShow);
+        }
         return true;
-      case KeyEvent.KEYCODE_1:
       case KeyEvent.KEYCODE_2:
+        byte[] block9 = nfcController.readM1(9);
+        if (block9 != null) {
+          ViewUtil.appendShow(String.format("9区：%s", ArrayUtils.bytes2HexString(block9)), tvShow);
+        } else {
+          ViewUtil.appendShow("读第9区失败", tvShow);
+        }
+        return true;
       case KeyEvent.KEYCODE_3:
       case KeyEvent.KEYCODE_4:
       case KeyEvent.KEYCODE_5:

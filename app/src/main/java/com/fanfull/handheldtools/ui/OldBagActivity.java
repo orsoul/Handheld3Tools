@@ -66,10 +66,13 @@ public class OldBagActivity extends InitModuleActivity {
 
     showLoadingView("正在初始化...");
     barcodeController.setBarcodeListener(new IBarcodeListener() {
-      @Override
-      public void onOpen() {
+      @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
           dismissLoadingView();
+          if (!openSuccess) {
+            tvShow.append("\n二维读头打开失败");
+            return;
+          }
           btnScan.setEnabled(true);
           tvShow.append("\n二维读头打开成功.Enter -> 扫描/取消扫描");
         });
@@ -77,19 +80,16 @@ public class OldBagActivity extends InitModuleActivity {
         //                btnScan.setEnabled(true);
       }
 
-      @Override
-      public void onScan() {
+      @Override public void onScan() {
         runOnUi(() -> btnScan.setText("取消扫描"));
       }
 
-      @Override
-      public void onStopScan() {
+      @Override public void onStopScan() {
         runOnUi(() -> btnScan.setText("扫描"));
         //runOnUi(() -> btnScan.setEnabled(true));
       }
 
-      @Override
-      public void onReceiveData(byte[] data) {
+      @Override public void onReceiveData(byte[] data) {
         //                barcodeController.stopReadThread();
         byte[] myBarcode = BarcodeUtil.decodeBarcode(data);
         if (myBarcode != null) {
@@ -112,25 +112,18 @@ public class OldBagActivity extends InitModuleActivity {
 
     nfcController = RfidController.getInstance();
     nfcController.setListener(new IRfidListener() {
-      @Override
-      public void onOpen() {
+      @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
+          dismissLoadingView();
+          if (!openSuccess) {
+            tvShow.setText("\n高频模块 初始化失败");
+            return;
+          }
           tvShow.setText("高频模块 初始化成功. 按键2 -> 读锁");
         });
       }
 
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
-      }
-
-      @Override
-      public void onReceiveData(byte[] data) {
+      @Override public void onReceiveData(byte[] data) {
         LogUtils.d("rec:%s", ArrayUtils.bytes2HexString(data));
       }
     });

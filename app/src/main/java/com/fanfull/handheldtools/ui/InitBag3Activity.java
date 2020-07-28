@@ -5,9 +5,13 @@ import android.os.SystemClock;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.InitBagTask;
@@ -18,9 +22,14 @@ import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 import org.orsoul.baselib.util.lock.BagIdParser;
+import org.orsoul.baselib.util.lock.EnumBagType;
+import org.orsoul.baselib.util.lock.EnumCity;
+import org.orsoul.baselib.util.lock.EnumMoneyType;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 
 public class InitBag3Activity extends InitModuleActivity {
@@ -55,10 +64,13 @@ public class InitBag3Activity extends InitModuleActivity {
     rfidController = RfidController.getInstance();
 
     uhfController.setListener(new IUhfListener() {
-      @Override
-      public void onOpen() {
-        rfidController.open();
+      @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
+          if (!openSuccess) {
+            dismissLoadingView();
+            ViewUtil.appendShow("超高频初始失败.", tvShow);
+            return;
+          }
           //tvShow.setText("打开成功.\n"
           //    + "3连接击->清空\n"
           //    + "Enter->开始/停止 连续扫描\n"
@@ -67,22 +79,16 @@ public class InitBag3Activity extends InitModuleActivity {
           //    + "按键9->关闭 EPC、TID同读\n\n");
           //ViewUtil.appendShow("超高频初始成功", tvShow);
           ViewUtil.appendShow("超高频初始成功.", tvShow);
+          rfidController.open();
         });
-        uhfController.send(UhfCmd.CMD_GET_DEVICE_VERSION);
-        SystemClock.sleep(100);
-        uhfController.send(UhfCmd.CMD_GET_DEVICE_ID);
-        SystemClock.sleep(100);
-        uhfController.send(UhfCmd.CMD_GET_FAST_ID);
-      }
 
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
+        if (openSuccess) {
+          uhfController.send(UhfCmd.CMD_GET_DEVICE_VERSION);
+          SystemClock.sleep(100);
+          uhfController.send(UhfCmd.CMD_GET_DEVICE_ID);
+          SystemClock.sleep(100);
+          uhfController.send(UhfCmd.CMD_GET_FAST_ID);
+        }
       }
 
       @Override
@@ -137,28 +143,20 @@ public class InitBag3Activity extends InitModuleActivity {
 
     rfidController.setListener(new IRfidListener() {
       @Override
-      public void onOpen() {
+      public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
           dismissLoadingView();
+          if (!openSuccess) {
+            ViewUtil.appendShow("高频模块初始失败", tvShow);
+            return;
+          }
           //tvShow.setText("初始化成功");
           ViewUtil.appendShow("高频模块初始成功", tvShow);
           lock3Operation = Lock3Operation.getInstance();
           initBagTask = new MyInitBagTask();
-          initBagTask.setCityCode("532");
-          initBagTask.setMoneyType("1");
-          initBagTask.setBagType("03");
+          initSpinner();
           btnOk.setEnabled(true);
         });
-      }
-
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
       }
 
       @Override
@@ -172,14 +170,18 @@ public class InitBag3Activity extends InitModuleActivity {
   }
 
   @Override protected void onEnterPress() {
-    super.onEnterPress();
+    btnOk.performClick();
   }
 
   @Override public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_init_bag3_ok:
         if (initBagTask.isStopped()) {
+          btnOk.setEnabled(false);
+          ClickUtil.resetRunTime();
           ThreadUtil.executeInSingleThread(initBagTask);
+        } else {
+          ToastUtils.showShort("正在初始化，请稍后...");
         }
         break;
       default:
@@ -200,6 +202,52 @@ public class InitBag3Activity extends InitModuleActivity {
     btnOk.setEnabled(false);
   }
 
+  private void initSpinner() {
+    Spinner spCityType = findViewById(R.id.spinner_init_bag_cityType);
+    Spinner spMoneyType = findViewById(R.id.spinner_init_bag_moneyType);
+    Spinner spBagType = findViewById(R.id.spinner_init_bag_bagType);
+
+    spCityType.setAdapter(new ArrayAdapter<>(this,
+        R.layout.support_simple_spinner_dropdown_item, EnumCity.getNames()));
+    spMoneyType.setAdapter(new ArrayAdapter<>(this,
+        R.layout.support_simple_spinner_dropdown_item, EnumMoneyType.getNames()));
+    spBagType.setAdapter(new ArrayAdapter<>(this,
+        R.layout.support_simple_spinner_dropdown_item, EnumBagType.getNames()));
+
+    AdapterView.OnItemSelectedListener itemSelectedListener =
+        new AdapterView.OnItemSelectedListener() {
+          @Override
+          public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            String name = parent.getSelectedItem().toString();
+            LogUtils.d("select: %s", name);
+            switch (parent.getId()) {
+              case R.id.spinner_init_bag_cityType:
+                initBagTask.setCityCode(EnumCity.getCodeByName(name));
+                break;
+              case R.id.spinner_init_bag_moneyType:
+                initBagTask.setMoneyType(EnumMoneyType.getTypeByName(name));
+                break;
+              case R.id.spinner_init_bag_bagType:
+                initBagTask.setBagType(EnumBagType.getTypeByName(name));
+                break;
+            }
+            LogUtils.d("%s", initBagTask.getBagIdParser());
+          }
+
+          @Override public void onNothingSelected(AdapterView<?> parent) {
+
+          }
+        };
+
+    spCityType.setOnItemSelectedListener(itemSelectedListener);
+    spMoneyType.setOnItemSelectedListener(itemSelectedListener);
+    spBagType.setOnItemSelectedListener(itemSelectedListener);
+
+    spCityType.setSelection(2);
+    spMoneyType.setSelection(0);
+    spBagType.setSelection(1);
+  }
+
   @Override protected void onDestroy() {
     uhfController.release();
     rfidController.release();
@@ -209,8 +257,13 @@ public class InitBag3Activity extends InitModuleActivity {
   private class MyInitBagTask extends InitBagTask {
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
-      runOnUiThread(
-          () -> ViewUtil.appendShow(String.format("初始化成功：%s", bagIdParser.getBagId()), tvShow));
+      SoundUtils.playInitSuccessSound();
+      long runTime = ClickUtil.runTime();
+      ToastUtils.showShort("初始化成，用时：%.2f秒", runTime / 1000.0);
+      runOnUiThread(() -> {
+        ViewUtil.appendShow(String.format("成功：%s", bagIdParser.getFormatBagId()), tvShow);
+        btnOk.setEnabled(true);
+      });
     }
 
     @Override protected void onProgress(int progress) {
@@ -219,7 +272,10 @@ public class InitBag3Activity extends InitModuleActivity {
 
     @Override protected void onFailed(int readRes, String info) {
       super.onFailed(readRes, info);
-      runOnUiThread(() -> ViewUtil.appendShow(String.format("%s : %s", info, readRes), tvShow));
+      runOnUiThread(() -> {
+        ViewUtil.appendShow(String.format("%s : %s", info, readRes), tvShow);
+        btnOk.setEnabled(true);
+      });
     }
   }
 }

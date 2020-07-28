@@ -75,10 +75,13 @@ public class UhfActivity extends InitModuleActivity {
   protected void initModule() {
     uhfController = UhfController.getInstance();
     uhfController.setListener(new IUhfListener() {
-      @Override
-      public void onOpen() {
+      @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
           dismissLoadingView();
+          if (!openSuccess) {
+            tvShow.setText("初始化失败");
+            return;
+          }
           tvShow.setText("打开成功.\n"
               + "3连接击->清空\n"
               + "Enter->开始/停止 连续扫描\n"
@@ -97,16 +100,6 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
         socketService = new SocketServiceDemo();
         socketService.start();
-      }
-
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
       }
 
       @Override
