@@ -1,6 +1,6 @@
 package com.fanfull.libhard.lock3;
 
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import java.util.List;

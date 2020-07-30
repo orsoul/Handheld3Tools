@@ -1,4 +1,4 @@
-package com.fanfull.libhard.nfc;
+package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
 import java.util.concurrent.ExecutorService;

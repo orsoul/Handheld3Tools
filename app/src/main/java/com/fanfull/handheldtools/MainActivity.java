@@ -13,7 +13,7 @@ import com.fanfull.handheldtools.ui.InitBag3Activity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.finger.FingerPrint;
 import org.orsoul.baselib.util.CrashLogUtil;

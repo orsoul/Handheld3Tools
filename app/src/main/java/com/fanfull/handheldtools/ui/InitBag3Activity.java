@@ -16,13 +16,13 @@ import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.InitBagTask;
 import com.fanfull.libhard.lock3.Lock3Operation;
-import com.fanfull.libhard.nfc.IRfidListener;
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.IRfidListener;
+import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
@@ -178,7 +178,7 @@ public class InitBag3Activity extends InitModuleActivity {
       case R.id.btn_init_bag3_ok:
         if (initBagTask.isStopped()) {
           btnOk.setEnabled(false);
-          ClickUtil.resetRunTime();
+          ClockUtil.resetRunTime();
           ThreadUtil.executeInSingleThread(initBagTask);
         } else {
           ToastUtils.showShort("正在初始化，请稍后...");
@@ -258,7 +258,7 @@ public class InitBag3Activity extends InitModuleActivity {
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
       SoundUtils.playInitSuccessSound();
-      long runTime = ClickUtil.runTime();
+      long runTime = ClockUtil.runTime();
       ToastUtils.showShort("初始化成，用时：%.2f秒", runTime / 1000.0);
       runOnUiThread(() -> {
         ViewUtil.appendShow(String.format("成功：%s", bagIdParser.getFormatBagId()), tvShow);

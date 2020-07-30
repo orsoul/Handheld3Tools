@@ -11,12 +11,12 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
-import com.fanfull.libhard.nfc.IRfidListener;
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.IRfidListener;
+import com.fanfull.libhard.rfid.RfidController;
 import java.util.Arrays;
 import java.util.Random;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ViewUtil;
@@ -191,7 +191,7 @@ public class NfcActivity extends InitModuleActivity {
         appendShow(info);
         break;
       case R.id.tv_barcode_show:
-        if (3 == ClickUtil.fastClickTimes()) {
+        if (3 == ClockUtil.fastClickTimes()) {
           tvShow.setText(null);
           appendShow("");
         }

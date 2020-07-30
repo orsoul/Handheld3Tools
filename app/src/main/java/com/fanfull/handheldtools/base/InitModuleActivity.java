@@ -3,14 +3,11 @@ package com.fanfull.handheldtools.base;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-
+import androidx.annotation.Nullable;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
-
-import org.orsoul.baselib.util.ClickUtil;
-
-import androidx.annotation.Nullable;
+import org.orsoul.baselib.util.ClockUtil;
 
 public abstract class InitModuleActivity extends BaseActivity implements View.OnClickListener {
 
@@ -33,7 +30,7 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
 
     @Override
     public void onBackPressed() {
-        if (!ClickUtil.isFastDoubleClick()) {
+        if (!ClockUtil.isFastDoubleClick()) {
             ToastUtils.showShort(R.string.text_click_again_quit);
             return;
         }

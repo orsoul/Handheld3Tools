@@ -15,10 +15,10 @@ import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
-import com.fanfull.libhard.nfc.IRfidListener;
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.IRfidListener;
+import com.fanfull.libhard.rfid.RfidController;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
@@ -179,7 +179,7 @@ public class OldBagActivity extends InitModuleActivity {
         btnReadM1.setEnabled(true);
         break;
       case R.id.tv_barcode_show:
-        if (ClickUtil.isFastDoubleClick()) {
+        if (ClockUtil.isFastDoubleClick()) {
           tvShow.setText(null);
           recCount = 0;
         }

@@ -1,11 +1,11 @@
 package com.fanfull.libhard.lock3;
 
 import com.apkfuns.logutils.LogUtils;
-import com.fanfull.libhard.nfc.RfidController;
+import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import java.util.Arrays;
 import java.util.Random;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.lock.BagIdParser;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
@@ -112,8 +112,8 @@ public class InitBagTask implements Runnable {
     /* 1、 读uid、epc、tid */
     boolean readSuccess = false;
     int failedCause = -1;
-    ClickUtil.resetRunTime();
-    while (!stopped && ClickUtil.runTime() < findLockTime) {
+    ClockUtil.resetRunTime();
+    while (!stopped && ClockUtil.runTime() < findLockTime) {
       //if (0 == (failedCause = lock3Operation.readUidEpcTid(uid, epc, tid))) {
       if (0 == (failedCause = findUidTid(uid, tid))) {
         readSuccess = true;

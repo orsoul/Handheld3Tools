@@ -44,12 +44,14 @@ public class UhfOperationRd extends AbsUhfOperation {
 
     boolean init = GpioController.getInstance().init();
     LogUtils.tag(TAG).d("init:%s", init);
-
-    isOpen = true;
-    if (uhfListener != null) {
-      uhfListener.onOpen(true);
+    if (init) {
+      setGpioUhfMode();
     }
-    return true;
+    isOpen = init;
+    if (uhfListener != null) {
+      uhfListener.onOpen(init);
+    }
+    return init;
   }
 
   @Override
@@ -62,32 +64,23 @@ public class UhfOperationRd extends AbsUhfOperation {
     isOpen = false;
   }
 
-  @Override
-  public boolean send(byte[] data) {
+  @Override public boolean send(byte[] data) {
     boolean isUhfMode = setGpioUhfMode();
     //        LogUtils.d("isUhfMode:%s", isUhfMode);
     return isUhfMode && serialPortController.send(data);
   }
 
+  public byte[] sendAndWaitReceive(byte[] data, int timeout) {
+    setGpioUhfMode();
+    return serialPortController.sendAndWaitReceive(data, timeout);
+  }
+
+  public byte[] sendAndWaitReceive(byte[] data) {
+    return sendAndWaitReceive(data, 500);
+  }
+
   private boolean setGpioUhfMode() {
-
-    //        boolean reVal = GpioController.getInstance().init()
-    //                && GpioController.getInstance().setMode(64, 0)
-    //                && GpioController.getInstance().setMode(62, 0)
-    //                && GpioController.getInstance().setIO(64, false)
-    //                && GpioController.getInstance().setIO(62, false)
-    //                && GpioController.getInstance().set(64, true)
-    //                && GpioController.getInstance().set(62, false);
-
     boolean[] res = new boolean[6];
-    //        res[0] = Platform.SetGpioMode(64, 0);
-    //        res[1] = Platform.SetGpioMode(62, 0);
-    //        res[2] = Platform.SetGpioOutput(64);
-    //        res[3] = Platform.SetGpioOutput(62);
-    //        res[4] = Platform.SetGpioDataHigh(64);
-    //        res[5] = Platform.SetGpioDataLow(62);
-    //        LogUtils.d("%s", Arrays.toString(res));
-
     res[0] = GpioController.getInstance().setMode(64, 0);
     res[1] = GpioController.getInstance().setMode(62, 0);
     res[2] = GpioController.getInstance().setIO(64, false);
@@ -95,13 +88,12 @@ public class UhfOperationRd extends AbsUhfOperation {
     res[4] = GpioController.getInstance().set(64, true);
     res[5] = GpioController.getInstance().set(62, false);
     LogUtils.tag(TAG).v("%s", Arrays.toString(res));
-
     return true;
   }
 
   @Override public byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
     byte[] readCmd = UhfCmd.getReadCmd(mb, sa, readLen, filter, mmb, msa);
-    byte[] bytes = serialPortController.sendAndWaitReceive(readCmd);
+    byte[] bytes = sendAndWaitReceive(readCmd);
     return bytes;
   }
 
@@ -112,46 +104,42 @@ public class UhfOperationRd extends AbsUhfOperation {
 
   @Override public byte[] fastEpc(int timeout) {
     byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
-    byte[] rec = serialPortController.sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
+    byte[] rec = sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public byte[] fastTid(int sa, int len) {
     byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
-    byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
+    byte[] rec = sendAndWaitReceive(fastReadTidCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public byte[] readEpc(int sa, int len) {
     byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_EPC, sa, len);
-    byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
+    byte[] rec = sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public byte[] readTid(int sa, int len) {
-    //byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
-    //byte[] rec = serialPortController.sendAndWaitReceive(fastReadTidCmd);
-    //byte[] parseData = UhfCmd.parseData(rec);
-    //return parseData;
     byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_TID, sa, len);
-    byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
+    byte[] rec = sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public byte[] readUse(int sa, int len) {
     byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_USE, sa, len);
-    byte[] rec = serialPortController.sendAndWaitReceive(readCmd);
+    byte[] rec = sendAndWaitReceive(readCmd);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
   @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
     byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
-    byte[] bytes = serialPortController.sendAndWaitReceive(cmd);
+    byte[] bytes = sendAndWaitReceive(cmd);
     byte[] parseData = UhfCmd.parseData(bytes);
     return parseData != null && parseData.length == 0;
   }
@@ -172,7 +160,7 @@ public class UhfOperationRd extends AbsUhfOperation {
   @Override
   public boolean setPower(int readPower, int writePower, int id, boolean isSave, boolean isClosed) {
     byte[] powerCmd = UhfCmd.getSetPowerCmd(readPower, writePower, id, isSave, isClosed);
-    byte[] bytes = serialPortController.sendAndWaitReceive(powerCmd);
+    byte[] bytes = sendAndWaitReceive(powerCmd);
     byte[] parseData = UhfCmd.parseData(bytes);
     return parseData != null
         && parseData.length == 1
@@ -186,7 +174,7 @@ public class UhfOperationRd extends AbsUhfOperation {
    */
   @Override public byte[] getPower() {
     byte[] powerCmd = UhfCmd.getPowerCmd();
-    byte[] bytes = serialPortController.sendAndWaitReceive(powerCmd);
+    byte[] bytes = sendAndWaitReceive(powerCmd);
     byte[] parseData = UhfCmd.parseData(bytes);
     return parseData;
   }

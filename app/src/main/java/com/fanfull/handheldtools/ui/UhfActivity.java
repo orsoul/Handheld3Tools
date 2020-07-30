@@ -25,7 +25,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class UhfActivity extends InitModuleActivity {
@@ -226,7 +226,7 @@ public class UhfActivity extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.tv_barcode_show:
-        if (3 == ClickUtil.fastClickTimes()) {
+        if (3 == ClockUtil.fastClickTimes()) {
           ViewUtil.appendShow(null, tvShow);
         }
         break;
