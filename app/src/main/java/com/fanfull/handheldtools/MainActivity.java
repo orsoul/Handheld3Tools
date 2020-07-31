@@ -12,6 +12,7 @@ import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
+import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     findViewById(R.id.btn_uhf).setOnClickListener(this);
     findViewById(R.id.btn_nfc).setOnClickListener(this);
     findViewById(R.id.btn_init_bag3).setOnClickListener(this);
+    findViewById(R.id.btn_main_socket).setOnClickListener(this);
     findViewById(R.id.btn_barcode).setOnClickListener(this);
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
@@ -105,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         break;
       case R.id.btn_init_bag3:
         startActivity(new Intent(this, InitBag3Activity.class));
+        break;
+      case R.id.btn_main_socket:
+        startActivity(new Intent(this, SocketActivity.class));
         break;
       case R.id.btn_barcode:
         startActivity(new Intent(this, BarcodeActivity.class));

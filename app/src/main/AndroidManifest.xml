@@ -7,8 +7,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
   <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-  <!-- SD卡 -->
+  <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- SD卡 -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
@@ -31,6 +30,9 @@
       android:theme="@style/AppTheme"
       tools:ignore="GoogleAppIndexingWarning"
       tools:replace="android:allowBackup">
+    <activity
+        android:name=".ui.SocketActivity"
+        android:label="@string/main_socket" />
     <activity
         android:name=".ui.InitBag3Activity"
         android:label="@string/main_init_bag3" />
