@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+  <TextView
+      style="@style/tv_title"
+      android:text="主界面"
+      />
+
+  <com.itheima62.mobileguard.view.MyTextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:singleLine="true"
+      android:ellipsize="marquee"
+      android:text="你是我的小呀小卫士，怎么爱你都不嫌多，你的强大功能彻底把哥给征服了。。。。。。。"
+      />
+
+  <GridView
+      android:padding="0dip"
+      android:listSelector="@drawable/gv_list_selector"
+      android:verticalSpacing="5dip"
+      android:numColumns="3"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/gv_home_menus"
+      ></GridView>
+</LinearLayout>

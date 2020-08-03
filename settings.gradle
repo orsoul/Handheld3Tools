@@ -1,2 +1,2 @@
-include ':app', ':libBase', ':libHardware'
+include ':app', ':libBase', ':libHardware', ':initLock3'
 rootProject.name='HandheldTools'

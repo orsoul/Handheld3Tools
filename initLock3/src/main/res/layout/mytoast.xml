@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    >
+
+  <TextView
+      android:id="@+id/tvTitleToast"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentTop="true"
+      android:layout_centerHorizontal="true"
+      android:text="错误提示"
+      android:textSize="20dip"
+      android:textStyle="bold"
+      android:textColor="#ff0000"
+      />
+
+  <TextView
+      android:id="@+id/tvTextToast"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/tvTitleToast"
+      android:layout_centerHorizontal="true"
+      android:text="显示错误信息"
+      android:textSize="15dip"
+      android:padding="5dip"
+      android:textColor="#ffffff"
+      />
+
+</RelativeLayout>
