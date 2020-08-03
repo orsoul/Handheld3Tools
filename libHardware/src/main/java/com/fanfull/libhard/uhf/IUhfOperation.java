@@ -3,6 +3,12 @@ package com.fanfull.libhard.uhf;
 import com.fanfull.libhard.IOperation;
 
 public interface IUhfOperation extends IOperation {
+  /** epc区. */
+  public static final int MB_EPC = 1;
+  /** tid区. */
+  public static final int MB_TID = 2;
+  /** use区. */
+  public static final int MB_USE = 3;
 
   boolean send(byte[] data);
 

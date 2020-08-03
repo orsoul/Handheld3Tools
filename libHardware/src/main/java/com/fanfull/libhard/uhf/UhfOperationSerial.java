@@ -7,13 +7,16 @@ import com.fanfull.libhard.serialport.impl.SerialPortController;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class UhfOperationRd extends AbsUhfOperation {
+/**
+ * 手持2、手持3 超高频读卡模块，通过串口控制.
+ */
+public class UhfOperationSerial extends AbsUhfOperation {
   private final String SERIAL_PORT_PATH = "/dev/ttyMT0";
   private final int BUADRATE = 115200;
   private SerialPortController serialPortController;
   private ISerialPortListener serialPortListener;
 
-  public UhfOperationRd() {
+  public UhfOperationSerial() {
   }
 
   @Override
@@ -93,8 +96,9 @@ public class UhfOperationRd extends AbsUhfOperation {
 
   @Override public byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
     byte[] readCmd = UhfCmd.getReadCmd(mb, sa, readLen, filter, mmb, msa);
-    byte[] bytes = sendAndWaitReceive(readCmd);
-    return bytes;
+    byte[] rec = sendAndWaitReceive(readCmd);
+    byte[] parseData = UhfCmd.parseData(rec);
+    return parseData;
   }
 
   @Override public void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
@@ -116,27 +120,6 @@ public class UhfOperationRd extends AbsUhfOperation {
     return parseData;
   }
 
-  @Override public byte[] readEpc(int sa, int len) {
-    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_EPC, sa, len);
-    byte[] rec = sendAndWaitReceive(readCmd);
-    byte[] parseData = UhfCmd.parseData(rec);
-    return parseData;
-  }
-
-  @Override public byte[] readTid(int sa, int len) {
-    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_TID, sa, len);
-    byte[] rec = sendAndWaitReceive(readCmd);
-    byte[] parseData = UhfCmd.parseData(rec);
-    return parseData;
-  }
-
-  @Override public byte[] readUse(int sa, int len) {
-    byte[] readCmd = UhfCmd.getReadCmd(UhfCmd.MB_USE, sa, len);
-    byte[] rec = sendAndWaitReceive(readCmd);
-    byte[] parseData = UhfCmd.parseData(rec);
-    return parseData;
-  }
-
   @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
     byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
     byte[] bytes = sendAndWaitReceive(cmd);
@@ -147,14 +130,6 @@ public class UhfOperationRd extends AbsUhfOperation {
   @Override public void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
     byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
     send(cmd);
-  }
-
-  @Override public boolean writeEpc(int sa, byte[] data) {
-    return write(UhfCmd.MB_EPC, sa, data, null, 0, 0);
-  }
-
-  @Override public boolean writeUse(int sa, byte[] data) {
-    return write(UhfCmd.MB_USE, sa, data, null, 0, 0);
   }
 
   @Override

@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    LogUtils.d("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
+    LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
         KeyEvent.keyCodeToString(keyCode),
         event.getRepeatCount(),
         event.getAction(),
