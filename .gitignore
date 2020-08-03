@@ -89,3 +89,4 @@ lint/tmp/
 /apk
 /.svn
 .idea/sqlandroid.xml
+.idea/checkstyleidea-libs/

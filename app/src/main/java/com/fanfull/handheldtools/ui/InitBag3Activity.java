@@ -9,13 +9,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.InitBagTask;
-import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
@@ -30,33 +30,20 @@ import org.orsoul.baselib.util.lock.BagIdParser;
 import org.orsoul.baselib.util.lock.EnumBagType;
 import org.orsoul.baselib.util.lock.EnumCity;
 import org.orsoul.baselib.util.lock.EnumMoneyType;
-import org.orsoul.baselib.util.lock.Lock3Bean;
 
 public class InitBag3Activity extends InitModuleActivity {
 
   private TextView tvShow;
   private Button btnOk;
+  private Switch switchCheck;
 
   private UhfController uhfController;
   private RfidController rfidController;
-  private Lock3Operation lock3Operation;
 
   private InitBagTask initBagTask;
-  private BagIdParser bagIdParser;
-  private Lock3Bean initLock3Bean;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    //bagIdParser = new BagIdParser();
-    //bagIdParser.setCityCode("532");
-    //bagIdParser.setMoneyType("1");
-    //bagIdParser.setBagType("03");
-
-    //initBagTask = new InitBagTask();
-    //initBagTask.setCityCode("532");
-    //initBagTask.setMoneyType("1");
-    //initBagTask.setBagType("03");
   }
 
   @Override protected void initModule() {
@@ -152,10 +139,10 @@ public class InitBag3Activity extends InitModuleActivity {
           }
           //tvShow.setText("初始化成功");
           ViewUtil.appendShow("高频模块初始成功", tvShow);
-          lock3Operation = Lock3Operation.getInstance();
           initBagTask = new MyInitBagTask();
           initSpinner();
           btnOk.setEnabled(true);
+          switchCheck.setEnabled(true);
         });
       }
 
@@ -177,11 +164,17 @@ public class InitBag3Activity extends InitModuleActivity {
     switch (v.getId()) {
       case R.id.btn_init_bag3_ok:
         if (initBagTask.isStopped()) {
-          btnOk.setEnabled(false);
+          //btnOk.setEnabled(false);
+          //switchCheck.setEnabled(false);
           ClockUtil.resetRunTime();
           ThreadUtil.executeInSingleThread(initBagTask);
         } else {
           ToastUtils.showShort("正在初始化，请稍后...");
+        }
+        break;
+      case R.id.tv_init_bag_show:
+        if (3 == ClockUtil.fastClickTimes()) {
+          tvShow.setText("");
         }
         break;
       default:
@@ -196,10 +189,17 @@ public class InitBag3Activity extends InitModuleActivity {
     setContentView(R.layout.activity_init_bag3);
     tvShow = findViewById(R.id.tv_init_bag_show);
     tvShow.setMovementMethod(ScrollingMovementMethod.getInstance());
+    tvShow.setOnClickListener(this);
 
     btnOk = findViewById(R.id.btn_init_bag3_ok);
     btnOk.setOnClickListener(this);
+
+    switchCheck = findViewById(R.id.switch_init_bag);
+    switchCheck.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> initBagTask.setCheckData(isChecked));
+
     btnOk.setEnabled(false);
+    switchCheck.setEnabled(false);
   }
 
   private void initSpinner() {
@@ -255,6 +255,14 @@ public class InitBag3Activity extends InitModuleActivity {
   }
 
   private class MyInitBagTask extends InitBagTask {
+
+    @Override protected void onStart(BagIdParser bagIdParser) {
+      runOnUiThread(() -> {
+        btnOk.setEnabled(false);
+        switchCheck.setEnabled(false);
+      });
+    }
+
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
       SoundUtils.playInitSuccessSound();
@@ -263,6 +271,7 @@ public class InitBag3Activity extends InitModuleActivity {
       runOnUiThread(() -> {
         ViewUtil.appendShow(String.format("成功：%s", bagIdParser.getFormatBagId()), tvShow);
         btnOk.setEnabled(true);
+        switchCheck.setEnabled(true);
       });
     }
 
@@ -275,6 +284,7 @@ public class InitBag3Activity extends InitModuleActivity {
       runOnUiThread(() -> {
         ViewUtil.appendShow(String.format("%s : %s", info, readRes), tvShow);
         btnOk.setEnabled(true);
+        switchCheck.setEnabled(true);
       });
     }
   }

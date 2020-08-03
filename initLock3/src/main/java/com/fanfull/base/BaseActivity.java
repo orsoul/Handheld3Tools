@@ -62,7 +62,7 @@ public class BaseActivity extends Activity implements
   @Override
   public void onClick(View v) {
     // 点击声音
-    SoundUtils.play(SoundUtils.DROP_SOUND);
+    SoundUtils.playDropSound();
   }
 
   @Override

@@ -37,8 +37,14 @@ public class InitBagTask implements Runnable {
   private long findLockTime = 5000;
   /** 尝试读写Epc的 次数. */
   private int readWriteEpcTimes = 5;
+  /** 写入数据后是否需要读出数据检查. */
+  private boolean isCheckData = true;
   /** 记录袋信息，用于生成袋id. */
   private BagIdParser bagIdParser = new BagIdParser();
+
+  public void setCheckData(boolean checkData) {
+    isCheckData = checkData;
+  }
 
   public void setBagIdParser(BagIdParser bagIdParser) {
     if (bagIdParser != null) {
@@ -108,6 +114,7 @@ public class InitBagTask implements Runnable {
 
   @Override public void run() {
     stopped = false;
+    onStart(bagIdParser);
     Lock3Operation lock3Operation = Lock3Operation.getInstance();
     /* 1、 读uid、epc、tid */
     boolean readSuccess = false;
@@ -192,6 +199,12 @@ public class InitBagTask implements Runnable {
       onProgress(RES_WRITE_EPC);
     }
 
+    if (!isCheckData) {
+      onSuccess(bagIdParser);
+      stopped = true;
+      return;
+    }
+
     Lock3Bean readLock3Bean = new Lock3Bean();
     readLock3Bean.addInitBagSa();
     boolean checkNfcWrite = lock3Operation.readLockNfc(initLock3Bean, false);
@@ -234,6 +247,10 @@ public class InitBagTask implements Runnable {
     onSuccess(bagIdParser);
     stopped = true;
   } // end run()
+
+  protected void onStart(BagIdParser bagIdParser) {
+    LogUtils.i("onSuccess:%s", bagIdParser);
+  }
 
   protected void onSuccess(BagIdParser bagIdParser) {
     LogUtils.i("onSuccess:%s", bagIdParser);

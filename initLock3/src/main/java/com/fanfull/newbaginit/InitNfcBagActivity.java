@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
@@ -757,6 +758,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
 
         boolean startRun = initBagTask.startRun();
         if (startRun) {
+          ClockUtil.resetRunTime();
           resetShowItem();
           vShow1.setDoing(true);
           mBtnOK.setEnabled(false);
@@ -1162,6 +1164,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   private class MyInitBagTask extends InitBagTask {
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
+      ToastUtils.showShort("用时：%.2f秒", ClockUtil.resetRunTime() / 1000.0);
       runOnUiThread(() -> {
         tvBagId.setText(bagIdParser.getFormatBagId());
         if (isOfflineMode) {

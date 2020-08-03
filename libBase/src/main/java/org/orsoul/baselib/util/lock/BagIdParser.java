@@ -94,6 +94,7 @@ public class BagIdParser {
 
   public void setUidBuff(byte[] uidBuff) {
     this.uidBuff = uidBuff;
+    this.uid = null;
   }
 
   public String genBagId() {
@@ -107,7 +108,7 @@ public class BagIdParser {
         || bagType.length() != 2
         || uidBuff.length != 7
     ) {
-      LogUtils.d("genBagIdBuff failed:%s", this);
+      LogUtils.i("genBagIdBuff failed:%s", this);
       return null;
     }
     byte[] bagIdPre = ArrayUtils.hexString2Bytes(version + cityCode + moneyType + bagType);
@@ -124,7 +125,7 @@ public class BagIdParser {
     bagIdBuff[checkIndex] = (byte) crc;
     bagId = ArrayUtils.bytes2HexString(bagIdBuff);
     checkByte = bagId.substring(22);
-    LogUtils.d("genBagIdBuff:%s", bagId);
+    LogUtils.v("genBagIdBuff:%s", bagId);
     return bagIdBuff;
   }
 

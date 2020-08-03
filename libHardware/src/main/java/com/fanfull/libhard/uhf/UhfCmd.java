@@ -459,7 +459,7 @@ public abstract class UhfCmd {
    * @param msa 过滤的起始地址, 单位 字
    */
   public static byte[] getWriteCmd(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
-    LogUtils.tag(TAG).i("read mb-sa-len:%s-0x%02X-%s",
+    LogUtils.tag(TAG).i("write mb-sa-len:%s-0x%02X-%s",
         mb, sa, ArrayUtils.bytes2HexString(data));
 
     if (null == data) {

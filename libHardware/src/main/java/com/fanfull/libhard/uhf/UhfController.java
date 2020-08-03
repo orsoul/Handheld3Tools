@@ -37,9 +37,7 @@ public class UhfController implements IUhfOperation {
   }
 
   @Override public byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
-    byte[] read = uhfOperation.read(mb, sa, readLen, filter, mmb, msa);
-    byte[] parseData = UhfCmd.parseData(read);
-    return parseData;
+    return uhfOperation.read(mb, sa, readLen, filter, mmb, msa);
   }
 
   @Override public void readAsync(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
@@ -94,7 +92,7 @@ public class UhfController implements IUhfOperation {
   }
 
   private static class SingletonHolder {
-    private static final UhfController instance = new UhfController(new UhfOperationRd());
+    private static final UhfController instance = new UhfController(new UhfOperationSerial());
   }
 
   public static UhfController getInstance() {

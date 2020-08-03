@@ -24,7 +24,6 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/spinner_init_bag_bagType"
       />
-
   <Button
       android:id="@+id/btn_init_bag3_ok"
       android:layout_width="wrap_content"
@@ -36,19 +35,6 @@
       android:text="初始化"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      />
-
-  <Button
-      android:id="@+id/btn_barcode_stopScan"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="8dp"
-      android:padding="5dp"
-      android:text="写"
-      android:visibility="invisible"
-      app:layout_constraintBottom_toBottomOf="@id/btn_init_bag3_ok"
-      app:layout_constraintEnd_toStartOf="@id/btn_init_bag3_ok"
-      app:layout_constraintTop_toTopOf="@id/btn_init_bag3_ok"
       />
   <Spinner
       android:id="@+id/spinner_init_bag_cityType"
@@ -67,7 +53,6 @@
       app:layout_constraintStart_toStartOf="@id/spinner_init_bag_cityType"
       app:layout_constraintTop_toBottomOf="@id/spinner_init_bag_cityType"
       />
-
   <Spinner
       android:id="@+id/spinner_init_bag_bagType"
       android:layout_width="wrap_content"
@@ -75,5 +60,16 @@
       app:layout_constraintEnd_toEndOf="@id/spinner_init_bag_cityType"
       app:layout_constraintStart_toStartOf="@id/spinner_init_bag_cityType"
       app:layout_constraintTop_toBottomOf="@id/spinner_init_bag_moneyType"
+      />
+  <Switch
+      android:id="@+id/switch_init_bag"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:checked="true"
+      android:text="数据复验"
+      app:layout_constraintBottom_toBottomOf="@id/btn_init_bag3_ok"
+      app:layout_constraintEnd_toStartOf="@id/btn_init_bag3_ok"
+      app:layout_constraintTop_toTopOf="@id/btn_init_bag3_ok"
       />
 </androidx.constraintlayout.widget.ConstraintLayout>
