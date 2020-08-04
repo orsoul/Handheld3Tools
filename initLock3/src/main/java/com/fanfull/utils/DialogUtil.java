@@ -242,6 +242,8 @@ public class DialogUtil {
   }
 
   public void showSetIpPopup(SetIpFullScreenPopup.SetIpCallback callback) {
-    new XPopup.Builder(mAct).asCustom(new SetIpFullScreenPopup(mAct, callback)).show();
+    new XPopup.Builder(mAct).autoOpenSoftInput(false)
+        .asCustom(new SetIpFullScreenPopup(mAct, callback))
+        .show();
   }
 }

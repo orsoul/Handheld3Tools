@@ -9,10 +9,12 @@ import com.fanfull.contexts.MyContexts;
 import com.fanfull.db.DaoMaster;
 import com.fanfull.db.DaoMaster.OpenHelper;
 import com.fanfull.db.DaoSession;
+import com.fanfull.initbag3.BuildConfig;
 import com.wanjian.cockroach.Cockroach;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.LogHelper;
 import org.orsoul.baselib.util.SoundUtils;
+import pl.com.salsoft.sqlitestudioremote.SQLiteStudioService;
 
 public class BaseApplication extends Application {
   private static Context context;
@@ -27,6 +29,12 @@ public class BaseApplication extends Application {
     LogHelper.initLog(true);
     LogHelper.initFileLog(true, this);
     SoundUtils.loadSounds(this);
+
+    if (BuildConfig.DEBUG) {
+      SQLiteStudioService.instance().start(this);
+    }
+    //SQLiteOnWeb.init(this, 7788).start();
+    //SQLiteOnWeb.init(this).start();
     //initCrashHandler();
   }
 

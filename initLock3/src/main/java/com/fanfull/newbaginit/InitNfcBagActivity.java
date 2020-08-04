@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -509,7 +511,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   private ReadEPCTask mReadEPCTask; // 读 EPC 任务
 
   private WriteRFIDTask mWriteRFIDTask; // 写 RFID 任务
-  private StartInitTask mStartInitTask;// 请求开始初始化
+  private StartInitTask mStartInitTask; // 请求开始初始化
   private UploadOffTask mUploadOffTask;
 
   private BagOperation mBagOp;
@@ -1033,8 +1035,71 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
     SoundUtils.playNumber(mInitNumber);
   }
 
+  @Override public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main, menu);
+    return true;
+  }
+
+  @Override public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    return onOptionsItemSelected(id);
+  }
+
+  private boolean onOptionsItemSelected(int itemId) {
+    switch (itemId) {
+      case R.id.menu_old_bag:
+        break;
+      case R.id.menu_setting:
+        break;
+      case R.id.menu_setting_ip:
+        Intent intent = new Intent(this, SettingIPActivity.class);
+        startActivityForResult(intent, 1025);
+        break;
+      case R.id.menu_about:
+        startActivity(new Intent(this, AboutActivity.class));
+        break;
+      default:
+        return false;
+    }
+    return true;
+  }
+
   @Override
-  protected void onDestroy() {
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_7:
+        onOptionsItemSelected(R.id.menu_setting_ip);
+        break;
+      case KeyEvent.KEYCODE_8:
+        onOptionsItemSelected(R.id.menu_old_bag);
+        break;
+      case KeyEvent.KEYCODE_9:
+        onOptionsItemSelected(R.id.menu_setting);
+        break;
+      case KeyEvent.KEYCODE_0:
+        onOptionsItemSelected(R.id.menu_about);
+        break;
+      case KeyEvent.KEYCODE_SHIFT_LEFT:
+      case KeyEvent.KEYCODE_F2:
+        openOptionsMenu();
+        break;
+      default:
+        return super.onKeyDown(keyCode, event);
+    }
+    return true;
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    LogUtils.i("requestCode:%s, resultCode:%s, data:%s", requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override protected void onNewIntent(Intent intent) {
+    LogUtils.i(intent);
+    super.onNewIntent(intent);
+  }
+
+  @Override protected void onDestroy() {
     SPUtils.putInt(InitNfcBagActivity.this,
         MyContexts.KEY_LAST_INIT_NUMBER, mInitNumber);
 
@@ -1062,23 +1127,6 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
     super.onDestroy();
     android.os.Process.killProcess(android.os.Process.myPid());
     System.exit(0);
-  }
-
-  @Override public boolean onMenuOpened(int featureId, Menu menu) {
-    Intent intent = new Intent(InitNfcBagActivity.this,
-        SettingPowerActivity.class);
-    startActivity(intent);
-    return super.onMenuOpened(featureId, menu);
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    LogUtils.i("requestCode:%s, resultCode:%s, data:%s", requestCode, resultCode, data);
-    super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override protected void onNewIntent(Intent intent) {
-    LogUtils.i(intent);
-    super.onNewIntent(intent);
   }
 
   private boolean setpower(int read, int write) {

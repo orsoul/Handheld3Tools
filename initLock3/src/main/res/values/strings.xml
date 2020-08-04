@@ -2,7 +2,7 @@
 <resources>
 
   <string name="app_name">袋初始化</string>
-  <string name="action_settings">Settings</string>
+
   <string name="quit">quit</string>
   <string name="changbag">换袋操作</string>
   <string name="scan_old_bag_code">是否扫描旧袋码</string>
@@ -68,6 +68,12 @@
   <string name="show1_check">地区</string>
   <string name="show2_check">币种</string>
   <string name="show3_check">券别</string>
+
+  <!-- menu -->
+  <string name="menu_old_bag">老袋检测</string>
+  <string name="menu_setting">设置</string>
+  <string name="menu_setting_ip">IP设置</string>
+  <string name="menu_about">设备信息</string>
 
 
 </resources>
