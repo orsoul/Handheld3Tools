@@ -17,7 +17,8 @@
       android:label="@string/app_name"
       android:theme="@style/AppTheme"
       tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-    <activity android:name="com.fanfull.activity.AboutActivity"></activity>
+    <activity android:name="com.fanfull.activity.CheckOldBagActivity"></activity>
+    <activity android:name="com.fanfull.activity.AboutActivity" />
     <activity
         android:name="com.fanfull.activity.InitNfcBagActivity"
         android:label="@string/app_name">

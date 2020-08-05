@@ -592,6 +592,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   private boolean onOptionsItemSelected(int itemId) {
     switch (itemId) {
       case R.id.menu_old_bag:
+        startActivity(new Intent(this, CheckOldBagActivity.class));
         break;
       case R.id.menu_setting:
         break;
@@ -689,7 +690,6 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
     mQuSpinerPopWindow.setWidth(mQuTView.getWidth());
     mQuSpinerPopWindow.showAsDropDown(mQuTView);
   }
-
 
   private class MyInitBagTask extends InitBagTask {
 

@@ -51,4 +51,8 @@ public class SettingIPActivity extends BaseActivity {
 
     mBtnQuit.setOnClickListener(v -> finish());
   }
+
+  @Override public void onBackPressed() {
+    finish();
+  }
 }
