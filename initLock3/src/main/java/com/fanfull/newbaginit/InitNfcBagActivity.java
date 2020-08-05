@@ -34,6 +34,7 @@ import com.fanfull.operation.BagOperation;
 import com.fanfull.operation.NFCBagOperation;
 import com.fanfull.operation.RFIDOperation;
 import com.fanfull.operation.UHFOperation;
+import com.fanfull.room.Bag3Entity;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.ArrayUtils;
@@ -1210,9 +1211,19 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   }
 
   private class MyInitBagTask extends InitBagTask {
+
+    private Bag3Entity bag3Entity = new Bag3Entity();
+
+    public Bag3Entity getBag3Entity() {
+      return bag3Entity;
+    }
+
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
-      ToastUtils.showShort("用时：%.2f秒", ClockUtil.resetRunTime() / 1000.0);
+      ToastUtils.showShort("用时：%.2f秒", ClockUtil.runTime() / 1000.0);
+
+      bag3Entity.insert(bagIdParser.getBagId(), ArrayUtils.bytesToHexString(tid));
+
       runOnUiThread(() -> {
         tvBagId.setText(bagIdParser.getFormatBagId());
         if (isOfflineMode) {
@@ -1645,6 +1656,8 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
       switch (split[0]) {
         case "*ib":
           if ("Ok".equals(split[1])) {
+            Bag3Entity bag3Entity = initBagTask.getBag3Entity();
+            bag3Entity.update(Bag3Entity.STATUS_UPLOAD);
             mHandler.sendEmptyMessage(MSG_NET_SUCCESS);
           } else if ("01".equals(split[1])) {
             mHandler.sendEmptyMessage(MSG_NET_INIT_SAME);
@@ -1657,6 +1670,8 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           }
           break;
         case "*rp":
+          Bag3Entity bag3Entity = initBagTask.getBag3Entity();
+          bag3Entity.update(Bag3Entity.STATUS_UPLOAD_AGAIN);
           mHandler.sendEmptyMessage(MSG_NET_SUCCESS);
           //if (BagIdParser.isBagId(split[1])) {
           //  mHandler.sendEmptyMessage(MSG_NET_SUCCESS);

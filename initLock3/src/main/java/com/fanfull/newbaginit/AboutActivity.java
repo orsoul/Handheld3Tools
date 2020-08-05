@@ -1,6 +1,8 @@
 package com.fanfull.newbaginit;
 
 import android.os.Bundle;
+import com.amitshekhar.DebugDB;
+import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.initbag3.BuildConfig;
@@ -36,6 +38,14 @@ public class AboutActivity extends BaseActivity {
         DeviceInfoUtils.getMyDeviceModel(),
         DeviceInfoUtils.getMyDeviceId()));
     aboutPage.addItem(element);
+
+    if (BuildConfig.DEBUG) {
+      String addressLog = DebugDB.getAddressLog();
+      LogUtils.i("DebugDB:%s", addressLog);
+      element = new Element();
+      element.setTitle(String.format("数据管理：%s", addressLog));
+      aboutPage.addItem(element);
+    }
 
     setContentView(aboutPage.create());
   }
