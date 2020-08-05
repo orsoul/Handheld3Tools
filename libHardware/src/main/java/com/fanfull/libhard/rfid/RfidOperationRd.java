@@ -285,7 +285,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     if (readSuccess) {
       reVal = data;
     }
-    LogUtils.wtf("%s 高频卡 %s：%s", readSuccess, block, ArrayUtils.bytes2HexString(data));
+    LogUtils.tag(TAG).v("%s:%s-%s", readSuccess, block, ArrayUtils.bytes2HexString(data));
     return reVal;
   }
 
