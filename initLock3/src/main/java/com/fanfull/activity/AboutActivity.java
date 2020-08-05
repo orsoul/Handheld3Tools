@@ -1,4 +1,4 @@
-package com.fanfull.newbaginit;
+package com.fanfull.activity;
 
 import android.os.Bundle;
 import com.amitshekhar.DebugDB;
@@ -34,7 +34,7 @@ public class AboutActivity extends BaseActivity {
     aboutPage.addItem(element);
 
     element = new Element();
-    element.setTitle(String.format("设备型号：%s\n设备号：%s\n",
+    element.setTitle(String.format("设备型号：%s\n设备号：\n%s",
         DeviceInfoUtils.getMyDeviceModel(),
         DeviceInfoUtils.getMyDeviceId()));
     aboutPage.addItem(element);
@@ -43,7 +43,7 @@ public class AboutActivity extends BaseActivity {
       String addressLog = DebugDB.getAddressLog();
       LogUtils.i("DebugDB:%s", addressLog);
       element = new Element();
-      element.setTitle(String.format("数据管理：%s", addressLog));
+      element.setTitle(String.format("数据管理：\n%s", addressLog));
       aboutPage.addItem(element);
     }
 

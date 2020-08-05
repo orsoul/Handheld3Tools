@@ -5,10 +5,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import com.blankj.utilcode.util.ToastUtils;
-import com.fanfull.contexts.MyContexts;
-import com.fanfull.db.DaoMaster;
-import com.fanfull.db.DaoMaster.OpenHelper;
-import com.fanfull.db.DaoSession;
 import com.fanfull.room.Bag3DbHelper;
 import com.wanjian.cockroach.Cockroach;
 import org.orsoul.baselib.util.CrashLogUtil;
@@ -17,8 +13,6 @@ import org.orsoul.baselib.util.SoundUtils;
 
 public class BaseApplication extends Application {
   private static Context context;
-  private static DaoMaster daoMaster;
-  private static DaoSession daoSession;
 
   @Override
   public void onCreate() {
@@ -50,24 +44,5 @@ public class BaseApplication extends Application {
 
   public static Context getContext() {
     return context;
-  }
-
-  public static DaoMaster getDaoMaster(Context context) {
-    if (daoMaster == null) {
-      OpenHelper helper = new DaoMaster.DevOpenHelper(context,
-          MyContexts.DB_NAME, null);
-      daoMaster = new DaoMaster(helper.getWritableDatabase());
-    }
-    return daoMaster;
-  }
-
-  public static DaoSession getDaoSession(Context context) {
-    if (daoSession == null) {
-      if (daoMaster == null) {
-        daoMaster = getDaoMaster(context);
-      }
-      daoSession = daoMaster.newSession();
-    }
-    return daoSession;
   }
 }

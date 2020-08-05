@@ -17,9 +17,9 @@
       android:label="@string/app_name"
       android:theme="@style/AppTheme"
       tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-    <activity android:name="com.fanfull.newbaginit.AboutActivity"></activity>
+    <activity android:name="com.fanfull.activity.AboutActivity"></activity>
     <activity
-        android:name="com.fanfull.newbaginit.InitNfcBagActivity"
+        android:name="com.fanfull.activity.InitNfcBagActivity"
         android:label="@string/app_name">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -28,15 +28,11 @@
       </intent-filter>
     </activity>
     <activity
-        android:name="com.fanfull.newbaginit.SettingPowerActivity"
+        android:name="com.fanfull.activity.SettingIPActivity"
         android:label="@string/app_name"
         android:launchMode="singleTask" />
     <activity
-        android:name="com.fanfull.newbaginit.SettingIPActivity"
-        android:label="@string/app_name"
-        android:launchMode="singleTask" />
-    <activity
-        android:name="com.fanfull.newbaginit.ZhuangXiangActivity"
+        android:name="com.fanfull.activity.ZhuangXiangActivity"
         android:label="@string/app_name"
         android:launchMode="singleTask" />
   </application>

@@ -240,29 +240,23 @@
       android:layout_height="wrap_content"
       android:layout_alignParentBottom="true"
       android:layout_centerHorizontal="true"
-      android:layout_marginBottom="5dp"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginBottom="8dp"
+      android:gravity="center"
       android:orientation="horizontal"
       >
 
     <Button
         android:id="@+id/btn_init_bag_ok"
         style="@style/activity_btn"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
         android:enabled="false"
-        android:padding="5dp"
-
+        android:padding="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:text="开  始"
-        />
-
-    <Button
-        android:id="@+id/btn_init_bag_off_line"
-        style="@style/activity_btn"
-        android:layout_width="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_weight="1"
-        android:text="离线上传"
-        android:visibility="gone"
+        android:textSize="16sp"
         />
 
     <Button
@@ -273,6 +267,7 @@
         android:layout_marginRight="30dp"
         android:layout_weight="1"
         android:text="装箱"
+        android:visibility="gone"
         />
 
     <Button
@@ -281,6 +276,7 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:text="退  出"
+        android:visibility="gone"
         />
 
   </LinearLayout>

@@ -1,14 +1,14 @@
-package com.fanfull.newbaginit;
+package com.fanfull.activity;
 
 import android.widget.Button;
 import android.widget.TextView;
 import com.blankj.utilcode.util.RegexUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.initbag3.R;
 import com.fanfull.utils.SPUtils;
-import com.fanfull.utils.ToastUtil;
 import com.orsoul.view.IPEditText;
 import org.orsoul.baselib.util.ViewUtil;
 
@@ -41,11 +41,11 @@ public class SettingIPActivity extends BaseActivity {
     mBtnChangeIP.setOnClickListener(v -> {
       String ip1 = mVSetIP.getText();
       if (!RegexUtils.isIP(ip1)) {
-        ToastUtil.showToastInCenter("ip地址不合法");
+        ToastUtils.showShort("ip地址不合法");
         return;
       }
       SPUtils.putString(MyContexts.Key_IP1, ip1);
-      ToastUtil.showToastInCenter("修改成功");
+      ToastUtils.showShort("修改成功");
       finish();
     });
 

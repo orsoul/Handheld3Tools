@@ -4,8 +4,6 @@ import android.text.TextUtils;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
-import com.fanfull.factory.ThreadPoolFactory;
-import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.SPUtils;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
@@ -109,7 +108,7 @@ public class SocketConnet implements Runnable {
     }
     try {
       out.write(dataBuff);
-      LogUtils.tag(TAG).d("send:%s", ArrayUtils.bytesToHexString(dataBuff));
+      LogUtils.tag(TAG).d("send:%s", ArrayUtils.bytes2HexString(dataBuff));
       return true;
     } catch (IOException e) {
       LogUtils.tag(TAG).w("%s", e.getMessage());
@@ -182,7 +181,7 @@ public class SocketConnet implements Runnable {
     count++;
     mSendTask.setProperty(taskid, getIntString(count));// 设置S的值
     StaticString.information = null;
-    ThreadPoolFactory.getNormalPool().execute(mSendTask);
+    ThreadUtil.execute(mSendTask);
   }
 
   public void communication() {

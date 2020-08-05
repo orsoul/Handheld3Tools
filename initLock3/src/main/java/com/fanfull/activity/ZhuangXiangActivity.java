@@ -1,4 +1,4 @@
-package com.fanfull.newbaginit;
+package com.fanfull.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,29 +10,25 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
-import com.fanfull.factory.ThreadPoolFactory;
 import com.fanfull.initbag3.R;
-import com.fanfull.operation.BagOperation;
-import com.fanfull.operation.NFCBagOperation;
-import com.fanfull.operation.UHFOperation;
+import com.fanfull.libhard.rfid.RfidController;
+import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.socket.ReplyParser;
 import com.fanfull.socket.SocketConnet;
-import com.fanfull.utils.ArrayUtils;
 import com.fanfull.utils.DialogUtil;
 import com.fanfull.utils.SPUtils;
-import com.fanfull.utils.ToastUtil;
 import java.util.HashSet;
 import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class ZhuangXiangActivity extends BaseActivity {
   private final static String TAG = ZhuangXiangActivity.class.getSimpleName();
 
-  private BagOperation mBagOp;
-  private NFCBagOperation mNfcBagOp;
   private int mInitNumber = 0;
   private Button mBtnOK;
   private Button mBtnCancel;
@@ -54,7 +50,6 @@ public class ZhuangXiangActivity extends BaseActivity {
 
   private final static int HAD_FILL_XIANG = 16;
 
-  private UHFOperation mUHFOp;
   private boolean haveTaskRunning = false;// 记录当前界面是否有子线程在运行
   private byte[] mTID;
 
@@ -86,9 +81,6 @@ public class ZhuangXiangActivity extends BaseActivity {
     mTvInitRecoverNumber = (TextView) findViewById(R.id.tv_sum_recover);
     mTvInitRecoverNumber.setOnClickListener(this);
 
-    mUHFOp = UHFOperation.getInstance();
-    ;
-    mBagOp = new BagOperation();
     mReadRFIDTask = new ReadRFIDTask();
     mReadEPCTask = new ReadEPCTask();
 
@@ -129,7 +121,7 @@ public class ZhuangXiangActivity extends BaseActivity {
     mInitNumber = SPUtils.getInt(this, MyContexts.KEY_LAST_ZX_NUMBER, 0);
     mTvInitNumber.setText(mInitNumber + "");
 
-    ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+    ThreadUtil.execute(new Runnable() {
 
       @Override
       public void run() {
@@ -158,15 +150,15 @@ public class ZhuangXiangActivity extends BaseActivity {
             mBtnOK.setText("进行中..");
             mBtnOK.setEnabled(false);
             mBtnCancel.setText("取消");
-            ThreadPoolFactory.getNormalPool().execute(mReadEPCTask);
+            ThreadUtil.execute(mReadEPCTask);
             return;
           } else if (mRfidBox.isChecked()) {
             mBtnOK.setText("进行中..");
             mBtnOK.setEnabled(false);
             mBtnCancel.setText("取消");
-            ThreadPoolFactory.getNormalPool().execute(mReadRFIDTask);
+            ThreadUtil.execute(mReadRFIDTask);
           } else {
-            ToastUtil.showToastInCenter("请勾选袋码或者标签码");
+            ToastUtils.showShort("请勾选袋码或者标签码");
           }
         }
 
@@ -178,7 +170,7 @@ public class ZhuangXiangActivity extends BaseActivity {
           haveTaskRunning = false;
           mReadEPCTask.stop();
           mReadEPCTask.stop();
-          ToastUtil.showToastInCenter("已经结束扫描，再次点击退出");
+          ToastUtils.showShort("已经结束扫描，再次点击退出");
         }
 
         break;
@@ -197,8 +189,7 @@ public class ZhuangXiangActivity extends BaseActivity {
 
     super.onDestroy();
     mHashSet.clear();
-    ThreadPoolFactory.getNormalPool().execute(new Runnable() {
-
+    ThreadUtil.execute(new Runnable() {
       @Override
       public void run() {
         if (!SocketConnet.getInstance().isConnect()) {
@@ -224,22 +215,22 @@ public class ZhuangXiangActivity extends BaseActivity {
           haveTaskRunning = false;
           mBtnCancel.setText("返回");
 
-          if (mUHFOp.mEPC != null && !"05".equals(StaticString.bagid.substring(0, 2))) {
-            ToastUtil.showToastInCenter("该袋尚未初始化");
+          StaticString.bagid = String.valueOf(msg.obj);
+          if (!"05".equals(StaticString.bagid.substring(0, 2))) {
+            ToastUtils.showShort("该袋尚未初始化");
           } else {
             if (mHashSet.contains(StaticString.bagid)) {
               mHandler.sendEmptyMessage(HAD_FILL_XIANG);
               return;
             }
             mInCardInView.append("袋ID:" + StaticString.bagid + "\n");
-            ThreadPoolFactory.getNormalPool().execute(new Runnable() {
+            ThreadUtil.execute(new Runnable() {
 
               @Override
               public void run() {
                 if (!SocketConnet.getInstance().isConnect()) {
                   mHandler.sendEmptyMessage(NET_INIT_NO_CONNET);
                 } else {
-                  StaticString.bagid = ArrayUtils.bytesToHexString(mUHFOp.mEPC);
                   LogUtils.d("id:" + StaticString.bagid);
                   SocketConnet.getInstance().communication(791);
                   if (ReplyParser.waitReply() && StaticString.information.startsWith("*oa ok")) {
@@ -259,7 +250,7 @@ public class ZhuangXiangActivity extends BaseActivity {
           mBtnOK.setEnabled(true);
           haveTaskRunning = false;
           mBtnCancel.setText("返回");
-          ToastUtil.showToastInCenter("该袋已经装箱");
+          ToastUtils.showShort("该袋已经装箱");
           SoundUtils.playFailedSound();
           break;
         case READ_EPC_FAILED:
@@ -270,40 +261,6 @@ public class ZhuangXiangActivity extends BaseActivity {
           SoundUtils.playFailedSound();
           break;
         case READ_EPC_SUCCESS:
-          haveTaskRunning = false;
-          mBtnCancel.setText("返回");
-          mBtnOK.setEnabled(true);
-          if (mUHFOp.mEPC != null && !"05".equals(
-              ArrayUtils.bytesToHexString(mUHFOp.mEPC).substring(0, 2))) {
-            ToastUtil.showToastInCenter("该袋尚未初始化");
-          } else {
-            if (mHashSet.contains(ArrayUtils.bytesToHexString(mUHFOp.mEPC))) {
-              mHandler.sendEmptyMessage(HAD_FILL_XIANG);
-              return;
-            }
-            mInCardInView.append("袋ID:" + ArrayUtils.bytesToHexString(mUHFOp.mEPC) + "\n");
-            ThreadPoolFactory.getNormalPool().execute(new Runnable() {
-
-              @Override
-              public void run() {
-                if (!SocketConnet.getInstance().isConnect()) {
-                  mHandler.sendEmptyMessage(NET_INIT_NO_CONNET);
-                } else {
-                  StaticString.bagid = ArrayUtils.bytesToHexString(mUHFOp.mEPC);
-                  LogUtils.d("id:" + StaticString.bagid);
-                  SocketConnet.getInstance().communication(791);
-                  if (ReplyParser.waitReply() && StaticString.information.startsWith("*oa ok")) {
-                    mHashSet.add(ArrayUtils.bytesToHexString(mUHFOp.mEPC));
-                    mHandler.sendEmptyMessage(NET_INIT_SUCCESS);
-                  } else {
-                    mHandler.sendEmptyMessage(NET_INIT_FAILED);
-                  }
-                }
-              }
-            });
-          }
-          break;
-
         case NET_INIT_SUCCESS:
           mBtnOK.setEnabled(true);
           mInitNumber++;
@@ -353,8 +310,8 @@ public class ZhuangXiangActivity extends BaseActivity {
       LogUtils.tag(TAG).d("mReadRFIDTask run");
       haveTaskRunning = true;
       int count = 0;
-      byte[] tmpID = mBagOp.getUid();
-      while (null == (tmpID = mBagOp.getUid())) {
+      byte[] tmpID = null;
+      while (null == (tmpID = RfidController.getInstance().findNfc())) {
         if (40 < ++count) {
           LogUtils.i("获取袋ID失败");
           break;
@@ -368,9 +325,8 @@ public class ZhuangXiangActivity extends BaseActivity {
         return;
       } else if (tmpID.length == 7) {
         mUid = tmpID;
-        mNfcBagOp = mBagOp.getNfcBagOperation();
         LogUtils.i("扫描袋锁nfc卡成功");
-        if (mNfcBagOp.readBagID() != -1) {
+        if (tmpID != null) {
           mHandler.sendEmptyMessage(READ_RFID_SUCCESS);
         } else {
           mHandler.sendEmptyMessage(READ_RFID_FAILED);
@@ -413,23 +369,11 @@ public class ZhuangXiangActivity extends BaseActivity {
           mHandler.sendEmptyMessage(READ_EPC_FAILED);
           break;
         }
-        if (mUHFOp.findOne()) {// 单次读取EPC
-          if (null != (mTID = mUHFOp.readTIDNogl())) {
-            mHandler.sendEmptyMessage(READ_EPC_SUCCESS);
-            LogUtils.d("READ_EPC_SUCCESS EPC:"
-                + ArrayUtils.bytesToHexString(mUHFOp.mEPC));
-            LogUtils.d("READ_EPC_SUCCESS TID:"
-                + ArrayUtils.bytesToHexString(mTID));
-            break;
-          } else {
-            SystemClock.sleep(GAS << 1);
-          }
+        if (null == UhfController.getInstance().fastEpc(500)) {// 单次读取EPC
+          SystemClock.sleep(GAS << 1);
         }
         SystemClock.sleep(GAS);
       } // end while()
-      LogUtils.d("Read EPC task end");
     }// end run()
   }
-
-  ;
 }

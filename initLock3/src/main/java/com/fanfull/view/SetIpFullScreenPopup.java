@@ -5,11 +5,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.RegexUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.initbag3.R;
 import com.fanfull.utils.SPUtils;
-import com.fanfull.utils.ToastUtil;
 import com.lxj.xpopup.impl.FullScreenPopupView;
 import com.orsoul.view.IPEditText;
 import org.orsoul.baselib.util.ViewUtil;
@@ -49,7 +49,7 @@ public class SetIpFullScreenPopup extends FullScreenPopupView {
     mBtnChangeIP.setOnClickListener(v -> {
       String ip1 = mVSetIP.getText();
       if (!RegexUtils.isIP(ip1)) {
-        ToastUtil.showToastInCenter("ip地址不合法");
+        ToastUtils.showShort("ip地址不合法");
         return;
       }
       SPUtils.putString(MyContexts.Key_IP1, ip1);
