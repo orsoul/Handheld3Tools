@@ -70,6 +70,7 @@
   <string name="show3_check">券别</string>
 
   <!-- menu -->
+  <string name="menu_zx">装箱</string>
   <string name="menu_old_bag">老袋检测</string>
   <string name="menu_setting">设置</string>
   <string name="menu_setting_ip">IP设置</string>

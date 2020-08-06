@@ -1,224 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout1"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-  <LinearLayout
-      android:id="@+id/lin_big"
-      android:layout_width="fill_parent"
+  <com.fanfull.view.ActivityHeadItemView
+      android:id="@+id/v_title"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      >
+      android:text="@string/menu_zx"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      title:showImage="true"
+      />
+
+  <View
+      android:id="@+id/view1"
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray"
+      app:layout_constraintBottom_toTopOf="@id/cb_v_setting_epc"
+      app:layout_constraintEnd_toStartOf="@+id/guideline"
+      app:layout_constraintHorizontal_bias="0.3"
+      app:layout_constraintStart_toStartOf="parent"
+      />
+  <View
+      android:id="@+id/view2"
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray"
+      app:layout_constraintBottom_toTopOf="@+id/cb_v_setting_rfid"
+      app:layout_constraintEnd_toEndOf="@+id/view1"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/cb_v_setting_epc"
+      />
+
+  <View
+      android:id="@+id/view3"
+      android:layout_width="0dp"
+      android:layout_height="1dp"
+      android:background="@android:color/darker_gray"
+      app:layout_constraintEnd_toEndOf="@+id/view1"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/cb_v_setting_rfid"
+      />
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-
-      <FrameLayout
-          android:layout_width="150dp"
-          android:layout_height="wrap_content"
-          android:background="@android:color/transparent"
-          >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:text="择二选一"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="15sp"
-            />
-
-        <CheckBox
-            android:id="@+id/cb_v_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
-            android:scaleX="0.75"
-            android:scaleY="0.75"
-            android:visibility="gone"
-            android:layout_marginRight="15dp"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_gravity="bottom"
-            android:background="@android:color/darker_gray"
-            />
-      </FrameLayout>
-
-      <FrameLayout
-          android:layout_width="150dp"
-          android:layout_height="wrap_content"
-          android:background="@android:color/transparent"
-          >
-
-        <TextView
-            android:id="@+id/tv_v_setting"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:text="袋码"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="15sp"
-            />
-
-        <CheckBox
-            android:id="@+id/cb_v_setting_rfid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
-            android:scaleX="0.75"
-            android:scaleY="0.75"
-            android:layout_marginRight="15dp"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_gravity="bottom"
-            android:background="@android:color/darker_gray"
-            />
-      </FrameLayout>
-
-      <FrameLayout
-          android:layout_width="150dp"
-          android:layout_height="wrap_content"
-          android:background="@android:color/transparent"
-          >
-
-        <TextView
-            android:id="@+id/tv_bq"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="5dp"
-            android:text="标签码"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="15sp"
-            />
-
-        <CheckBox
-            android:id="@+id/cb_v_setting_epc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right|center_vertical"
-            android:scaleX="0.75"
-            android:scaleY="0.75"
-            android:checked="true"
-            android:layout_marginRight="15dp"
-            />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_gravity="bottom"
-            android:background="@android:color/darker_gray"
-            />
-      </FrameLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        >
-
-      <TextView
-          android:id="@+id/tv_init_num"
-          android:layout_width="wrap_content"
-          android:layout_height="0dp"
-          android:layout_weight="0.7"
-          android:layout_gravity="center_horizontal"
-          android:gravity="center_vertical"
-          android:textColor="@color/yellow"
-          android:textSize="70sp"
-          android:text="20"
-          />
-
-      <TextView
-          android:id="@+id/tv_sum_recover"
-          android:layout_width="wrap_content"
-          android:layout_height="0dp"
-          android:layout_gravity="center_horizontal"
-          android:layout_weight="0.3"
-          android:layout_marginTop="5dp"
-          android:textColor="@color/white"
-          android:textSize="20sp"
-          android:text="重新计数"
-          />
-    </LinearLayout>
-
-  </LinearLayout>
-
-
-  <RelativeLayout
+  <TextView
+      android:id="@+id/tv_init_num"
       android:layout_width="wrap_content"
-      android:layout_above="@+id/btn_first_re"
-      android:layout_below="@+id/lin_big"
-      android:layout_height="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:gravity="center"
+      android:text="20"
+      android:textColor="@color/yellow"
+      android:textSize="60sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="@+id/guideline"
+      app:layout_constraintTop_toBottomOf="@+id/v_title"
+      />
+  <TextView
+      android:id="@+id/tv_sum_recover"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:text="重新计数"
+      android:textColor="@color/white"
+      android:textSize="20sp"
+      app:layout_constraintEnd_toEndOf="@+id/tv_init_num"
+      app:layout_constraintStart_toStartOf="@+id/tv_init_num"
+      app:layout_constraintTop_toBottomOf="@+id/tv_init_num"
+      />
+  <ScrollView
+      android:id="@+id/scrollView2"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_marginBottom="8dp"
+      app:layout_constraintBottom_toTopOf="@+id/btn_init_bag_ok"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/tv_sum_recover"
       >
-
-    <ScrollView
+    <TextView
+        android:id="@+id/cardinf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:textSize="16sp"
+        />
+  </ScrollView>
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="vertical"
-          >
-
-        <TextView
-            android:id="@+id/cardinf"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            />
-
-      </LinearLayout>
-    </ScrollView>
-  </RelativeLayout>
-
-
-  <LinearLayout
-      android:id="@+id/btn_first_re"
-      android:layout_width="fill_parent"
+  <Button
+      android:id="@+id/btn_init_bag_ok"
+      style="@style/activity_btn"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:layout_marginTop="20dp"
-      android:layout_marginBottom="10dp"
-      android:orientation="horizontal"
-      >
+      android:layout_marginBottom="16dp"
+      android:paddingStart="16dp"
+      android:paddingEnd="16dp"
+      android:text="开  始"
+      android:textSize="16sp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      />
+  <CheckBox
+      android:id="@+id/cb_v_setting_epc"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="8dp"
+      android:checked="true"
+      android:scaleX="0.75"
+      android:scaleY="0.75"
+      android:text="读超高频"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/v_title"
+      />
+  <CheckBox
+      android:id="@+id/cb_v_setting_rfid"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:checked="true"
+      android:scaleX="0.75"
+      android:scaleY="0.75"
+      android:text="读NFC"
+      app:layout_constraintBottom_toBottomOf="@+id/tv_sum_recover"
+      app:layout_constraintStart_toStartOf="@+id/cb_v_setting_epc"
+      />
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.5"
+      />
 
-    <Button
-        android:id="@+id/btn_init_bag_ok"
-        style="@style/activity_btn"
-        android:layout_width="0dp"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="1"
-        android:text="开   始"
-        />
-
-
-    <Button
-        android:id="@+id/btn_init_bag_cancel"
-        style="@style/activity_btn"
-        android:layout_width="0dp"
-        android:layout_marginLeft="20dp"
-        android:layout_weight="1"
-        android:text="返   回"
-        />
-
-  </LinearLayout>
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

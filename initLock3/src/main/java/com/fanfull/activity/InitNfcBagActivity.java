@@ -120,7 +120,6 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   private TextView mTvInitNumber;
   private TextView mTvInitRecoverNumber;
 
-  private byte mUid[];
   // 任务进度
   private final int STEP_READ_EPC = 1;
 
@@ -158,37 +157,16 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   private final static int SQL_NET_INIT_SAME = 20;
   protected static final int CONNECT_FAILED = 21;
   protected static final int CONNECT_SUCCESS = 22;
-  protected static final int CONNECT_ING = 23;
   protected static final int CONNECT_FAILED_FIRST = 24;
-
-  private final static int NET_RP_SUCCESS = 25;
 
   private final static int NET_RP_FAILED = 26;
 
   private final static int MSG_NET_SUCCESS = 27;
   private final static int MSG_NET_FAILED = 28;
   private final static int MSG_NET_INIT_SAME = 29;
-  private final static int MSG_TIMEOUT = 30;
 
   private boolean haveTaskRunning;// 记录当前界面是否有子线程在运行
-  private byte[] mTID;
-
-  public byte[] tempEPC = null;// 保存EPC
-  private byte[] mNewBagID = null;
   private int mStep = STEP_READ_EPC;
-
-  private byte[] mIndexData = new byte[] {
-      (byte) 0x04, (byte) 0x03,
-      (byte) 0x01, (byte) 0x10, (byte) 0x01, (byte) 0x01, (byte) 0x30,
-      (byte) 0x0f, (byte) 0x00, (byte) 0x40, (byte) 0x01, (byte) 0x00
-  };
-  private byte[] mInit12_16 = new byte[] {
-      (byte) 0x00, (byte) 0x00,
-      (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-      (byte) 0x00, (byte) 0xA1, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-      (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00,
-      (byte) 0x00, (byte) 0x00, (byte) 0x00,
-  };
 
   private int mOffCount = 0;
 
@@ -393,9 +371,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
 
       @Override
       public boolean onLongClick(View v) {
-        Intent intent = new Intent(InitNfcBagActivity.this,
-            SettingIPActivity.class);
-        startActivity(intent);
+        openOptionsMenu();
         return true;
       }
     });
@@ -454,7 +430,6 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
     initBagTask = new MyInitBagTask();
 
     initBagIdSelect();
-    mUid = new byte[7];
     checkNet();
     mBtnOK.setEnabled(true);
   }
@@ -591,6 +566,9 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
 
   private boolean onOptionsItemSelected(int itemId) {
     switch (itemId) {
+      case R.id.menu_zx:
+        startActivity(new Intent(this, ZhuangXiangActivity.class));
+        break;
       case R.id.menu_old_bag:
         startActivity(new Intent(this, CheckOldBagActivity.class));
         break;
@@ -612,6 +590,9 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
     switch (keyCode) {
+      case KeyEvent.KEYCODE_6:
+        onOptionsItemSelected(R.id.menu_zx);
+        break;
       case KeyEvent.KEYCODE_7:
         onOptionsItemSelected(R.id.menu_setting_ip);
         break;
@@ -635,7 +616,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    LogUtils.i("requestCode:%s, resultCode:%s, data:%s", requestCode, resultCode, data);
+    //LogUtils.i("requestCode:%s, resultCode:%s, data:%s", requestCode, resultCode, data);
     super.onActivityResult(requestCode, resultCode, data);
   }
 
