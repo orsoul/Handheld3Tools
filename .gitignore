@@ -88,5 +88,10 @@ lint/tmp/
 */build/
 /apk
 /.svn
-.idea/sqlandroid.xml
+
+# checkstyle
 .idea/checkstyleidea-libs/
+
+# sql android
+/AndroidSqlEditorDatabases
+.idea/sqlandroid.xml

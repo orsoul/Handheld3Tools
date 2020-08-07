@@ -4,28 +4,31 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ThreadUtil {
-  private static ExecutorService threadPool;
+  private static ExecutorService normalThreadPool;
   private static ExecutorService singleThreadPool;
 
-  private static void createCachePool() {
-    if (threadPool == null) {
+  private static void createNormalThreadPool() {
+    if (normalThreadPool == null) {
       synchronized (ThreadUtil.class) {
-        if (threadPool == null) {
-          threadPool = Executors.newCachedThreadPool(
-              getNameFormatThreadFactory("CachePool"));
+        if (normalThreadPool == null) {
+          normalThreadPool = new ThreadPoolExecutor(3, 32,
+              3000L, TimeUnit.MILLISECONDS,
+              new LinkedBlockingQueue<>(), getNameFormatThreadFactory("FixedThread"));
         }
       }
     }
   }
 
   public static void execute(Runnable task) {
-    createCachePool();
-    threadPool.execute(task);
+    createNormalThreadPool();
+    normalThreadPool.execute(task);
   }
 
   public static void executeInSingleThread(Runnable task) {
@@ -42,10 +45,15 @@ public class ThreadUtil {
   }
 
   public static <T> Future<T> submit(Callable<T> task) {
-    createCachePool();
-    return threadPool.submit(task);
+    createNormalThreadPool();
+    return normalThreadPool.submit(task);
   }
 
+  /**
+   * 线程休眠.
+   *
+   * @return 被中断返回false
+   */
   public static boolean sleep(long millis) {
     try {
       Thread.sleep(millis);
