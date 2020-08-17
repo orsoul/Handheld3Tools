@@ -74,6 +74,30 @@ public abstract class ArrayUtils {
     return reVal;
   }
 
+  /** 拼接数组.为null的数组会被忽略 */
+  public static byte[] concatArray(byte[]... args) {
+    if (args == null) {
+      return null;
+    }
+    int len = 0;
+    for (byte[] arg : args) {
+      if (arg != null) {
+        len += arg.length;
+      }
+    }
+
+    byte[] reVal = new byte[len];
+    int offset = 0;
+    for (byte[] arg : args) {
+      if (arg == null) {
+        continue;
+      }
+      System.arraycopy(arg, 0, reVal, offset, arg.length);
+      offset += arg.length;
+    }
+    return reVal;
+  }
+
   /**
    * 将基金袋上的袋id通过每两位异或得到检验位，合成新的芯片的袋id
    */

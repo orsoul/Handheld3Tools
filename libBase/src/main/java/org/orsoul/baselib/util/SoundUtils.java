@@ -20,7 +20,9 @@ public class SoundUtils {
   private static final int PRIORITY = 1; // 指定播放声音的优先级，数值越高，优先级越大。
   /** 指定是否循环。-1表示无限循环，0播放1次,n 表示 循环 n次 */
   private static final int LOOP = 0;
-  private static final float RATE = 1;// 指定播放速率。1.0为原始频率,2.0 为两倍播放
+  private static final float RATE = 1; // 指定播放速率。1.0为原始频率,2.0 为两倍播放
+
+  private static boolean isSilence;
 
   /** 连续播放声音的 时间隔 */
   private static final int PLAY_INTERVAL = 300;
@@ -117,9 +119,11 @@ public class SoundUtils {
 
   public static void setVolume(boolean silence) {
     if (silence) {
-      setVolume(0);
+      isSilence = true;
+      //setVolume(0);
     } else {
-      setVolume(DEFAULT_VOLUME);
+      isSilence = false;
+      //setVolume(DEFAULT_VOLUME);
     }
   }
 
@@ -129,6 +133,9 @@ public class SoundUtils {
    * @param id soundpool中声音流的id
    */
   private static void play(int id) {
+    if (isSilence) {
+      return;
+    }
     mSoundPool.play(id, volume, volume, PRIORITY, LOOP, RATE);
     // LogsUtil.s("sound play : " + id);
   }
@@ -139,6 +146,9 @@ public class SoundUtils {
    * @param indexs 可变参数, 从 mSoundIds[indexs] 获得 声音流 的id
    */
   private static void playArr(int... indexs) {
+    if (isSilence) {
+      return;
+    }
     for (int i = 0; i < indexs.length; i++) {
       SoundUtils.play(mSoundIds[indexs[i]]);
       // 连续 报数的 时间 隔
@@ -152,6 +162,9 @@ public class SoundUtils {
    * @param n 需要 播报 的数字, 范围应在 0~999
    */
   public static void playNumber(int n) {
+    if (isSilence) {
+      return;
+    }
     if (n < 0 || 999 < n) {
       return;
     }
