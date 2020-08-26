@@ -70,13 +70,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       case KeyEvent.KEYCODE_3:
         FingerPrint.getInstance().stopSearchFinger();
         break;
+      case KeyEvent.KEYCODE_4:
+      case KeyEvent.KEYCODE_5:
+      case KeyEvent.KEYCODE_6:
+        break;
       case KeyEvent.KEYCODE_7:
         throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
         CrashLogUtil.logException(new RuntimeException("test log exception"));
         break;
       default:
-        break;
+        return super.onKeyDown(keyCode, event);
     }
 
     return super.onKeyDown(keyCode, event);

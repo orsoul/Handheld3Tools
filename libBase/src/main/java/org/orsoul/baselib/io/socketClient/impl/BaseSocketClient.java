@@ -49,6 +49,11 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
     return this.listenerSet.add(listener);
   }
 
+  public void setIpPort(String ip, int port) {
+    ops.serverIp = ip;
+    ops.serverPort = port;
+  }
+
   @Override public boolean isConnected() {
     return connected;
   }
@@ -65,7 +70,7 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
     isConnecting = true;
     try {
       // 1. 初始化Socket
-      if (socket == null || socket.isClosed()) {
+      if (socket == null || !socket.isConnected()) {
         socket = new Socket();
       }
 
