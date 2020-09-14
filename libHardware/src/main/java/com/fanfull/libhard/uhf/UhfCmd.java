@@ -696,7 +696,7 @@ public abstract class UhfCmd {
     return CMD_READ_LOT;
   }
 
-  public static byte[] getSetPwdCmd(int pwd, byte[] filter, int mmb, int msa) {
+  public static byte[] getSetPwdCmd(int pwd, byte[] filter, int mmb, int msa, int ld) {
 
     if (null == filter) {
       filter = new byte[0];
@@ -755,9 +755,9 @@ public abstract class UhfCmd {
       cmdSetPwd[14 + i] = filter[i];
     }
     // ld 3byte
-    cmdSetPwd[totalLen - 6] = 0;
-    cmdSetPwd[totalLen - 5] = 0;
-    cmdSetPwd[totalLen - 4] = 0;
+    cmdSetPwd[totalLen - 6] = (byte) ((ld >> 16) & 0xFF);
+    cmdSetPwd[totalLen - 5] = (byte) ((ld >> 8) & 0xFF);
+    cmdSetPwd[totalLen - 4] = (byte) (ld & 0xFF);
     // 帧尾
     cmdSetPwd[totalLen - 2] = 0x0D;
     cmdSetPwd[totalLen - 1] = 0x0A;
@@ -1017,7 +1017,7 @@ public abstract class UhfCmd {
   }
 
   public static void main(String[] args) {
-    byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0);
+    byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0, 0x0FC2A0);
     System.out.println(ArrayUtils.bytes2HexString(setPwdCmd));
   }
 }

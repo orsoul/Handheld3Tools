@@ -7,18 +7,18 @@ import org.orsoul.baselib.util.ArrayUtils;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
-public class RfidController implements IRfidOperation {
-  private static final RfidController ourInstance = new RfidController(new RfidOperationRd());
+public class RfidController implements IRfidPSamOperation {
+  private static final RfidController ourInstance = new RfidController(new RfidPSamOperationRd());
 
   public static RfidController getInstance() {
     return ourInstance;
   }
 
-  private RfidController(IRfidOperation uhfOperation) {
-    this.operation = uhfOperation;
+  private RfidController(IRfidPSamOperation rfidPSamOperation) {
+    this.operation = rfidPSamOperation;
   }
 
-  private IRfidOperation operation;
+  private IRfidPSamOperation operation;
 
   @Override
   public boolean open() {
@@ -109,9 +109,42 @@ public class RfidController implements IRfidOperation {
     return operation.readM1(block);
   }
 
-  @Override
-  public boolean writeM1(int block, byte[] data16) {
+  @Override public boolean writeM1(int block, byte[] data16) {
     return operation.writeM1(block, data16);
+  }
+
+  @Override public int send2PSam(byte[] cmd, byte[] responseBuff, boolean withReset) {
+    return operation.send2PSam(cmd, responseBuff, withReset);
+  }
+
+  @Override public int send2PSam(byte[] cmd, byte[] responseBuff) {
+    return operation.send2PSam(cmd, responseBuff);
+  }
+
+  @Override public int send2Cpu(byte[] cmd, byte[] responseBuff, boolean withReset) {
+    return operation.send2Cpu(cmd, responseBuff, withReset);
+  }
+
+  @Override public int send2Cpu(byte[] cmd, byte[] responseBuff) {
+    return operation.send2Cpu(cmd, responseBuff);
+  }
+
+  public byte[] send2PSam(byte[] cosCmd) {
+    byte[] responseBuff = new byte[255];
+    int responseLen = send2PSam(cosCmd, responseBuff);
+    if (0 < responseLen) {
+      return Arrays.copyOf(responseBuff, responseLen);
+    }
+    return null;
+  }
+
+  public byte[] send2Cpu(byte[] cosCmd) {
+    byte[] responseBuff = new byte[255];
+    int responseLen = send2Cpu(cosCmd, responseBuff);
+    if (0 < responseLen) {
+      return Arrays.copyOf(responseBuff, responseLen);
+    }
+    return null;
   }
 
   public boolean write456Block(byte[] barcodeBuf, int WRITE_TIMES) {

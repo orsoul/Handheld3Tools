@@ -2,7 +2,6 @@ package org.orsoul.baselib.util;
 
 import android.text.TextUtils;
 import androidx.annotation.IntRange;
-import java.util.Locale;
 
 public abstract class ArrayUtils {
 
@@ -11,7 +10,12 @@ public abstract class ArrayUtils {
       '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
   };
 
-  public static String bytes2HexString(byte[] bArray, int start, int end) {
+  /**
+   * 字节数组转16进制字符串.
+   *
+   * @param isLowerCase true 返回字符串小写，否则 返回字符串大写
+   */
+  public static String bytes2HexString(byte[] bArray, int start, int end, boolean isLowerCase) {
     if ((bArray == null) || (end < start) || (bArray.length < start)) {
       return null;
     }
@@ -26,9 +30,27 @@ public abstract class ArrayUtils {
       int l = (bArray[i] & 0x0F);
       sb.append(HEX_CHAR[h]).append(HEX_CHAR[l]);
     }
-    return sb.toString().toUpperCase(Locale.getDefault());
+
+    if (isLowerCase) {
+      return sb.toString().toLowerCase();
+    }
+    return sb.toString();
   }
 
+  /** 字节数组转16进制字符串,返回字符串大写. */
+  public static String bytes2HexString(byte[] bArray, int start, int end) {
+    return bytes2HexString(bArray, start, end, false);
+  }
+
+  /** 字节数组转16进制字符串,返回字符串大写. */
+  public static String bytes2HexString(byte[] bArray, int len) {
+    if (null == bArray) {
+      return null;
+    }
+    return bytes2HexString(bArray, 0, len);
+  }
+
+  /** 字节数组转16进制字符串,返回字符串大写. */
   public static String bytes2HexString(byte[] bArray) {
     if (null == bArray) {
       return null;
