@@ -1,5 +1,7 @@
 package com.fanfull.libhard.rfid;
 
+import org.orsoul.baselib.util.ArrayUtils;
+
 public abstract class PSamCmd {
   public static final int COS_RES_CARD_LEN = 12;
 
@@ -24,27 +26,63 @@ public abstract class PSamCmd {
   public static final byte[] CMD_COS_4 =
       new byte[] { (byte) 0x80, (byte) 0xB2, (byte) 0x00, (byte) 0x00, (byte) 0x0A, };
 
-  public static final byte[] CMD_PSAM_GET_RANDOM_NUM =
+  /** 取随机数. */
+  public static final byte[] CMD_PSAM_GET_CHALLENGE =
       { (byte) 0x00, (byte) 0x84, (byte) 0x00, (byte) 0x00, (byte) 0x04 };
+  /** 用户验证. */
+  public static final byte[] CMD_PSAM_VERIFY_USER =
+      { (byte) 0x80, (byte) 0x20, (byte) 0x00, (byte) 0x00 };
 
-  public static boolean checkRecData(byte[] successBuff, byte[] recData, int recLen) {
-    if (recData == null
-        || successBuff == null
-        || recLen != successBuff.length
-        || recData.length < recLen) {
-      return false;
-    }
-    for (int i = 0; i < successBuff.length; i++) {
-      if (successBuff[i] != recData[i]) {
-        return false;
-      }
-    }
-    return true;
+  /**
+   * 获取信息.
+   *
+   * @param p1 01 获取PSAM卡信息, 02 获取 PSAM 卡设备证书
+   * @param p2 0 取得第一部分或所有的数据;1 取得下一部分数据
+   */
+  public static byte[] genCmdGetInfo(int p1, int p2) {
+    /* P1 含义:‘01’ 获取 PSAM 卡信息 ‘02’ 获取 PSAM 卡设备证书 ‘XX’ RFU */
+    return APDUParser.genCmd(0x80, 0x10, p1, p2, 0x15);
   }
 
-  public static boolean dealSuccess(byte[] data, int dataLen) {
-    return dataLen == 2
-        && data[0] == COS_RES_0[0]
-        && data[1] == COS_RES_0[1];
+  /** 用户验证. */
+  public static byte[] getCmdVerifyUser(byte[] userId, byte[] pin) {
+    byte[] data = ArrayUtils.concatArray(userId, pin);
+    return APDUParser.genCmd(0x80, 0x20, 0, 0, data);
+  }
+
+  /** 用户验证. */
+  public static byte[] getCmdVerifyUser() {
+    byte[] userId = new byte[8];
+    userId[7] = 1;
+    byte[] pin = ArrayUtils.hexString2Bytes("4d494d49535f5053414d5f55534552");
+    //byte[] pin = ArrayUtils.hexString2Bytes("4d494d49535f5053414d5f55530000");
+    return getCmdVerifyUser(userId, pin);
+  }
+
+  /**
+   * 生成电子签封交互指令.
+   *
+   * @param elsType 交互命令类型: <br/>
+   * 01 签封激活指令 <br/>
+   * 02 关锁指令 <br/>
+   * 03 开锁指令 <br/>
+   * 04 关锁写物流指令 <br/>
+   * 05 开锁写物流指令 <br/>
+   * 06 追溯指令文档编号—EDJK005 8 <br/>
+   * 07 恢复指令 <br/>
+   * 08 日志清除指令<br/>
+   * @param epc EPC 数据
+   * @param elsData 交互指令 data 区数据
+   */
+  public static byte[] getCmdGenElsCmd(int elsType, byte[] epc, byte[] elsData) {
+    // 转为 LV格式 后拼接
+    byte[] lvEpc = ArrayUtils.bytes2LnVData(1, epc);
+    byte[] data = lvEpc;
+    if (elsData != null) {
+      byte[] lvElsData = ArrayUtils.bytes2LnVData(1, elsData);
+      data = ArrayUtils.concatArray(lvEpc, lvElsData);
+    }
+
+    return APDUParser.genCmd(0x80, 0x30, elsType, 0, data, 0);
   }
 }

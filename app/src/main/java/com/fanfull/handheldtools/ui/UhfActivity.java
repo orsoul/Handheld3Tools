@@ -327,8 +327,14 @@ public class UhfActivity extends InitModuleActivity {
             }).show();
         break;
       case KeyEvent.KEYCODE_8:
-        fastIdOn = true;
-        uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0x0FC2A0);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0b11111100000000000000);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B00000000001111111111);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111111111111111);
+        byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111110000000000);
+        uhfController.send(setPwdCmd);
+        //fastIdOn = true;
+        //uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
         break;
       case KeyEvent.KEYCODE_9:
         fastIdOn = false;

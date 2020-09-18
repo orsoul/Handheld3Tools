@@ -113,12 +113,20 @@ public class RfidController implements IRfidPSamOperation {
     return operation.writeM1(block, data16);
   }
 
+  @Override public int resetPSam(byte[] responseBuff) {
+    return operation.resetPSam(responseBuff);
+  }
+
   @Override public int send2PSam(byte[] cmd, byte[] responseBuff, boolean withReset) {
     return operation.send2PSam(cmd, responseBuff, withReset);
   }
 
   @Override public int send2PSam(byte[] cmd, byte[] responseBuff) {
     return operation.send2PSam(cmd, responseBuff);
+  }
+
+  @Override public int resetCpu(byte[] responseBuff) {
+    return operation.resetCpu(responseBuff);
   }
 
   @Override public int send2Cpu(byte[] cmd, byte[] responseBuff, boolean withReset) {

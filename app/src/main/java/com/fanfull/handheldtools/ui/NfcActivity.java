@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.IRfidListener;
+import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
 import java.util.Arrays;
 import java.util.Random;
@@ -70,7 +72,7 @@ public class NfcActivity extends InitModuleActivity {
         runOnUi(() -> {
           dismissLoadingView();
           if (openSuccess) {
-            tvShow.setText("初始化成功\n按键1 -> 写39\n按键2 -> 读39");
+            tvShow.setText("初始化成功\n按键1 -> 写39\n按键2 -> 读39\n按键0 -> psam随机数\n按键6 -> cpu卡\n");
           } else {
             tvShow.setText("初始化失败\n");
           }
@@ -209,18 +211,44 @@ public class NfcActivity extends InitModuleActivity {
         event.isShiftPressed(),
         event.getMetaState()
     );
+    byte[] pSamBuff = new byte[128];
+    int len;
     switch (keyCode) {
       case KeyEvent.KEYCODE_0:
-      case KeyEvent.KEYCODE_1:
-        byte[] bytes = new byte[16];
-        Arrays.fill(bytes, (byte) 0x39);
-        boolean b = nfcController.writeM1(9, bytes);
-        if (b) {
-          ViewUtil.appendShow("写第9区39 成功", tvShow);
+        len = nfcController.send2PSam(PSamCmd.CMD_PSAM_GET_CHALLENGE, pSamBuff);
+        if (0 < len) {
+          String s = ArrayUtils.bytes2HexString(pSamBuff, len);
+          if (APDUParser.checkReply(pSamBuff, len)) {
+            ViewUtil.appendShow("psam获取随机数 成功:" + s, tvShow);
+          } else {
+            ViewUtil.appendShow("psam获取随机数 失败:" + s, tvShow);
+          }
         } else {
-          ViewUtil.appendShow("写第9区 失败", tvShow);
+          ViewUtil.appendShow("psam获取随机数 执行失败", tvShow);
         }
         return true;
+      case KeyEvent.KEYCODE_1:
+        len = nfcController.send2PSam(PSamCmd.genCmdGetInfo(1, 0), pSamBuff);
+        if (0 < len) {
+          String s = ArrayUtils.bytes2HexString(pSamBuff, len);
+          if (APDUParser.checkReply(pSamBuff, len)) {
+            ViewUtil.appendShow("获取信息 成功:" + s, tvShow);
+          } else {
+            ViewUtil.appendShow("获取信息 失败:" + s, tvShow);
+          }
+        } else {
+          ViewUtil.appendShow("获取信息 执行失败", tvShow);
+        }
+        return true;
+      //byte[] bytes = new byte[16];
+      //Arrays.fill(bytes, (byte) 0x39);
+      //boolean b = nfcController.writeM1(9, bytes);
+      //if (b) {
+      //  ViewUtil.appendShow("写第9区39 成功", tvShow);
+      //} else {
+      //  ViewUtil.appendShow("写第9区 失败", tvShow);
+      //}
+      //return true;
       case KeyEvent.KEYCODE_2:
         byte[] block9 = nfcController.readM1(9);
         if (block9 != null) {
@@ -236,8 +264,35 @@ public class NfcActivity extends InitModuleActivity {
         nfcController.writeStatus(status);
         return true;
       case KeyEvent.KEYCODE_6:
+        String cpuCard = readCpuCard();
+        if (null != cpuCard) {
+          ViewUtil.appendShow("cpuCard:" + cpuCard, tvShow);
+        } else {
+          ViewUtil.appendShow("获取cpuCard 失败", tvShow);
+        }
+        return true;
       case KeyEvent.KEYCODE_7:
+        byte[] verifyUser = new byte[2];
+        int verifyUserLen = nfcController.send2PSam(PSamCmd.getCmdVerifyUser(), verifyUser);
+        if (0 < verifyUserLen) {
+          String s = ArrayUtils.bytes2HexString(verifyUser, verifyUserLen);
+          ViewUtil.appendShow("用户验证 成功:" + s, tvShow);
+        } else {
+          ViewUtil.appendShow("用户验证 失败", tvShow);
+        }
+        return true;
       case KeyEvent.KEYCODE_8:
+        byte[] sta = new byte[2];
+        byte[] epc = ArrayUtils.hexString2Bytes("000F46311000000000000000");
+        byte[] elsData = ArrayUtils.hexString2Bytes("0100000000000000000000000000");
+        int l1 = nfcController.send2PSam(PSamCmd.getCmdGenElsCmd(1, epc, elsData), sta);
+        if (0 < l1) {
+          String s = ArrayUtils.bytes2HexString(sta, l1);
+          ViewUtil.appendShow("获取 成功:" + s, tvShow);
+        } else {
+          ViewUtil.appendShow("获取 失败", tvShow);
+        }
+        return true;
       case KeyEvent.KEYCODE_9:
         nfcController.readM1(keyCode - KeyEvent.KEYCODE_0);
         return true;
@@ -246,6 +301,35 @@ public class NfcActivity extends InitModuleActivity {
     }
 
     return super.onKeyDown(keyCode, event);
+  }
+
+  private String readCpuCard() {
+    byte[] cpuCardBuff = new byte[12];
+    int len = nfcController.send2Cpu(PSamCmd.CMD_COS_0, cpuCardBuff);
+    if (!APDUParser.checkReply(cpuCardBuff, len)) {
+      return null;
+    }
+
+    len = nfcController.send2Cpu(PSamCmd.CMD_COS_1, cpuCardBuff, false);
+    if (!APDUParser.checkReply(cpuCardBuff, len)) {
+      return null;
+    }
+    len = nfcController.send2Cpu(PSamCmd.CMD_COS_2, cpuCardBuff, false);
+    if (!APDUParser.checkReply(cpuCardBuff, len)) {
+      return null;
+    }
+    len = nfcController.send2Cpu(PSamCmd.CMD_COS_3, cpuCardBuff, false);
+    if (!APDUParser.checkReply(cpuCardBuff, len, 0x9100)) {
+      return null;
+    }
+    len = nfcController.send2Cpu(PSamCmd.CMD_COS_4, cpuCardBuff, false);
+    if (!APDUParser.checkReply(cpuCardBuff, len) || len != PSamCmd.COS_RES_CARD_LEN) {
+      return null;
+    }
+
+    String cpuCard = new String(cpuCardBuff, 0, len - 2);
+
+    return cpuCard;
   }
 
   @Override

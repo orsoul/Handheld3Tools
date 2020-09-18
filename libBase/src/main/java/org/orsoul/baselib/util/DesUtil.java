@@ -17,8 +17,8 @@ public class DesUtil {
   public static final String ALGORITHM_NAME_AES = "AES";
   /** 算法名 DES. */
   public static final String ALGORITHM_NAME_DES = "DES";
-  /** 算法名 DESede. */
-  public static final String ALGORITHM_NAME_DESede = "DESede";
+  /** 算法名 3DES(DESede). */
+  public static final String ALGORITHM_NAME_3DES = "DESede";
 
   /** 加密模式 ECB. */
   public static final String ALGORITHM_MODE_ECB = "ECB";
@@ -31,15 +31,12 @@ public class DesUtil {
   public static final String PADDING_MODE_NOPadding = "NOPadding";
 
   private static final String defaultCharset = "UTF-8";
-  ///** 算法名. */
-  //private static String defaultAlgorithmName = ALGORITHM_NAME_DES;
-  ///** 加密模式. */
-  //private static String defaultAlgorithmMode = ALGORITHM_MODE_ECB;
-  ///** 填充模式. */
-  //private static String defaultAlgorithmPadding = PADDING_MODE_PKCS5Padding;
+
   /** 加密完整参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
   private static String defaultAlgorithmArgs =
-      String.format("%s/%s/%s", ALGORITHM_NAME_DES, ALGORITHM_MODE_ECB,
+      String.format("%s/%s/%s",
+          ALGORITHM_NAME_DES,
+          ALGORITHM_MODE_ECB,
           PADDING_MODE_PKCS5Padding);
 
   public static void setAlgorithmArgs(String algorithmArgs) {
@@ -86,8 +83,8 @@ public class DesUtil {
     if (args.length != 3) {
       return null;
     }
-    String algorithmName = args[0];
 
+    String algorithmName = args[0];
     SecretKey key;
     if (ALGORITHM_NAME_DES.equals(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 8), algorithmName);
@@ -170,7 +167,7 @@ public class DesUtil {
   /** 算法参数，支持DES、3DES、AES，支持ECB. 例：DES/ECB/PKCS5Padding */
   private String algorithmArgs;
 
-  private DesUtil(String algorithmArgs) {
+  public DesUtil(String algorithmArgs) {
     this.algorithmArgs = algorithmArgs;
   }
 
