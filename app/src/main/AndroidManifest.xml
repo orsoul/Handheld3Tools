@@ -31,6 +31,9 @@
       tools:ignore="GoogleAppIndexingWarning"
       tools:replace="android:allowBackup">
     <activity
+        android:name=".ui.SocketActivity"
+        android:label="@string/main_socket" />
+    <activity
         android:name=".ui.InitBag3Activity"
         android:label="@string/main_init_bag3" />
     <activity

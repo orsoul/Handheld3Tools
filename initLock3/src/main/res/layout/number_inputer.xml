@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    >
+
+  <TextView
+      android:id="@+id/tv_number_inputer_text"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="扫捆数量:"
+      android:textSize="20sp"
+      />
+
+  <Button
+      style="?android:attr/buttonStyleSmall"
+      android:id="@+id/tv_number_inputer_minus"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp"
+      android:text="-"
+      android:textSize="20sp"
+      />
+
+  <EditText
+      android:id="@+id/et_number_inputer_num"
+      android:layout_width="45dp"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:layout_marginLeft="10dp"
+      android:inputType="number"
+      android:maxLength="2"
+      android:text="0"
+      android:textSize="20sp"
+      />
+
+  <Button
+      android:id="@+id/tv_number_inputer_plus"
+      style="?android:attr/buttonStyleSmall"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp"
+      android:text="+"
+      android:textSize="20sp"
+      />
+
+</LinearLayout>

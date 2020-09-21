@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <string name="app_name">袋初始化</string>
+
+  <string name="quit">quit</string>
+  <string name="changbag">换袋操作</string>
+  <string name="scan_old_bag_code">是否扫描旧袋码</string>
+  <string name="scan_old_code">是否扫描旧条码</string>
+  <string name="back_to_lastpage">返回上一页</string>
+  <string name="can_not_read">&lt;1>封签不可识别</string>
+  <string name="bagcode_can_not_read">&lt;2>袋码不可识别</string>
+  <string name="reason_to_change">请选择换袋原因</string>
+  <string name="bag_broken">&lt;3>基金袋损坏</string>
+  <string name="bag_has_foreignmatter">&lt;4>基金袋有异物</string>
+  <string name="other">&lt;5>其他</string>
+  <string name="change_bag_reason_quit">返回</string>
+  <string name="change_bag_reason_ok">进入换袋</string>
+  <string name="scan">一般扫描</string>
+  <string name="lot_scan">批量扫描</string>
+  <string name="check">查询</string>
+  <string name="setting">设置</string>
+  <string name="fqbrk">封签并入库：允许</string>
+  <string name="open_bag">开袋：允许</string>
+  <string name="recheck">复核：允许</string>
+  <string name="examing">验封：允许</string>
+  <string name="out">出库：允许</string>
+  <string name="in">入库：允许</string>
+  <string name="cover_bag">封袋：允许</string>
+  <string name="operator">操作人员：Tester</string>
+  <string name="lot_inbank">批量入库</string>
+  <string name="initbag">初始化基金袋</string>
+  <string name="skip">跳过>>></string>
+  <string name="read_lock_state">读锁片状态：</string>
+  <string name="check_uhf">检查超高频：</string>
+  <string name="lot_outbank">批量出库</string>
+  <string name="lot_count">批量清点</string>
+  <string name="edit_ip">编辑</string>
+  <string name="complete">提交</string>
+  <string name="ip">000</string>
+  <string name="scan_bunch">扫捆页面</string>
+  <string name="number">0</string>
+  <string name="sure">开始扫捆</string>
+  <string name="title_activity_pre_scan">PreScanActivity</string>
+  <string name="finger_setting">指纹设置</string>
+  <string name="fanfull_change_bag_reason">换袋原因</string>
+  <string name="point">.</string>
+
+  <!-- login -->
+  <string name="connet_rfid_error">连接 RFID 串口失败</string>
+  <string name="connet_finger_error">指纹模块启动失败</string>
+  <string name="login_passwd_error">密码错误,请重新输入</string>
+  <string name="login_again">请重试</string>
+  <string name="login_wait">等待当前任务完成</string>
+  <string name="login_again_click">再次点击退出</string>
+  <string name="login_saomiao_idcard">请扫描您的ID卡</string>
+  <string name="login_input_passwd">请输入密码</string>
+  <string name="fanfull_change_bag_old_bar">二、扫描旧条码和袋码</string>
+  <string name="fanfull_change_bag_recover">三、重新封袋</string>
+  <string name="fanfull_change_bag_check_info">更换操作</string>
+  <string name="text_receive_timeout">服务器回复超时</string>
+
+  <!-- init bag -->
+  <string name="show1_init">检测袋锁</string>
+  <string name="show2_init">写入数据</string>
+  <string name="show3_init">检验数据</string>
+  <string name="show4_init">刻码通讯</string>
+  <string name="show1_check">地区</string>
+  <string name="show2_check">币种</string>
+  <string name="show3_check">券别</string>
+
+  <!-- menu -->
+  <string name="menu_zx">装箱</string>
+  <string name="menu_old_bag">老袋检测</string>
+  <string name="menu_setting">设置</string>
+  <string name="menu_setting_ip">IP设置</string>
+  <string name="menu_about">设备信息</string>
+
+
+</resources>

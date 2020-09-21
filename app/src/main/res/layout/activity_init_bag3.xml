@@ -18,59 +18,58 @@
       android:layout_marginEnd="8dp"
       android:layout_marginBottom="8dp"
       android:padding="5dp"
-      android:text="正在初始化..."
-      app:layout_constraintBottom_toTopOf="@id/switch_nfc_mode"
+      android:text="正在初始化...\n"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/spinner_init_bag_bagType"
       />
-
   <Button
       android:id="@+id/btn_init_bag3_ok"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
       android:layout_marginEnd="8dp"
-      android:layout_marginBottom="8dp"
       android:enabled="true"
       android:padding="5dp"
-      android:text="读"
-      app:layout_constraintBottom_toBottomOf="parent"
+      android:text="初始化"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
       />
-
-  <Button
-      android:id="@+id/btn_barcode_stopScan"
+  <Spinner
+      android:id="@+id/spinner_init_bag_cityType"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+  <Spinner
+      android:id="@+id/spinner_init_bag_moneyType"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintEnd_toEndOf="@id/spinner_init_bag_cityType"
+      app:layout_constraintStart_toStartOf="@id/spinner_init_bag_cityType"
+      app:layout_constraintTop_toBottomOf="@id/spinner_init_bag_cityType"
+      />
+  <Spinner
+      android:id="@+id/spinner_init_bag_bagType"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintEnd_toEndOf="@id/spinner_init_bag_cityType"
+      app:layout_constraintStart_toStartOf="@id/spinner_init_bag_cityType"
+      app:layout_constraintTop_toBottomOf="@id/spinner_init_bag_moneyType"
+      />
+  <Switch
+      android:id="@+id/switch_init_bag"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginEnd="8dp"
-      android:padding="5dp"
-      android:text="写"
+      android:checked="true"
+      android:text="数据复验"
       app:layout_constraintBottom_toBottomOf="@id/btn_init_bag3_ok"
       app:layout_constraintEnd_toStartOf="@id/btn_init_bag3_ok"
       app:layout_constraintTop_toTopOf="@id/btn_init_bag3_ok"
       />
-
-  <Switch
-      android:id="@+id/switch_nfc_mode"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="5dp"
-      android:checked="true"
-      android:text="NFC模式"
-      app:layout_constraintBottom_toTopOf="@+id/switch_barcode_sound"
-      app:layout_constraintStart_toStartOf="@+id/switch_barcode_sound"
-      />
-
-  <Switch
-      android:id="@+id/switch_barcode_sound"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginBottom="8dp"
-      android:checked="true"
-      android:text="扫描音效"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <LinearLayout
+      android:id="@+id/v_title_info_linear"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      >
+
+    <com.fanfull.view.ActivityHeadItemView
+        android:id="@+id/v_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="基金袋初始化"
+        title:showImage="true"
+        >
+
+      <ImageView
+          android:id="@+id/iv_init_bag_redo"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="right"
+          android:layout_marginRight="10dp"
+          android:layout_marginTop="8dp"
+          android:contentDescription="重新初始化"
+          android:src="@drawable/redo"
+          />
+    </com.fanfull.view.ActivityHeadItemView>
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/v_coverBagItemView_info_linear"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/v_title_info_linear"
+      android:layout_marginTop="20dp"
+      android:orientation="vertical"
+      >
+
+    <com.fanfull.view.CoverBagItemView
+        android:id="@+id/v_init_bag_barcode_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="扫描条码"
+        />
+
+    <com.fanfull.view.CoverBagItemView
+        android:id="@+id/v_init_bag_init_epc_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="读袋标签"
+        />
+
+    <com.fanfull.view.CoverBagItemView
+        android:id="@+id/v_init_bag_read_rfid_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="读袋锁片"
+        />
+
+    <com.fanfull.view.CoverBagItemView
+        android:id="@+id/v_init_bag_init_first_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="写入标签"
+        />
+
+    <com.fanfull.view.CoverBagItemView
+        android:id="@+id/v_init_bag_write_rfid_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="更新袋锁"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:layout_marginBottom="20dp"
+      android:orientation="horizontal"
+      >
+
+    <Button
+        android:id="@+id/btn_init_bag_ok"
+        style="@style/activity_btn"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:text="扫描条码"
+        />
+
+    <Button
+        android:id="@+id/btn_init_bag_cancel"
+        style="@style/activity_btn"
+        android:layout_width="0dp"
+        android:layout_marginLeft="30dp"
+        android:layout_weight="1"
+        android:text="取  消"
+        />
+  </LinearLayout>
+
+
+</RelativeLayout>

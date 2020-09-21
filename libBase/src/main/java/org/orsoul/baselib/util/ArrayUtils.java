@@ -1,8 +1,6 @@
 package org.orsoul.baselib.util;
 
-import android.text.TextUtils;
 import androidx.annotation.IntRange;
-import java.util.Locale;
 
 public abstract class ArrayUtils {
 
@@ -11,8 +9,13 @@ public abstract class ArrayUtils {
       '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
   };
 
-  public static String bytes2HexString(byte[] bArray, int start, int end) {
-    if ((bArray == null) || (end < start) || (bArray.length < start)) {
+  /**
+   * 字节数组转16进制字符串.
+   *
+   * @param isLowerCase true 返回字符串小写，否则 返回字符串大写
+   */
+  public static String bytes2HexString(byte[] bArray, int start, int end, boolean isLowerCase) {
+    if ((bArray == null) || (end <= start) || (bArray.length <= start)) {
       return null;
     }
 
@@ -26,70 +29,86 @@ public abstract class ArrayUtils {
       int l = (bArray[i] & 0x0F);
       sb.append(HEX_CHAR[h]).append(HEX_CHAR[l]);
     }
-    return sb.toString().toUpperCase(Locale.getDefault());
+
+    if (isLowerCase) {
+      return sb.toString().toLowerCase();
+    }
+    return sb.toString();
   }
 
+  /** 字节数组转16进制字符串,返回字符串大写. */
+  public static String bytes2HexString(byte[] bArray, int start, int end) {
+    return bytes2HexString(bArray, start, end, false);
+  }
+
+  /** 字节数组转16进制字符串,返回字符串大写. */
+  public static String bytes2HexString(byte[] bArray, int len) {
+    if (null == bArray) {
+      return null;
+    }
+    return bytes2HexString(bArray, 0, len);
+  }
+
+  /** 字节数组转16进制字符串,返回字符串大写. */
   public static String bytes2HexString(byte[] bArray) {
     if (null == bArray) {
       return null;
+    } else if (bArray.length == 0) {
+      return "";
     }
     return bytes2HexString(bArray, 0, bArray.length);
   }
 
   public static byte[] hexString2Bytes(String hexString) {
-    if (hexString == null || 0 == hexString.length()) {
+    if (hexString == null || 0 == hexString.length() || hexString.length() % 2 != 0) {
       return null;
     }
-    char[] hexChars = hexString.toUpperCase().toCharArray();
+    char[] hexChars = hexString.toCharArray();
 
-    byte[] reVal = new byte[(hexChars.length + 1) / 2];
+    byte[] reVal = new byte[hexChars.length / 2];
 
-    for (int i = reVal.length - 1, j = hexChars.length - 1; 0 < j; i--, j -= 2) {
-      reVal[i] = (byte) (Character.digit(hexChars[j - 1], 16) << 4 | Character
-          .digit(hexChars[j], 16));
-    }
-    if (0 != hexChars.length % 2) {
-      reVal[0] = (byte) Character.digit(hexChars[0], 16);
+    //for (int i = reVal.length - 1, j = hexChars.length - 1; 0 < j; i--, j -= 2) {
+    //  reVal[i] = (byte) (Character.digit(hexChars[j - 1], 16) << 4
+    //      | Character.digit(hexChars[j], 16));
+    //}
+    for (int i = 0; i < reVal.length; i++) {
+      int h = Character.digit(hexChars[2 * i], 16) << 4;
+      int l = Character.digit(hexChars[2 * i + 1], 16);
+      if (h < 0 || l < 0) {
+        return null;
+      }
+      reVal[i] = (byte) (h | l);
     }
     return reVal;
   }
 
-  /**
-   * @return 返回 拼接好后的新 字节数组
-   * @description 拼接两个字节数组
-   */
-  public static byte[] concatArray(byte[] arr1, byte[] arr2) {
-    // 处理 特殊情况
-    if (null == arr1 && null == arr2) {
-      return null;
-    } else if (null == arr1) {
-      return arr2;
-    } else if (null == arr2) {
-      return arr1;
-    }
+  public static byte[] string2Bytes(String str, int radix) {
 
-    byte[] reVal = new byte[arr1.length + arr2.length];
-    System.arraycopy(arr1, 0, reVal, 0, arr1.length);
-    System.arraycopy(arr2, 0, reVal, arr1.length, arr2.length);
-    return reVal;
+    return null;
   }
 
-  /**
-   * 将基金袋上的袋id通过每两位异或得到检验位，合成新的芯片的袋id
-   */
-  public static String bagIdConvert(String originalId) throws NumberFormatException {
-    if (TextUtils.isEmpty(originalId)) {
-      return "";
+  /** 拼接数组.为null的数组会被忽略 */
+  public static byte[] concatArray(byte[]... args) {
+    if (args == null) {
+      return null;
     }
-    if (originalId.length() % 2 == 1) {
-      originalId = "0" + originalId;
+    int len = 0;
+    for (byte[] arg : args) {
+      if (arg != null) {
+        len += arg.length;
+      }
     }
-    int checkBit = 0;
-    for (int i = 0; i < originalId.length() / 2; i++) {
-      checkBit ^= Integer.parseInt(originalId.substring(i * 2, i * 2 + 2), 16);
+
+    byte[] reVal = new byte[len];
+    int offset = 0;
+    for (byte[] arg : args) {
+      if (arg == null) {
+        continue;
+      }
+      System.arraycopy(arg, 0, reVal, offset, arg.length);
+      offset += arg.length;
     }
-    return (originalId + String.format("%2s", Integer.toHexString(checkBit))
-        .replace(' ', '0')).toUpperCase();
+    return reVal;
   }
 
   public static void reverse(byte[] data) {
@@ -103,10 +122,24 @@ public abstract class ArrayUtils {
     }
   }
 
+  private static boolean checkBounds(byte[] data, int beginIndex, int len) {
+    if (data == null || data.length == 0) {
+      return false;
+    }
+    if (beginIndex < 0 || data.length <= beginIndex) {
+      return false;
+    }
+
+    if (len < 0 || data.length < beginIndex + len) {
+      return false;
+    }
+    return true;
+  }
+
   /**
-   * 将整数转成 byte[]。例：0xABCDEF -> {0xAB,0xCD,0xEF}
+   * 将整数转成 byte[]。例：0xABCDEF -> {0xAB,0xCD,0xEF}.
    *
-   * @param byteCount 1~8 的整数
+   * @param byteCount 字节数，1~8 的整数
    */
   public static byte[] long2Bytes(long n, @IntRange(from = 1, to = 8) int byteCount) {
     if (8 < byteCount || byteCount <= 0) {
@@ -143,17 +176,18 @@ public abstract class ArrayUtils {
     return res;
   }
 
-  private static boolean checkBounds(byte[] data, int beginIndex, int len) {
-    if (data == null || data.length == 0) {
-      return false;
+  /**
+   * 将数据V 转为LnV结构. L为V的长度，n为L所占的字节数.
+   *
+   * @param n 数据长度L所占的字节数
+   * @param v 数据
+   * @return Ln + v
+   */
+  public static byte[] bytes2LnVData(int n, byte[] v) {
+    if (n < 1 || v == null) {
+      return null;
     }
-    if (beginIndex < 0 || data.length <= beginIndex) {
-      return false;
-    }
-
-    if (len < 0 || data.length < beginIndex + len) {
-      return false;
-    }
-    return true;
+    byte[] ln = long2Bytes(v.length, n);
+    return concatArray(ln, v);
   }
 }

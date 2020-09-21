@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    >
+
+  <TextView
+      android:id="@+id/tv_v_setting"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginLeft="15dp"
+      android:text="启用批量扫捆"
+      android:textColor="@color/sliverwhite"
+      android:textSize="15sp"
+      />
+
+  <CheckBox
+      android:id="@+id/cb_v_setting"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="right|center_vertical"
+      android:scaleX="0.75"
+      android:scaleY="0.75"
+      android:layout_marginRight="15dp"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="1px"
+      android:layout_gravity="bottom"
+      android:background="@color/lighter_gray"
+      />
+</FrameLayout>

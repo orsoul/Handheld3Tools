@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:title="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fanfull.activity.CheckOldBagActivity"
+    >
+
+  <com.fanfull.view.ActivityHeadItemView
+      android:id="@+id/v_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="老袋检测"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      title:showImage="true"
+      />
+
+  <TextView
+      android:id="@+id/tv_old_bag_show"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="90dp"
+      android:text="点击开始检测"
+      android:textSize="20sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/v_title"
+      />
+
+
+  <Button
+      android:id="@+id/btn_old_bag_write_lock"
+      style="@style/activity_btn"
+      android:layout_width="wrap_content"
+      android:layout_marginStart="36dp"
+      android:layout_marginTop="50dp"
+      android:focusableInTouchMode="false"
+      android:padding="12dp"
+      android:paddingStart="14dp"
+      android:paddingEnd="14dp"
+      android:text="改为上锁"
+      android:textSize="14sp"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/tv_old_bag_show"
+      />
+
+  <Button
+      android:id="@+id/btn_old_bag_write_unlock"
+      style="@style/activity_btn"
+      android:layout_width="wrap_content"
+      android:layout_marginEnd="36dp"
+      android:focusableInTouchMode="false"
+      android:padding="12dp"
+      android:paddingStart="14dp"
+      android:paddingEnd="14dp"
+      android:text="改为开锁"
+      android:textSize="14sp"
+      app:layout_constraintBottom_toBottomOf="@+id/btn_old_bag_write_lock"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/btn_old_bag_write_lock"
+      />
+
+  <Button
+      android:id="@+id/btn_old_bag_check"
+      style="@style/activity_btn"
+      android:layout_width="wrap_content"
+      android:layout_marginTop="40dp"
+      android:focusableInTouchMode="true"
+      android:padding="16dp"
+      android:paddingStart="20dp"
+      android:paddingEnd="20dp"
+      android:text="检测状态"
+      android:textSize="16sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/btn_old_bag_write_lock"
+      />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

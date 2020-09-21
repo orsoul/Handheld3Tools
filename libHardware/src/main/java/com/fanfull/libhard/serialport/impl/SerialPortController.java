@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 
 public class SerialPortController implements ISerialPort {
   protected String TAG = this.getClass().getSimpleName();
@@ -103,14 +103,14 @@ public class SerialPortController implements ISerialPort {
 
     synchronized (onceListener) {
       try {
-        LogUtils.tag(TAG).d("click1:%s", ClickUtil.click());
+        LogUtils.tag(TAG).d("click1:%s", ClockUtil.clock());
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
       }
     }
     onceListener = null;
-    LogUtils.tag(TAG).d("click2:%s", ClickUtil.click());
+    LogUtils.tag(TAG).d("click2:%s", ClockUtil.clock());
     return onceRecBuff;
   }
 

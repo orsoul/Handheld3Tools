@@ -25,7 +25,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
 import org.orsoul.baselib.util.ArrayUtils;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class UhfActivity extends InitModuleActivity {
@@ -69,19 +69,29 @@ public class UhfActivity extends InitModuleActivity {
     btnReadTid.setEnabled(false);
     btnReadUse.setEnabled(false);
     btnGetPower.setEnabled(false);
+
+    ViewUtil.requestFocus(tvShow);
   }
 
   @Override
   protected void initModule() {
     uhfController = UhfController.getInstance();
     uhfController.setListener(new IUhfListener() {
-      @Override
-      public void onOpen() {
+      @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
           dismissLoadingView();
+          if (!openSuccess) {
+            tvShow.setText("初始化失败");
+            return;
+          }
           tvShow.setText("打开成功.\n"
               + "3连接击->清空\n"
               + "Enter->开始/停止 连续扫描\n"
+              + "按键1->随机写EPC 12byte\n"
+              + "按键2->随机写USE 32byte\n"
+              + "按键4->读TID 12byte\n"
+              + "按键5->读EPC 12byte\n"
+              + "按键6->读USE 32byte\n"
               + "按键7->设置功率\n"
               + "按键8->开启 EPC、TID同读\n"
               + "按键9->关闭 EPC、TID同读\n\n");
@@ -97,16 +107,6 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
         socketService = new SocketServiceDemo();
         socketService.start();
-      }
-
-      @Override
-      public void onScan() {
-
-      }
-
-      @Override
-      public void onStopScan() {
-
       }
 
       @Override
@@ -233,7 +233,7 @@ public class UhfActivity extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.tv_barcode_show:
-        if (3 == ClickUtil.fastClickTimes()) {
+        if (3 == ClockUtil.fastClickTimes()) {
           ViewUtil.appendShow(null, tvShow);
         }
         break;
@@ -281,6 +281,7 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.writeAsync(UhfCmd.MB_USE, 0x4, writeBuff, null, 0, 0);
         break;
       case KeyEvent.KEYCODE_3:
+        uhfController.readEpc(0x02, 12);
         break;
       case KeyEvent.KEYCODE_4:
         uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
@@ -326,8 +327,14 @@ public class UhfActivity extends InitModuleActivity {
             }).show();
         break;
       case KeyEvent.KEYCODE_8:
-        fastIdOn = true;
-        uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0x0FC2A0);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0b11111100000000000000);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B00000000001111111111);
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111111111111111);
+        byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111110000000000);
+        uhfController.send(setPwdCmd);
+        //fastIdOn = true;
+        //uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
         break;
       case KeyEvent.KEYCODE_9:
         fastIdOn = false;

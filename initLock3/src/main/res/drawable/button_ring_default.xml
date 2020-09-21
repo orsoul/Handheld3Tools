@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"><!-- 椭圆 长宽都为100所以是圆 -->
+  <corners android:radius="6dp"></corners>
+  <gradient
+      android:startColor="#FFFF0000"
+      android:endColor="#80FF00FF"
+      android:angle="135" />
+  <size
+      android:width="75dp"
+      android:height="45dp" />
+  <!-- 实心填充 -->
+  <solid android:color="#80065e8d" />
+
+  <!-- 边框处理
+  <stroke android:color="#FFDDCC"
+      android:dashWidth="3dp"
+      android:width="5dp"
+      android:dashGap="3dp"/>
+      -->
+  <stroke
+      android:dashGap="0dp"
+      android:width="5dp"
+      android:color="#99CC33" />
+</shape>

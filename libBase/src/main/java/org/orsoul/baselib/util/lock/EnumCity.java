@@ -1,5 +1,8 @@
 package org.orsoul.baselib.util.lock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** 城市代号. */
 public enum EnumCity {
 
@@ -32,7 +35,6 @@ public enum EnumCity {
   }
 
   public static EnumCity getByBagId(String bagId) {
-
     return getByType(BagIdParser.getCityCode(bagId));
   }
 
@@ -45,11 +47,32 @@ public enum EnumCity {
     return UNDEFINE;
   }
 
+  public static EnumCity getByName(String name) {
+    for (EnumCity enumType : values()) {
+      if (enumType.getName().equals(name)) {
+        return enumType;
+      }
+    }
+    return UNDEFINE;
+  }
+
   public static String getNameByCode(String cityCode) {
     return getByType(cityCode).getName();
   }
 
   public static String getNameByBagId(String bagId) {
     return getByBagId(bagId).getName();
+  }
+
+  public static String getCodeByName(String name) {
+    return getByName(name).getCode();
+  }
+
+  public static List<String> getNames() {
+    List<String> list = new ArrayList<>();
+    for (EnumCity enumType : values()) {
+      list.add(enumType.getName());
+    }
+    return list;
   }
 }

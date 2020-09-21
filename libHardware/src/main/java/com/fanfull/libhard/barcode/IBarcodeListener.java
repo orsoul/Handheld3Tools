@@ -1,10 +1,9 @@
 package com.fanfull.libhard.barcode;
 
-public interface IBarcodeListener {
-    void onOpen();
+import com.fanfull.libhard.IOperationListener;
 
-    void onScan();
+public interface IBarcodeListener extends IOperationListener {
+  void onScan();
 
-    void onStopScan();
-    void onReceiveData(byte[] data);
+  void onStopScan();
 }

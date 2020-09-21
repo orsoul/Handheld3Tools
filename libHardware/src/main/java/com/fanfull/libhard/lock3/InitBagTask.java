@@ -1,17 +1,26 @@
 package com.fanfull.libhard.lock3;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libhard.rfid.RfidController;
+import com.fanfull.libhard.uhf.UhfController;
 import java.util.Arrays;
 import java.util.Random;
-import org.orsoul.baselib.util.ClickUtil;
+import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.lock.BagIdParser;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
+/**
+ * 锁3 初始化逻辑：.
+ * 1、寻卡NFC、读超高频EPC及TID；
+ * 2、生成袋id、密钥等信息，写入NFC；
+ * 3、袋id写入EPC；
+ * 3、将写入的信息从锁中读出，检查写入-读出的信息是否一样，确保写入成功；
+ */
 public class InitBagTask implements Runnable {
   public static final int RES_FIND_NFC = 1;
-  public static final int RES_FIND_EPC = 2;
-  public static final int RES_FIND_TID = 3;
+  public static final int RES_READ_TID = 2;
+  public static final int RES_GEN_DATA = 3;
 
   public static final int RES_WRITE_NFC = 4;
   public static final int RES_WRITE_EPC = 5;
@@ -21,15 +30,30 @@ public class InitBagTask implements Runnable {
   public static final int RES_EPC_DATA_NOT_EQUALS = 9;
 
   public byte[] uid = new byte[7];
-  public byte[] epc = new byte[12];
   public byte[] tid = new byte[6];
 
-  private boolean readSuccess;
   private boolean stopped = true;
+  /** 尝试读袋锁的 持续时间. */
+  private long findLockTime = 5000;
+  /** 尝试读写Epc的 次数. */
+  private int readWriteEpcTimes = 5;
+  /** 写入数据后是否需要读出数据检查. */
+  private boolean isCheckData = true;
+  /** 记录袋信息，用于生成袋id. */
   private BagIdParser bagIdParser = new BagIdParser();
 
+  public void setCheckData(boolean checkData) {
+    isCheckData = checkData;
+  }
+
   public void setBagIdParser(BagIdParser bagIdParser) {
-    this.bagIdParser = bagIdParser;
+    if (bagIdParser != null) {
+      this.bagIdParser = bagIdParser;
+    }
+  }
+
+  public BagIdParser getBagIdParser() {
+    return bagIdParser;
   }
 
   public InitBagTask setCityCode(String cityCode) {
@@ -48,8 +72,16 @@ public class InitBagTask implements Runnable {
   }
 
   public InitBagTask setUid(byte[] uid) {
-    bagIdParser.setUid(uid);
+    bagIdParser.setUidBuff(uid);
     return this;
+  }
+
+  public void setFindLockTime(long findLockTime) {
+    this.findLockTime = findLockTime;
+  }
+
+  public void setReadWriteEpcTimes(int readWriteEpcTimes) {
+    this.readWriteEpcTimes = readWriteEpcTimes;
   }
 
   public boolean isStopped() {
@@ -60,19 +92,37 @@ public class InitBagTask implements Runnable {
     this.stopped = true;
   }
 
-  public boolean isReadSuccess() {
-    return readSuccess;
+  public int findUidTid(byte[] uid, byte[] tid6) {
+    if (uid == null || tid6 == null
+        || uid.length != 7 || tid6.length != 6) {
+      return -1;
+    }
+
+    /* 1、读Nfc uid */
+    boolean readSuccess = RfidController.getInstance().findCard(uid);
+    if (!readSuccess) {
+      return RES_FIND_NFC;
+    }
+    /* 2、读 tid */
+    byte[] readTid = UhfController.getInstance().fastTid(0x03, 6);
+    if (readTid == null) {
+      return RES_READ_TID;
+    }
+    System.arraycopy(readTid, 0, tid6, 0, tid6.length);
+    return 0;
   }
 
   @Override public void run() {
     stopped = false;
+    onStart(bagIdParser);
     Lock3Operation lock3Operation = Lock3Operation.getInstance();
     /* 1、 读uid、epc、tid */
-    readSuccess = false;
+    boolean readSuccess = false;
     int failedCause = -1;
-    ClickUtil.resetRunTime();
-    while (!stopped && ClickUtil.runTime() < 5000) {
-      if (0 == (failedCause = lock3Operation.readUidEpcTid(uid, epc, tid))) {
+    ClockUtil.resetRunTime();
+    while (!stopped && ClockUtil.runTime() < findLockTime) {
+      //if (0 == (failedCause = lock3Operation.readUidEpcTid(uid, epc, tid))) {
+      if (0 == (failedCause = findUidTid(uid, tid))) {
         readSuccess = true;
         break;
       } else {
@@ -83,13 +133,17 @@ public class InitBagTask implements Runnable {
 
     String info;
     if (!readSuccess) {
-      info = "读锁失败";
+      if (failedCause == RES_READ_TID) {
+        info = "读TID失败";
+      } else {
+        info = "寻卡NFC失败";
+      }
       LogUtils.i(info);
       onFailed(failedCause, info);
       stopped = true;
       return;
     } else {
-      onProgress(RES_FIND_TID);
+      onProgress(RES_READ_TID);
     }
 
     /* 2、 生成袋id、密钥编号，写入nfc */
@@ -106,8 +160,18 @@ public class InitBagTask implements Runnable {
     sa14[0] = (byte) (keyNum | 0xA0);
     sa10[3] = sa14[0]; //
 
-    bagIdParser.setUid(uid);
+    bagIdParser.setUidBuff(uid);
     byte[] sa4 = bagIdParser.genBagIdBuff();
+    if (sa4 == null) {
+      info = "生成袋Id 失败";
+      LogUtils.i("%s:%s", info, bagIdParser);
+      onFailed(RES_GEN_DATA, info);
+      stopped = true;
+      return;
+    } else {
+      onProgress(RES_GEN_DATA);
+    }
+
     initLock3Bean.getInfoUnit(Lock3Bean.SA_BAG_ID).buff = sa4;
     initLock3Bean.getInfoUnit(Lock3Bean.SA_STATUS).buff = sa10;
     initLock3Bean.getInfoUnit(Lock3Bean.SA_KEY_NUM).buff = sa14;
@@ -124,7 +188,7 @@ public class InitBagTask implements Runnable {
     }
 
     /* 3、 袋id 写入超高频卡epc区 */
-    boolean writeEpd = lock3Operation.writeEpcFilterTid(sa4, tid, 5);
+    boolean writeEpd = lock3Operation.writeEpcFilterTid(sa4, tid, readWriteEpcTimes);
     if (!writeEpd) {
       info = "写EPC 失败";
       LogUtils.i(info);
@@ -133,6 +197,12 @@ public class InitBagTask implements Runnable {
       return;
     } else {
       onProgress(RES_WRITE_EPC);
+    }
+
+    if (!isCheckData) {
+      onSuccess(bagIdParser);
+      stopped = true;
+      return;
     }
 
     Lock3Bean readLock3Bean = new Lock3Bean();
@@ -155,7 +225,7 @@ public class InitBagTask implements Runnable {
       stopped = true;
       return;
     }
-    byte[] readEpc = lock3Operation.readEpcFilterTid(tid, 5);
+    byte[] readEpc = lock3Operation.readEpcFilterTid(tid, readWriteEpcTimes);
     if (readEpc == null) {
       info = "重读EPC 失败";
       LogUtils.i(info);
@@ -178,14 +248,18 @@ public class InitBagTask implements Runnable {
     stopped = true;
   } // end run()
 
+  protected void onStart(BagIdParser bagIdParser) {
+    LogUtils.i("onSuccess:%s", bagIdParser);
+  }
+
   protected void onSuccess(BagIdParser bagIdParser) {
     LogUtils.i("onSuccess:%s", bagIdParser);
   }
 
   protected void onProgress(int progress) {
-    LogUtils.i("onProgress:%s", progress);
+    //LogUtils.i("onProgress:%s", progress);
     switch (progress) {
-      case RES_FIND_TID:
+      case RES_READ_TID:
         LogUtils.d("读锁成功");
         break;
       case RES_WRITE_NFC:
