@@ -2,7 +2,6 @@ package org.orsoul.baselib.util;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /*
@@ -38,114 +37,140 @@ import java.util.Date;
  * @author orsoul
  * @常用格式: "yyyy-MM-dd HH:mm:ss"
  */
-public class DateFormatUtil {
+public abstract class DateFormatUtil {
 
-    /** 默认 时间的 字符串格式 */
-    public static final String FORMAT_NORMAL = "yyyy-MM-dd HH:mm:ss";
-    /** MM-dd */
-    public static final String FORMAT_DATE = "MM-dd";
-    /** HH:mm:ss */
-    public static final String FORMAT_TIME = "HH:mm:ss";
+  /** 默认 时间的 字符串格式 */
+  public static final String FORMAT_NORMAL = "yyyy-MM-dd HH:mm:ss";
+  public final static String FORMAT_yyyyMMddHHmmss = "yyyyMMddHHmmss";
+  /** MM-dd */
+  public static final String FORMAT_DATE = "MM-dd";
+  /** HH:mm:ss */
+  public static final String FORMAT_TIME = "HH:mm:ss";
 
-    /**
-     * @param date   指定时间, 为null表示当前时间
-     * @param format 时间格式,例如:yyyy-MM-dd HH:mm:ss
-     * @return 指定时间的 字符串形式; 若 format 格式非法, 返回 null
-     */
-    public static String getStringTime(Date date, String format) {
-        SimpleDateFormat formatter = null;
-        try {
-            formatter = new SimpleDateFormat(format);
-            // formatter = new SimpleDateFormat(format, Locale.CHINA);
-        } catch (Exception e) {
-            // format 格式非法
-            return null;
-        }
-        if (null == date) {
-            date = new Date();
-        }
-        String dateString = formatter.format(date);
-        return dateString;
+  /**
+   * @param date 指定时间, 为null表示当前时间
+   * @param format 时间格式,例如:yyyy-MM-dd HH:mm:ss
+   * @return 指定时间的 字符串形式; 若 format 格式非法, 返回 null
+   */
+  public static String getStringTime(Date date, String format) {
+    SimpleDateFormat formatter = null;
+    try {
+      formatter = new SimpleDateFormat(format);
+      // formatter = new SimpleDateFormat(format, Locale.CHINA);
+    } catch (Exception e) {
+      // format 格式非法
+      return null;
     }
-
-    /**
-     * @param date
-     * @return date的字符串形式: yyyy-MM-dd HH:mm:ss
-     */
-    public static String getStringTime(Date date) {
-        return getStringTime(date, FORMAT_NORMAL);
+    if (null == date) {
+      date = new Date();
     }
+    String dateString = formatter.format(date);
+    return dateString;
+  }
 
-    /**
-     * @param format
-     * @return 当前时间
-     */
-    public static String getStringTime(String format) {
-        return getStringTime(null, format);
-    }
+  /**
+   * @param milliseconds 指定时间
+   * @param format 时间格式,例如:yyyy-MM-dd HH:mm:ss
+   * @return 指定时间的 字符串形式; 若 format 格式非法, 返回 null
+   */
+  public static String getStringTime(long milliseconds, String format) {
+    Date date = new Date(milliseconds);
+    return getStringTime(date, format);
+  }
 
-    /**
-     * @return 当前时间的默认字符串形式: yyyy-MM-dd HH:mm:ss
-     */
-    public static String getStringTime() {
-        return getStringTime(null, FORMAT_NORMAL);
-    }
+  /**
+   * 时间格式 转换.
+   *
+   * @param strTime 源时间
+   * @param srcFormat 源时间 格式
+   * @param desFormat 目标格式
+   * @return 格式非法返回 null
+   */
+  public static String getStringTime(String strTime, String srcFormat, String desFormat) {
+    Date date = parseString2Date(strTime, srcFormat);
+    return getStringTime(date, desFormat);
+  }
 
-    /**
-     * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
-     * @param format  时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
-     * @return Date
-     */
-    public static Date parseString2Date(String strTime, String format) {
-        SimpleDateFormat formatter = new SimpleDateFormat(format);
-        // 从 第0个字符开始解析
-        ParsePosition pos = new ParsePosition(0);
-        Date date = formatter.parse(strTime, pos);
-        return date;
-    }
+  /**
+   * 时间格式 转换成：yyyy-MM-dd HH:mm:ss.
+   *
+   * @param strTime 源时间
+   * @param srcFormat 源时间 格式
+   * @return 格式非法返回 null
+   */
+  public static String getStringTime(String strTime, String srcFormat) {
+    Date date = parseString2Date(strTime, srcFormat);
+    return getStringTime(date, FORMAT_NORMAL);
+  }
 
-    /**
-     * @param strTime 默认格式的时间:2000-05-30 16:25:55
-     * @return Date
-     * @des 默认格式:yyyy-MM-dd HH:mm:ss
-     */
-    public static Date parseString2Date(String strTime) {
-        return parseString2Date(strTime, FORMAT_NORMAL);
-    }
+  /**
+   * @return date的字符串形式: yyyy-MM-dd HH:mm:ss
+   */
+  public static String getStringTime(Date date) {
+    return getStringTime(date, FORMAT_NORMAL);
+  }
 
-    /**
-     * 将字符串形式的时间 转成 milliseconds
-     *
-     * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
-     * @param format  时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
-     * @return milliseconds
-     */
-    public static long parseString2Long(String strTime, String format) {
-        return parseString2Date(strTime, format).getTime();
-    }
+  /**
+   * @return date的字符串形式: yyyy-MM-dd HH:mm:ss
+   */
+  public static String getStringTime(long date) {
+    return getStringTime(date, FORMAT_NORMAL);
+  }
 
-    /**
-     * 将字符串形式的时间 转成 milliseconds
-     *
-     * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
-     * @return milliseconds
-     */
-    public static long parseString2Long(String strTime) {
-        return parseString2Long(strTime, FORMAT_NORMAL);
-    }
+  /**
+   * @return 当前时间
+   */
+  public static String getStringTime(String format) {
+    return getStringTime(System.currentTimeMillis(), format);
+  }
 
-    /**
-     * 获取 day 天 前 零点零分零秒 时的时间
-     *
-     * @param day
-     * @return
-     */
-    private static long getTimeInMillisBefore(int day) {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.add(Calendar.DAY_OF_YEAR, -day);
-        return cal.getTimeInMillis();
-    }
+  /**
+   * @return 当前时间的默认字符串形式: yyyy-MM-dd HH:mm:ss
+   */
+  public static String getStringTime() {
+    return getStringTime(FORMAT_NORMAL);
+  }
+
+  /**
+   * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
+   * @param format 时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
+   * @return Date
+   */
+  public static Date parseString2Date(String strTime, String format) {
+    SimpleDateFormat formatter = new SimpleDateFormat(format);
+    // 从 第0个字符开始解析
+    ParsePosition pos = new ParsePosition(0);
+    Date date = formatter.parse(strTime, pos);
+    return date;
+  }
+
+  /**
+   * @param strTime 默认格式的时间:2000-05-30 16:25:55
+   * @return Date
+   * @des 默认格式:yyyy-MM-dd HH:mm:ss
+   */
+  public static Date parseString2Date(String strTime) {
+    return parseString2Date(strTime, FORMAT_NORMAL);
+  }
+
+  /**
+   * 将字符串形式的时间 转成 milliseconds
+   *
+   * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
+   * @param format 时间的字符串形式,如:yyyy-MM-dd HH:mm:ss
+   * @return milliseconds
+   */
+  public static long parseString2Long(String strTime, String format) {
+    return parseString2Date(strTime, format).getTime();
+  }
+
+  /**
+   * 将字符串形式的时间 转成 milliseconds
+   *
+   * @param strTime 字符串的形式的时间,如:2000-05-30 16:25:55
+   * @return milliseconds
+   */
+  public static long parseString2Long(String strTime) {
+    return parseString2Long(strTime, FORMAT_NORMAL);
+  }
 }
