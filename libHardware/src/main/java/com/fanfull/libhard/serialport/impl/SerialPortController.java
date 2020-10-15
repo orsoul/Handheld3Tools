@@ -85,12 +85,13 @@ public class SerialPortController implements ISerialPort {
   @Override
   public boolean send(byte[] data, int off, int len) {
     boolean send = serialPort.send(data, off, len);
+    LogUtils.tag(TAG).i("send %s:%s", send, ArrayUtils.bytes2HexString(data, 0, len));
     return send;
   }
 
   @Override
   public boolean send(byte[] data) {
-    return serialPort.send(data);
+    return send(data, 0, data != null ? data.length : 0);
   }
 
   public byte[] sendAndWaitReceive(byte[] data, long timeout) {
@@ -110,7 +111,7 @@ public class SerialPortController implements ISerialPort {
       }
     }
     onceListener = null;
-    LogUtils.tag(TAG).d("click2:%s", ClockUtil.clock());
+    LogUtils.tag(TAG).d("wait time:%s", ClockUtil.clock());
     return onceRecBuff;
   }
 
@@ -185,7 +186,7 @@ public class SerialPortController implements ISerialPort {
             synchronized (onceListener) {
               onceListener.notifyAll();
             }
-            onceListener = null;
+            //onceListener = null;
           }
           if (listenerSet != null) {
             for (ISerialPortListener listener : listenerSet) {

@@ -1,11 +1,6 @@
 package com.fanfull.libhard.finger;
 
-public interface IFingerListener {
-  void onOpen();
+import com.fanfull.libhard.IOperationListener;
 
-  void onScan();
-
-  void onStopScan();
-
-  void onReceiveData(byte[] data);
+public interface IFingerListener extends IOperationListener {
 }
