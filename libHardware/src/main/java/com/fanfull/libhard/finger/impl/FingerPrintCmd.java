@@ -49,12 +49,12 @@ public abstract class FingerPrintCmd {
   /** 储存模板 PS_StoreChar. */
   private static final byte[] CMD_STORE_CHAR = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x06,
-      0x06, BUFFER_ID, 0x00, 0x01, 0x00, 0x0F
+      0x06, 0x01, 0x00, 0x01, 0x00, 0x0F
   };
   /** 搜索指纹 PS_Search. */
   public static final byte[] CMD_SEARCH = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x08,
-      0x04, BUFFER_ID, 0x00, 0x00, 0x00, 0x10, 0x00, 0x1E
+      0x04, 0x01, 0x00, 0x00, 0x00, 0x10, 0x00, 0x1E
   };
   /** 自动验证指纹 PS_Identify. */
   public static final byte[] CMD_SEARCH_IDENTIFY = {
@@ -69,12 +69,13 @@ public abstract class FingerPrintCmd {
   };
 
   public static final byte[] loadchar = {
-      (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01,
-      0x00, 0x06, 0x07, 0x01, 0x00, 0x00, 0x00, 0x0f
-  };//PS_LoadChar
-  public static final byte[] upchar = {
-      (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01,
-      0x00, 0x04, 0x08, 0x01, 0x00, 0x0e
+      (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01, 0x00, 0x06,
+      0x07, 0x01, 0x00, 0x00, 0x00, 0x0f
+  };
+  /** 8. 上传特征或模板 PS_UpChar. */
+  private static final byte[] CMD_GET_FINGER_FEATURE = {
+      (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01, 0x00, 0x04,
+      0x08, 0x01, 0x00, 0x0E
   };
   /** 自动注册模板 PS_Enroll. */
   public static final byte[] CMD_ADD_FINGER = {
@@ -147,6 +148,23 @@ public abstract class FingerPrintCmd {
     CMD_STORE_CHAR[12] = (byte) (pageID & 0xFF);
     setCheckSum(CMD_STORE_CHAR);
     return CMD_STORE_CHAR;
+  }
+
+  /** 获取特征码 指令. */
+  public static byte[] getCmdGetFingerFeature(int buffId) {
+    if (buffId == BUFFER_ID_1) {
+      CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_1;
+      CMD_GET_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0E;
+    } else {
+      CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_2;
+      CMD_GET_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0F;
+    }
+    return CMD_GET_FINGER_FEATURE;
+  }
+
+  /** 获取特征码 指令. */
+  public static byte[] getCmdGetFingerFeature() {
+    return getCmdGetFingerFeature(BUFFER_ID);
   }
 
   /** 搜索指纹 指令.最大搜索范围 0~127 */

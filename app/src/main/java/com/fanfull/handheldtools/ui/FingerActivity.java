@@ -222,8 +222,12 @@ public class FingerActivity extends InitModuleActivity {
             }).show();
         break;
       case KeyEvent.KEYCODE_4:
+        fingerprintController.operation.send(
+            FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_1));
         break;
       case KeyEvent.KEYCODE_5:
+        fingerprintController.operation.send(
+            FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_2));
         break;
       case KeyEvent.KEYCODE_6:
         break;
