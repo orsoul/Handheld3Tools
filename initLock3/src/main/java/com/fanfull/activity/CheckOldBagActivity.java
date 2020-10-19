@@ -8,7 +8,7 @@ import com.fanfull.base.BaseActivity;
 import com.fanfull.initbag3.R;
 import com.fanfull.libhard.rfid.RfidController;
 import java.util.Arrays;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ViewUtil;
 
@@ -40,7 +40,7 @@ public class CheckOldBagActivity extends BaseActivity {
         String info;
         byte[] block8 = RfidController.getInstance().readM1(9);
         if (block8 != null) {
-          LogUtils.d("block9:%s", ArrayUtils.bytes2HexString(block8));
+          LogUtils.d("block9:%s", BytesUtil.bytes2HexString(block8));
           SoundUtils.playInitSuccessSound();
           if (block8[0] == 0x39) {
             info = "已上锁";

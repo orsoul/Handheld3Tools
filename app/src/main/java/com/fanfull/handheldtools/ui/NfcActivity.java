@@ -17,7 +17,7 @@ import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
 import java.util.Arrays;
 import java.util.Random;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
@@ -81,7 +81,7 @@ public class NfcActivity extends InitModuleActivity {
 
       @Override
       public void onReceiveData(byte[] data) {
-        LogUtils.d("rec:%s", ArrayUtils.bytes2HexString(data));
+        LogUtils.d("rec:%s", BytesUtil.bytes2HexString(data));
       }
     });
     showLoadingView("正在打开高频读头...");
@@ -96,7 +96,7 @@ public class NfcActivity extends InitModuleActivity {
     String info;
     if (nfcOrM1 != null) {
       SoundUtils.playInitSuccessSound();
-      info = ArrayUtils.bytes2HexString(nfcOrM1);
+      info = BytesUtil.bytes2HexString(nfcOrM1);
       switchNfc.setChecked(nfcOrM1.length == 7);
     } else {
       SoundUtils.playFailedSound();
@@ -141,9 +141,9 @@ public class NfcActivity extends InitModuleActivity {
                 0x000099, "\n标志位:%s\n电压值:%s\n袋ID:%s\n工作模式:%s\n启用码:%s\n",
                 Lock3Util.getStatusDesc(status),
                 String.format("%.3f", vReal),
-                ArrayUtils.bytes2HexString(bagIdBuff),
+                BytesUtil.bytes2HexString(bagIdBuff),
                 readbuf[8] == (byte) 0xFF ? "测试模式" : "产品模式",
-                ArrayUtils.bytes2HexString(readbuf, 4, 8));
+                BytesUtil.bytes2HexString(readbuf, 4, 8));
             info = colorSpanned;
             SoundUtils.playInitSuccessSound();
           } else {
@@ -155,7 +155,7 @@ public class NfcActivity extends InitModuleActivity {
           byte[] block8 = nfcController.read456Block();
           if (block8 != null) {
             SoundUtils.playInitSuccessSound();
-            info = String.format("读成功：%s\n%s", ArrayUtils.bytes2HexString(block8),
+            info = String.format("读成功：%s\n%s", BytesUtil.bytes2HexString(block8),
                 new String(block8));
           } else {
             SoundUtils.playFailedSound();
@@ -184,7 +184,7 @@ public class NfcActivity extends InitModuleActivity {
           boolean res = nfcController.write456Block(data, 1);
           if (res) {
             SoundUtils.playInitSuccessSound();
-            info = String.format("写456区成功：%s", ArrayUtils.bytes2HexString(data));
+            info = String.format("写456区成功：%s", BytesUtil.bytes2HexString(data));
           } else {
             SoundUtils.playFailedSound();
             info = "写8区失败";
@@ -217,7 +217,7 @@ public class NfcActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_0:
         len = nfcController.send2PSam(PSamCmd.CMD_PSAM_GET_CHALLENGE, pSamBuff);
         if (0 < len) {
-          String s = ArrayUtils.bytes2HexString(pSamBuff, len);
+          String s = BytesUtil.bytes2HexString(pSamBuff, len);
           if (APDUParser.checkReply(pSamBuff, len)) {
             ViewUtil.appendShow("psam获取随机数 成功:" + s, tvShow);
           } else {
@@ -230,7 +230,7 @@ public class NfcActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_1:
         len = nfcController.send2PSam(PSamCmd.genCmdGetInfo(1, 0), pSamBuff);
         if (0 < len) {
-          String s = ArrayUtils.bytes2HexString(pSamBuff, len);
+          String s = BytesUtil.bytes2HexString(pSamBuff, len);
           if (APDUParser.checkReply(pSamBuff, len)) {
             ViewUtil.appendShow("获取信息 成功:" + s, tvShow);
           } else {
@@ -252,7 +252,7 @@ public class NfcActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_2:
         byte[] block9 = nfcController.readM1(9);
         if (block9 != null) {
-          ViewUtil.appendShow(String.format("9区：%s", ArrayUtils.bytes2HexString(block9)), tvShow);
+          ViewUtil.appendShow(String.format("9区：%s", BytesUtil.bytes2HexString(block9)), tvShow);
         } else {
           ViewUtil.appendShow("读第9区失败", tvShow);
         }
@@ -275,7 +275,7 @@ public class NfcActivity extends InitModuleActivity {
         byte[] verifyUser = new byte[2];
         int verifyUserLen = nfcController.send2PSam(PSamCmd.getCmdVerifyUser(), verifyUser);
         if (0 < verifyUserLen) {
-          String s = ArrayUtils.bytes2HexString(verifyUser, verifyUserLen);
+          String s = BytesUtil.bytes2HexString(verifyUser, verifyUserLen);
           ViewUtil.appendShow("用户验证 成功:" + s, tvShow);
         } else {
           ViewUtil.appendShow("用户验证 失败", tvShow);
@@ -283,11 +283,11 @@ public class NfcActivity extends InitModuleActivity {
         return true;
       case KeyEvent.KEYCODE_8:
         byte[] sta = new byte[2];
-        byte[] epc = ArrayUtils.hexString2Bytes("000F46311000000000000000");
-        byte[] elsData = ArrayUtils.hexString2Bytes("0100000000000000000000000000");
+        byte[] epc = BytesUtil.hexString2Bytes("000F46311000000000000000");
+        byte[] elsData = BytesUtil.hexString2Bytes("0100000000000000000000000000");
         int l1 = nfcController.send2PSam(PSamCmd.getCmdGenElsCmd(1, epc, elsData), sta);
         if (0 < l1) {
-          String s = ArrayUtils.bytes2HexString(sta, l1);
+          String s = BytesUtil.bytes2HexString(sta, l1);
           ViewUtil.appendShow("获取 成功:" + s, tvShow);
         } else {
           ViewUtil.appendShow("获取 失败", tvShow);

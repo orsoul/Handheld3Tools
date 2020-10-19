@@ -6,7 +6,7 @@ import java.net.Socket;
 import org.orsoul.baselib.io.socketClient.Options;
 import org.orsoul.baselib.io.socketClient.impl.BaseSocketClient;
 import org.orsoul.baselib.io.socketClient.interf.ISocketClientListener;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public class SocketDemo {
 
@@ -79,8 +79,8 @@ public class SocketDemo {
         while (true) {
           Socket client = serverSocket.accept();
           System.out.println(client.getInetAddress() + " connected");
-          byte[] cmdBuff1 = ArrayUtils.hexString2Bytes(cmd1);
-          byte[] cmdBuff2 = ArrayUtils.hexString2Bytes(cmd2);
+          byte[] cmdBuff1 = BytesUtil.hexString2Bytes(cmd1);
+          byte[] cmdBuff2 = BytesUtil.hexString2Bytes(cmd2);
           //                    int total = 0;
           //                    for (int i = 0; i < 20_0000; i++) {
           //                        byte[] bytes = ("message " + i + ", ").getBytes();
@@ -92,7 +92,7 @@ public class SocketDemo {
           //                    ThreadUtil.sleep(5);
           //                    client.getOutputStream().write(cmdBuff2);
 
-          send(client, ArrayUtils.concatArray(cmdBuff1, cmdBuff2));
+          send(client, BytesUtil.concatArray(cmdBuff1, cmdBuff2));
 
           //                    client.getOutputStream().flush();
           //                    System.out.println("server: close, send: " + total);

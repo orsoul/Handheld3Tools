@@ -3,7 +3,7 @@ package com.fanfull.libhard.rfid;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import java.util.Arrays;
 import java.util.List;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
@@ -53,7 +53,7 @@ public class RfidController implements IRfidPSamOperation {
   @Override
   public byte[] findM1() {
     byte[] uid = operation.findM1();
-    ArrayUtils.reverse(uid);
+    BytesUtil.reverse(uid);
     return uid;
   }
 

@@ -1,7 +1,7 @@
 package com.fanfull.libhard.finger.impl;
 
 import com.apkfuns.logutils.LogUtils;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class FingerPrintCmd {
   /** 指纹指令头 长度. */
@@ -199,7 +199,7 @@ public abstract class FingerPrintCmd {
         && (data[6] == 0x01 || data[6] == 0x07)
         && (len = (data[7] << 8) | (data[8] & 0xFF)) == data.length - CMD_HEAD_LEN;
     if (!isCmd) {
-      LogUtils.i("not FingerCmd:%s, len:%s", ArrayUtils.bytes2HexString(data), len);
+      LogUtils.i("not FingerCmd:%s, len:%s", BytesUtil.bytes2HexString(data), len);
     }
     return isCmd;
   }

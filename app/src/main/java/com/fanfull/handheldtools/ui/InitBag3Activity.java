@@ -21,7 +21,7 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
@@ -82,7 +82,7 @@ public class InitBag3Activity extends InitModuleActivity {
       public void onReceiveData(byte[] data) {
         byte[] parseData = UhfCmd.parseData(data);
         if (parseData == null) {
-          LogUtils.i("parseData failed:%s", ArrayUtils.bytes2HexString(data));
+          LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
           return;
         }
         int cmdType = data[4] & 0xFF;
@@ -92,7 +92,7 @@ public class InitBag3Activity extends InitModuleActivity {
             info = String.format("设备版本：v%s.%s.%s", parseData[0], parseData[1], parseData[2]);
             break;
           case UhfCmd.RECEIVE_TYPE_GET_DEVICE_ID:
-            info = String.format("设备Id：%s", ArrayUtils.bytes2HexString(parseData));
+            info = String.format("设备Id：%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_GET_FAST_ID:
             if (parseData[0] == 1) {
@@ -103,11 +103,11 @@ public class InitBag3Activity extends InitModuleActivity {
             break;
           case UhfCmd.RECEIVE_TYPE_FAST_EPC:
             info =
-                String.format("fastEpc:%s", ArrayUtils.bytes2HexString(parseData));
+                String.format("fastEpc:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_READ:
             info =
-                String.format("read:%s", ArrayUtils.bytes2HexString(parseData));
+                String.format("read:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_WRITE:
             if (parseData.length == 0) {
@@ -118,7 +118,7 @@ public class InitBag3Activity extends InitModuleActivity {
             break;
           default:
             LogUtils.w("parseData cmdType:%02X, %s", cmdType,
-                ArrayUtils.bytes2HexString(parseData));
+                BytesUtil.bytes2HexString(parseData));
         }
         if (info != null) {
           LogUtils.i("parseData:%s", info);
@@ -148,7 +148,7 @@ public class InitBag3Activity extends InitModuleActivity {
 
       @Override
       public void onReceiveData(byte[] data) {
-        LogUtils.d("recNfc:%s", ArrayUtils.bytes2HexString(data));
+        LogUtils.d("recNfc:%s", BytesUtil.bytes2HexString(data));
       }
     });
 

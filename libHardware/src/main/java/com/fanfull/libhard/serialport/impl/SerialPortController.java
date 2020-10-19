@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 
 public class SerialPortController implements ISerialPort {
@@ -85,7 +85,7 @@ public class SerialPortController implements ISerialPort {
   @Override
   public boolean send(byte[] data, int off, int len) {
     boolean send = serialPort.send(data, off, len);
-    LogUtils.tag(TAG).i("send %s:%s", send, ArrayUtils.bytes2HexString(data, 0, len));
+    LogUtils.tag(TAG).i("send %s:%s", send, BytesUtil.bytes2HexString(data, 0, len));
     return send;
   }
 
@@ -176,7 +176,7 @@ public class SerialPortController implements ISerialPort {
         try {
           len = in.read(buff);
           LogUtils.tag(TAG)
-              .i("rec:%s, %s", ArrayUtils.bytes2HexString(buff, 0, len), getSerialPortInfo());
+              .i("rec:%s, %s", BytesUtil.bytes2HexString(buff, 0, len), getSerialPortInfo());
           if (len < 1) {
             break;
           }

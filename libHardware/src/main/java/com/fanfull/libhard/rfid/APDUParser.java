@@ -1,7 +1,7 @@
 package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.DesUtil;
 
 public abstract class APDUParser {
@@ -111,7 +111,7 @@ public abstract class APDUParser {
     }
     StringBuilder sb = new StringBuilder();
     // 命令头 cla ins p1 p2
-    sb.append(ArrayUtils.bytes2HexString(apduCmd, 4));
+    sb.append(BytesUtil.bytes2HexString(apduCmd, 4));
     if (5 == apduCmd.length) {
       // 有le段，无data
       sb.append(String.format("_%02X", apduCmd[apduCmd.length - 1]));
@@ -122,7 +122,7 @@ public abstract class APDUParser {
         sb.append('_')
             .append(dataLen)
             .append('-')
-            .append(ArrayUtils.bytes2HexString(apduCmd, 5, 5 + dataLen));
+            .append(BytesUtil.bytes2HexString(apduCmd, 5, 5 + dataLen));
         if (dataLen + 5 < apduCmd.length) {
           // le段
           sb.append(String.format("_%02X", apduCmd[apduCmd.length - 1]));
@@ -147,7 +147,7 @@ public abstract class APDUParser {
     byte sw1 = (byte) ((sw >> 8) & 0xFF);
     byte sw2 = (byte) (sw & 0xFF);
     boolean res = recData[recDataLen - 2] == sw1 && recData[recDataLen - 1] == sw2;
-    LogUtils.d("res:%s, data:%s, sw:%X", res, ArrayUtils.bytes2HexString(recData, recDataLen), sw);
+    LogUtils.d("res:%s, data:%s, sw:%X", res, BytesUtil.bytes2HexString(recData, recDataLen), sw);
     return res;
   }
 
@@ -217,14 +217,14 @@ public abstract class APDUParser {
     //System.out.println(ArrayUtils.bytes2HexString(randomData));
     //System.out.println(ArrayUtils.bytes2HexString(dkL));
     byte[] dkR = tripleDes(regData(randomData), key);
-    return ArrayUtils.concatArray(dkR, dkL);
+    return BytesUtil.concatArray(dkR, dkL);
   }
 
   static void test() {
-    byte[] mk = ArrayUtils.hexString2Bytes("1233db4e05758ac9dcee55b702a9fb4b");
-    byte[] randomData = ArrayUtils.hexString2Bytes("000000000F466880");
+    byte[] mk = BytesUtil.hexString2Bytes("1233db4e05758ac9dcee55b702a9fb4b");
+    byte[] randomData = BytesUtil.hexString2Bytes("000000000F466880");
     byte[] diversify = genDiversify(mk, randomData);
-    System.out.println(String.format("diversify:%s", ArrayUtils.bytes2HexString(diversify)));
+    System.out.println(String.format("diversify:%s", BytesUtil.bytes2HexString(diversify)));
   }
 
   public static void main(String[] args) {
@@ -241,8 +241,8 @@ public abstract class APDUParser {
 
     System.out.println(cmd2String(PSamCmd.getCmdVerifyUser()));
 
-    byte[] epc = ArrayUtils.hexString2Bytes("000F46311000000000000000");
-    byte[] elsData = ArrayUtils.hexString2Bytes("0100000000000000000000000000");
+    byte[] epc = BytesUtil.hexString2Bytes("000F46311000000000000000");
+    byte[] elsData = BytesUtil.hexString2Bytes("0100000000000000000000000000");
     System.out.println(cmd2String(PSamCmd.getCmdGenElsCmd(1, epc, null)));
   }
 }

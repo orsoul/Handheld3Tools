@@ -6,7 +6,7 @@ import com.fanfull.libhard.serialport.impl.SerialPortController;
 import com.halio.Rfid;
 import com.rd.io.Platform;
 import java.util.concurrent.Executors;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 高频卡 操作类，基于 雨滴开发板.
@@ -48,7 +48,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     boolean reVal;
     byte[] buff = new byte[16];
     int len = Rfid.getHwVersion(buff);
-    LogUtils.tag(TAG).v("%s:%s", len, ArrayUtils.bytes2HexString(buff, 0, len));
+    LogUtils.tag(TAG).v("%s:%s", len, BytesUtil.bytes2HexString(buff, 0, len));
     if (len > 0) {
       LogUtils.tag(TAG).v("HwVersion:%s", new String(buff, 0, len).trim());
       isOpen = true;
@@ -90,7 +90,7 @@ public class RfidOperationRd extends AbsRfidOperation {
 
     byte[] tagType = new byte[2];
     boolean reVal = Rfid.PcdRequest(Rfid.CARD_ALL, tagType);
-    LogUtils.tag(TAG).v("PcdRequest %s:%s", reVal, ArrayUtils.bytes2HexString(tagType));
+    LogUtils.tag(TAG).v("PcdRequest %s:%s", reVal, BytesUtil.bytes2HexString(tagType));
     return reVal;
   }
 
@@ -190,14 +190,14 @@ public class RfidOperationRd extends AbsRfidOperation {
     } else if (uidBuff.length == 7) {
       findSuccess = Rfid.ULPcdAnticoll(uidBuff);
     }
-    LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, ArrayUtils.bytes2HexString(uidBuff));
+    LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
     return findSuccess;
   }
 
   @Override
   public boolean readNfc4Byte(int sa, byte[] data4) {
     boolean readSuccess = Rfid.ULPcdRead((byte) sa, data4);
-    LogUtils.tag(TAG).v("%s:%02X(%s)", readSuccess, sa, ArrayUtils.bytes2HexString(data4));
+    LogUtils.tag(TAG).v("%s:%02X(%s)", readSuccess, sa, BytesUtil.bytes2HexString(data4));
     return readSuccess;
   }
 
@@ -238,7 +238,7 @@ public class RfidOperationRd extends AbsRfidOperation {
   @Override
   public boolean writeNfc4Byte(int sa, byte[] data4) {
     boolean writeSuccess = Rfid.ULPcdWrite((byte) sa, data4);
-    LogUtils.tag(TAG).v("%s:%02X(%s)", writeSuccess, sa, ArrayUtils.bytes2HexString(data4));
+    LogUtils.tag(TAG).v("%s:%02X(%s)", writeSuccess, sa, BytesUtil.bytes2HexString(data4));
     return writeSuccess;
   }
 
@@ -288,7 +288,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     if (readSuccess) {
       reVal = data;
     }
-    LogUtils.tag(TAG).v("%s:%s-%s", readSuccess, block, ArrayUtils.bytes2HexString(data));
+    LogUtils.tag(TAG).v("%s:%s-%s", readSuccess, block, BytesUtil.bytes2HexString(data));
     return reVal;
   }
 
@@ -298,7 +298,7 @@ public class RfidOperationRd extends AbsRfidOperation {
       return false;
     }
     boolean writeSuccess = Rfid.PcdWrite((byte) block, data16);
-    LogUtils.tag(TAG).v("%s:%s-%s", writeSuccess, block, ArrayUtils.bytes2HexString(data16));
+    LogUtils.tag(TAG).v("%s:%s-%s", writeSuccess, block, BytesUtil.bytes2HexString(data16));
     return writeSuccess;
   }
 }

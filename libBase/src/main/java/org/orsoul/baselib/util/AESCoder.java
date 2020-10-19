@@ -279,7 +279,7 @@ public abstract class AESCoder {
       plain += "1";
       byte[] encrypt = encrypt(plain, key);
 
-      String secretHexStr = ArrayUtils.bytes2HexString(encrypt);
+      String secretHexStr = BytesUtil.bytes2HexString(encrypt);
       System.out.println("明文长度:" + plain.length() + " --- 密文长度:"
           + secretHexStr.length());
       System.out.println(secretHexStr);

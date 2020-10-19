@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ArrayUtilsTest {
+public class BytesUtilTest {
 
   @Test
   public void long2Bytes() {
@@ -21,8 +21,8 @@ public class ArrayUtilsTest {
     list.add(1L);
 
     for (Long aLong : list) {
-      byte[] data = ArrayUtils.long2Bytes(aLong, 8);
-      Assert.assertEquals(String.format("%016X", aLong), ArrayUtils.bytes2HexString(data));
+      byte[] data = BytesUtil.long2Bytes(aLong, 8);
+      Assert.assertEquals(String.format("%016X", aLong), BytesUtil.bytes2HexString(data));
     }
 
     list.clear();
@@ -32,8 +32,8 @@ public class ArrayUtilsTest {
     list.add(-1L);
     list.add(1L);
     for (Long aLong : list) {
-      byte[] data = ArrayUtils.long2Bytes(aLong, 4);
-      Assert.assertEquals(String.format("%08X", aLong), ArrayUtils.bytes2HexString(data));
+      byte[] data = BytesUtil.long2Bytes(aLong, 4);
+      Assert.assertEquals(String.format("%08X", aLong), BytesUtil.bytes2HexString(data));
     }
   }
 
@@ -44,8 +44,8 @@ public class ArrayUtilsTest {
     list.add(new byte[] { (byte) 0xAA, (byte) 0xBB, (byte) 0xCC, (byte) 0xDD, });
 
     for (byte[] data : list) {
-      long res = ArrayUtils.bytes2Long(data, 0, data.length);
-      Assert.assertEquals(String.format("%08X", res), ArrayUtils.bytes2HexString(data));
+      long res = BytesUtil.bytes2Long(data, 0, data.length);
+      Assert.assertEquals(String.format("%08X", res), BytesUtil.bytes2HexString(data));
     }
   }
 
@@ -60,13 +60,13 @@ public class ArrayUtilsTest {
     list.add("123");
     list.add("az");
     for (String s : list) {
-      byte[] bytes = ArrayUtils.hexString2Bytes(s);
+      byte[] bytes = BytesUtil.hexString2Bytes(s);
       Assert.assertNull(bytes);
     }
-    Assert.assertNull(ArrayUtils.bytes2HexString(null));
-    Assert.assertNull(ArrayUtils.bytes2HexString(new byte[1], 1, 2));
-    Assert.assertNull(ArrayUtils.bytes2HexString(new byte[2], 0, 3));
-    Assert.assertEquals(ArrayUtils.bytes2HexString(new byte[0]), "");
+    Assert.assertNull(BytesUtil.bytes2HexString(null));
+    Assert.assertNull(BytesUtil.bytes2HexString(new byte[1], 1, 2));
+    Assert.assertNull(BytesUtil.bytes2HexString(new byte[2], 0, 3));
+    Assert.assertEquals(BytesUtil.bytes2HexString(new byte[0]), "");
 
     //String strTest;
     //byte[] dataTest;
@@ -87,10 +87,10 @@ public class ArrayUtilsTest {
     //map.put("00Ff12", new byte[] { 0, -1, 18 });
 
     for (Map.Entry<String, byte[]> entry : map.entrySet()) {
-      String str = ArrayUtils.bytes2HexString(entry.getValue());
+      String str = BytesUtil.bytes2HexString(entry.getValue());
       Assert.assertEquals(str, entry.getKey().toUpperCase());
 
-      byte[] bytes = ArrayUtils.hexString2Bytes(entry.getKey());
+      byte[] bytes = BytesUtil.hexString2Bytes(entry.getKey());
       Assert.assertArrayEquals(bytes, entry.getValue());
     }
 
@@ -100,9 +100,9 @@ public class ArrayUtilsTest {
     list.add("1234567890abcdef");
     list.add("1234567890ABCDEF");
     for (String s : list) {
-      byte[] bytes = ArrayUtils.hexString2Bytes(s);
+      byte[] bytes = BytesUtil.hexString2Bytes(s);
       System.out.println(Arrays.toString(bytes));
-      String s1 = ArrayUtils.bytes2HexString(bytes);
+      String s1 = BytesUtil.bytes2HexString(bytes);
       Assert.assertEquals(s1, s.toUpperCase());
     }
   }

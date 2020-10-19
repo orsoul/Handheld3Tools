@@ -2,7 +2,7 @@ package com.fanfull.libhard.uhf;
 
 import com.apkfuns.logutils.LogUtils;
 import java.util.Arrays;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 /**
  *
@@ -239,7 +239,7 @@ public abstract class UhfCmd {
 
       long time = System.currentTimeMillis();
       do {
-        LogUtils.i("wuh", "cmd_write:" + ArrayUtils.bytes2HexString(cmd_write));
+        LogUtils.i("wuh", "cmd_write:" + BytesUtil.bytes2HexString(cmd_write));
         int len = runCmd(cmd_write, buf);
         LogUtils.tag(TAG).d("writeUHFInTime(" + mb + ") len=10:" + (len));
         if (buf[4] == (byte) 0x87 && buf[5] == 0x01) {
@@ -272,7 +272,7 @@ public abstract class UhfCmd {
       filter = new byte[0];
     } else {
       LogUtils.tag(TAG).i("filter mmb-msa-len:%s-0x%02X-%s",
-          mmb, msa, ArrayUtils.bytes2HexString(filter));
+          mmb, msa, BytesUtil.bytes2HexString(filter));
     }
 
     int totalLen = 22 + filter.length;
@@ -377,7 +377,7 @@ public abstract class UhfCmd {
     cmdRead[4] = (byte) 0x84;
 
     // 密码
-    byte[] pwd = ArrayUtils.long2Bytes(psw, 4);
+    byte[] pwd = BytesUtil.long2Bytes(psw, 4);
     if (pwd != null && pwd.length == 4) {
       cmdRead[5] = pwd[0];
       cmdRead[6] = pwd[1];
@@ -460,7 +460,7 @@ public abstract class UhfCmd {
    */
   public static byte[] getWriteCmd(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
     LogUtils.tag(TAG).i("write mb-sa-len:%s-0x%02X-%s",
-        mb, sa, ArrayUtils.bytes2HexString(data));
+        mb, sa, BytesUtil.bytes2HexString(data));
 
     if (null == data) {
       return null;
@@ -470,7 +470,7 @@ public abstract class UhfCmd {
       filter = new byte[0];
     } else {
       LogUtils.tag(TAG).i("filter mmb-msa-len:%s-0x%02X-%s",
-          mmb, msa, ArrayUtils.bytes2HexString(filter));
+          mmb, msa, BytesUtil.bytes2HexString(filter));
     }
 
     // 总长度 = 22其他信息 + 过滤数据 + 50写入数据
@@ -715,7 +715,7 @@ public abstract class UhfCmd {
     // 帧类型
     cmdSetPwd[4] = (byte) 0x88;
     // 密码
-    byte[] pwdBuff = ArrayUtils.long2Bytes(pwd, 4);
+    byte[] pwdBuff = BytesUtil.long2Bytes(pwd, 4);
     if (pwdBuff != null && pwdBuff.length == 4) {
       cmdSetPwd[5] = pwdBuff[0];
       cmdSetPwd[6] = pwdBuff[1];
@@ -851,7 +851,7 @@ public abstract class UhfCmd {
     }
 
     LogUtils.tag(TAG).d("cmdType:%02X, parseData:%s, rec cmd:%s",
-        cmdType, ArrayUtils.bytes2HexString(reVal), ArrayUtils.bytes2HexString(cmd));
+        cmdType, BytesUtil.bytes2HexString(reVal), BytesUtil.bytes2HexString(cmd));
     return reVal;
   }
 
@@ -915,10 +915,10 @@ public abstract class UhfCmd {
 
     byte[] buff = new byte[20];
     LogUtils.d("SettingPowerActivity",
-        "CMD_GET_POWER:" + ArrayUtils.bytes2HexString(CMD_SET_POWER));
+        "CMD_GET_POWER:" + BytesUtil.bytes2HexString(CMD_SET_POWER));
     reVal = runCmd(CMD_GET_POWER, buff);
     LogUtils.tag(TAG).d("getPower() len=12:" + (reVal));
-    LogUtils.d("SettingPowerActivity", "buff:" + ArrayUtils.bytes2HexString(buff));
+    LogUtils.d("SettingPowerActivity", "buff:" + BytesUtil.bytes2HexString(buff));
     if (14 <= reVal && buff[4] == (byte) 0x13) {
       int h = 0;
       int l = 0;
@@ -1018,6 +1018,6 @@ public abstract class UhfCmd {
 
   public static void main(String[] args) {
     byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0, 0x0FC2A0);
-    System.out.println(ArrayUtils.bytes2HexString(setPwdCmd));
+    System.out.println(BytesUtil.bytes2HexString(setPwdCmd));
   }
 }

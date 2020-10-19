@@ -3,7 +3,7 @@ package org.orsoul.baselib.util.lock;
 import androidx.annotation.Nullable;
 import com.apkfuns.logutils.LogUtils;
 import java.util.Objects;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 /** 锁3袋id解析工具. */
 public class BagIdParser {
@@ -80,14 +80,14 @@ public class BagIdParser {
 
   public String getUid() {
     if (uid == null) {
-      uid = ArrayUtils.bytes2HexString(uidBuff);
+      uid = BytesUtil.bytes2HexString(uidBuff);
     }
     return uid;
   }
 
   public byte[] getUidBuff() {
     if (uidBuff == null) {
-      uidBuff = ArrayUtils.hexString2Bytes(uid);
+      uidBuff = BytesUtil.hexString2Bytes(uid);
     }
     return uidBuff;
   }
@@ -98,7 +98,7 @@ public class BagIdParser {
   }
 
   public String genBagId() {
-    return ArrayUtils.bytes2HexString(genBagIdBuff());
+    return BytesUtil.bytes2HexString(genBagIdBuff());
   }
 
   public byte[] genBagIdBuff() {
@@ -111,7 +111,7 @@ public class BagIdParser {
       LogUtils.i("genBagIdBuff failed:%s", this);
       return null;
     }
-    byte[] bagIdPre = ArrayUtils.hexString2Bytes(version + cityCode + moneyType + bagType);
+    byte[] bagIdPre = BytesUtil.hexString2Bytes(version + cityCode + moneyType + bagType);
     byte[] bagIdBuff = new byte[BAG_ID_BYTE_LEN];
     System.arraycopy(bagIdPre, 0, bagIdBuff, 0, bagIdPre.length);
     System.arraycopy(uidBuff, 0, bagIdBuff, 4, uidBuff.length);
@@ -123,7 +123,7 @@ public class BagIdParser {
       crc ^= bagIdBuff[i];
     }
     bagIdBuff[checkIndex] = (byte) crc;
-    bagId = ArrayUtils.bytes2HexString(bagIdBuff);
+    bagId = BytesUtil.bytes2HexString(bagIdBuff);
     checkByte = bagId.substring(22);
     LogUtils.v("genBagIdBuff:%s", bagId);
     return bagIdBuff;
@@ -160,7 +160,7 @@ public class BagIdParser {
         ", bagType='" + bagType + '\'' +
         ", uid='" + uid + '\'' +
         ", checkByte='" + checkByte + '\'' +
-        ", uidBuff=" + ArrayUtils.bytes2HexString(uidBuff) +
+        ", uidBuff=" + BytesUtil.bytes2HexString(uidBuff) +
         '}';
   }
 

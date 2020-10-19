@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
@@ -108,7 +108,7 @@ public class SocketConnet implements Runnable {
     }
     try {
       out.write(dataBuff);
-      LogUtils.tag(TAG).d("send:%s", ArrayUtils.bytes2HexString(dataBuff));
+      LogUtils.tag(TAG).d("send:%s", BytesUtil.bytes2HexString(dataBuff));
       return true;
     } catch (IOException e) {
       LogUtils.tag(TAG).w("%s", e.getMessage());

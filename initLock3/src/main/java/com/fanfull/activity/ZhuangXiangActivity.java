@@ -21,7 +21,7 @@ import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.SPUtils;
 import java.util.ArrayList;
 import java.util.List;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
@@ -266,9 +266,9 @@ public class ZhuangXiangActivity extends BaseActivity {
           String bagId;
           boolean dataFromEpc = epc != null;
           if (dataFromEpc) {
-            bagId = ArrayUtils.bytes2HexString(epc);
+            bagId = BytesUtil.bytes2HexString(epc);
           } else {
-            bagId = ArrayUtils.bytes2HexString(nfc);
+            bagId = BytesUtil.bytes2HexString(nfc);
           }
           onReadSuccess(bagId, dataFromEpc);
           isRunning = false;
