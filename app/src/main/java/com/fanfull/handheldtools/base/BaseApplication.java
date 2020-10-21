@@ -4,8 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
+import com.amitshekhar.DebugDB;
+import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.fanfull.handheldtools.BuildConfig;
 import com.wanjian.cockroach.Cockroach;
+import java.lang.reflect.Method;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.LogHelper;
 
@@ -40,6 +45,21 @@ public class BaseApplication extends Application {
         CrashLogUtil.saveCrashReport(throwable);
       });
     });
+  }
+
+  public static void showDebugDBAddressLogToast() {
+    LogUtils.i("db ip:%s", DebugDB.getAddressLog());
+    if (BuildConfig.DEBUG) {
+      try {
+        Class<?> debugDB = Class.forName("com.amitshekhar.DebugDB");
+        Method getAddressLog = debugDB.getMethod("getAddressLog");
+        Object value = getAddressLog.invoke(null);
+        Toast.makeText(context, (String) value, Toast.LENGTH_LONG).show();
+        LogUtils.i("db ip:%s", value);
+      } catch (Exception ignore) {
+
+      }
+    }
   }
 
   private void initCaocConfig() {
