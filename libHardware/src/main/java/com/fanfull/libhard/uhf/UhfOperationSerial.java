@@ -29,9 +29,11 @@ public class UhfOperationSerial extends AbsUhfOperation {
     }
     try {
       serialPortController = SerialPortController.newBuilder(SERIAL_PORT_PATH, BUADRATE).build();
-      serialPortListener = data -> {
-        if (uhfListener != null) {
-          uhfListener.onReceiveData(data);
+      serialPortListener = new ISerialPortListener() {
+        @Override public void onReceiveData(byte[] data) {
+          if (uhfListener != null) {
+            uhfListener.onReceiveData(data);
+          }
         }
       };
       serialPortController.addSerialPortListener(serialPortListener);

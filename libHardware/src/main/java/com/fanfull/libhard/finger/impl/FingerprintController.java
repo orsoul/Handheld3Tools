@@ -49,8 +49,16 @@ public class FingerprintController implements IFingerOperation {
     return operation.addFinger(fingerIdBuff);
   }
 
+  @Override public int addFinger(int[] fingerIdBuff, byte[] fingerFeatureBuff) {
+    return operation.addFinger(fingerIdBuff, fingerFeatureBuff);
+  }
+
   @Override public int searchFinger(int[] fingerIdBuff) {
     return operation.searchFinger(fingerIdBuff);
+  }
+
+  @Override public int searchFinger(int[] fingerIdBuff, byte[] fingerFeatureBuff) {
+    return operation.searchFinger(fingerIdBuff, fingerFeatureBuff);
   }
 
   @Override public int getFingerNum(int[] fingerNumBuff) {
@@ -98,6 +106,7 @@ public class FingerprintController implements IFingerOperation {
     private boolean stopped = true;
     private boolean isAddMode;
     private long runTime = 5000L;
+    private byte[] fingerFeature;
 
     public FingerPrintTask(FingerprintController fingerprintController) {
       this.fingerprintController = fingerprintController;
@@ -171,6 +180,17 @@ public class FingerprintController implements IFingerOperation {
 
     /** 添加或匹配指纹成功时 回调. */
     protected void onSuccess(boolean isAddMode, int fingerId, int score) {
+      if (isAddMode) {
+        onAddSuccess(fingerId);
+      } else {
+        onSearchSuccess(fingerId, score);
+      }
+    }
+
+    protected void onAddSuccess(int fingerId) {
+    }
+
+    protected void onSearchSuccess(int fingerId, int score) {
     }
 
     /** 添加或匹配指纹失败时 回调. */

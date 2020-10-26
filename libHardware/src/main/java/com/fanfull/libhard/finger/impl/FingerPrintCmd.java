@@ -6,8 +6,13 @@ import org.orsoul.baselib.util.BytesUtil;
 public abstract class FingerPrintCmd {
   /** 指纹指令头 长度. */
   public static final int CMD_HEAD_LEN = 9;
+  /** 获取指纹特征码 回复指令的长度. */
+  public static final int CMD_FINGER_FEATURE_LEN = 568;
+
+  /** 指纹特征码 长度. */
+  public static final int FINGER_FEATURE_LEN = 512;
   /** 指纹容量为128，指纹id范围 0~127. */
-  public static final int FINGER_MAX_NUM = 128;
+  public static final int FINGER_MAX_NUM = 127;
 
   /** 指纹模块缓冲区号1. */
   public static final byte BUFFER_ID_1 = 0x01;
@@ -68,9 +73,16 @@ public abstract class FingerPrintCmd {
       0x0F, 0x00, 0x13
   };
 
-  public static final byte[] loadchar = {
-      (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01, 0x00, 0x06,
-      0x07, 0x01, 0x00, 0x00, 0x00, 0x0f
+  /** 7. 读出模板 PS_LoadChar. */
+  private static final byte[] CMD_LOAD_FINGER_FEATURE = {
+      (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x06,
+      0x07, 0x01, 0x00, 0x00, 0x00, 0x0F
+  };
+
+  /** 9. 下载特征或模板 PS_DownChar. */
+  private static final byte[] CMD_SAVE_FINGER_FEATURE = {
+      (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x04,
+      0x09, 0x01, 0x00, 0x0F
   };
   /** 8. 上传特征或模板 PS_UpChar. */
   private static final byte[] CMD_GET_FINGER_FEATURE = {
@@ -125,6 +137,41 @@ public abstract class FingerPrintCmd {
     return true;
   }
 
+  public static byte[] convertFingerFeature2Cmd(byte[] fingerFeatureBuff) {
+
+    if (fingerFeatureBuff == null
+        || fingerFeatureBuff.length < FingerPrintCmd.FINGER_FEATURE_LEN) {
+      return null;
+    }
+
+    // 每条指令长139字节，其中[9-137]为128字节的部分指纹特征码
+    byte[] cmdBuff = new byte[139];
+    cmdBuff[0] = (byte) 0xEF;
+    cmdBuff[1] = (byte) 0x01;
+    cmdBuff[2] = (byte) 0xFF;
+    cmdBuff[3] = (byte) 0xFF;
+    cmdBuff[4] = (byte) 0xFF;
+    cmdBuff[5] = (byte) 0xFF;
+    cmdBuff[7] = (byte) 0x00;
+    cmdBuff[8] = (byte) 0x82;
+    cmdBuff[6] = (byte) 0x02;
+
+    byte[] reVal = new byte[CMD_FINGER_FEATURE_LEN];
+    for (int i = 0; i < 4; i++) {
+      int srcPos = i * 128;
+      System.arraycopy(fingerFeatureBuff, srcPos, cmdBuff, 9, 128);
+      if (i == 3) {
+        cmdBuff[6] = (byte) 0x08;
+      }
+      setCheckSum(cmdBuff);
+      srcPos = i * cmdBuff.length;
+      System.arraycopy(cmdBuff, 0, reVal, srcPos, cmdBuff.length);
+    }
+
+    LogUtils.d("convertFingerFeature2Cmd:%s", BytesUtil.bytes2HexString(reVal));
+    return reVal;
+  }
+
   /** 生成特征码 指令. */
   public static byte[] getCmdGenChar(int buffId) {
     if (buffId == BUFFER_ID_1) {
@@ -150,7 +197,7 @@ public abstract class FingerPrintCmd {
     return CMD_STORE_CHAR;
   }
 
-  /** 获取特征码 指令. */
+  /** 8. 上传特征或模板 PS_UpChar. 获取特征码 指令. */
   public static byte[] getCmdGetFingerFeature(int buffId) {
     if (buffId == BUFFER_ID_1) {
       CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_1;
@@ -162,9 +209,45 @@ public abstract class FingerPrintCmd {
     return CMD_GET_FINGER_FEATURE;
   }
 
-  /** 获取特征码 指令. */
+  /** 8. 上传特征或模板 PS_UpChar.获取特征码 指令，使用 bufferID1. */
   public static byte[] getCmdGetFingerFeature() {
     return getCmdGetFingerFeature(BUFFER_ID);
+  }
+
+  /** 载入特征码 指令. */
+  public static byte[] getCmdSaveFingerFeature(int buffId) {
+    if (buffId == BUFFER_ID_1) {
+      CMD_SAVE_FINGER_FEATURE[10] = BUFFER_ID_1;
+      CMD_SAVE_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0F;
+    } else {
+      CMD_SAVE_FINGER_FEATURE[10] = BUFFER_ID_2;
+      CMD_SAVE_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x10;
+    }
+    return CMD_SAVE_FINGER_FEATURE;
+  }
+
+  /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令. */
+  public static byte[] getCmdLoadFingerFeature(int buffId, int fingerIndex) {
+    if (buffId == BUFFER_ID_1) {
+      CMD_LOAD_FINGER_FEATURE[10] = BUFFER_ID_1;
+    } else {
+      CMD_LOAD_FINGER_FEATURE[10] = BUFFER_ID_2;
+    }
+
+    CMD_LOAD_FINGER_FEATURE[11] = (byte) ((fingerIndex >> 8) & 0xFF);
+    CMD_LOAD_FINGER_FEATURE[12] = (byte) (fingerIndex & 0xFF);
+    setCheckSum(CMD_LOAD_FINGER_FEATURE);
+    return CMD_LOAD_FINGER_FEATURE;
+  }
+
+  /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令，使用 bufferID1. */
+  public static byte[] getCmdLoadFingerFeature(int pageId) {
+    return getCmdLoadFingerFeature(BUFFER_ID, pageId);
+  }
+
+  /** 载入特征码 指令，使用 bufferID1. */
+  public static byte[] getCmdSaveFingerFeature() {
+    return getCmdSaveFingerFeature(BUFFER_ID);
   }
 
   /** 搜索指纹 指令.最大搜索范围 0~127 */
@@ -197,7 +280,7 @@ public abstract class FingerPrintCmd {
         && (data[0] == (byte) 0xEF)
         && (data[1] == 0x01)
         && (data[6] == 0x01 || data[6] == 0x07)
-        && (len = (data[7] << 8) | (data[8] & 0xFF)) == data.length - CMD_HEAD_LEN;
+        && (len = (data[7] << 8) | (data[8] & 0xFF)) <= data.length - CMD_HEAD_LEN;
     if (!isCmd) {
       LogUtils.i("not FingerCmd:%s, len:%s", BytesUtil.bytes2HexString(data), len);
     }

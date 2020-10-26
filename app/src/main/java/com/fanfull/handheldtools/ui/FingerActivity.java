@@ -12,9 +12,12 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.finger.IFingerListener;
+import com.fanfull.libhard.finger.bean.FingerBean;
+import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.finger.impl.FingerPrintCmd;
 import com.fanfull.libhard.finger.impl.FingerprintController;
 import com.lxj.xpopup.XPopup;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
@@ -28,6 +31,7 @@ public class FingerActivity extends InitModuleActivity {
   private int fingerId = 127;
   private FingerprintController fingerprintController;
   private FingerprintController.FingerPrintTask fingerPrintTask;
+  private FingerPrintSQLiteHelper fingerPrintDbHelper;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,7 @@ public class FingerActivity extends InitModuleActivity {
   }
 
   @Override protected void initModule() {
+    fingerPrintDbHelper = new FingerPrintSQLiteHelper(this);
     fingerprintController = FingerprintController.getInstance();
     fingerprintController.setListener(new IFingerListener() {
       @Override public void onOpen(boolean openSuccess) {
@@ -192,6 +197,8 @@ public class FingerActivity extends InitModuleActivity {
             if (res1 == 0) {
               ViewUtil.appendShow(String.format("搜索成功，fingerID：%s,    score:%s",
                   resBuff[0], resBuff[1]), tvShow);
+              byte[] bytes = new byte[512];
+              fingerprintController.operation.getFingerFeature(resBuff[0], bytes);
             } else {
               ViewUtil.appendShow(String.format("搜索失败，case:%s", res1), tvShow);
             }
@@ -210,10 +217,17 @@ public class FingerActivity extends InitModuleActivity {
               }
 
               ThreadUtil.execute(() -> {
-                int res1 = fingerprintController.operation.addFinger(fingerId);
+                byte[] fingerFeature = new byte[512];
+                int res1 = fingerprintController.operation.addFinger(fingerId, fingerFeature);
+                long[] dbId = new long[] { -1L };
+                if (res1 == 0) {
+                  FingerBean fingerBean = new FingerBean(fingerId, fingerFeature);
+                  dbId[0] = fingerPrintDbHelper.saveOrUpdate(fingerBean);
+                }
                 runOnUi(() -> {
                   if (res1 == 0) {
-                    ViewUtil.appendShow(String.format("添加成功，fingerId：%s", fingerId), tvShow);
+                    ViewUtil.appendShow(
+                        String.format("添加成功，fingerId：%s，db Id：%s", fingerId, dbId[0]), tvShow);
                   } else {
                     ViewUtil.appendShow(String.format("添加失败，case:%s", res1), tvShow);
                   }
@@ -230,6 +244,19 @@ public class FingerActivity extends InitModuleActivity {
             FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_2));
         break;
       case KeyEvent.KEYCODE_6:
+        String str =
+            "0301492D0000C0068002800200000000000000000000000200020002000200028002800280028002000000000000000000000000000000002B0FC91E6013279E2497C87E2A9A9EDE701FCFFE4423E7DE33B91A5E2E89C41F578DD03F0D95C9FF609BD0BF0E1D4A3F2D21455F55A1E6FF0E23C9BF292844FF4AABE99F2B31439F54BFD47F2307163C3E0901BD72134E150E2889DD378B05FB72170DFB0DACC97B0DB7473B4A8BD8D84E0E8EF8709A8EB8230B43D90E0DCA796B9A0F990DB048F318876CB611329D1014882C176D8D51170DB388B76089D2F5409D1CD33A9A9F906F06D68A160F492F451825AB000000000000000000000000000000000000000003014B290000C0068002800200000000000000000000000080008000800080008002800280028002000000000000000000000000000000002B0FC91E6013279E2497C87E2A9A9EDE701FCFFE33B91A5E2E89C41F410DC49F578DD03F0D95C9FF609BD0BF0E1D0A3F2D21455F55A1E6FF0E23C9BF422528DF292844FF4AABE99F2B31439F56BF947F2307163C0E0DCA7D4A8BD8DA4E0E8EFA3D8901BB378B05DB72170DFB18876CB87390CD72709A8EB814882C39230B43D972134E136B9A0F996D8D51176089D2F5148B41533E1CDCD3160F49316F06D6AE3D96E04B000000000000000000000000000000000000000000000000000000000000000000000000";
+        byte[] fingerBuff = BytesUtil.hexString2Bytes(str);
+        ThreadUtil.execute(() -> {
+          int res1 = fingerprintController.operation.loadFinger(3, fingerBuff);
+          runOnUi(() -> {
+            if (res1 == 0) {
+              ViewUtil.appendShow(String.format("加载指纹成功，fingerID：%s", 3), tvShow);
+            } else {
+              ViewUtil.appendShow(String.format("加载指纹失败，case:%s", res1), tvShow);
+            }
+          });
+        });
         break;
       case KeyEvent.KEYCODE_9:
         btnSearch.setEnabled(false);
@@ -247,6 +274,9 @@ public class FingerActivity extends InitModuleActivity {
   @Override
   protected void onDestroy() {
     fingerprintController.release();
+    if (fingerPrintDbHelper != null) {
+      fingerPrintDbHelper.close();
+    }
     super.onDestroy();
   }
 }
