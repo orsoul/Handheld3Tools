@@ -2,7 +2,7 @@ package org.orsoul.baselib.util;
 
 import androidx.annotation.IntRange;
 
-public abstract class ArrayUtils {
+public abstract class BytesUtil {
 
   private static final char[] HEX_CHAR = {
       '0', '1', '2', '3', '4', '5', '6',

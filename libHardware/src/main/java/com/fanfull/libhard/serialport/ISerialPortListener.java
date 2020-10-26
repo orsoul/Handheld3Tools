@@ -1,5 +1,12 @@
 package com.fanfull.libhard.serialport;
 
+import java.util.Arrays;
+
 public interface ISerialPortListener {
-    void onReceiveData(byte[] data);
+  default void onReceiveData(byte[] data) {
+  }
+
+  default void onReceiveData(byte[] data, int len) {
+    onReceiveData(Arrays.copyOf(data, len));
+  }
 }

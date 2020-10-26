@@ -1,6 +1,6 @@
 package com.fanfull.libhard.rfid;
 
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class PSamCmd {
   public static final int COS_RES_CARD_LEN = 12;
@@ -46,7 +46,7 @@ public abstract class PSamCmd {
 
   /** 用户验证. */
   public static byte[] getCmdVerifyUser(byte[] userId, byte[] pin) {
-    byte[] data = ArrayUtils.concatArray(userId, pin);
+    byte[] data = BytesUtil.concatArray(userId, pin);
     return APDUParser.genCmd(0x80, 0x20, 0, 0, data);
   }
 
@@ -54,7 +54,7 @@ public abstract class PSamCmd {
   public static byte[] getCmdVerifyUser() {
     byte[] userId = new byte[8];
     userId[7] = 1;
-    byte[] pin = ArrayUtils.hexString2Bytes("4d494d49535f5053414d5f55534552");
+    byte[] pin = BytesUtil.hexString2Bytes("4d494d49535f5053414d5f55534552");
     //byte[] pin = ArrayUtils.hexString2Bytes("4d494d49535f5053414d5f55530000");
     return getCmdVerifyUser(userId, pin);
   }
@@ -76,11 +76,11 @@ public abstract class PSamCmd {
    */
   public static byte[] getCmdGenElsCmd(int elsType, byte[] epc, byte[] elsData) {
     // 转为 LV格式 后拼接
-    byte[] lvEpc = ArrayUtils.bytes2LnVData(1, epc);
+    byte[] lvEpc = BytesUtil.bytes2LnVData(1, epc);
     byte[] data = lvEpc;
     if (elsData != null) {
-      byte[] lvElsData = ArrayUtils.bytes2LnVData(1, elsData);
-      data = ArrayUtils.concatArray(lvEpc, lvElsData);
+      byte[] lvElsData = BytesUtil.bytes2LnVData(1, elsData);
+      data = BytesUtil.concatArray(lvEpc, lvElsData);
     }
 
     return APDUParser.genCmd(0x80, 0x30, elsType, 0, data, 0);

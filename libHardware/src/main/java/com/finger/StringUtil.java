@@ -1,6 +1,6 @@
 package com.finger;
 
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 import java.util.Arrays;
 
@@ -16,7 +16,7 @@ public class StringUtil {
             int len = 1024 - fingerInfo.length();
             byte[] b = new byte[len * 2];
             Arrays.fill(b, (byte) 0x00);
-            fingerInfo = fingerInfo + ArrayUtils.bytes2HexString(b);
+            fingerInfo = fingerInfo + BytesUtil.bytes2HexString(b);
         }
         return fingerInfo;
     }

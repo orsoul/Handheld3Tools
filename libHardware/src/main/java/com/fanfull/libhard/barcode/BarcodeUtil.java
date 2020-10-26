@@ -3,7 +3,7 @@ package com.fanfull.libhard.barcode;
 import com.apkfuns.logutils.LogUtils;
 import com.hardware.Hardware;
 import java.util.Arrays;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 老锁二维码 解密工具
@@ -23,7 +23,7 @@ public abstract class BarcodeUtil {
             byte[] barcodeBuff = new byte[DECODE_DATA_LEN];
             System.arraycopy(data, 0, barcodeBuff, 0, length);
             Hardware.decodeBarcode(barcodeBuff);// 解码
-          String s = ArrayUtils.bytes2HexString(barcodeBuff);
+          String s = BytesUtil.bytes2HexString(barcodeBuff);
           LogUtils.wtf("barcode:%s", s);
           //LogUtils.d("barcode解码后hex:"
           //                   + ArrayUtils.bytes2HexString(barcodeBuff));

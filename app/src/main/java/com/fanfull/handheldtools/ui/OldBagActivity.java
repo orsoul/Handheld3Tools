@@ -17,7 +17,7 @@ import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
@@ -124,7 +124,7 @@ public class OldBagActivity extends InitModuleActivity {
       }
 
       @Override public void onReceiveData(byte[] data) {
-        LogUtils.d("rec:%s", ArrayUtils.bytes2HexString(data));
+        LogUtils.d("rec:%s", BytesUtil.bytes2HexString(data));
       }
     });
     RfidController.getInstance().open();
@@ -166,7 +166,7 @@ public class OldBagActivity extends InitModuleActivity {
                   TextUtils.equals(barcode, m1Barcode));
           appendShow(colorSpanned);
 
-          String hex = ArrayUtils.bytes2HexString(block8);
+          String hex = BytesUtil.bytes2HexString(block8);
           appendShow(String.format("\n%s", hex));
           LogUtils.i("M1 hex:%s", hex);
         } else {

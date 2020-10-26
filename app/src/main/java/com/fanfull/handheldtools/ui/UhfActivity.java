@@ -24,7 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
@@ -113,7 +113,7 @@ public class UhfActivity extends InitModuleActivity {
       public void onReceiveData(byte[] data) {
         byte[] parseData = UhfCmd.parseData(data);
         if (parseData == null) {
-          LogUtils.i("parseData failed:%s", ArrayUtils.bytes2HexString(data));
+          LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
           return;
         }
         int cmdType = data[4] & 0xFF;
@@ -123,7 +123,7 @@ public class UhfActivity extends InitModuleActivity {
             info = String.format("设备版本：v%s.%s.%s", parseData[0], parseData[1], parseData[2]);
             break;
           case UhfCmd.RECEIVE_TYPE_GET_DEVICE_ID:
-            info = String.format("设备Id：%s", ArrayUtils.bytes2HexString(parseData));
+            info = String.format("设备Id：%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_GET_FAST_ID:
             if (parseData[0] == 1) {
@@ -148,20 +148,20 @@ public class UhfActivity extends InitModuleActivity {
             readLotCount++;
             if (parseData.length == 24) {
               info = String.format("%s epc:%s\n%s tid:%s",
-                  readLotCount, ArrayUtils.bytes2HexString(parseData, 0, 12),
-                  readLotCount, ArrayUtils.bytes2HexString(parseData, 12, parseData.length));
+                  readLotCount, BytesUtil.bytes2HexString(parseData, 0, 12),
+                  readLotCount, BytesUtil.bytes2HexString(parseData, 12, parseData.length));
             } else if (parseData.length == 1) {
               // 续卡停止
               readingLot = false;
               info = "连续续卡停止";
             } else {
               info =
-                  String.format("%s epc:%s", readLotCount, ArrayUtils.bytes2HexString(parseData));
+                  String.format("%s epc:%s", readLotCount, BytesUtil.bytes2HexString(parseData));
             }
             break;
           case UhfCmd.RECEIVE_TYPE_READ:
             info =
-                String.format("read:%s", ArrayUtils.bytes2HexString(parseData));
+                String.format("read:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_WRITE:
             if (parseData.length == 0) {
@@ -171,7 +171,7 @@ public class UhfActivity extends InitModuleActivity {
             }
             break;
           default:
-            LogUtils.v("parseData:%s", ArrayUtils.bytes2HexString(parseData));
+            LogUtils.v("parseData:%s", BytesUtil.bytes2HexString(parseData));
         }
         if (info != null) {
           Object obj = info;
@@ -197,10 +197,10 @@ public class UhfActivity extends InitModuleActivity {
           info = "读epc失败";
         } else if (readBuff.length == 24) {
           info = String.format("epc:%s\ntid:%s",
-              ArrayUtils.bytes2HexString(readBuff, 0, 12),
-              ArrayUtils.bytes2HexString(readBuff, 12, readBuff.length));
+              BytesUtil.bytes2HexString(readBuff, 0, 12),
+              BytesUtil.bytes2HexString(readBuff, 12, readBuff.length));
         } else {
-          info = String.format("epc:%s", ArrayUtils.bytes2HexString(readBuff));
+          info = String.format("epc:%s", BytesUtil.bytes2HexString(readBuff));
         }
         ViewUtil.appendShow(info, tvShow);
         break;
@@ -209,7 +209,7 @@ public class UhfActivity extends InitModuleActivity {
         if (readBuff == null) {
           info = "读tid失败";
         } else {
-          info = String.format("tid:%s", ArrayUtils.bytes2HexString(readBuff));
+          info = String.format("tid:%s", BytesUtil.bytes2HexString(readBuff));
         }
         ViewUtil.appendShow(info, tvShow);
         break;
@@ -218,7 +218,7 @@ public class UhfActivity extends InitModuleActivity {
         if (readBuff == null) {
           info = "读use失败";
         } else {
-          info = String.format("use:%s", ArrayUtils.bytes2HexString(readBuff));
+          info = String.format("use:%s", BytesUtil.bytes2HexString(readBuff));
         }
         ViewUtil.appendShow(info, tvShow);
         break;
@@ -475,7 +475,7 @@ public class UhfActivity extends InitModuleActivity {
         case "w":
           mb = Integer.parseInt(s[1]);
           sa = Integer.parseInt(s[2]);
-          byte[] data = ArrayUtils.hexString2Bytes(s[3]);
+          byte[] data = BytesUtil.hexString2Bytes(s[3]);
           UhfController.getInstance().send(UhfCmd.getWriteCmd(mb, sa, data));
           break;
         default:

@@ -2,7 +2,7 @@ package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
 import com.halio.Rfid;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 高频卡 操作类，添加对PSam卡、CPU卡，基于 雨滴开发板.
@@ -19,7 +19,7 @@ public class RfidPSamOperationRd extends RfidOperationRd implements IRfidPSamOpe
       return -1;
     }
     LogUtils.tag(TAG)
-        .d("samReset:%s", ArrayUtils.bytes2HexString(responseBuff, responseLenBuff[0]));
+        .d("samReset:%s", BytesUtil.bytes2HexString(responseBuff, responseLenBuff[0]));
     return responseLenBuff[0];
   }
 
@@ -40,8 +40,8 @@ public class RfidPSamOperationRd extends RfidOperationRd implements IRfidPSamOpe
       return -2;
     }
     LogUtils.tag(TAG).d("samCos res:%s cmd:%s",
-        ArrayUtils.bytes2HexString(responseBuff, responseLenBuff[0]),
-        ArrayUtils.bytes2HexString(cmd));
+        BytesUtil.bytes2HexString(responseBuff, responseLenBuff[0]),
+        BytesUtil.bytes2HexString(cmd));
     return responseLenBuff[0];
   }
 
@@ -57,7 +57,7 @@ public class RfidPSamOperationRd extends RfidOperationRd implements IRfidPSamOpe
       return -1;
     }
     LogUtils.tag(TAG)
-        .d("iso14443aReset:%s", ArrayUtils.bytes2HexString(responseBuff, responseLenBuff[0]));
+        .d("iso14443aReset:%s", BytesUtil.bytes2HexString(responseBuff, responseLenBuff[0]));
     return responseLenBuff[0];
   }
 
@@ -78,8 +78,8 @@ public class RfidPSamOperationRd extends RfidOperationRd implements IRfidPSamOpe
       return -2;
     }
     LogUtils.tag(TAG).d("iso14443aCos res:%s cmd:%s",
-        ArrayUtils.bytes2HexString(responseBuff, responseLenBuff[0]),
-        ArrayUtils.bytes2HexString(cmd));
+        BytesUtil.bytes2HexString(responseBuff, responseLenBuff[0]),
+        BytesUtil.bytes2HexString(cmd));
     return responseLenBuff[0];
   }
 

@@ -2,7 +2,7 @@ package com.fanfull.libhard.serialport;
 
 import com.apkfuns.logutils.LogUtils;
 import java.io.OutputStream;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class AbsSerialPort implements ISerialPort {
   protected String TAG = this.getClass().getSimpleName();
@@ -14,7 +14,7 @@ public abstract class AbsSerialPort implements ISerialPort {
       OutputStream out = getOutputStream();
       out.write(data, off, len);
       out.flush();
-      LogUtils.tag(TAG).i("send:%s", ArrayUtils.bytes2HexString(data, off, off + len));
+      LogUtils.tag(TAG).i("send:%s", BytesUtil.bytes2HexString(data, off, off + len));
       return true;
     } catch (Exception e) {
       LogUtils.tag(TAG).w("%s", e.getMessage());

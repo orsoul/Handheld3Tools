@@ -1,16 +1,21 @@
 package com.fanfull.libhard.finger.impl;
 
-import android.os.SystemClock;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.IFingerListener;
 import com.fanfull.libhard.finger.IFingerOperation;
+import org.orsoul.baselib.util.ClockUtil;
+import org.orsoul.baselib.util.ThreadUtil;
 
 public class FingerprintController implements IFingerOperation {
-  private IFingerOperation operation;
-  private SearchFingerPrintThread searchThread;
+  //private IFingerOperation operation;
+  public FingerOperationRd operation;
+  private FingerPrintTask searchThread;
   private boolean searchThreadRunning;
 
-  private FingerprintController(IFingerOperation operation) {
+  //private FingerprintController(IFingerOperation operation) {
+  //  this.operation = operation;
+  //}
+  private FingerprintController(FingerOperationRd operation) {
     this.operation = operation;
   }
 
@@ -40,6 +45,30 @@ public class FingerprintController implements IFingerOperation {
     return operation.send(data);
   }
 
+  @Override public int addFinger(int[] fingerIdBuff) {
+    return operation.addFinger(fingerIdBuff);
+  }
+
+  @Override public int addFinger(int[] fingerIdBuff, byte[] fingerFeatureBuff) {
+    return operation.addFinger(fingerIdBuff, fingerFeatureBuff);
+  }
+
+  @Override public int searchFinger(int[] fingerIdBuff) {
+    return operation.searchFinger(fingerIdBuff);
+  }
+
+  @Override public int searchFinger(int[] fingerIdBuff, byte[] fingerFeatureBuff) {
+    return operation.searchFinger(fingerIdBuff, fingerFeatureBuff);
+  }
+
+  @Override public int getFingerNum(int[] fingerNumBuff) {
+    return operation.getFingerNum(fingerNumBuff);
+  }
+
+  @Override public boolean clearFinger() {
+    return operation.clearFinger();
+  }
+
   @Override
   public void setListener(IFingerListener listener) {
     operation.setListener(listener);
@@ -56,8 +85,8 @@ public class FingerprintController implements IFingerOperation {
 
   public synchronized void startSearchFingerPrint() {
     if (searchThread == null) {
-      searchThread = new SearchFingerPrintThread();
-      searchThread.start();
+      searchThread = new FingerPrintTask(this);
+      searchThread.startRun();
     }
   }
 
@@ -72,8 +101,28 @@ public class FingerprintController implements IFingerOperation {
     return searchThread != null && searchThread.isRunning();
   }
 
-  class SearchFingerPrintThread extends Thread {
-    private boolean stopped;
+  public static class FingerPrintTask implements Runnable {
+    private FingerprintController fingerprintController;
+    private boolean stopped = true;
+    private boolean isAddMode;
+    private long runTime = 5000L;
+    private byte[] fingerFeature;
+
+    public FingerPrintTask(FingerprintController fingerprintController) {
+      this.fingerprintController = fingerprintController;
+    }
+
+    public void setAddMode(boolean addMode) {
+      isAddMode = addMode;
+    }
+
+    public boolean isAddMode() {
+      return isAddMode;
+    }
+
+    public void setRunTime(long runTime) {
+      this.runTime = runTime;
+    }
 
     public synchronized void stopSearch() {
       this.stopped = true;
@@ -83,16 +132,69 @@ public class FingerprintController implements IFingerOperation {
       return !stopped;
     }
 
+    public synchronized boolean startRun() {
+      if (isRunning()) {
+        return false;
+      }
+      ThreadUtil.execute(this);
+      return true;
+    }
+
     @Override
     public void run() {
       LogUtils.i("run start");
 
+      stopped = false;
+      int[] fingerIdBuff = new int[2];
+      ClockUtil.resetRunTime();
       while (!stopped) {
-        send(FingerPrintCmd.CMD_GET_IMAGE);
-        SystemClock.sleep(500);
-      }// end while
+        if (runTime <= ClockUtil.runTime()) {
+          onFailed(isAddMode, -2);
+          break;
+        }
 
+        int res;
+        if (isAddMode) {
+          res = fingerprintController.addFinger(fingerIdBuff);
+        } else {
+          res = fingerprintController.searchFinger(fingerIdBuff);
+        }
+
+        if (res == FingerPrintCmd.RES_CODE_NO_FINGER) {
+          onNoFinger();
+        } else if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+          onSuccess(isAddMode, fingerIdBuff[0], fingerIdBuff[1]);
+          break;
+        } else {
+          onFailed(isAddMode, res);
+          break;
+        }
+      } // end while
       LogUtils.i("run end");
+      stopped = true;
+    }
+
+    /** 感应器无指纹时 回调. */
+    protected void onNoFinger() {
+    }
+
+    /** 添加或匹配指纹成功时 回调. */
+    protected void onSuccess(boolean isAddMode, int fingerId, int score) {
+      if (isAddMode) {
+        onAddSuccess(fingerId);
+      } else {
+        onSearchSuccess(fingerId, score);
+      }
+    }
+
+    protected void onAddSuccess(int fingerId) {
+    }
+
+    protected void onSearchSuccess(int fingerId, int score) {
+    }
+
+    /** 添加或匹配指纹失败时 回调. */
+    protected void onFailed(boolean isAddMode, int errorCode) {
     }
   }
 }

@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.TreeSet;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public class Hardware2 {
 
@@ -325,7 +325,7 @@ public class Hardware2 {
                 mOutputStream.flush();
                 readLength = 0;
                 Arrays.fill(bufferCache, (byte) 0);
-                Log.i("hd", "write the fd = " + fd + " data = " + ArrayUtils.bytes2HexString(data));
+                Log.i("hd", "write the fd = " + fd + " data = " + BytesUtil.bytes2HexString(data));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -363,7 +363,7 @@ public class Hardware2 {
         }
         if (hasSelect) {
             System.arraycopy(bufferCache, 0, buf, 0, len);
-            Log.i("hd", "read the data from cache= " + ArrayUtils.bytes2HexString(buf));
+            Log.i("hd", "read the data from cache= " + BytesUtil.bytes2HexString(buf));
             hasSelect = false;
             return readLength;
         }
@@ -430,7 +430,7 @@ public class Hardware2 {
                             readLength += mInputStream.read(bufferCache, readLength, available);
                             byte[] a = new byte[readLength];
                             System.arraycopy(bufferCache, 0, a, 0, readLength);
-                            Log.i(TAG, "read the data = " + ArrayUtils.bytes2HexString(a));
+                            Log.i(TAG, "read the data = " + BytesUtil.bytes2HexString(a));
                         }
                     }
                 }
@@ -624,9 +624,9 @@ public class Hardware2 {
     }
 
     public int writeRFID(byte[] buf) {
-        Log.i(TAG, "writeRFID=" + ArrayUtils.bytes2HexString(buf));
+        Log.i(TAG, "writeRFID=" + BytesUtil.bytes2HexString(buf));
         if (Arrays.equals(buf, CMD_WAKEUP)) {
-            Log.i(TAG, "valueRFID=" + ArrayUtils.bytes2HexString(CMD_WAKEUP));
+            Log.i(TAG, "valueRFID=" + BytesUtil.bytes2HexString(CMD_WAKEUP));
             rfidRet = new byte[15];
             initFirst6Data(rfidRet);
             rfidRet[6] = (byte) 0x00;
@@ -640,7 +640,7 @@ public class Hardware2 {
             rfidRet[14] = (byte) 0x00;
             return 3721;
         } else if (Arrays.equals(buf, CMD_FINDCARD)) {
-            Log.i(TAG, "valueRFID=" + ArrayUtils.bytes2HexString(CMD_WAKEUP));
+            Log.i(TAG, "valueRFID=" + BytesUtil.bytes2HexString(CMD_WAKEUP));
             byte[] ret = findNFC();
             if (ret != null) {
                 rfidRet = new byte[28];

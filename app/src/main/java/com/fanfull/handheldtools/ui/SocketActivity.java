@@ -23,7 +23,7 @@ import org.orsoul.baselib.io.socketClient.Options;
 import org.orsoul.baselib.io.socketClient.impl.BaseSocketClient;
 import org.orsoul.baselib.io.socketClient.interf.ISocketClientListener;
 import org.orsoul.baselib.io.transfer.IoTransferListener;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
@@ -82,7 +82,7 @@ public class SocketActivity extends InitModuleActivity {
       @Override public boolean onReceive(byte[] data) {
         runOnUiThread(() -> {
           ViewUtil.appendShow(
-              String.format("rec:%s", ArrayUtils.bytes2HexString(data)), tvShow);
+              String.format("rec:%s", BytesUtil.bytes2HexString(data)), tvShow);
         });
         return true;
       }

@@ -9,18 +9,7 @@ public class FingerprintListener implements IFingerListener {
     this.stopped = true;
   }
 
-  @Override
-  public void onOpen() {
-
-  }
-
-  @Override
-  public void onScan() {
-
-  }
-
-  @Override
-  public void onStopScan() {
+  @Override public void onOpen(boolean openSuccess) {
 
   }
 

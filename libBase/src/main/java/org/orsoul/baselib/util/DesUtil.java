@@ -259,9 +259,9 @@ public class DesUtil {
       SecretKey key3 = new SecretKeySpec(keyBytes, "DES");//SecretKeySpec类同时实现了Key和KeySpec接口
 
       //打印
-      System.out.println("key1：" + ArrayUtils.bytes2HexString(key1.getEncoded()));
-      System.out.println("key2：" + ArrayUtils.bytes2HexString(key2.getEncoded()));
-      System.out.println("key3：" + ArrayUtils.bytes2HexString(key3.getEncoded()));
+      System.out.println("key1：" + BytesUtil.bytes2HexString(key1.getEncoded()));
+      System.out.println("key2：" + BytesUtil.bytes2HexString(key2.getEncoded()));
+      System.out.println("key3：" + BytesUtil.bytes2HexString(key3.getEncoded()));
     } catch (Exception e) {
       System.out.println(e.toString());
     }
@@ -286,14 +286,14 @@ public class DesUtil {
     //text = "12345678123456_#";
     dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/PKCS5Padding");
     //dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/PKCS5Padding");
-    System.out.println(String.format("%s, PKCS5Padding", ArrayUtils.bytes2HexString(dataEncrypt)));
+    System.out.println(String.format("%s, PKCS5Padding", BytesUtil.bytes2HexString(dataEncrypt)));
 
     dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/NoPadding");
     //dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/NOPadding");
-    System.out.println(String.format("%s, NOPadding", ArrayUtils.bytes2HexString(dataEncrypt)));
+    System.out.println(String.format("%s, NOPadding", BytesUtil.bytes2HexString(dataEncrypt)));
 
     dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/ZeroPadding");
     dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/ZeroPadding");
-    System.out.println(String.format("%s, ZeroPadding", ArrayUtils.bytes2HexString(dataEncrypt)));
+    System.out.println(String.format("%s, ZeroPadding", BytesUtil.bytes2HexString(dataEncrypt)));
   }
 }

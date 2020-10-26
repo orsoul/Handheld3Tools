@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.base.BaseApplication;
+import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
@@ -78,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
         CrashLogUtil.logException(new RuntimeException("test log exception"));
+        break;
+      case KeyEvent.KEYCODE_SHIFT_LEFT:
+      case KeyEvent.KEYCODE_F2:
+        startActivity(new Intent(this, AboutActivity.class));
         break;
       default:
         return super.onKeyDown(keyCode, event);

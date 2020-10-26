@@ -3,7 +3,7 @@ package org.orsoul.baselib.util.lock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 
 public class Lock3Bean {
   public static final int SA_BAG_ID = 0x04;
@@ -132,7 +132,7 @@ public class Lock3Bean {
       return "InfoUnit{" +
           "sa=" + sa +
           ", len=" + len +
-          ", buff=" + ArrayUtils.bytes2HexString(buff) +
+          ", buff=" + BytesUtil.bytes2HexString(buff) +
           '}';
     }
 

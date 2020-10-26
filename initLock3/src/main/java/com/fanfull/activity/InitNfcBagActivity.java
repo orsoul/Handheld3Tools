@@ -39,7 +39,7 @@ import com.orsoul.view.SpinerPopWindow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.orsoul.baselib.util.ArrayUtils;
+import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
@@ -76,7 +76,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
       }
 
       String bagID;
-      bagID = ArrayUtils.bytes2HexString(bagIdBuff);
+      bagID = BytesUtil.bytes2HexString(bagIdBuff);
       LogUtils.tag(TAG).d("CheckBagIdTask bagID:" + bagID);
       BagIdParser idParser = BagIdParser.parseBagId(bagID);
 
@@ -684,7 +684,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
       super.onSuccess(bagIdParser);
       ToastUtils.showShort("用时：%.2f秒", ClockUtil.runTime() / 1000.0);
 
-      bag3Entity.insert(bagIdParser.getBagId(), ArrayUtils.bytes2HexString(tid));
+      bag3Entity.insert(bagIdParser.getBagId(), BytesUtil.bytes2HexString(tid));
 
       runOnUiThread(() -> {
         tvBagId.setText(bagIdParser.getFormatBagId());
