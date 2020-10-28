@@ -16,7 +16,11 @@ import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.finger.impl.FingerPrintCmd;
 import com.fanfull.libhard.finger.impl.FingerprintController;
+import com.fanfull.libhard.uhf.IUhfListener;
+import com.fanfull.libhard.uhf.UhfCmd;
+import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
+import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ThreadUtil;
@@ -32,6 +36,8 @@ public class FingerActivity extends InitModuleActivity {
   private FingerprintController fingerprintController;
   private FingerprintController.FingerPrintTask fingerPrintTask;
   private FingerPrintSQLiteHelper fingerPrintDbHelper;
+
+  private UhfController uhfController;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,7 @@ public class FingerActivity extends InitModuleActivity {
     fingerAdd.setOnCheckedChangeListener((buttonView, isChecked) -> {
       if (fingerPrintTask != null) {
         fingerPrintTask.setAddMode(isChecked);
+        fingerPrintTask.setGetFeature(isChecked);
       }
     });
   }
@@ -94,17 +101,83 @@ public class FingerActivity extends InitModuleActivity {
   }
 
   @Override protected void initModule() {
-    fingerPrintDbHelper = new FingerPrintSQLiteHelper(this);
+    uhfController = UhfController.getInstance();
+    uhfController.setListener(new IUhfListener() {
+      @Override public void onOpen(boolean openSuccess) {
+        runOnUi(() -> {
+          dismissLoadingView();
+          if (!openSuccess) {
+            ViewUtil.appendShow("超高频 初始化失败！！", tvShow);
+          } else {
+            ViewUtil.appendShow("超高频 初始化成功", tvShow);
+          }
+        });
+      }
+
+      @Override
+      public void onReceiveData(byte[] data) {
+        byte[] parseData = UhfCmd.parseData(data);
+        if (parseData == null) {
+          LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
+          return;
+        }
+        int cmdType = data[4] & 0xFF;
+        Object info = null;
+        switch (cmdType) {
+          case UhfCmd.RECEIVE_TYPE_GET_DEVICE_VERSION:
+            info = String.format("设备版本：v%s.%s.%s", parseData[0], parseData[1], parseData[2]);
+            break;
+          case UhfCmd.RECEIVE_TYPE_GET_DEVICE_ID:
+            info = String.format("设备Id：%s", BytesUtil.bytes2HexString(parseData));
+            break;
+          case UhfCmd.RECEIVE_TYPE_GET_FAST_ID:
+            if (parseData[0] == 1) {
+              info = "EPC、TID同时读取 开启";
+            } else {
+              info = "EPC、TID同时读取 关闭";
+            }
+            break;
+          case UhfCmd.RECEIVE_TYPE_SET_FAST_ID:
+            // 1:成功， 0：失败
+            if (parseData[0] == 1) {
+              info = "EPC、TID同读设为 开启";
+              info = "EPC、TID同读设为 关闭";
+            } else {
+              info = "设置 EPC、TID同读 失败";
+            }
+            break;
+          case UhfCmd.RECEIVE_TYPE_READ_LOT:
+            break;
+          case UhfCmd.RECEIVE_TYPE_READ:
+            info =
+                String.format("read:%s", BytesUtil.bytes2HexString(parseData));
+            break;
+          case UhfCmd.RECEIVE_TYPE_WRITE:
+            if (parseData.length == 0) {
+              info = "写成功";
+            } else {
+              info = String.format("写失败,cause:%X", parseData[0]);
+            }
+            break;
+          default:
+            LogUtils.v("parseData:%s", BytesUtil.bytes2HexString(parseData));
+        }
+        if (info != null) {
+        }
+      }
+    });
+
+    FingerPrintSQLiteHelper.init(this);
+    fingerPrintDbHelper = FingerPrintSQLiteHelper.getInstance();
     fingerprintController = FingerprintController.getInstance();
+    fingerprintController.init(this);
     fingerprintController.setListener(new IFingerListener() {
       @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.setText("模块初始化失败！！！");
-            //ViewUtil.appendShow("模块初始化失败！！！", tvShow);
           } else {
-            //ViewUtil.appendShow("模块初始化失败！！！", tvShow);
             tvShow.setText("初始化成功\n"
                 + "按键1 -> 生成特征码\n"
                 + "按键2 -> 搜索指纹2\n"
@@ -112,6 +185,9 @@ public class FingerActivity extends InitModuleActivity {
                 + "按键9 -> 清空指纹库\n");
             btnSearch.setEnabled(true);
             btnNum.setEnabled(true);
+
+            showLoadingView("正在打开超高频读头...");
+            uhfController.open();
           }
         });
       }
@@ -135,22 +211,50 @@ public class FingerActivity extends InitModuleActivity {
         });
       }
 
-      @Override protected void onSuccess(boolean isAddMode, int fingerId, int score) {
+      @Override protected void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+        runOnUi(() -> {
+          ViewUtil.appendShow(String.format("添加成功，FingerIndex：%s, 保存在数据库？：%s",
+              fingerBean.getFingerIndex(), isSaveInDB), tvShow);
+        });
+      }
+
+      @Override protected void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+        runOnUi(() -> {
+          ViewUtil.appendShow(String.format("搜索成功，FingerIndex：%s, 保存在数据库？：%s",
+              fingerBean.getFingerIndex(), isSaveInDB), tvShow);
+          if (isSaveInDB) {
+            ViewUtil.appendShow(String.format("FingerId：%s, FingerVersion：%s",
+                fingerBean.getFingerId(), fingerBean.getFingerVersion()), tvShow);
+          }
+        });
+      }
+
+      @Override protected void onSearchNoMatch() {
         count = 0;
         runOnUi(() -> {
           dismissLoadingView();
-          if (isAddMode) {
-            ViewUtil.appendShow(String.format("添加成功，fingerID：%s", fingerId), tvShow);
-          } else {
-            ViewUtil.appendShow(String.format("搜索成功，fingerID：%s,    score:%s", fingerId, score),
-                tvShow);
-          }
+          ViewUtil.appendShow("未匹配到指纹", tvShow);
+          btnSearch.setEnabled(true);
+          btnNum.setEnabled(true);
+        });
+      }
+
+      @Override protected void onSuccess(
+          boolean isAddMode, int fingerIndex, int score, byte[] fingerFeature) {
+        super.onSuccess(isAddMode, fingerIndex, score, fingerFeature);
+        count = 0;
+        runOnUi(() -> {
+          dismissLoadingView();
           btnSearch.setEnabled(true);
           btnNum.setEnabled(true);
         });
       }
 
       @Override protected void onFailed(boolean isAddMode, int errorCode) {
+        if (errorCode != FingerPrintCmd.RES_CODE_TIMEOUT) {
+          LogUtils.d("errorCode:%s", errorCode);
+          return;
+        }
         count = 0;
         runOnUi(() -> {
           dismissLoadingView();
@@ -218,7 +322,7 @@ public class FingerActivity extends InitModuleActivity {
 
               ThreadUtil.execute(() -> {
                 byte[] fingerFeature = new byte[512];
-                int res1 = fingerprintController.operation.addFinger(fingerId, fingerFeature);
+                int res1 = fingerprintController.operation.addFinger2(fingerId, fingerFeature);
                 long[] dbId = new long[] { -1L };
                 if (res1 == 0) {
                   FingerBean fingerBean = new FingerBean(fingerId, fingerFeature);
@@ -244,19 +348,27 @@ public class FingerActivity extends InitModuleActivity {
             FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_2));
         break;
       case KeyEvent.KEYCODE_6:
-        String str =
-            "0301492D0000C0068002800200000000000000000000000200020002000200028002800280028002000000000000000000000000000000002B0FC91E6013279E2497C87E2A9A9EDE701FCFFE4423E7DE33B91A5E2E89C41F578DD03F0D95C9FF609BD0BF0E1D4A3F2D21455F55A1E6FF0E23C9BF292844FF4AABE99F2B31439F54BFD47F2307163C3E0901BD72134E150E2889DD378B05FB72170DFB0DACC97B0DB7473B4A8BD8D84E0E8EF8709A8EB8230B43D90E0DCA796B9A0F990DB048F318876CB611329D1014882C176D8D51170DB388B76089D2F5409D1CD33A9A9F906F06D68A160F492F451825AB000000000000000000000000000000000000000003014B290000C0068002800200000000000000000000000080008000800080008002800280028002000000000000000000000000000000002B0FC91E6013279E2497C87E2A9A9EDE701FCFFE33B91A5E2E89C41F410DC49F578DD03F0D95C9FF609BD0BF0E1D0A3F2D21455F55A1E6FF0E23C9BF422528DF292844FF4AABE99F2B31439F56BF947F2307163C0E0DCA7D4A8BD8DA4E0E8EFA3D8901BB378B05DB72170DFB18876CB87390CD72709A8EB814882C39230B43D972134E136B9A0F996D8D51176089D2F5148B41533E1CDCD3160F49316F06D6AE3D96E04B000000000000000000000000000000000000000000000000000000000000000000000000";
-        byte[] fingerBuff = BytesUtil.hexString2Bytes(str);
+        byte[] fastEpc = uhfController.fastEpc(800);
+        ViewUtil.appendShow(String.format("fastEpc：%s", BytesUtil.bytes2HexString(fastEpc)),
+            tvShow);
+        break;
+      case KeyEvent.KEYCODE_7:
+        List<FingerBean> fingerBeans = fingerPrintDbHelper.queryAllFinger();
+        LogUtils.d("fingerBean size:%s", fingerBeans.size());
+        LogUtils.v("fingerBeans:%s", fingerBeans);
         ThreadUtil.execute(() -> {
-          int res1 = fingerprintController.operation.loadFinger(3, fingerBuff);
+          int res1 = fingerprintController.operation.addFinger(fingerBeans);
           runOnUi(() -> {
-            if (res1 == 0) {
-              ViewUtil.appendShow(String.format("加载指纹成功，fingerID：%s", 3), tvShow);
-            } else {
-              ViewUtil.appendShow(String.format("加载指纹失败，case:%s", res1), tvShow);
-            }
+            ViewUtil.appendShow(String.format("从数据库加载数量：%s / %s", res1, fingerBeans.size()),
+                tvShow);
           });
         });
+        break;
+      case KeyEvent.KEYCODE_8:
+        List<Integer> indexList = fingerPrintDbHelper.queryAllFingerIndex();
+        LogUtils.d("indexList:%s", indexList);
+        fingerPrintDbHelper.clearAll();
+        ViewUtil.appendShow(String.format("清空指纹数据库,num: %s", indexList.size()), tvShow);
         break;
       case KeyEvent.KEYCODE_9:
         btnSearch.setEnabled(false);
@@ -276,6 +388,9 @@ public class FingerActivity extends InitModuleActivity {
     fingerprintController.release();
     if (fingerPrintDbHelper != null) {
       fingerPrintDbHelper.close();
+    }
+    if (uhfController != null) {
+      uhfController.release();
     }
     super.onDestroy();
   }

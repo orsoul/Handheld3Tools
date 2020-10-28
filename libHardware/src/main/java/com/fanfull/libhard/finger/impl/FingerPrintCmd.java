@@ -12,7 +12,7 @@ public abstract class FingerPrintCmd {
   /** 指纹特征码 长度. */
   public static final int FINGER_FEATURE_LEN = 512;
   /** 指纹容量为128，指纹id范围 0~127. */
-  public static final int FINGER_MAX_NUM = 127;
+  public static final int FINGER_MAX_NUM = 128;
 
   /** 指纹模块缓冲区号1. */
   public static final byte BUFFER_ID_1 = 0x01;
@@ -27,6 +27,13 @@ public abstract class FingerPrintCmd {
   public static final int RES_CODE_NO_FINGER = 0x02;
   /** 确认码 未匹配到指纹. */
   public static final int RES_CODE_NO_MATCH = 0x09;
+
+  /** 自定义确认码 非指纹指令返回或返回超时. */
+  public static final int RES_CODE_NOT_FINGER_REPLY = -1;
+  /** 自定义确认码 搜索超时. */
+  public static final int RES_CODE_TIMEOUT = -3;
+  /** 自定义确认码 参数错误. */
+  public static final int RES_CODE_ARGS_WRONG = -2;
 
   /** 读有效模板个数 PS_ValidTempleteNum. */
   public static final byte[] CMD_FINGER_NUM = {
@@ -116,9 +123,18 @@ public abstract class FingerPrintCmd {
   };
 
   public static void main(String[] args) {
-    setCheckSum(CMD_GET_IMAGE);
-    setCheckSum(CMD_REG_MODEL);
-    setCheckSum(CMD_READ_SYS_PARA);
+    //setCheckSum(CMD_GET_IMAGE);
+    //setCheckSum(CMD_REG_MODEL);
+    //setCheckSum(CMD_READ_SYS_PARA);
+
+    int start = 128;
+    int num = 127;
+    byte[] cmdSearch = getCmdSearch(start, num);
+    System.out.printf("cmdSearch %s~%s:%s\n", start, num, BytesUtil.bytes2HexString(cmdSearch));
+
+    num = 128;
+    cmdSearch = getCmdSearch(start, num);
+    System.out.printf("cmdSearch %s~%s:%s\n", start, num, BytesUtil.bytes2HexString(cmdSearch));
   }
 
   /** 计算指令的校验和，并写在指令末尾的2字节. */
@@ -129,11 +145,11 @@ public abstract class FingerPrintCmd {
 
     int sum = 0;
     for (int i = 6; i < cmd.length - 2; i++) {
-      sum += cmd[i];
+      sum += cmd[i] & 0xFF;
     }
     cmd[cmd.length - 2] = (byte) ((sum >> 8) & 0xFF);
     cmd[cmd.length - 1] = (byte) (sum & 0xFF);
-    //System.out.println("sum:" + ArrayUtils.bytes2HexString(cmd));
+    //System.out.println("sum:" + sum);
     return true;
   }
 
@@ -197,7 +213,7 @@ public abstract class FingerPrintCmd {
     return CMD_STORE_CHAR;
   }
 
-  /** 8. 上传特征或模板 PS_UpChar. 获取特征码 指令. */
+  /** 8. 上传特征或模板 PS_UpChar. 从缓冲区获取特征码 指令. */
   public static byte[] getCmdGetFingerFeature(int buffId) {
     if (buffId == BUFFER_ID_1) {
       CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_1;
@@ -209,12 +225,12 @@ public abstract class FingerPrintCmd {
     return CMD_GET_FINGER_FEATURE;
   }
 
-  /** 8. 上传特征或模板 PS_UpChar.获取特征码 指令，使用 bufferID1. */
+  /** 8. 上传特征或模板 PS_UpChar. 从缓冲区获取特征码 指令，使用 bufferID1. */
   public static byte[] getCmdGetFingerFeature() {
     return getCmdGetFingerFeature(BUFFER_ID);
   }
 
-  /** 载入特征码 指令. */
+  /** 载入特征码到缓冲区. 9. 下载特征或模板 PS_DownChar. */
   public static byte[] getCmdSaveFingerFeature(int buffId) {
     if (buffId == BUFFER_ID_1) {
       CMD_SAVE_FINGER_FEATURE[10] = BUFFER_ID_1;
@@ -224,6 +240,11 @@ public abstract class FingerPrintCmd {
       CMD_SAVE_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x10;
     }
     return CMD_SAVE_FINGER_FEATURE;
+  }
+
+  /** 载入特征码到缓冲区. 9. 下载特征或模板 PS_DownChar,使用 bufferID1. */
+  public static byte[] getCmdSaveFingerFeature() {
+    return getCmdSaveFingerFeature(BUFFER_ID);
   }
 
   /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令. */
@@ -243,11 +264,6 @@ public abstract class FingerPrintCmd {
   /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令，使用 bufferID1. */
   public static byte[] getCmdLoadFingerFeature(int pageId) {
     return getCmdLoadFingerFeature(BUFFER_ID, pageId);
-  }
-
-  /** 载入特征码 指令，使用 bufferID1. */
-  public static byte[] getCmdSaveFingerFeature() {
-    return getCmdSaveFingerFeature(BUFFER_ID);
   }
 
   /** 搜索指纹 指令.最大搜索范围 0~127 */
@@ -279,7 +295,7 @@ public abstract class FingerPrintCmd {
         && (CMD_HEAD_LEN <= data.length)
         && (data[0] == (byte) 0xEF)
         && (data[1] == 0x01)
-        && (data[6] == 0x01 || data[6] == 0x07)
+        && (data[6] == 0x01 || data[6] == 0x07 || data[6] == 0x02 || data[6] == 0x08)
         && (len = (data[7] << 8) | (data[8] & 0xFF)) <= data.length - CMD_HEAD_LEN;
     if (!isCmd) {
       LogUtils.i("not FingerCmd:%s, len:%s", BytesUtil.bytes2HexString(data), len);
@@ -298,7 +314,7 @@ public abstract class FingerPrintCmd {
    */
   public static int getFingerRes(byte[] cmd) {
     if (!isFingerCmd(cmd)) {
-      return -1;
+      return FingerPrintCmd.RES_CODE_NOT_FINGER_REPLY;
     }
     return cmd[9];
   }

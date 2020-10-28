@@ -16,6 +16,11 @@ import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 
 public class SerialPortController implements ISerialPort {
+  public static final long SWICHT_MODE_WAIT_TIME = 50;
+  public static final int WITCH_MODE_UHF = 1;
+  public static final int WITCH_MODE_FINGER = 2;
+  public static int witchMode = 0;
+
   protected String TAG = this.getClass().getSimpleName();
 
   private static Map<String, SerialPortController> sControllerMap;
@@ -110,16 +115,16 @@ public class SerialPortController implements ISerialPort {
       return -1;
     }
 
-    synchronized (onceListener) {
+    synchronized (SerialPortController.this) {
       try {
-        LogUtils.tag(TAG).d("click1:%s", ClockUtil.clock());
+        ClockUtil.clock();
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
       }
     }
     onceListener = null;
-    LogUtils.tag(TAG).d("wait time:%s", ClockUtil.clock());
+    LogUtils.tag(TAG).d("wait time: %s / %s", ClockUtil.clock(), timeout);
     return reVal[0];
   }
 
@@ -138,14 +143,14 @@ public class SerialPortController implements ISerialPort {
 
     synchronized (onceListener) {
       try {
-        LogUtils.tag(TAG).d("click1:%s", ClockUtil.clock());
+        ClockUtil.clock();
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
       }
     }
     onceListener = null;
-    LogUtils.tag(TAG).d("wait time:%s", ClockUtil.clock());
+    LogUtils.tag(TAG).d("wait time: %s / %s", ClockUtil.clock(), timeout);
     return reVal[0];
   }
 
@@ -179,13 +184,17 @@ public class SerialPortController implements ISerialPort {
     return useCount;
   }
 
-  public synchronized void addUseCount() {
-    ++this.useCount;
-    LogUtils.tag(TAG).d("useCount:%s", useCount);
-  }
-
-  public synchronized void minUseCount() {
-    --this.useCount;
+  /**
+   * 记录使用串口的模式数量.
+   *
+   * @param isAdd true 计数器加一，否则计数器减一
+   */
+  public synchronized void countUse(boolean isAdd) {
+    if (isAdd) {
+      this.useCount++;
+    } else {
+      this.useCount--;
+    }
     LogUtils.tag(TAG).d("useCount:%s", useCount);
   }
 

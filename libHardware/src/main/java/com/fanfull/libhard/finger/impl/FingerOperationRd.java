@@ -1,12 +1,16 @@
 package com.fanfull.libhard.finger.impl;
 
+import android.os.SystemClock;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.AbsFingerOperation;
+import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 
 public class FingerOperationRd extends AbsFingerOperation {
@@ -35,7 +39,7 @@ public class FingerOperationRd extends AbsFingerOperation {
       };
       serialPortController.addSerialPortListener(serialPortListener);
       serialPortController.startReadThread();
-      serialPortController.addUseCount();
+      serialPortController.countUse(true);
     } catch (IOException e) {
       e.printStackTrace();
       if (fingerListener != null) {
@@ -58,7 +62,7 @@ public class FingerOperationRd extends AbsFingerOperation {
   @Override
   public void release() {
     serialPortController.removeSerialPortListener(serialPortListener);
-    serialPortController.minUseCount();
+    serialPortController.countUse(false);
     if (serialPortController.getUseCount() == 0) {
       serialPortController.close();
     }
@@ -90,6 +94,12 @@ public class FingerOperationRd extends AbsFingerOperation {
     res[3] = GpioController.getInstance().setIO(62, false);
     res[4] = GpioController.getInstance().set(64, true);
     res[5] = GpioController.getInstance().set(62, true);
+
+    if (SerialPortController.witchMode != SerialPortController.WITCH_MODE_FINGER) {
+      // 之前串口被其他模块 使用，休眠等待 切换生效
+      SerialPortController.witchMode = SerialPortController.WITCH_MODE_FINGER;
+      SystemClock.sleep(600);
+    }
     LogUtils.d("%s", Arrays.toString(res));
     return true;
   }
@@ -152,7 +162,7 @@ public class FingerOperationRd extends AbsFingerOperation {
    * 确认码=0bH 表示 PageID 超出指纹库范围<br/>
    * 确认码=18H 表示写 FLASH 出错<br/>
    */
-  public int addFinger(int pageId, byte[] fingerFeatureBuff) {
+  public int addFinger2(int pageId, byte[] fingerFeatureBuff) {
     setGpioFingerMode();
 
     int res = genFingerFeature(FingerPrintCmd.BUFFER_ID_1);
@@ -179,35 +189,64 @@ public class FingerOperationRd extends AbsFingerOperation {
     return res;
   }
 
-  public int loadFinger(int pageId, byte[] fingerFeatureBuff) {
+  /**
+   * 添加指纹特征码到指纹库.
+   *
+   * @param pageId 特征码保存的位置
+   * @param fingerFeatureBuff 512字节的指纹特征码
+   */
+  private int addFinger(int pageId, byte[] fingerFeatureBuff) {
 
-    if (fingerFeatureBuff == null
-        || fingerFeatureBuff.length != FingerPrintCmd.FINGER_FEATURE_LEN) {
-      return -2;
-    }
-
-    setGpioFingerMode();
+    //if (fingerFeatureBuff == null
+    //    || fingerFeatureBuff.length != FingerPrintCmd.FINGER_FEATURE_LEN) {
+    //  return -2;
+    //}
+    //setGpioFingerMode();
 
     byte[] buff;
-    buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdSaveFingerFeature(), 1000);
+    buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdSaveFingerFeature(), 2000);
     int res = FingerPrintCmd.getFingerRes(buff);
+    LogUtils.d("SaveFingerFeature:%s", res);
 
+    boolean sendSuccess = false;
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
       byte[] cmdBuff = FingerPrintCmd.convertFingerFeature2Cmd(fingerFeatureBuff);
       if (cmdBuff != null) {
-        buff =
-            serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdSaveFingerFeature(pageId));
-        res = FingerPrintCmd.getFingerRes(buff);
+        sendSuccess = serialPortController.send(cmdBuff);
       }
     }
 
-    if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+    if (sendSuccess) {
       buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdStoreChar(pageId));
       res = FingerPrintCmd.getFingerRes(buff);
     }
 
-    LogUtils.d("loadFinger to %s, res：%s", pageId, res);
+    LogUtils.d("addFinger to %s, res：%s", pageId, res);
     return res;
+  }
+
+  public int addFinger(List<FingerBean> fingerBeans) {
+    setGpioFingerMode();
+
+    int count = 0;
+    for (FingerBean fingerBean : fingerBeans) {
+      int res = addFinger(fingerBean.getFingerIndex(), fingerBean.getFingerFeature());
+      if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+        count++;
+      }
+    }
+
+    LogUtils.d("addFinger count / total:  %s / %s", count, fingerBeans.size());
+    return count;
+  }
+
+  public int addFinger(FingerBean fingerBean) {
+    if (fingerBean == null) {
+      return 0;
+    }
+    List<FingerBean> fingerBeans = new ArrayList<>();
+    fingerBeans.add(fingerBean);
+    return addFinger(fingerBeans);
   }
 
   /**
@@ -223,7 +262,7 @@ public class FingerOperationRd extends AbsFingerOperation {
   @Override public int addFinger(int[] fingerIdBuff) {
     setGpioFingerMode();
     byte[] buff;
-    buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.CMD_ADD_FINGER, 1000);
+    buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.CMD_ADD_FINGER, 1500);
     int res = FingerPrintCmd.getFingerRes(buff);
     LogUtils.d("addFinger:%s", res);
 
@@ -234,10 +273,16 @@ public class FingerOperationRd extends AbsFingerOperation {
     return res;
   }
 
-  @Override public int addFinger(int[] fingerIdBuff, byte[] fingerFeatureBuff) {
+  @Override public int addFinger(int[] fingerIdBuff, byte[] featureBuff) {
+
+    if (featureBuff == null
+        || featureBuff.length < FingerPrintCmd.FINGER_FEATURE_LEN) {
+      return -2;
+    }
+
     int res = addFinger(fingerIdBuff);
-    if (fingerFeatureBuff != null) {
-      res = getFingerFeature(fingerIdBuff[0], fingerFeatureBuff);
+    if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+      res = getFingerFeature(fingerIdBuff[0], featureBuff);
     }
     return res;
   }
@@ -299,7 +344,7 @@ public class FingerOperationRd extends AbsFingerOperation {
     setGpioFingerMode();
 
     byte[] buff = serialPortController.sendAndWaitReceive(
-        FingerPrintCmd.getCmdLoadFingerFeature(fingerId), 1000);
+        FingerPrintCmd.getCmdLoadFingerFeature(fingerId), 1500);
     int res = FingerPrintCmd.getFingerRes(buff);
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
       res = getFingerFeature(fingerFeatureBuff);
@@ -337,6 +382,12 @@ public class FingerOperationRd extends AbsFingerOperation {
   }
 
   @Override public int searchFinger(int[] fingerIdBuff, byte[] featureBuff) {
+
+    if (featureBuff == null
+        || featureBuff.length < FingerPrintCmd.FINGER_FEATURE_LEN) {
+      return -2;
+    }
+
     int res = searchFinger(fingerIdBuff);
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
       res = getFingerFeature(fingerIdBuff[0], featureBuff);

@@ -42,9 +42,26 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
 
   private SQLiteDatabase sqliteDataBase;
 
-  public FingerPrintSQLiteHelper(Context context) {
+  private FingerPrintSQLiteHelper(Context context) {
     super(context, DB_NAME, null, DB_VERSION);
     sqliteDataBase = getWritableDatabase();
+  }
+
+  private static FingerPrintSQLiteHelper instance;
+
+  public static FingerPrintSQLiteHelper init(Context context) {
+    if (instance == null) {
+      synchronized (FingerPrintSQLiteHelper.class) {
+        if (instance == null) {
+          instance = new FingerPrintSQLiteHelper(context);
+        }
+      }
+    }
+    return instance;
+  }
+
+  public static FingerPrintSQLiteHelper getInstance() {
+    return instance;
   }
 
   @Override
@@ -125,6 +142,41 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
     return list;
   }
 
+  public List<FingerBean> queryAllFinger() {
+    Cursor cursor = sqliteDataBase.query(FingerPrintSQLiteHelper.TABLE_NAME, null,
+        null, null, null, null, null);
+    List<FingerBean> list = new ArrayList<>();
+    while (cursor.moveToNext()) {
+      int fingerIndexIndex = cursor.getColumnIndex(INDEX_FINGER_INDEX);
+      int fingerIdIndex = cursor.getColumnIndex(INDEX_FINGER_ID);
+      int featureIndex = cursor.getColumnIndex(INDEX_FINGER_FEATURE);
+      int fingerVersionIndex = cursor.getColumnIndex(INDEX_FINGER_VERSION);
+
+      int cardIdIndex = cursor.getColumnIndex(INDEX_CARD_ID);
+      int userNameIndex = cursor.getColumnIndex(INDEX_USER_NAME);
+
+      if (fingerIndexIndex > -1
+          && fingerIdIndex > -1
+          && featureIndex > -1
+          && fingerVersionIndex > -1
+          && cardIdIndex > -1
+          && userNameIndex > -1) {
+
+        FingerBean fingerBean = new FingerBean(
+            cursor.getInt(fingerIndexIndex),
+            cursor.getString(featureIndex),
+            cursor.getString(fingerIdIndex),
+            cursor.getInt(fingerVersionIndex)
+        );
+        fingerBean.setCardId(cursor.getString(cardIdIndex));
+        fingerBean.setUserName(cursor.getString(userNameIndex));
+        list.add(fingerBean);
+      }
+    }
+    cursor.close();
+    return list;
+  }
+
   /** 根据指纹在指纹库中的位置 查询. */
   public FingerBean queryFingerByFingerIndex(int fingerIndex) {
 
@@ -187,7 +239,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
   }
 
   /**
-   * 删除 所有住户数据 并 重设ID
+   * 删除 所有数据 并 重设ID
    */
   public void clearAll() {
     sqliteDataBase.execSQL(SQL_CLEAR_TABLE);

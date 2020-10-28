@@ -3,11 +3,13 @@ package com.fanfull.libhard.finger.bean;
 import org.orsoul.baselib.util.BytesUtil;
 
 /**
- * 指纹.
+ * 指纹实体类.
  */
 public class FingerBean {
 
+  /** 指纹特征码 在指纹库中的位置，范围0~127. */
   private int fingerIndex;
+  /** 指纹特征码 512字节. */
   private byte[] fingerFeature;
 
   private String fingerId;

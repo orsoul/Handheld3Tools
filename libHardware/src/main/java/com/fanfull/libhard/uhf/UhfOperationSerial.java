@@ -1,5 +1,6 @@
 package com.fanfull.libhard.uhf;
 
+import android.os.SystemClock;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
@@ -38,7 +39,7 @@ public class UhfOperationSerial extends AbsUhfOperation {
       };
       serialPortController.addSerialPortListener(serialPortListener);
       serialPortController.startReadThread();
-      serialPortController.addUseCount();
+      serialPortController.countUse(true);
     } catch (IOException e) {
       e.printStackTrace();
       if (uhfListener != null) {
@@ -62,7 +63,7 @@ public class UhfOperationSerial extends AbsUhfOperation {
   @Override
   public void release() {
     serialPortController.removeSerialPortListener(serialPortListener);
-    serialPortController.minUseCount();
+    serialPortController.countUse(false);
     if (serialPortController.getUseCount() == 0) {
       serialPortController.close();
     }
@@ -92,6 +93,12 @@ public class UhfOperationSerial extends AbsUhfOperation {
     res[3] = GpioController.getInstance().setIO(62, false);
     res[4] = GpioController.getInstance().set(64, true);
     res[5] = GpioController.getInstance().set(62, false);
+
+    if (SerialPortController.witchMode != SerialPortController.WITCH_MODE_UHF) {
+      // 之前串口被其他模块 使用，休眠等待 切换生效
+      SerialPortController.witchMode = SerialPortController.WITCH_MODE_UHF;
+      SystemClock.sleep(SerialPortController.SWICHT_MODE_WAIT_TIME);
+    }
     LogUtils.tag(TAG).v("%s", Arrays.toString(res));
     return true;
   }
