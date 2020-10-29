@@ -102,7 +102,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
     if (null != queryFingerByFingerIndex(fingerIndex)) {
       String whereClause;
       String[] whereArgs;
-      whereClause = INDEX_FINGER_ID + "=?";
+      whereClause = INDEX_FINGER_INDEX + "=?";
       whereArgs = new String[] { String.valueOf(fingerIndex) };
       res = sqliteDataBase.update(FingerPrintSQLiteHelper.TABLE_NAME, contentValues,
           whereClause,
@@ -217,7 +217,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       }
     }
     cursor.close();
-    LogUtils.d("queryFinger by Id：%s, %s", fingerIndex, reVal);
+    LogUtils.d("queryFinger by index：%s, %s", fingerIndex, reVal);
     return reVal;
   }
 

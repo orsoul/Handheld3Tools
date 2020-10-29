@@ -58,59 +58,64 @@ public abstract class FingerPrintCmd {
       0x05, 0x00, 0x09
   };
 
-  /** 储存模板 PS_StoreChar. */
+  /** 5.储存模板 PS_StoreChar. 保存Buffer中特征码到指纹库. */
   private static final byte[] CMD_STORE_CHAR = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x06,
       0x06, 0x01, 0x00, 0x01, 0x00, 0x0F
   };
-  /** 搜索指纹 PS_Search. */
+  /** 6.搜索指纹 PS_Search. */
   public static final byte[] CMD_SEARCH = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x08,
       0x04, 0x01, 0x00, 0x00, 0x00, 0x10, 0x00, 0x1E
   };
-  /** 自动验证指纹 PS_Identify. */
+  /** 11.自动验证指纹 PS_Identify. */
   public static final byte[] CMD_SEARCH_IDENTIFY = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x03,
       0x11, 0x00, 0x15
   };
 
-  /** 读系统基本参数 PS_ReadSysPara. */
+  /** 15.读系统基本参数 PS_ReadSysPara. */
   public static final byte[] CMD_READ_SYS_PARA = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x03,
       0x0F, 0x00, 0x13
   };
 
-  /** 7. 读出模板 PS_LoadChar. */
-  private static final byte[] CMD_LOAD_FINGER_FEATURE = {
+  /** 7. 读出模板 PS_LoadChar.将指纹库中特征码 加载到 缓冲区 */
+  private static final byte[] CMD_INNER_FEATURE_2_BUFFER = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x06,
       0x07, 0x01, 0x00, 0x00, 0x00, 0x0F
   };
-
-  /** 9. 下载特征或模板 PS_DownChar. */
-  private static final byte[] CMD_SAVE_FINGER_FEATURE = {
-      (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x04,
-      0x09, 0x01, 0x00, 0x0F
-  };
-  /** 8. 上传特征或模板 PS_UpChar. */
-  private static final byte[] CMD_GET_FINGER_FEATURE = {
+  /** 从缓冲区获取特征码. 8. 上传特征或模板 PS_UpChar. */
+  private static final byte[] CMD_GET_BUFFER_FEATURE = {
       (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01, 0x00, 0x04,
       0x08, 0x01, 0x00, 0x0E
   };
-  /** 自动注册模板 PS_Enroll. */
+  /** 9. 下载特征或模板 PS_DownChar. 将指纹库外的特征码 加载到 缓冲区 */
+  private static final byte[] CMD_OUTER_FEATURE_2_BUFFER = {
+      (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x04,
+      0x09, 0x01, 0x00, 0x0F
+  };
+  /** 10.自动注册模板 PS_Enroll. */
   public static final byte[] CMD_ADD_FINGER = {
       (byte) 0xef, 0x01, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, 0x01, 0x00, 0x03,
       0x10, 0x00, 0x14
   };
+  /** 12.删除模板 PS_DeletChar. */
+  private static final byte[] CMD_DELETE_FINGER = {
+      (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x07,
+      0x0C, 0x00, 0x00, 0x00, 0x01, 0x00, 0x15
+  };
+
   /** 13. 清空指纹库 PS_Empty. */
   public static final byte[] CMD_CLEAR_FINGER = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x03,
       0x0D, 0x00, 0x11
   };
-  public static final byte[] mReadindex = {
+  private static final byte[] mReadindex = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF,
       (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x04, 0x1F, 0x00, 0x00, 0x24
   };// PS_ReadIndexTable
-  public static final byte[] writeText = {
+  private static final byte[] writeText = {
       (byte) 0xEF, 0x01, (byte) 0xFF, (byte) 0xFF,
       (byte) 0xFF, (byte) 0xFF, 0x01, 0x00, 0x24, 0x18, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -205,7 +210,7 @@ public abstract class FingerPrintCmd {
     return getCmdGenChar(BUFFER_ID);
   }
 
-  /** 保存特征码 指令. */
+  /** 保存Buffer中特征码到指纹库. 5.储存模板 PS_StoreChar */
   public static byte[] getCmdStoreChar(int pageID) {
     CMD_STORE_CHAR[11] = (byte) ((pageID >> 8) & 0xFF);
     CMD_STORE_CHAR[12] = (byte) (pageID & 0xFF);
@@ -213,57 +218,57 @@ public abstract class FingerPrintCmd {
     return CMD_STORE_CHAR;
   }
 
-  /** 8. 上传特征或模板 PS_UpChar. 从缓冲区获取特征码 指令. */
-  public static byte[] getCmdGetFingerFeature(int buffId) {
+  /** 从缓冲区获取特征码. 8. 上传特征或模板 PS_UpChar */
+  public static byte[] getCmGetBufferFeature(int buffId) {
     if (buffId == BUFFER_ID_1) {
-      CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_1;
-      CMD_GET_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0E;
+      CMD_GET_BUFFER_FEATURE[10] = BUFFER_ID_1;
+      CMD_GET_BUFFER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0E;
     } else {
-      CMD_GET_FINGER_FEATURE[10] = BUFFER_ID_2;
-      CMD_GET_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0F;
+      CMD_GET_BUFFER_FEATURE[10] = BUFFER_ID_2;
+      CMD_GET_BUFFER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0F;
     }
-    return CMD_GET_FINGER_FEATURE;
+    return CMD_GET_BUFFER_FEATURE;
   }
 
-  /** 8. 上传特征或模板 PS_UpChar. 从缓冲区获取特征码 指令，使用 bufferID1. */
-  public static byte[] getCmdGetFingerFeature() {
-    return getCmdGetFingerFeature(BUFFER_ID);
+  /** 从缓冲区获取特征码，使用 bufferID1. 8. 上传特征或模板 PS_UpChar */
+  public static byte[] getCmGetBufferFeature() {
+    return getCmGetBufferFeature(BUFFER_ID);
   }
 
-  /** 载入特征码到缓冲区. 9. 下载特征或模板 PS_DownChar. */
-  public static byte[] getCmdSaveFingerFeature(int buffId) {
+  /** 将指纹库外征码 加载到 缓冲区. 9. 下载特征或模板 PS_DownChar. */
+  public static byte[] getCmdOuterFeature2Buffer(int buffId) {
     if (buffId == BUFFER_ID_1) {
-      CMD_SAVE_FINGER_FEATURE[10] = BUFFER_ID_1;
-      CMD_SAVE_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x0F;
+      CMD_OUTER_FEATURE_2_BUFFER[10] = BUFFER_ID_1;
+      CMD_OUTER_FEATURE_2_BUFFER[CMD_GEN_CHAR.length - 1] = 0x0F;
     } else {
-      CMD_SAVE_FINGER_FEATURE[10] = BUFFER_ID_2;
-      CMD_SAVE_FINGER_FEATURE[CMD_GEN_CHAR.length - 1] = 0x10;
+      CMD_OUTER_FEATURE_2_BUFFER[10] = BUFFER_ID_2;
+      CMD_OUTER_FEATURE_2_BUFFER[CMD_GEN_CHAR.length - 1] = 0x10;
     }
-    return CMD_SAVE_FINGER_FEATURE;
+    return CMD_OUTER_FEATURE_2_BUFFER;
   }
 
-  /** 载入特征码到缓冲区. 9. 下载特征或模板 PS_DownChar,使用 bufferID1. */
-  public static byte[] getCmdSaveFingerFeature() {
-    return getCmdSaveFingerFeature(BUFFER_ID);
+  /** 将指纹库外特征码 加载到 缓冲区，使用 bufferID1. 9. 下载特征或模板 PS_DownChar */
+  public static byte[] getCmdOuterFeature2Buffer() {
+    return getCmdOuterFeature2Buffer(BUFFER_ID);
   }
 
-  /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令. */
-  public static byte[] getCmdLoadFingerFeature(int buffId, int fingerIndex) {
+  /** 将指纹库中特征码 加载到 缓冲区. 7. 读出模板 PS_LoadChar */
+  public static byte[] getCmdInnerFeature2Buffer(int buffId, int fingerIndex) {
     if (buffId == BUFFER_ID_1) {
-      CMD_LOAD_FINGER_FEATURE[10] = BUFFER_ID_1;
+      CMD_INNER_FEATURE_2_BUFFER[10] = BUFFER_ID_1;
     } else {
-      CMD_LOAD_FINGER_FEATURE[10] = BUFFER_ID_2;
+      CMD_INNER_FEATURE_2_BUFFER[10] = BUFFER_ID_2;
     }
 
-    CMD_LOAD_FINGER_FEATURE[11] = (byte) ((fingerIndex >> 8) & 0xFF);
-    CMD_LOAD_FINGER_FEATURE[12] = (byte) (fingerIndex & 0xFF);
-    setCheckSum(CMD_LOAD_FINGER_FEATURE);
-    return CMD_LOAD_FINGER_FEATURE;
+    CMD_INNER_FEATURE_2_BUFFER[11] = (byte) ((fingerIndex >> 8) & 0xFF);
+    CMD_INNER_FEATURE_2_BUFFER[12] = (byte) (fingerIndex & 0xFF);
+    setCheckSum(CMD_INNER_FEATURE_2_BUFFER);
+    return CMD_INNER_FEATURE_2_BUFFER;
   }
 
-  /** 7. 读出模板 PS_LoadChar 获取指定位置指纹的特征码 指令，使用 bufferID1. */
-  public static byte[] getCmdLoadFingerFeature(int pageId) {
-    return getCmdLoadFingerFeature(BUFFER_ID, pageId);
+  /** 将指纹库中特征码 加载到 缓冲区，使用 bufferID1.. 7. 读出模板 PS_LoadChar */
+  public static byte[] getCmdInnerFeature2Buffer(int pageId) {
+    return getCmdInnerFeature2Buffer(BUFFER_ID, pageId);
   }
 
   /** 搜索指纹 指令.最大搜索范围 0~127 */
@@ -280,6 +285,27 @@ public abstract class FingerPrintCmd {
   /** 搜索指纹 指令，全范围搜索 0~127. */
   public static byte[] getCmdSearch() {
     return getCmdSearch(0, FINGER_MAX_NUM);
+  }
+
+  /**
+   * 删除指纹 指令.
+   *
+   * @param startPageId 将要删除指纹的开始位置
+   * @param pageNum 删除指纹的数量
+   */
+  public static byte[] getCmdDelete(int startPageId, int pageNum) {
+    CMD_DELETE_FINGER[10] = (byte) ((startPageId >> 8) & 0xFF);
+    CMD_DELETE_FINGER[11] = (byte) (startPageId & 0xFF);
+
+    CMD_DELETE_FINGER[12] = (byte) ((pageNum >> 8) & 0xFF);
+    CMD_DELETE_FINGER[13] = (byte) (pageNum & 0xFF);
+    setCheckSum(CMD_DELETE_FINGER);
+    return CMD_DELETE_FINGER;
+  }
+
+  /** 删除 一个指纹 指令. */
+  public static byte[] getCmdDelete(int fingerIndex) {
+    return getCmdDelete(fingerIndex, 1);
   }
 
   /**

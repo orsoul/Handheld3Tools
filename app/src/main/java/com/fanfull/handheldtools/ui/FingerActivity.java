@@ -15,6 +15,7 @@ import com.fanfull.libhard.finger.IFingerListener;
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.finger.impl.FingerPrintCmd;
+import com.fanfull.libhard.finger.impl.FingerPrintTask;
 import com.fanfull.libhard.finger.impl.FingerprintController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
@@ -34,7 +35,7 @@ public class FingerActivity extends InitModuleActivity {
 
   private int fingerId = 127;
   private FingerprintController fingerprintController;
-  private FingerprintController.FingerPrintTask fingerPrintTask;
+  private FingerPrintTask fingerPrintTask;
   private FingerPrintSQLiteHelper fingerPrintDbHelper;
 
   private UhfController uhfController;
@@ -167,10 +168,7 @@ public class FingerActivity extends InitModuleActivity {
       }
     });
 
-    FingerPrintSQLiteHelper.init(this);
-    fingerPrintDbHelper = FingerPrintSQLiteHelper.getInstance();
     fingerprintController = FingerprintController.getInstance();
-    fingerprintController.init(this);
     fingerprintController.setListener(new IFingerListener() {
       @Override public void onOpen(boolean openSuccess) {
         runOnUi(() -> {
@@ -198,10 +196,13 @@ public class FingerActivity extends InitModuleActivity {
       }
     });
     showLoadingView("正在打开指纹模块...");
-    fingerprintController.open();
+    fingerprintController.init(this);
+    //fingerprintController.open();
+    //FingerPrintSQLiteHelper.init(this);
+    fingerPrintDbHelper = FingerPrintSQLiteHelper.getInstance();
 
     /* 指纹任务 */
-    fingerPrintTask = new FingerprintController.FingerPrintTask(fingerprintController) {
+    fingerPrintTask = new FingerPrintTask() {
       int count;
 
       @Override protected void onNoFinger() {
@@ -272,10 +273,8 @@ public class FingerActivity extends InitModuleActivity {
 
   @Override
   protected void onEnterPress() {
-    if (fingerprintController.isSearch()) {
-      fingerprintController.stopSearchFingerPrint();
-    } else {
-      fingerprintController.startSearchFingerPrint();
+    if (btnSearch.isEnabled()) {
+      onClick(btnSearch);
     }
   }
 
@@ -310,7 +309,6 @@ public class FingerActivity extends InitModuleActivity {
         });
         break;
       case KeyEvent.KEYCODE_3:
-        //new XPopup.Builder(this).inp
         new XPopup.Builder(this).asInputConfirm("添加指纹", "输入指纹ID", fingerId + "", "输入指纹ID",
             text -> {
               try {
@@ -340,12 +338,15 @@ public class FingerActivity extends InitModuleActivity {
             }).show();
         break;
       case KeyEvent.KEYCODE_4:
-        fingerprintController.operation.send(
-            FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_1));
+        btnSearch.setEnabled(false);
+        btnNum.setEnabled(false);
+        boolean deleteSuccess = fingerprintController.deleteFinger(fingerId);
+        ViewUtil.appendShow(String.format("删除指纹 %s 成功？：%s", fingerId, deleteSuccess), tvShow);
+        LogUtils.d("删除指纹 %s 成功？：%s", fingerId, deleteSuccess);
+        btnSearch.setEnabled(true);
+        btnNum.setEnabled(true);
         break;
       case KeyEvent.KEYCODE_5:
-        fingerprintController.operation.send(
-            FingerPrintCmd.getCmdGetFingerFeature(FingerPrintCmd.BUFFER_ID_2));
         break;
       case KeyEvent.KEYCODE_6:
         byte[] fastEpc = uhfController.fastEpc(800);
@@ -356,8 +357,9 @@ public class FingerActivity extends InitModuleActivity {
         List<FingerBean> fingerBeans = fingerPrintDbHelper.queryAllFinger();
         LogUtils.d("fingerBean size:%s", fingerBeans.size());
         LogUtils.v("fingerBeans:%s", fingerBeans);
+        showLoadingView();
         ThreadUtil.execute(() -> {
-          int res1 = fingerprintController.operation.addFinger(fingerBeans);
+          int res1 = fingerprintController.operation.loadFinger(fingerBeans);
           runOnUi(() -> {
             ViewUtil.appendShow(String.format("从数据库加载数量：%s / %s", res1, fingerBeans.size()),
                 tvShow);
