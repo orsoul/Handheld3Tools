@@ -349,8 +349,8 @@ public class FingerActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_5:
         break;
       case KeyEvent.KEYCODE_6:
-        byte[] fastEpc = uhfController.fastEpc(800);
-        ViewUtil.appendShow(String.format("fastEpc：%s", BytesUtil.bytes2HexString(fastEpc)),
+        byte[] fastEpc = uhfController.readEpcWithTid(800);
+        ViewUtil.appendShow(String.format("readEpcWithTid：%s", BytesUtil.bytes2HexString(fastEpc)),
             tvShow);
         break;
       case KeyEvent.KEYCODE_7:

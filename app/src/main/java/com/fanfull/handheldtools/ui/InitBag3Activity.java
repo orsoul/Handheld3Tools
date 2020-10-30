@@ -103,7 +103,7 @@ public class InitBag3Activity extends InitModuleActivity {
             break;
           case UhfCmd.RECEIVE_TYPE_FAST_EPC:
             info =
-                String.format("fastEpc:%s", BytesUtil.bytes2HexString(parseData));
+                String.format("readEpcWithTid:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_READ:
             info =

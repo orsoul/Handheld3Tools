@@ -17,7 +17,6 @@ import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
-import com.finger.FingerPrint;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
 
@@ -63,13 +62,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        FingerPrint.getInstance().open();
         break;
       case KeyEvent.KEYCODE_2:
-        FingerPrint.getInstance().startSearchFinger();
         break;
       case KeyEvent.KEYCODE_3:
-        FingerPrint.getInstance().stopSearchFinger();
         break;
       case KeyEvent.KEYCODE_4:
       case KeyEvent.KEYCODE_5:
@@ -94,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   @Override
   protected void onDestroy() {
     LogUtils.getLog2FileConfig().flushAsync();
-    FingerPrint.getInstance().stopSearchAndClose();
 
     if (UhfController.getInstance().isOpen()) {
       UhfController.getInstance().release();

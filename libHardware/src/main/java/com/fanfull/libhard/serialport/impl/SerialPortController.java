@@ -99,15 +99,17 @@ public class SerialPortController implements ISerialPort {
     return send(data, 0, data != null ? data.length : 0);
   }
 
+  /**
+   * @return 发送失败返回-1，回复超时返回-2
+   */
   public int sendAndWaitReceive(byte[] data, long timeout, byte[] recBuff) {
-    final int[] reVal = { -1 };
-    //onceListener = (buff, len) -> onceRecBuff = Arrays.copyOf(buff, len);
+    final int[] reVal = { -2 };
     onceListener = new ISerialPortListener() {
       @Override public void onReceiveData(byte[] data, int len) {
         if (recBuff != null) {
-          System.arraycopy(data, 0, recBuff, 0, Math.min(recBuff.length, len));
+          reVal[0] = Math.min(recBuff.length, len);
+          System.arraycopy(data, 0, recBuff, 0, reVal[0]);
         }
-        reVal[0] = len;
       }
     };
     boolean send = send(data);
@@ -115,7 +117,7 @@ public class SerialPortController implements ISerialPort {
       return -1;
     }
 
-    synchronized (SerialPortController.this) {
+    synchronized (onceListener) {
       try {
         ClockUtil.clock();
         onceListener.wait(timeout);
@@ -124,7 +126,8 @@ public class SerialPortController implements ISerialPort {
       }
     }
     onceListener = null;
-    LogUtils.tag(TAG).d("wait time: %s / %s", ClockUtil.clock(), timeout);
+    LogUtils.tag(TAG).d("wait time: %s / %s, rec len:%s",
+        ClockUtil.clock(), timeout, reVal[0]);
     return reVal[0];
   }
 

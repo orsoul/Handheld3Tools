@@ -3,16 +3,23 @@ package com.fanfull.libhard.uhf;
 import com.fanfull.libhard.IOperation;
 
 public interface IUhfOperation extends IOperation {
-  /** epc区. */
-  public static final int MB_EPC = 1;
-  /** tid区. */
-  public static final int MB_TID = 2;
-  /** use区. */
-  public static final int MB_USE = 3;
 
   boolean send(byte[] data);
 
   void setListener(IUhfListener listener);
+
+  /**
+   * 读 超高频.
+   *
+   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+   * @param sa 读取 数据的 起始地址, 单位：字（字长: 2byte）
+   * @param dataBuff 接收数据,单位：byte；长度因为偶数
+   * @param timeout 超时
+   * @param mmb 过滤的区
+   * @param msa 过滤的起始地址, 单位 字
+   * @param filter 过滤数据
+   */
+  boolean read(int mb, int sa, byte[] dataBuff, int timeout, int mmb, int msa, byte[] filter);
 
   /**
    * 读 超高频.
@@ -45,15 +52,15 @@ public interface IUhfOperation extends IOperation {
    * @param timeout 尝试读取数据的时间
    * @return 12byte 的epc 或者 byte[24]的 epc + tid
    */
-  byte[] fastEpc(int timeout);
+  byte[] readEpcWithTid(int timeout);
 
-  byte[] fastTid(int sa, int len);
+  boolean fastTid(int sa, byte[] buff);
 
-  byte[] readEpc(int sa, int len);
+  boolean readEpc(int sa, byte[] buff);
 
-  byte[] readTid(int sa, int len);
+  boolean readTid(int sa, byte[] buff);
 
-  byte[] readUse(int sa, int len);
+  boolean readUse(int sa, byte[] buff);
 
   /**
    * 写 超高频.
@@ -65,7 +72,7 @@ public interface IUhfOperation extends IOperation {
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
    */
-  boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
+  boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter);
 
   void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
 

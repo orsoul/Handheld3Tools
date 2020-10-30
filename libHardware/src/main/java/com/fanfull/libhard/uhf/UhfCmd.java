@@ -16,6 +16,11 @@ public abstract class UhfCmd {
   /** use区. */
   public static final int MB_USE = 3;
 
+  /** 模块回复数据的 最小长度. */
+  public static final int MIN_LEN_REC = 8;
+  /** EPC或TID区最大长度 12byte. */
+  public static final int EPC_TID_LEN = 12;
+
   public static final int RECEIVE_TYPE_GET_DEVICE_VERSION = 0x01;
   public static final int RECEIVE_TYPE_GET_DEVICE_ID = 0x05;
 
@@ -85,8 +90,6 @@ public abstract class UhfCmd {
       0x00, 0x08, (byte) 0x8C, (byte) 0x84, 0x0D, 0x0A
   };
 
-  /** EPC区大小 12byte. */
-  private final int EPC_LEN = 12;
   /** 超高频 最大 读写功率 30. */
   public static final int MAX_POWER = 25;
   /** 超高频 最小 读写功率 5. */
@@ -105,6 +108,24 @@ public abstract class UhfCmd {
       0x00, 0x0D, (byte) 0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
       0x0A
   };
+
+  public static boolean isUhfCmd(byte[] cmd, int len) {
+    // 帧头 帧长度 帧类型 数据 校验码 帧尾
+    // 2 字节 2 字节 1 字节 N 字节 1 字节 2 字节
+    //帧头 0xA5、0x5A
+    //帧尾 0x0D、0x0A
+    // 例：A55A 000A FF 0402 F3 0D0A // 未读到数据
+    // 例：A55A 0018 8501000006CFCFCFCFCFCFCFCFCFCFCFCF 9A 0D0A // 读EPC 12字节
+    if (len < 1 || cmd == null || cmd.length < UhfCmd.MIN_LEN_REC || cmd.length < len) {
+      LogUtils.tag(TAG).i("not cmd %s:%s", len, BytesUtil.bytes2HexString(cmd, len));
+      return false;
+    }
+
+    return cmd[0] == (byte) 0xA5
+        && cmd[1] == (byte) 0x5A
+        && cmd[len - 2] == (byte) 0x0D
+        && cmd[len - 1] == (byte) 0x0A;
+  }
 
   public static boolean isUhfCmd(byte[] cmd) {
     // 帧头 帧长度 帧类型 数据 校验码 帧尾
@@ -256,6 +277,7 @@ public abstract class UhfCmd {
     }
     return reVal;
   }
+
   /**
    * 获取读 超高频 指令.
    *
@@ -448,6 +470,7 @@ public abstract class UhfCmd {
   public static byte[] getReadCmd(int mb, int sa, int readLen) {
     return getReadCmd(mb, sa, readLen, null, 0, 0);
   }
+
   /**
    * 获取写 超高频 指令.
    *
@@ -458,7 +481,7 @@ public abstract class UhfCmd {
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
    */
-  public static byte[] getWriteCmd(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
+  public static byte[] getWriteCmd(int mb, int sa, byte[] data, int mmb, int msa, byte[] filter) {
     LogUtils.tag(TAG).i("write mb-sa-len:%s-0x%02X-%s",
         mb, sa, BytesUtil.bytes2HexString(data));
 
@@ -566,7 +589,7 @@ public abstract class UhfCmd {
   }
 
   public static byte[] getWriteCmd(int mb, int sa, byte[] data) {
-    return getWriteCmd(mb, sa, data, null, 0, 0);
+    return getWriteCmd(mb, sa, data, 0, 0, null);
   }
 
   public static byte[] getPowerCmd() {
@@ -659,7 +682,7 @@ public abstract class UhfCmd {
   /**
    * 快速获取TID区数据, 无法进行过滤, TID区总大小 : 12字节； 获取唯一TID参数选择(0x03, 6)
    *
-   * @param sa  起始地址，单位 字（2byte）
+   * @param sa 起始地址，单位 字（2byte）
    * @param len 获取数据长度，单位 byte；应设为偶数，如为奇数等同于（len + 1）
    */
   public static byte[] getFastReadTidCmd(int sa, int len) {

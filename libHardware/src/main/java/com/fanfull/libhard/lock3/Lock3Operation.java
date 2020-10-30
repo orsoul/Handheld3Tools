@@ -44,7 +44,7 @@ public class Lock3Operation {
 
     int reVal = -1;
     /* 2、读 epc */
-    byte[] epc = uhfController.fastEpc(300);
+    byte[] epc = uhfController.readEpcWithTid(300);
     if (epc == null) {
       return 2;
     } else if (epc.length == 12) {
@@ -99,7 +99,7 @@ public class Lock3Operation {
       times = 50;
     }
     for (int i = 0; i < times; i++) {
-      if (uhfController.write(UhfCmd.MB_EPC, 0x02, epcBuff, filterBuff, UhfCmd.MB_TID, 0x03)) {
+      if (uhfController.write(UhfCmd.MB_EPC, 0x02, epcBuff, UhfCmd.MB_TID, 0x03, filterBuff)) {
         return true;
       }
     }

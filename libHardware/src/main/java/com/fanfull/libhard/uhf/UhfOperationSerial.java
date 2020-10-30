@@ -1,6 +1,7 @@
 package com.fanfull.libhard.uhf;
 
 import android.os.SystemClock;
+import androidx.annotation.NonNull;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
@@ -76,6 +77,14 @@ public class UhfOperationSerial extends AbsUhfOperation {
     return isUhfMode && serialPortController.send(data);
   }
 
+  /**
+   * @return 发送失败返回-1，回复超时返回-2
+   */
+  public int sendAndWaitReceive(byte[] data, int timeout, byte[] recBuff) {
+    setGpioUhfMode();
+    return serialPortController.sendAndWaitReceive(data, timeout, recBuff);
+  }
+
   public byte[] sendAndWaitReceive(byte[] data, int timeout) {
     setGpioUhfMode();
     return serialPortController.sendAndWaitReceive(data, timeout);
@@ -103,6 +112,65 @@ public class UhfOperationSerial extends AbsUhfOperation {
     return true;
   }
 
+  /**
+   * 接收模块返回的数据. 帧头、帧尾等格式内容长度 占12字节，
+   * 读取TID或EPC数据最大16字节；读取use区数据大于16时，会进行扩容.
+   */
+  private byte[] uhfBuff = new byte[12 + 16];
+
+  /**
+   * 检查通过read()方法接收的指令，如果成功获取到数据 且 数据长度与目标数组长度一致，拷贝数据到目标数组.
+   *
+   * @param recCmd 接收到的数据
+   * @param dest 目标数组
+   */
+  private boolean checkAndCopy(@NonNull byte[] recCmd, @NonNull byte[] dest) {
+    if (recCmd[5] == 0x01 && recCmd[6] == 0x00) {
+      // A55A 0019 81 3000CFCFCFCFCFCFCFCFCFCFCFCFFE3F01 68 0D0A
+      int dataLen = recCmd[7] & 0xFF;
+      dataLen <<= 8;
+      dataLen |= recCmd[8] & 0xFF;
+      dataLen <<= 1;
+      if (dataLen == dest.length) {
+        System.arraycopy(uhfBuff, 9, dest, 0, dataLen);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override public boolean read(int mb, int sa, byte[] buff, int timeout, int mmb, int msa,
+      byte[] filter) {
+    return 0 < readCode(mb, sa, buff, timeout, mmb, msa, filter);
+  }
+
+  private int readCode(int mb, int sa, byte[] buff, int timeout, int mmb, int msa,
+      byte[] filter) {
+    if (buff == null || buff.length == 0) {
+      return -3;
+    }
+
+    if (mb == UhfCmd.MB_USE && uhfBuff.length < buff.length + 12) {
+      // 读取use区，原缓存区空间不足，进行扩容
+      uhfBuff = new byte[buff.length + 12];
+    }
+
+    byte[] readCmd = UhfCmd.getReadCmd(mb, sa, buff.length, filter, mmb, msa);
+    int len = sendAndWaitReceive(readCmd, timeout, uhfBuff);
+    if (len < 1) {
+      return len;
+    }
+    if (!UhfCmd.isUhfCmd(uhfBuff, len)) {
+      return -4;
+    }
+
+    if (checkAndCopy(uhfBuff, buff)) {
+      return len;
+    }
+
+    return -5;
+  }
+
   @Override public byte[] read(int mb, int sa, int readLen, byte[] filter, int mmb, int msa) {
     byte[] readCmd = UhfCmd.getReadCmd(mb, sa, readLen, filter, mmb, msa);
     byte[] rec = sendAndWaitReceive(readCmd);
@@ -115,29 +183,62 @@ public class UhfOperationSerial extends AbsUhfOperation {
     send(readCmd);
   }
 
-  @Override public byte[] fastEpc(int timeout) {
+  @Override public byte[] readEpcWithTid(int timeout) {
     byte[] fastReadEpcCmd = UhfCmd.getFastReadEpcCmd(timeout);
     byte[] rec = sendAndWaitReceive(fastReadEpcCmd, timeout + 50);
     byte[] parseData = UhfCmd.parseData(rec);
     return parseData;
   }
 
-  @Override public byte[] fastTid(int sa, int len) {
-    byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, len);
-    byte[] rec = sendAndWaitReceive(fastReadTidCmd);
-    byte[] parseData = UhfCmd.parseData(rec);
-    return parseData;
+  /**
+   * 快速读取tid，效率比通过read()获取高.
+   */
+  @Override public boolean fastTid(int sa, byte[] buff) {
+    return 0 < fastTidCode(sa, buff);
   }
 
-  @Override public boolean write(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
-    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
-    byte[] bytes = sendAndWaitReceive(cmd);
-    byte[] parseData = UhfCmd.parseData(bytes);
-    return parseData != null && parseData.length == 0;
+  private int fastTidCode(int sa, byte[] buff) {
+    if (buff == null || buff.length == 0) {
+      return -3;
+    }
+
+    byte[] fastReadTidCmd = UhfCmd.getFastReadTidCmd(sa, buff.length);
+    int len = sendAndWaitReceive(fastReadTidCmd, 100, uhfBuff);
+    if (len < 1) {
+      return len;
+    }
+    if (!UhfCmd.isUhfCmd(uhfBuff, len)) {
+      return -4;
+    }
+
+    if (checkAndCopy(uhfBuff, buff)) {
+      return len;
+    }
+    return -5;
+  }
+
+  @Override
+  public boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter) {
+    if (data == null || data.length == 0) {
+      return false;
+    }
+    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, mmb, msa, filter);
+    //byte[] bytes = sendAndWaitReceive(cmd, timeout, uhfBuff);
+    int len = sendAndWaitReceive(cmd, timeout, uhfBuff);
+    if (!UhfCmd.isUhfCmd(uhfBuff, len)) {
+      return false;
+    }
+
+    if (uhfBuff[5] == 0x01 && uhfBuff[6] == 0x00) {
+      return true;
+    } else {
+      return false;
+    }
+    //return parseData != null && parseData.length == 0;
   }
 
   @Override public void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa) {
-    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, filter, mmb, msa);
+    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, mmb, msa, filter);
     send(cmd);
   }
 

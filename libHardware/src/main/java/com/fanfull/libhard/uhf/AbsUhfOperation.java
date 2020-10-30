@@ -23,31 +23,23 @@ public abstract class AbsUhfOperation implements IUhfOperation {
     return false;
   }
 
-  @Override public byte[] fastEpc(int timeout) {
-    return null;
+  @Override public boolean readEpc(int sa, byte[] buff) {
+    return read(UhfCmd.MB_EPC, sa, buff, 500, 0, 0, null);
   }
 
-  @Override public byte[] fastTid(int sa, int len) {
-    return null;
+  @Override public boolean readTid(int sa, byte[] buff) {
+    return read(UhfCmd.MB_TID, sa, buff, 500, 0, 0, null);
   }
 
-  @Override public byte[] readEpc(int sa, int len) {
-    return read(UhfCmd.MB_EPC, sa, len, null, 0, 0);
-  }
-
-  @Override public byte[] readTid(int sa, int len) {
-    return read(UhfCmd.MB_TID, sa, len, null, 0, 0);
-  }
-
-  @Override public byte[] readUse(int sa, int len) {
-    return read(UhfCmd.MB_USE, sa, len, null, 0, 0);
+  @Override public boolean readUse(int sa, byte[] buff) {
+    return read(UhfCmd.MB_USE, sa, buff, 500, 0, 0, null);
   }
 
   @Override public boolean writeEpc(int sa, byte[] data) {
-    return write(UhfCmd.MB_EPC, sa, data, null, 0, 0);
+    return write(UhfCmd.MB_EPC, sa, data, 500, 0, 0, null);
   }
 
   @Override public boolean writeUse(int sa, byte[] data) {
-    return write(UhfCmd.MB_USE, sa, data, null, 0, 0);
+    return write(UhfCmd.MB_USE, sa, data, 500, 0, 0, null);
   }
 }

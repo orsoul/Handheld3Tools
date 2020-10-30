@@ -246,12 +246,11 @@ public class ZhuangXiangActivity extends BaseActivity {
       isRunning = true;
       boolean readSuccess = false;
       while (isRunning && ClockUtil.runTime() < runTime) {
-        byte[] epc = null;
+        byte[] epc = new byte[12];
         byte[] nfc = null;
         if (isReadEpc) {
           // 从epc获取 袋id
-          epc = UhfController.getInstance().readEpc(0x02, 12);
-          readSuccess = epc != null;
+          readSuccess = UhfController.getInstance().readEpc(epc);
         }
 
         if (!readSuccess && isReadNfc) {

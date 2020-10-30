@@ -105,8 +105,8 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.send(UhfCmd.CMD_GET_DEVICE_ID);
         SystemClock.sleep(50);
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
-        socketService = new SocketServiceDemo();
-        socketService.start();
+        //socketService = new SocketServiceDemo();
+        //socketService.start();
       }
 
       @Override
@@ -192,7 +192,7 @@ public class UhfActivity extends InitModuleActivity {
     Object info;
     switch (v.getId()) {
       case R.id.btn_uhf_read_epc:
-        readBuff = uhfController.fastEpc(500);
+        readBuff = uhfController.readEpcWithTid(500);
         if (readBuff == null) {
           info = "读epc失败";
         } else if (readBuff.length == 24) {
@@ -205,30 +205,33 @@ public class UhfActivity extends InitModuleActivity {
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_tid:
-        readBuff = uhfController.fastTid(0, 12);
-        if (readBuff == null) {
+        byte[] tidBuff = new byte[12];
+        boolean tidLen = uhfController.fastTid(0, tidBuff);
+        if (!tidLen) {
           info = "读tid失败";
         } else {
+          readBuff = tidBuff;
           info = String.format("tid:%s", BytesUtil.bytes2HexString(readBuff));
         }
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_use:
-        readBuff = uhfController.readUse(0x4, 32);
-        if (readBuff == null) {
-          info = "读use失败";
+        byte[] bytes = new byte[32];
+        boolean len = uhfController.readUse(0x00, bytes);
+        if (!len) {
+          info = "读use失败:";
         } else {
-          info = String.format("use:%s", BytesUtil.bytes2HexString(readBuff));
+          info = String.format("use:%s", BytesUtil.bytes2HexString(bytes));
         }
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_get_power:
-        readBuff = uhfController.getPower();
-        if (readBuff == null) {
+        byte[] power = uhfController.getPower();
+        if (power == null) {
           info = "获取功率失败";
         } else {
           info = String.format("读/写功率: %s/%s | 天线号:%s | %s",
-              readBuff[0], readBuff[1], readBuff[2], readBuff[3] == 0 ? "开环" : "闭环");
+              power[0], power[1], power[2], power[3] == 0 ? "开环" : "闭环");
         }
         ViewUtil.appendShow(info, tvShow);
         break;
@@ -263,6 +266,8 @@ public class UhfActivity extends InitModuleActivity {
         event.isShiftPressed(),
         event.getMetaState()
     );
+    boolean res;
+    byte[] data = new byte[12];
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
         byte[] writeBuff = readBuff;
@@ -270,27 +275,38 @@ public class UhfActivity extends InitModuleActivity {
           writeBuff = new byte[12];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
         }
-        uhfController.writeAsync(UhfCmd.MB_EPC, 0x02, writeBuff, null, 0, 0);
+        //uhfController.writeAsync(UhfCmd.MB_EPC, 0x02, writeBuff, null, 0, 0);
+        res = uhfController.write(UhfCmd.MB_EPC, 0x02, writeBuff, 500, 0, 0, null);
+        LogUtils.d("write epc %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
         break;
       case KeyEvent.KEYCODE_2:
         writeBuff = readBuff;
         if (writeBuff == null) {
-          writeBuff = new byte[32];
+          writeBuff = new byte[12];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
         }
-        uhfController.writeAsync(UhfCmd.MB_USE, 0x4, writeBuff, null, 0, 0);
+        //uhfController.writeAsync(UhfCmd.MB_USE, 0x4, writeBuff, null, 0, 0);
+        res = uhfController.write(UhfCmd.MB_USE, 0x01, writeBuff, 500, 0, 0, null);
+        LogUtils.d("write use %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
         break;
       case KeyEvent.KEYCODE_3:
-        uhfController.readEpc(0x02, 12);
         break;
       case KeyEvent.KEYCODE_4:
-        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
+
+        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
+        res = uhfController.read(UhfCmd.MB_TID, 0x00, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        LogUtils.d("read tid %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_5:
-        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
+        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
+        res = uhfController.read(UhfCmd.MB_EPC, 0x02, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        LogUtils.d("read epc %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_6:
-        uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x00, 32));
+        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x00, 32));
+        data = new byte[16];
+        res = uhfController.read(UhfCmd.MB_USE, 0x00, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        LogUtils.d("read use %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_7:
         new XPopup.Builder(this).asInputConfirm(
