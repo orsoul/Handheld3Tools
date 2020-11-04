@@ -41,6 +41,13 @@ public interface IFingerOperation extends IOperation {
   int searchFinger(int[] fingerIndexBuff);
 
   /**
+   * 从外部加载指纹特征码到指纹库.
+   *
+   * @param fingerFeatureBuff 512字节特征码
+   */
+  int loadFinger(int fingerIndex, byte[] fingerFeatureBuff);
+
+  /**
    * 获取指纹库中指纹的数量.
    *
    * @return 获取成功返回 指纹数量

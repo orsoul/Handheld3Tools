@@ -26,7 +26,7 @@ public interface IRfidOperation extends IOperation {
 
   boolean writeNfc(int sa, byte[] buff, boolean withFindCard);
 
-  byte[] readM1(int block);
+  boolean readM1(int block, byte[] dataBuff);
 
   boolean writeM1(int block, byte[] data16);
 }

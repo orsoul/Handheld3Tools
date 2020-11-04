@@ -1,5 +1,6 @@
 package com.fanfull.libhard.finger.bean;
 
+import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import org.orsoul.baselib.util.BytesUtil;
 
 /**
@@ -8,13 +9,21 @@ import org.orsoul.baselib.util.BytesUtil;
 public class FingerBean {
 
   /** 指纹特征码 在指纹库中的位置，范围0~127. */
-  private int fingerIndex;
+  private int fingerIndex = -1;
   /** 指纹特征码 512字节. */
   private byte[] fingerFeature;
 
+  /** 指纹id，业务暂未需要. */
   private String fingerId;
+  /** 指纹对应的用户id . */
+  private String userId;
+  /** 指纹版本，用于比较本地指纹与服务器的是否一致. */
   private int fingerVersion;
-  private String cardId;
+  /** 指纹编号，用于区分同一用户的不同指纹. */
+  private int fingerNum;
+  /** 指纹状态，0表示未上传到服务器，1表示已上传到服务器，2表示与服务器指纹不一致. */
+  private int fingerStatus;
+  /** 指纹名，业务暂未需要. */
   private String userName;
 
   public FingerBean(int fingerIndex, byte[] fingerFeature, String fingerId, int fingerVersion) {
@@ -24,12 +33,12 @@ public class FingerBean {
     this.fingerId = fingerId;
   }
 
-  public FingerBean(int fingerIndex, String fingerFeatureBase64, String fingerId,
+  public FingerBean(int fingerIndex, String fingerFeature, String fingerId,
       int fingerVersion) {
     this.fingerIndex = fingerIndex;
     this.fingerVersion = fingerVersion;
     this.fingerId = fingerId;
-    setFeatureString(fingerFeatureBase64);
+    setFeatureString(fingerFeature);
   }
 
   public FingerBean(int fingerIndex, byte[] fingerFeature, String fingerId) {
@@ -38,6 +47,11 @@ public class FingerBean {
 
   public FingerBean(int fingerIndex, byte[] fingerFeature) {
     this(fingerIndex, fingerFeature, null);
+  }
+
+  public FingerBean(String userId, int fingerVersion) {
+    this.userId = userId;
+    this.fingerVersion = fingerVersion;
   }
 
   public String getFeatureString() {
@@ -60,8 +74,10 @@ public class FingerBean {
     return "FingerBean{" +
         "fingerIndex=" + fingerIndex +
         ", fingerId='" + fingerId + '\'' +
+        ", userId='" + userId + '\'' +
         ", fingerVersion=" + fingerVersion +
-        ", cardId='" + cardId + '\'' +
+        ", fingerNum='" + fingerNum + '\'' +
+        ", fingerStatus='" + fingerStatus + '\'' +
         ", userName='" + userName + '\'' +
         '}';
   }
@@ -82,6 +98,14 @@ public class FingerBean {
     this.fingerId = fingerId;
   }
 
+  public int getFingerStatus() {
+    return fingerStatus;
+  }
+
+  public void setFingerStatus(int fingerStatus) {
+    this.fingerStatus = fingerStatus;
+  }
+
   public byte[] getFingerFeature() {
     return fingerFeature;
   }
@@ -90,12 +114,20 @@ public class FingerBean {
     this.fingerFeature = fingerFeature;
   }
 
-  public String getCardId() {
-    return cardId;
+  public String getUserId() {
+    return userId;
   }
 
-  public void setCardId(String cardId) {
-    this.cardId = cardId;
+  public void setUserId(String userId) {
+    this.userId = userId;
+  }
+
+  public int getFingerNum() {
+    return fingerNum;
+  }
+
+  public void setFingerNum(int fingerNum) {
+    this.fingerNum = fingerNum;
   }
 
   public String getUserName() {
@@ -112,5 +144,21 @@ public class FingerBean {
 
   public void setFingerVersion(int fingerVersion) {
     this.fingerVersion = fingerVersion;
+  }
+
+  public long insertOrUpdate() {
+    FingerPrintSQLiteHelper instance = FingerPrintSQLiteHelper.getInstance();
+    if (instance == null) {
+      return -1;
+    }
+    return instance.saveOrUpdate(this);
+  }
+
+  public int delete() {
+    FingerPrintSQLiteHelper instance = FingerPrintSQLiteHelper.getInstance();
+    if (instance == null) {
+      return -1;
+    }
+    return instance.delete(this);
   }
 }

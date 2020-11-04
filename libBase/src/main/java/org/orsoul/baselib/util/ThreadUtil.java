@@ -148,4 +148,28 @@ public class ThreadUtil {
   public static String getCurrentThreadName() {
     return Thread.currentThread().getName();
   }
+
+  public static abstract class ThreadRunnable implements Runnable {
+    private boolean isRunning;
+
+    public synchronized boolean startThread() {
+      if (isRunning) {
+        return false;
+      }
+      execute(this);
+      return true;
+    }
+
+    public synchronized void stopThread() {
+      isRunning = false;
+    }
+
+    public synchronized boolean isRunning() {
+      return isRunning;
+    }
+
+    public synchronized void setRunning(boolean running) {
+      isRunning = running;
+    }
+  }
 }

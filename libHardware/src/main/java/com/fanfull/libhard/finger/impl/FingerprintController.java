@@ -1,10 +1,14 @@
 package com.fanfull.libhard.finger.impl;
 
 import android.content.Context;
+import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.IFingerListener;
 import com.fanfull.libhard.finger.IFingerOperation;
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class FingerprintController implements IFingerOperation {
   //private IFingerOperation operation;
@@ -19,9 +23,9 @@ public class FingerprintController implements IFingerOperation {
   }
 
   /** 初始化数据库、并打开指纹模块 */
-  public void init(Context context) {
+  public boolean init(Context context) {
     fingerPrintSQLiteHelper = FingerPrintSQLiteHelper.init(context);
-    open();
+    return open();
   }
 
   @Override
@@ -42,6 +46,7 @@ public class FingerprintController implements IFingerOperation {
   @Override
   public void release() {
     operation.release();
+    fingerPrintSQLiteHelper = null;
   }
 
   @Override
@@ -60,7 +65,7 @@ public class FingerprintController implements IFingerOperation {
   public FingerBean addFinger() {
     int[] fingerIdBuff = new int[1];
     byte[] fingerFeatureBuff = new byte[FingerPrintCmd.FINGER_FEATURE_LEN];
-    int res = operation.addFinger(fingerIdBuff, fingerFeatureBuff);
+    int res = addFinger(fingerIdBuff, fingerFeatureBuff);
     FingerBean fingerBean = null;
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
       fingerBean = new FingerBean(fingerIdBuff[0], fingerFeatureBuff);
@@ -70,6 +75,44 @@ public class FingerprintController implements IFingerOperation {
 
   @Override public int searchFinger(int[] fingerIndexBuff) {
     return operation.searchFinger(fingerIndexBuff);
+  }
+
+  @Override public int loadFinger(int fingerIndex, byte[] fingerFeatureBuff) {
+    return operation.loadFinger(fingerIndex, fingerFeatureBuff);
+  }
+
+  //public int loadFinger(byte[] fingerFeatureBuff) {
+  //  fingerPrintSQLiteHelper.queryAllFingerIndex();
+  //  return operation.loadFinger(fingerIndex, fingerFeatureBuff);
+  //}
+
+  /** 添加指纹特征码到指纹库. 返回成功添加的数量 */
+  public int loadFinger(List<FingerBean> fingerBeans) {
+    if (fingerBeans == null || fingerBeans.isEmpty()) {
+      return FingerPrintCmd.RES_CODE_ARGS_WRONG;
+    }
+
+    int count = 0;
+    for (FingerBean fingerBean : fingerBeans) {
+      int res = loadFinger(fingerBean.getFingerIndex(), fingerBean.getFingerFeature());
+      if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+        count++;
+      }
+    }
+
+    LogUtils.d("loadFinger count / total:  %s / %s", count, fingerBeans.size());
+    return count;
+  }
+
+  /** 加载指纹特征码到指纹库. 返回成功添加的数量 */
+  public int loadFinger(FingerBean... fingerBeans) {
+    if (fingerBeans == null) {
+      return FingerPrintCmd.RES_CODE_ARGS_WRONG;
+    }
+
+    List<FingerBean> list = new ArrayList<>();
+    Collections.addAll(list, fingerBeans);
+    return loadFinger(list);
   }
 
   @Override public int searchFinger(int[] fingerIndexBuff, byte[] fingerFeatureBuff) {
@@ -82,6 +125,26 @@ public class FingerprintController implements IFingerOperation {
 
   @Override public boolean deleteFinger(int fingerIndex) {
     return operation.deleteFinger(fingerIndex);
+  }
+
+  public boolean delete(FingerBean fingerBean) {
+    if (fingerBean == null) {
+      return false;
+    }
+    return deleteFinger(fingerBean.getFingerIndex());
+  }
+
+  public int delete(List<FingerBean> fingerBeans) {
+    if (fingerBeans == null) {
+      return 0;
+    }
+    int count = 0;
+    for (FingerBean fingerBean : fingerBeans) {
+      if (delete(fingerBean)) {
+        count++;
+      }
+    }
+    return count;
   }
 
   @Override public boolean clearFinger() {

@@ -104,9 +104,17 @@ public class RfidController implements IRfidPSamOperation {
     return operation.findNfc();
   }
 
-  @Override
+  @Override public boolean readM1(int block, byte[] dataBuff) {
+    return operation.readM1(block, dataBuff);
+  }
+
   public byte[] readM1(int block) {
-    return operation.readM1(block);
+    byte[] data = new byte[16];
+    boolean readSuccess = readM1(block, data);
+    if (readSuccess) {
+      return data;
+    }
+    return null;
   }
 
   @Override public boolean writeM1(int block, byte[] data16) {

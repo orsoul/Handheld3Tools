@@ -359,7 +359,7 @@ public class FingerActivity extends InitModuleActivity {
         LogUtils.v("fingerBeans:%s", fingerBeans);
         showLoadingView();
         ThreadUtil.execute(() -> {
-          int res1 = fingerprintController.operation.loadFinger(fingerBeans);
+          int res1 = fingerprintController.loadFinger(fingerBeans);
           runOnUi(() -> {
             ViewUtil.appendShow(String.format("从数据库加载数量：%s / %s", res1, fingerBeans.size()),
                 tvShow);

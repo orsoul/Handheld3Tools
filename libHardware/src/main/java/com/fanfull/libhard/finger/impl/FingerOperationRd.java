@@ -3,14 +3,12 @@ package com.fanfull.libhard.finger.impl;
 import android.os.SystemClock;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.AbsFingerOperation;
-import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 
 public class FingerOperationRd extends AbsFingerOperation {
@@ -27,6 +25,9 @@ public class FingerOperationRd extends AbsFingerOperation {
   @Override
   public boolean open() throws SecurityException {
     if (isOpen) {
+      if (fingerListener != null) {
+        fingerListener.onOpen(true);
+      }
       return true;
     }
     try {
@@ -193,16 +194,17 @@ public class FingerOperationRd extends AbsFingerOperation {
   /**
    * 添加指纹特征码到指纹库.
    *
-   * @param pageId 特征码保存的位置
+   * @param fingerIndex 特征码保存的位置
    * @param fingerFeatureBuff 512字节的指纹特征码
    */
-  private int loadFinger(int pageId, byte[] fingerFeatureBuff) {
+  @Override public int loadFinger(int fingerIndex, byte[] fingerFeatureBuff) {
+    setGpioFingerMode();
 
     byte[] buff;
     buff =
         serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdOuterFeature2Buffer(), 2000);
     int res = FingerPrintCmd.getFingerRes(buff);
-    LogUtils.d("SaveFingerFeature:%s", res);
+    LogUtils.d("OuterFeature2Buffer:%s", res);
 
     boolean sendSuccess = false;
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
@@ -213,40 +215,11 @@ public class FingerOperationRd extends AbsFingerOperation {
     }
 
     if (sendSuccess) {
-      buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdStoreChar(pageId));
+      buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.getCmdStoreChar(fingerIndex));
       res = FingerPrintCmd.getFingerRes(buff);
     }
 
-    LogUtils.d("loadFinger to %s, res：%s", pageId, res);
-    return res;
-  }
-
-  /** 添加指纹特征码到指纹库. */
-  public int loadFinger(List<FingerBean> fingerBeans) {
-    if (fingerBeans == null || fingerBeans.isEmpty()) {
-      return 0;
-    }
-
-    setGpioFingerMode();
-
-    int count = 0;
-    for (FingerBean fingerBean : fingerBeans) {
-      int res = loadFinger(fingerBean.getFingerIndex(), fingerBean.getFingerFeature());
-      if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
-        count++;
-      }
-    }
-
-    LogUtils.d("loadFinger count / total:  %s / %s", count, fingerBeans.size());
-    return count;
-  }
-
-  /** 加载指纹特征码到指纹库. */
-  public int loadFinger(FingerBean fingerBean) {
-    if (fingerBean == null) {
-      return FingerPrintCmd.RES_CODE_ARGS_WRONG;
-    }
-    int res = loadFinger(fingerBean.getFingerIndex(), fingerBean.getFingerFeature());
+    LogUtils.d("loadFinger to %s, res：%s", fingerIndex, res);
     return res;
   }
 

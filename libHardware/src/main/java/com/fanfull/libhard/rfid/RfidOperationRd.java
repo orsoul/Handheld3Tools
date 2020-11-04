@@ -277,19 +277,13 @@ public class RfidOperationRd extends AbsRfidOperation {
     return true;
   }
 
-  @Override
-  public byte[] readM1(int block) {
-    if (!authM1(block)) {
-      return null;
+  @Override public boolean readM1(int block, byte[] dataBuff) {
+    if (dataBuff == null || dataBuff.length != 16 || !authM1(block)) {
+      return false;
     }
-    byte[] reVal = null;
-    byte[] data = new byte[16];
-    boolean readSuccess = Rfid.PcdRead((byte) block, data);
-    if (readSuccess) {
-      reVal = data;
-    }
-    LogUtils.tag(TAG).v("%s:%s-%s", readSuccess, block, BytesUtil.bytes2HexString(data));
-    return reVal;
+    boolean readSuccess = Rfid.PcdRead((byte) block, dataBuff);
+    LogUtils.tag(TAG).v("%s:%s-%s", readSuccess, block, BytesUtil.bytes2HexString(dataBuff));
+    return readSuccess;
   }
 
   @Override
