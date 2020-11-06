@@ -4,8 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import androidx.appcompat.app.AppCompatActivity;
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.handheldtools.base.BaseActivity;
 import com.fanfull.handheldtools.base.BaseApplication;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
@@ -17,10 +17,11 @@ import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
       RfidController.getInstance().release();
     }
     super.onDestroy();
+
+    AppUtil.killProcess();
   }
 
   @Override

@@ -50,6 +50,6 @@ public class AboutActivity extends BaseActivity {
   }
 
   @Override public void onBackPressed() {
-    finish();
+    super.onBackPressed();
   }
 }
