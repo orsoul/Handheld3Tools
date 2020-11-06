@@ -6,10 +6,16 @@ import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 
 public class Lock3Bean {
+  /** 锁内袋id. */
   public static final int SA_BAG_ID = 0x04;
+  /** 锁片tid 0x07~0x09. */
+  public static final int SA_PIECE_TID = 0x07;
+  /** 锁内tid 0x0A~0x0C. */
+  public static final int SA_LOCK_TID = 0x0A;
   public static final int SA_STATUS = 0x10;
   public static final int SA_WORK_MODE = 0x12;
   public static final int SA_KEY_NUM = 0x14;
+  /** 电压. */
   public static final int SA_VOLTAGE = 0x17;
 
   public Lock3Bean(int sa, int... saArr) {
@@ -156,6 +162,8 @@ public class Lock3Bean {
         default:
         case SA_STATUS:
         case SA_BAG_ID:
+        case SA_PIECE_TID:
+        case SA_LOCK_TID:
           return new InfoUnit(sa, 12);
       }
     }
