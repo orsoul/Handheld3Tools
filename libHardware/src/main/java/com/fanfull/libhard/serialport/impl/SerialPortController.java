@@ -178,6 +178,8 @@ public class SerialPortController implements ISerialPort {
 
   @Override
   public void close() {
+    LogUtils.tag(TAG).d("close");
+    listenerSet.clear();
     stopReadThread();
     sControllerMap.remove(getKey());
     serialPort.close();
@@ -218,12 +220,14 @@ public class SerialPortController implements ISerialPort {
       int len;
       byte[] buff = new byte[1024 * 16];
       InputStream in = serialPort.getInputStream();
+      stopped = false;
       while (!isStop()) {
         try {
           len = in.read(buff);
           LogUtils.tag(TAG)
               .i("rec:%s, %s", BytesUtil.bytes2HexString(buff, 0, len), getSerialPortInfo());
           if (len < 1) {
+            LogUtils.tag(TAG).w("rec:%s", len);
             break;
           }
           LogUtils.tag(TAG).d("onceListener:%s", onceListener);

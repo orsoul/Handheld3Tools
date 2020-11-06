@@ -23,7 +23,9 @@ public class FingerBean {
   private int fingerNum;
   /** 指纹状态，0表示未上传到服务器，1表示已上传到服务器，2表示与服务器指纹不一致. */
   private int fingerStatus;
-  /** 指纹名，业务暂未需要. */
+  /** 指纹名. */
+  private String fingerName;
+  /** 用户名. */
   private String userName;
 
   public FingerBean(int fingerIndex, byte[] fingerFeature, String fingerId, int fingerVersion) {
@@ -78,6 +80,7 @@ public class FingerBean {
         ", fingerVersion=" + fingerVersion +
         ", fingerNum='" + fingerNum + '\'' +
         ", fingerStatus='" + fingerStatus + '\'' +
+        ", fingerName='" + fingerName + '\'' +
         ", userName='" + userName + '\'' +
         '}';
   }
@@ -128,6 +131,14 @@ public class FingerBean {
 
   public void setFingerNum(int fingerNum) {
     this.fingerNum = fingerNum;
+  }
+
+  public String getFingerName() {
+    return fingerName;
+  }
+
+  public void setFingerName(String fingerName) {
+    this.fingerName = fingerName;
   }
 
   public String getUserName() {

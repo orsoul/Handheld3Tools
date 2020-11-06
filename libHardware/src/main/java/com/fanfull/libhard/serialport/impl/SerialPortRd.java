@@ -32,6 +32,7 @@ public class SerialPortRd extends AbsSerialPort {
   public void close() {
     try {
       serialPort.getInputStream().close();
+      serialPort.getOutputStream().close();
     } catch (IOException e) {
       e.printStackTrace();
     }

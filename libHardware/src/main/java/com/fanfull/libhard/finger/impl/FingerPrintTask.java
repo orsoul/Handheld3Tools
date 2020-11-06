@@ -157,6 +157,7 @@ public class FingerPrintTask implements Runnable {
   protected void onSuccess(boolean isAddMode, int fingerIndex, int score, byte[] fingerFeature) {
     if (isAddMode) {
       FingerBean fingerBean = new FingerBean(fingerIndex, fingerFeature);
+      fingerBean.setFingerName(String.format("未命名%s", fingerIndex));
       boolean isSaveInDB = false;
       if (fingerPrintSQLiteHelper != null) {
         isSaveInDB = 0 < fingerPrintSQLiteHelper.saveOrUpdate(fingerBean);

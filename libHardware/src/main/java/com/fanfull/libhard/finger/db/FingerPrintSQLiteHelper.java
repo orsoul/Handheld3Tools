@@ -27,13 +27,15 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
   public static final String INDEX_FINGER_NUM = "fingerNum";
   /** 指纹状态，0表示未上传到服务器，1表示已上传到服务器，2表示与服务器指纹不一致. */
   public static final String INDEX_FINGER_STATUS = "fingerStatus";
-  /** 指纹名，业务暂未需要. */
+  /** 指纹名. */
+  public static final String INDEX_FINGER_NAME = "fingerName";
+  /** 用户名. */
   public static final String INDEX_USER_NAME = "userName";
   /** 指纹特征码，1024个十六进制字符. */
   public static final String INDEX_FINGER_FEATURE = "fingerFeature";
   public static final String INDEX_TIME = "timeStamp";
 
-  public static final int DB_VERSION = 4;
+  public static final int DB_VERSION = 5;
 
   // 创建表的 sql 语句
   private final String SQL_CREATE = "create table " + TABLE_NAME + "("
@@ -44,6 +46,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       + INDEX_USER_ID + " varchar(16),"
       + INDEX_FINGER_NUM + " integer,"
       + INDEX_FINGER_STATUS + " integer,"
+      + INDEX_FINGER_NAME + " varchar(16),"
       + INDEX_USER_NAME + " varchar(16),"
       + INDEX_TIME + " TimeStamp NOT NULL DEFAULT (datetime('now','localtime')),"
       + INDEX_FINGER_FEATURE + " varchar not null"
@@ -119,6 +122,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
     contentValues.put(INDEX_FINGER_VERSION, fingerVersion);
     contentValues.put(INDEX_FINGER_NUM, fingerNum);
     contentValues.put(INDEX_FINGER_STATUS, fingerBean.getFingerStatus());
+    contentValues.put(INDEX_FINGER_NAME, fingerBean.getFingerName());
     contentValues.put(INDEX_USER_NAME, fingerBean.getUserName());
 
     long res;
@@ -180,27 +184,21 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       int fingerVersionIndex = cursor.getColumnIndex(INDEX_FINGER_VERSION);
       int numIndex = cursor.getColumnIndex(INDEX_FINGER_NUM);
       int statusIndex = cursor.getColumnIndex(INDEX_FINGER_STATUS);
+      int fingerNameIndex = cursor.getColumnIndex(INDEX_FINGER_NAME);
       int userNameIndex = cursor.getColumnIndex(INDEX_USER_NAME);
 
-      if (fingerIndexIndex > -1
-          && fingerIdIndex > -1
-          && featureIndex > -1
-          && fingerVersionIndex > -1
-          && cardIdIndex > -1
-          && userNameIndex > -1) {
-
-        FingerBean fingerBean = new FingerBean(
-            cursor.getInt(fingerIndexIndex),
-            cursor.getString(featureIndex),
-            cursor.getString(fingerIdIndex),
-            cursor.getInt(fingerVersionIndex)
-        );
-        fingerBean.setUserId(cursor.getString(cardIdIndex));
-        fingerBean.setFingerNum(cursor.getInt(numIndex));
-        fingerBean.setFingerStatus(cursor.getInt(statusIndex));
-        fingerBean.setUserName(cursor.getString(userNameIndex));
-        list.add(fingerBean);
-      }
+      FingerBean fingerBean = new FingerBean(
+          cursor.getInt(fingerIndexIndex),
+          cursor.getString(featureIndex),
+          cursor.getString(fingerIdIndex),
+          cursor.getInt(fingerVersionIndex)
+      );
+      fingerBean.setUserId(cursor.getString(cardIdIndex));
+      fingerBean.setFingerNum(cursor.getInt(numIndex));
+      fingerBean.setFingerStatus(cursor.getInt(statusIndex));
+      fingerBean.setFingerName(cursor.getString(fingerNameIndex));
+      fingerBean.setUserName(cursor.getString(userNameIndex));
+      list.add(fingerBean);
     }
     cursor.close();
     return list;
@@ -228,6 +226,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       int fingerVersionIndex = cursor.getColumnIndex(INDEX_FINGER_VERSION);
       int numIndex = cursor.getColumnIndex(INDEX_FINGER_NUM);
       int statusIndex = cursor.getColumnIndex(INDEX_FINGER_STATUS);
+      int fingerNameIndex = cursor.getColumnIndex(INDEX_FINGER_NAME);
       int userNameIndex = cursor.getColumnIndex(INDEX_USER_NAME);
 
       FingerBean fingerBean = new FingerBean(
@@ -239,6 +238,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       fingerBean.setUserId(cursor.getString(cardIdIndex));
       fingerBean.setFingerNum(cursor.getInt(numIndex));
       fingerBean.setFingerStatus(cursor.getInt(statusIndex));
+      fingerBean.setFingerName(cursor.getString(fingerNameIndex));
       fingerBean.setUserName(cursor.getString(userNameIndex));
       list.add(fingerBean);
     }
@@ -270,26 +270,20 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
       int fingerVersionIndex = cursor.getColumnIndex(INDEX_FINGER_VERSION);
       int numIndex = cursor.getColumnIndex(INDEX_FINGER_NUM);
       int statusIndex = cursor.getColumnIndex(INDEX_FINGER_STATUS);
+      int fingerNameIndex = cursor.getColumnIndex(INDEX_FINGER_NAME);
       int userNameIndex = cursor.getColumnIndex(INDEX_USER_NAME);
 
-      if (fingerIndexIndex > -1
-          && fingerIdIndex > -1
-          && featureIndex > -1
-          && fingerVersionIndex > -1
-          && userIdIndex > -1
-          && userNameIndex > -1) {
-
-        reVal = new FingerBean(
-            cursor.getInt(fingerIndexIndex),
-            cursor.getString(featureIndex),
-            cursor.getString(fingerIdIndex),
-            cursor.getInt(fingerVersionIndex)
-        );
-        reVal.setUserId(cursor.getString(userIdIndex));
-        reVal.setFingerNum(cursor.getInt(numIndex));
-        reVal.setFingerStatus(cursor.getInt(statusIndex));
-        reVal.setUserName(cursor.getString(userNameIndex));
-      }
+      reVal = new FingerBean(
+          cursor.getInt(fingerIndexIndex),
+          cursor.getString(featureIndex),
+          cursor.getString(fingerIdIndex),
+          cursor.getInt(fingerVersionIndex)
+      );
+      reVal.setUserId(cursor.getString(userIdIndex));
+      reVal.setFingerNum(cursor.getInt(numIndex));
+      reVal.setFingerStatus(cursor.getInt(statusIndex));
+      reVal.setUserName(cursor.getString(userNameIndex));
+      reVal.setFingerName(cursor.getString(fingerNameIndex));
     }
     cursor.close();
     LogUtils.d("queryFinger by index：%s, %s", fingerIndex, reVal);

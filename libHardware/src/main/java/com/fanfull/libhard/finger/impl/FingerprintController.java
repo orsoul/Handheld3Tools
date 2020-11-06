@@ -127,24 +127,49 @@ public class FingerprintController implements IFingerOperation {
     return operation.deleteFinger(fingerIndex);
   }
 
-  public boolean delete(FingerBean fingerBean) {
+  /**
+   * 删除指纹.
+   *
+   * @param deleteDb true 删除数据库中指纹
+   */
+  public boolean delete(FingerBean fingerBean, boolean deleteDb) {
     if (fingerBean == null) {
       return false;
     }
-    return deleteFinger(fingerBean.getFingerIndex());
+    boolean deleteInLib = deleteFinger(fingerBean.getFingerIndex());
+    if (deleteDb && deleteInLib) {
+      return 0 < fingerBean.delete();
+    }
+
+    return deleteInLib;
   }
 
-  public int delete(List<FingerBean> fingerBeans) {
+  /** 删除指纹. 不删除数据库中指纹 */
+  public boolean delete(FingerBean fingerBean) {
+    return delete(fingerBean, false);
+  }
+
+  /**
+   * 删除指纹.
+   *
+   * @param deleteDb true 删除数据库中指纹
+   */
+  public int delete(List<FingerBean> fingerBeans, boolean deleteDb) {
     if (fingerBeans == null) {
       return 0;
     }
     int count = 0;
     for (FingerBean fingerBean : fingerBeans) {
-      if (delete(fingerBean)) {
+      if (delete(fingerBean, deleteDb)) {
         count++;
       }
     }
     return count;
+  }
+
+  /** 删除指纹. 不删除数据库中指纹 */
+  public int delete(List<FingerBean> fingerBeans) {
+    return delete(fingerBeans, false);
   }
 
   @Override public boolean clearFinger() {
