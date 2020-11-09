@@ -30,9 +30,10 @@
     android:theme="@style/AppTheme"
     tools:ignore="GoogleAppIndexingWarning"
     tools:replace="android:allowBackup">
+    <activity android:name=".ui.BagCheckActivity"></activity>
     <activity
       android:name=".ui.AboutActivity"
-      android:launchMode="singleTask"></activity>
+      android:launchMode="singleTask" />
     <activity
       android:name=".ui.SocketActivity"
       android:label="@string/main_socket" />
@@ -54,7 +55,9 @@
     <activity
       android:name=".ui.BarcodeActivity"
       android:label="@string/main_barcode" />
-    <activity android:name=".MainActivity">
+    <activity
+      android:name=".MainActivity"
+      android:launchMode="singleTask">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 

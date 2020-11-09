@@ -4,6 +4,7 @@
   <string name="main_uhf">超高频</string>
   <string name="main_nfc">高频</string>
   <string name="main_init_bag3">锁3初始化</string>
+  <string name="main_check_bag">锁3检测</string>
   <string name="main_socket">TCP测试</string>
   <string name="main_barcode">二维码、条码</string>
   <string name="main_finger">指纹</string>

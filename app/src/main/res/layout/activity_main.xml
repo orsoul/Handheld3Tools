@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".MainActivity">
 
-  <AutoCompleteTextView
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <AutoCompleteTextView
       android:id="@+id/auto"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -24,10 +27,9 @@
       android:visibility="gone"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+      app:layout_constraintTop_toTopOf="parent" />
 
-  <Button
+    <Button
       android:id="@+id/btn_uhf"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -37,10 +39,9 @@
       android:text="@string/main_uhf"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+      app:layout_constraintTop_toTopOf="parent" />
 
-  <Button
+    <Button
       android:id="@+id/btn_nfc"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -48,10 +49,9 @@
       android:text="@string/main_nfc"
       app:layout_constraintEnd_toEndOf="@id/btn_uhf"
       app:layout_constraintStart_toStartOf="@id/btn_uhf"
-      app:layout_constraintTop_toBottomOf="@id/btn_uhf"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_uhf" />
 
-  <Button
+    <Button
       android:id="@+id/btn_init_bag3"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -59,10 +59,9 @@
       android:text="@string/main_init_bag3"
       app:layout_constraintEnd_toEndOf="@id/btn_nfc"
       app:layout_constraintStart_toStartOf="@id/btn_nfc"
-      app:layout_constraintTop_toBottomOf="@id/btn_nfc"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_nfc" />
 
-  <Button
+    <Button
       android:id="@+id/btn_main_socket"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -70,10 +69,9 @@
       android:text="@string/main_socket"
       app:layout_constraintEnd_toEndOf="@id/btn_init_bag3"
       app:layout_constraintStart_toStartOf="@id/btn_init_bag3"
-      app:layout_constraintTop_toBottomOf="@id/btn_init_bag3"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_init_bag3" />
 
-  <Button
+    <Button
       android:id="@+id/btn_barcode"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -81,10 +79,9 @@
       android:text="@string/main_barcode"
       app:layout_constraintEnd_toEndOf="@id/btn_main_socket"
       app:layout_constraintStart_toStartOf="@id/btn_main_socket"
-      app:layout_constraintTop_toBottomOf="@id/btn_main_socket"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_main_socket" />
 
-  <Button
+    <Button
       android:id="@+id/btn_finger"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -92,10 +89,9 @@
       android:text="@string/main_finger"
       app:layout_constraintEnd_toEndOf="@id/btn_barcode"
       app:layout_constraintStart_toStartOf="@id/btn_barcode"
-      app:layout_constraintTop_toBottomOf="@id/btn_barcode"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_barcode" />
 
-  <Button
+    <Button
       android:id="@+id/btn_old_bag"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
@@ -103,7 +99,16 @@
       android:text="@string/main_old_bag"
       app:layout_constraintEnd_toEndOf="@id/btn_finger"
       app:layout_constraintStart_toStartOf="@id/btn_finger"
-      app:layout_constraintTop_toBottomOf="@id/btn_finger"
-      />
+      app:layout_constraintTop_toBottomOf="@id/btn_finger" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+      android:id="@+id/btn_check_bag"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_check_bag"
+      app:layout_constraintEnd_toEndOf="@id/btn_old_bag"
+      app:layout_constraintStart_toStartOf="@id/btn_old_bag"
+      app:layout_constraintTop_toBottomOf="@id/btn_old_bag" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

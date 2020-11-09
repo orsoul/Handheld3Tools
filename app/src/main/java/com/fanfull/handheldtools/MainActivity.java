@@ -8,6 +8,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.base.BaseActivity;
 import com.fanfull.handheldtools.base.BaseApplication;
 import com.fanfull.handheldtools.ui.AboutActivity;
+import com.fanfull.handheldtools.ui.BagCheckActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
@@ -30,6 +31,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_uhf).setOnClickListener(this);
     findViewById(R.id.btn_nfc).setOnClickListener(this);
     findViewById(R.id.btn_init_bag3).setOnClickListener(this);
+    findViewById(R.id.btn_check_bag).setOnClickListener(this);
     findViewById(R.id.btn_main_socket).setOnClickListener(this);
     findViewById(R.id.btn_barcode).setOnClickListener(this);
     findViewById(R.id.btn_finger).setOnClickListener(this);
@@ -126,6 +128,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_old_bag:
         startActivity(new Intent(this, OldBagActivity.class));
+        break;
+      case R.id.btn_check_bag:
+        startActivity(new Intent(this, BagCheckActivity.class));
         break;
     }
   }
