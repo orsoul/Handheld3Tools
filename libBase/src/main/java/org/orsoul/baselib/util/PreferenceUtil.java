@@ -6,19 +6,7 @@ import com.blankj.utilcode.util.SPUtils;
 import java.util.Map;
 import java.util.Set;
 
-public final class ConfigUtil {
-
-  public static class Config {
-    public static final String FINGER_LIB_VERSION = "FINGER_LIB_VERSION";
-
-    public static void setFingerLibVersion(String version) {
-      ConfigUtil.put(FINGER_LIB_VERSION, version);
-    }
-
-    public static String getFingerLibVersion() {
-      return ConfigUtil.getString(FINGER_LIB_VERSION, "0");
-    }
-  }
+public final class PreferenceUtil {
 
   public static final String CONFIG_FILE_NAME = "ConfigUtil";
   private static SPUtils sDefaultSPUtils;
@@ -32,7 +20,11 @@ public final class ConfigUtil {
     sDefaultSPUtils = spUtils;
   }
 
-  public static SPUtils getDefaultSPUtils() {
+  public static void setPreferenceFileName(final String spFileName) {
+    setDefaultSPUtils(SPUtils.getInstance(spFileName));
+  }
+
+  private static SPUtils getDefaultSPUtils() {
     return sDefaultSPUtils != null ? sDefaultSPUtils : SPUtils.getInstance(CONFIG_FILE_NAME);
   }
 

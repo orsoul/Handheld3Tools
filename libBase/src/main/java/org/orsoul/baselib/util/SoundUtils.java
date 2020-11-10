@@ -25,7 +25,7 @@ public class SoundUtils {
   private static boolean isSilence;
 
   /** 连续播放声音的 时间隔 */
-  private static final int PLAY_INTERVAL = 300;
+  private static final int PLAY_INTERVAL = 400;
 
   private static final int SOUND_TEN = 10; // 声音 '十'
   private static final int SOUND_HUNDRED = 11; // 声音 '百'

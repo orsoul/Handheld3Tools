@@ -149,26 +149,49 @@ public class ThreadUtil {
     return Thread.currentThread().getName();
   }
 
+  /**
+   * 携带停止标志的 任务，可查询执行任务的线程是否正在运行.
+   */
   public static abstract class ThreadRunnable implements Runnable {
+    /** 线程运行状态. */
     private boolean isRunning;
+    /** 线程停止标志. */
+    protected boolean stopped;
 
+    /**
+     * 使用线程池 执行 当前任务.
+     *
+     * @return 当前任务正在运行返回false；
+     */
     public synchronized boolean startThread() {
-      if (isRunning) {
+      if (isRunning()) {
         return false;
       }
-      execute(this);
+      execute(() -> {
+        setRunning(true);
+        stopped = false;
+        ThreadRunnable.this.run();
+        setRunning(false);
+      });
       return true;
     }
 
+    /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
     public synchronized void stopThread() {
-      isRunning = false;
+      stopped = true;
     }
 
+    /** 获取 当前线程停止标志. */
+    public synchronized boolean isStopped() {
+      return stopped;
+    }
+
+    /** 当前线程正在运行 返回true. */
     public synchronized boolean isRunning() {
       return isRunning;
     }
 
-    public synchronized void setRunning(boolean running) {
+    private synchronized void setRunning(boolean running) {
       isRunning = running;
     }
   }
