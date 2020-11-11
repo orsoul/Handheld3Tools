@@ -1,6 +1,5 @@
 package com.fanfull.libhard.finger.impl;
 
-import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import org.orsoul.baselib.util.ClockUtil;
@@ -9,13 +8,15 @@ import org.orsoul.baselib.util.ThreadUtil;
 /**
  * 添加、搜索指纹 任务，使用前应先初始化 FingerprintController 和 FingerPrintSQLiteHelper.
  */
-public class FingerPrintTask implements Runnable {
+public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
   private FingerprintController fingerprintController;
   private FingerPrintSQLiteHelper fingerPrintSQLiteHelper;
+  private FingerSearchListener fingerSearchListener;
+
   /** 任务持续时间. */
   private long runTime = 5000L;
-  /** 是否持续搜索直至 搜索成功或时间结束. */
-  private boolean isContinue = true;
+  /** 添加或搜索成功时 是否终止线程，默认true. */
+  private boolean successStop = true;
   /**
    * 工作模式：false为匹配指纹，true为添加指纹.<br/>
    * 工作模式设为添加指纹时 默认会获取特征码<br/>
@@ -29,12 +30,12 @@ public class FingerPrintTask implements Runnable {
    */
   private boolean isGetFeature;
 
-  private boolean stopped = true;
   private byte[] fingerFeature;
 
-  public FingerPrintTask() {
+  public FingerPrintTask(FingerSearchListener listener) {
     fingerPrintSQLiteHelper = FingerPrintSQLiteHelper.getInstance();
     fingerprintController = FingerprintController.getInstance();
+    fingerSearchListener = listener;
   }
 
   public FingerPrintTask(FingerprintController fingerprintController,
@@ -63,44 +64,38 @@ public class FingerPrintTask implements Runnable {
     }
   }
 
-  public boolean isContinue() {
-    return isContinue;
+  public boolean isSuccessStop() {
+    return successStop;
   }
 
-  public void setContinue(boolean aContinue) {
-    isContinue = aContinue;
+  public void setSuccessStop(boolean successStop) {
+    this.successStop = successStop;
   }
 
   public void setRunTime(long runTime) {
     this.runTime = runTime;
   }
 
-  public synchronized void stopRun() {
-    this.stopped = true;
+  public FingerSearchListener getFingerSearchListener() {
+    return fingerSearchListener;
   }
 
-  public synchronized boolean isRunning() {
-    return !stopped;
-  }
-
-  public synchronized boolean startRun() {
-    if (isRunning()) {
-      return false;
-    }
-    ThreadUtil.execute(this);
-    return true;
+  public void setFingerSearchListener(
+      FingerSearchListener fingerSearchListener) {
+    this.fingerSearchListener = fingerSearchListener;
   }
 
   @Override
   public void run() {
-    LogUtils.i("run start");
+    //LogUtils.i("run start");
 
-    stopped = false;
     int[] fingerIdBuff = new int[2];
     ClockUtil.resetRunTime();
     while (!stopped) {
       if (runTime <= ClockUtil.runTime()) {
-        onFailed(isAddMode, FingerPrintCmd.RES_CODE_TIMEOUT);
+        if (fingerSearchListener != null) {
+          fingerSearchListener.onFailed(isAddMode, FingerPrintCmd.RES_CODE_TIMEOUT);
+        }
         break;
       }
 
@@ -119,31 +114,31 @@ public class FingerPrintTask implements Runnable {
         }
       }
 
-      if (res == FingerPrintCmd.RES_CODE_NO_FINGER) {
-        onNoFinger();
-      } else if (res == FingerPrintCmd.RES_CODE_NO_MATCH) {
-        onSearchNoMatch();
-        break;
-      } else if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
+      if (res == FingerPrintCmd.RES_CODE_NO_FINGER) { // 感应器无指纹
+        if (fingerSearchListener != null) {
+          fingerSearchListener.onNoFinger();
+        }
+      } else if (res == FingerPrintCmd.RES_CODE_NO_MATCH) { // 无匹配的指纹
+        if (fingerSearchListener != null) {
+          fingerSearchListener.onSearchNoMatch();
+        }
+      } else if (res == FingerPrintCmd.RES_CODE_SUCCESS) { // 匹配到指纹、添加指纹成功
         if (isGetFeature) {
           onSuccess(isAddMode, fingerIdBuff[0], fingerIdBuff[1], fingerFeature);
         } else {
           onSuccess(isAddMode, fingerIdBuff[0], fingerIdBuff[1], null);
         }
-        break;
-      } else {
-        onFailed(isAddMode, res);
-        if (!isContinue) {
+        if (successStop) {
           break;
         }
+      } else {
+        if (fingerSearchListener != null) {
+          fingerSearchListener.onFailed(isAddMode, res);
+        }
+        break;
       }
     } // end while
-    LogUtils.i("run end");
-    stopped = true;
-  }
-
-  /** 感应器无指纹时 回调. */
-  protected void onNoFinger() {
+    //LogUtils.i("run end");
   }
 
   /**
@@ -162,7 +157,9 @@ public class FingerPrintTask implements Runnable {
       if (fingerPrintSQLiteHelper != null) {
         isSaveInDB = 0 < fingerPrintSQLiteHelper.saveOrUpdate(fingerBean);
       }
-      onAddSuccess(fingerBean, isSaveInDB);
+      if (fingerSearchListener != null) {
+        fingerSearchListener.onAddSuccess(fingerBean, isSaveInDB);
+      }
     } else {
       FingerBean fingerBean = null;
       if (fingerPrintSQLiteHelper != null) {
@@ -173,30 +170,38 @@ public class FingerPrintTask implements Runnable {
         fingerBean = new FingerBean(fingerIndex, fingerFeature);
         isSaveInDB = false;
       }
-      onSearchSuccess(fingerBean, isSaveInDB);
+      if (fingerSearchListener != null) {
+        fingerSearchListener.onSearchSuccess(fingerBean, isSaveInDB);
+      }
     }
   }
 
-  protected void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
-  }
+  public interface FingerSearchListener {
+    /** 感应器无指纹时 回调. */
+    default void onNoFinger() {
+    }
 
-  protected void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
-  }
+    default void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+    }
 
-  /** 搜索指纹时，指纹库中无匹配指纹时进行回调. */
-  protected void onSearchNoMatch() {
-  }
+    default void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+    }
 
-  /**
-   * 添加或匹配指纹失败时 回调.
-   *
-   * @param isAddMode 是否为 添加加指纹
-   * @param errorCode 错误码<br/>
-   * 确认码=-1 非指纹指令返回<br/>
-   * 确认码=-2 表示参数错误<br/>
-   * 确认码=-3：搜索超时<br/>
-   * 确认码=01H 表示收包有错<br/>
-   */
-  protected void onFailed(boolean isAddMode, int errorCode) {
+    /** 搜索指纹时，指纹库中无匹配指纹时进行回调. */
+    default void onSearchNoMatch() {
+    }
+
+    /**
+     * 添加或匹配指纹失败时 回调.
+     *
+     * @param isAddMode 是否为 添加加指纹
+     * @param errorCode 错误码<br/>
+     * 确认码=-1 非指纹指令返回<br/>
+     * 确认码=-2 表示参数错误<br/>
+     * 确认码=-3：搜索超时<br/>
+     * 确认码=01H 表示收包有错<br/>
+     */
+    default void onFailed(boolean isAddMode, int errorCode) {
+    }
   }
 }

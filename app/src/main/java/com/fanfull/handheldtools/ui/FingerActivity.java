@@ -71,7 +71,7 @@ public class FingerActivity extends InitModuleActivity {
   @Override public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_finger_search:
-        if (fingerPrintTask.startRun()) {
+        if (fingerPrintTask.startThread()) {
           showLoadingView("识别指纹...");
           btnSearch.setEnabled(false);
           btnNum.setEnabled(false);
@@ -119,7 +119,7 @@ public class FingerActivity extends InitModuleActivity {
       public void onReceiveData(byte[] data) {
         byte[] parseData = UhfCmd.parseData(data);
         if (parseData == null) {
-          LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
+          //LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
           return;
         }
         int cmdType = data[4] & 0xFF;
@@ -202,24 +202,29 @@ public class FingerActivity extends InitModuleActivity {
     fingerPrintDbHelper = FingerPrintSQLiteHelper.getInstance();
 
     /* 指纹任务 */
-    fingerPrintTask = new FingerPrintTask() {
+    fingerPrintTask = new FingerPrintTask(new FingerPrintTask.FingerSearchListener() {
       int count;
 
-      @Override protected void onNoFinger() {
+      @Override public void onNoFinger() {
         runOnUi(() -> {
           count++;
           showLoadingView("感应器无指纹 " + count);
         });
       }
 
-      @Override protected void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+      @Override public void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+        count = 0;
         runOnUi(() -> {
           ViewUtil.appendShow(String.format("添加成功，FingerIndex：%s, 保存在数据库？：%s",
               fingerBean.getFingerIndex(), isSaveInDB), tvShow);
+          btnSearch.setEnabled(true);
+          btnNum.setEnabled(true);
+          dismissLoadingView();
         });
       }
 
-      @Override protected void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+      @Override public void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
+        count = 0;
         runOnUi(() -> {
           ViewUtil.appendShow(String.format("搜索成功，FingerIndex：%s, 保存在数据库？：%s",
               fingerBean.getFingerIndex(), isSaveInDB), tvShow);
@@ -227,11 +232,15 @@ public class FingerActivity extends InitModuleActivity {
             ViewUtil.appendShow(String.format("FingerId：%s, FingerVersion：%s",
                 fingerBean.getFingerId(), fingerBean.getFingerVersion()), tvShow);
           }
+          btnSearch.setEnabled(true);
+          btnNum.setEnabled(true);
+          dismissLoadingView();
         });
       }
 
-      @Override protected void onSearchNoMatch() {
+      @Override public void onSearchNoMatch() {
         count = 0;
+        fingerPrintTask.stopThread();
         runOnUi(() -> {
           dismissLoadingView();
           ViewUtil.appendShow("未匹配到指纹", tvShow);
@@ -240,18 +249,7 @@ public class FingerActivity extends InitModuleActivity {
         });
       }
 
-      @Override protected void onSuccess(
-          boolean isAddMode, int fingerIndex, int score, byte[] fingerFeature) {
-        super.onSuccess(isAddMode, fingerIndex, score, fingerFeature);
-        count = 0;
-        runOnUi(() -> {
-          dismissLoadingView();
-          btnSearch.setEnabled(true);
-          btnNum.setEnabled(true);
-        });
-      }
-
-      @Override protected void onFailed(boolean isAddMode, int errorCode) {
+      @Override public void onFailed(boolean isAddMode, int errorCode) {
         if (errorCode != FingerPrintCmd.RES_CODE_TIMEOUT) {
           LogUtils.d("errorCode:%s", errorCode);
           return;
@@ -268,7 +266,7 @@ public class FingerActivity extends InitModuleActivity {
           btnNum.setEnabled(true);
         });
       }
-    };
+    });
   }
 
   @Override
@@ -357,12 +355,16 @@ public class FingerActivity extends InitModuleActivity {
         List<FingerBean> fingerBeans = fingerPrintDbHelper.queryAllFinger();
         LogUtils.d("fingerBean size:%s", fingerBeans.size());
         LogUtils.v("fingerBeans:%s", fingerBeans);
+        if (fingerBeans.isEmpty()) {
+          return true;
+        }
         showLoadingView();
         ThreadUtil.execute(() -> {
           int res1 = fingerprintController.loadFinger(fingerBeans);
           runOnUi(() -> {
             ViewUtil.appendShow(String.format("从数据库加载数量：%s / %s", res1, fingerBeans.size()),
                 tvShow);
+            dismissLoadingView();
           });
         });
         break;

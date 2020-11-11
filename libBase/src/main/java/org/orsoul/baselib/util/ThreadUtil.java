@@ -1,5 +1,6 @@
 package org.orsoul.baselib.util;
 
+import com.apkfuns.logutils.LogUtils;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -168,10 +169,12 @@ public class ThreadUtil {
         return false;
       }
       execute(() -> {
+        LogUtils.i("%s run", ThreadRunnable.this.getClass().getSimpleName());
         setRunning(true);
         stopped = false;
         ThreadRunnable.this.run();
         setRunning(false);
+        LogUtils.i("%s end", ThreadRunnable.this.getClass().getSimpleName());
       });
       return true;
     }
