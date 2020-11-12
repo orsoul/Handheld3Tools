@@ -32,9 +32,13 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
 
   private byte[] fingerFeature;
 
-  public FingerPrintTask(FingerSearchListener listener) {
+  public FingerPrintTask() {
     fingerPrintSQLiteHelper = FingerPrintSQLiteHelper.getInstance();
     fingerprintController = FingerprintController.getInstance();
+  }
+
+  public FingerPrintTask(FingerSearchListener listener) {
+    super();
     fingerSearchListener = listener;
   }
 
