@@ -42,7 +42,7 @@ public class BagCheckActivity extends InitModuleActivity {
   private UhfController uhfController;
   private RfidController rfidController;
 
-  private ReadLockTask readLockTask;
+  private ReadNfcEpcTask readLockTask;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -141,11 +141,12 @@ public class BagCheckActivity extends InitModuleActivity {
           }
           //tvShow.setText("初始化成功");
           ViewUtil.appendShow("高频模块初始成功", tvShow);
-          readLockTask = new ReadLockTask();
+          readLockTask = new ReadNfcEpcTask();
           //initBagTask = new InitBag3Activity.MyInitBagTask();
           //initSpinner();
           btnOk.setEnabled(true);
           switchCheck.setEnabled(true);
+          switchCheck.setChecked(false);
         });
       }
 
@@ -187,7 +188,7 @@ public class BagCheckActivity extends InitModuleActivity {
         LogUtils.getLog2FileConfig().flushAsync();
         ViewUtil.appendShow(info, tvShow);
         break;
-      case R.id.tv_init_bag_show:
+      case R.id.tv_check_bag_show:
         if (3 == ClockUtil.fastClickTimes()) {
           tvShow.setText("");
         }
@@ -218,8 +219,8 @@ public class BagCheckActivity extends InitModuleActivity {
     btnShow.setOnClickListener(this);
 
     switchCheck = findViewById(R.id.switch_check_bag_nfc_mode);
-    //switchCheck.setOnCheckedChangeListener(
-    //(buttonView, isChecked) -> initBagTask.setCheckData(isChecked));
+    switchCheck.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> readLockTask.setReadEpc(isChecked));
 
     btnOk.setEnabled(false);
     switchCheck.setEnabled(false);
@@ -277,15 +278,20 @@ public class BagCheckActivity extends InitModuleActivity {
     super.onDestroy();
   }
 
-  private class ReadLockTask extends ThreadUtil.ThreadRunnable {
+  private class ReadNfcEpcTask extends ThreadUtil.ThreadRunnable {
 
     public List<String> scanList;
     public List<String> otherNoHaveList;
     public List<String> otherList;
     byte[] bagIdBuff = new byte[12];
     byte[] epcBuff = new byte[12];
+    boolean isReadEpc = true;
 
-    public ReadLockTask() {
+    public void setReadEpc(boolean isChecked) {
+      isReadEpc = isChecked;
+    }
+
+    public ReadNfcEpcTask() {
       scanList = new ArrayList<>(300);
       otherNoHaveList = new ArrayList<>();
       otherList = new ArrayList<>(300);
@@ -299,7 +305,10 @@ public class BagCheckActivity extends InitModuleActivity {
 
     @Override public void run() {
       boolean readNfc = rfidController.readNfc(Lock3Bean.SA_BAG_ID, bagIdBuff, true);
-      boolean readEpc = uhfController.readEpc(epcBuff);
+      boolean readEpc = false;
+      if (isReadEpc) {
+        readEpc = uhfController.readEpc(epcBuff);
+      }
 
       String bagIdNfc = null;
       String bagIdEpc = null;
@@ -318,26 +327,25 @@ public class BagCheckActivity extends InitModuleActivity {
       if (bagIdNfc != null && bagIdEpc != null) {
         if (!scanList.contains(bagIdNfc)) {
           scanList.add(bagIdNfc);
-          if (!otherList.contains(bagIdNfc)) {
-            otherNoHaveList.add(bagIdNfc);
-            otherNoHave = true;
-          }
         } else {
-          scanList.indexOf(bagIdNfc);
+          //scanList.indexOf(bagIdNfc);
         }
-        //int size = scanList.size();
+        if (!otherList.contains(bagIdNfc)) {
+          otherNoHaveList.add(bagIdNfc);
+          otherNoHave = true;
+        }
         int size = scanList.indexOf(bagIdNfc) + 1;
         SoundUtils.playNumber(size);
         info = String.format("%s,Nfc:%s\n%s,Epc:%s", size, bagIdNfc, size, bagIdEpc);
       } else if (bagIdNfc != null) {
         if (!scanList.contains(bagIdNfc)) {
           scanList.add(bagIdNfc);
-          if (!otherList.contains(bagIdNfc)) {
-            otherNoHaveList.add(bagIdNfc);
-            otherNoHave = true;
-          }
         } else {
-          scanList.indexOf(bagIdNfc);
+          //scanList.indexOf(bagIdNfc);
+        }
+        if (!otherList.contains(bagIdNfc)) {
+          otherNoHaveList.add(bagIdNfc);
+          otherNoHave = true;
         }
         //int size = scanList.size();
         int size = scanList.indexOf(bagIdNfc) + 1;
@@ -359,6 +367,17 @@ public class BagCheckActivity extends InitModuleActivity {
           ViewUtil.appendShow("发现未在列表中", tvShow);
         }
       });
+    }
+  }
+
+  private class ReadAllLockTask extends com.fanfull.libhard.lock3.ReadLockTask {
+    @Override protected void onSuccess(byte[] uid, byte[] tid, byte[] epc,
+        List<Lock3Bean.InfoUnit> infoList) {
+
+    }
+
+    @Override protected void onFailed(int errorCode) {
+      super.onFailed(errorCode);
     }
   }
 }

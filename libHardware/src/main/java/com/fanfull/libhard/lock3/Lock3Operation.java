@@ -1,5 +1,6 @@
 package com.fanfull.libhard.lock3;
 
+import androidx.annotation.Nullable;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
@@ -62,6 +63,60 @@ public class Lock3Operation {
       reVal = 0;
     }
     return reVal;
+  }
+
+  /**
+   * 寻卡NFC后马上读tid.
+   *
+   * @param uid 7字节，必选
+   * @param tid 12字节，必选
+   * @param epc 12字节，可选，若读取会以tid作为过滤
+   * @return 结果码<br />
+   * 结果码=0 执行成功<br/>
+   * 结果码=-1 参数错误<br/>
+   * 结果码=-2 nfc寻卡失败<br/>
+   * 结果码=-3 读tid失败<br/>
+   * 结果码=-4 读epc失败<br/>
+   */
+  public int readUidAndTid(byte[] uid, byte[] tid, @Nullable byte[] epc) {
+    if (uid == null
+        || tid == null
+        || uid.length != 7) {
+      return -1;
+    }
+
+    /* 1、读Nfc uid */
+    boolean readSuccess = rfidController.findCard(uid);
+    if (!readSuccess) {
+      return -2;
+    }
+    readSuccess = uhfController.fastTid(0x00, tid);
+    if (!readSuccess) {
+      return -3;
+    }
+
+    if (epc != null) {
+      readSuccess = uhfController.read(UhfCmd.MB_EPC, 0x02, epc, UhfCmd.MB_TID, 0x00, tid);
+      if (!readSuccess) {
+        return -4;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * 寻卡NFC后马上读tid.
+   *
+   * @param uid 7字节，必选
+   * @param tid 12字节，必选
+   * @return 结果码<br />
+   * 结果码=0 执行成功<br/>
+   * 结果码=-1 参数错误<br/>
+   * 结果码=-2 nfc寻卡失败<br/>
+   * 结果码=-3 读tid失败<br/>
+   */
+  public int readUidAndTid(byte[] uid, byte[] tid) {
+    return readUidAndTid(uid, tid, null);
   }
 
   /**
