@@ -31,6 +31,7 @@ import org.orsoul.baselib.util.lock.EnumBagType;
 import org.orsoul.baselib.util.lock.EnumCity;
 import org.orsoul.baselib.util.lock.EnumMoneyType;
 import org.orsoul.baselib.util.lock.Lock3Bean;
+import org.orsoul.baselib.util.lock.Lock3InfoUnit;
 
 public class BagCheckActivity extends InitModuleActivity {
 
@@ -43,6 +44,7 @@ public class BagCheckActivity extends InitModuleActivity {
   private RfidController rfidController;
 
   private ReadNfcEpcTask readLockTask;
+  private ReadAllLockTask allLockTask;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -139,9 +141,11 @@ public class BagCheckActivity extends InitModuleActivity {
             ViewUtil.appendShow("高频模块初始失败", tvShow);
             return;
           }
+          // TODO: 2020-11-13 初始化成功
           //tvShow.setText("初始化成功");
           ViewUtil.appendShow("高频模块初始成功", tvShow);
           readLockTask = new ReadNfcEpcTask();
+          allLockTask = new ReadAllLockTask();
           //initBagTask = new InitBag3Activity.MyInitBagTask();
           //initSpinner();
           btnOk.setEnabled(true);
@@ -199,8 +203,12 @@ public class BagCheckActivity extends InitModuleActivity {
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     switch (keyCode) {
-      case KeyEvent.KEYCODE_ENTER:
-        btnOk.performClick();
+      case KeyEvent.KEYCODE_1:
+        if (allLockTask.startThread()) {
+          showLoadingView("正在读取袋锁信息...");
+        } else {
+          ToastUtils.showShort("读袋锁信息线程已在运行");
+        }
         return true;
     }
     return super.onKeyDown(keyCode, event);
@@ -372,12 +380,19 @@ public class BagCheckActivity extends InitModuleActivity {
 
   private class ReadAllLockTask extends com.fanfull.libhard.lock3.ReadLockTask {
     @Override protected void onSuccess(byte[] uid, byte[] tid, byte[] epc,
-        List<Lock3Bean.InfoUnit> infoList) {
-
+        List<Lock3InfoUnit> infoList) {
+      runOnUiThread(() -> {
+        dismissLoadingView();
+        ViewUtil.appendShow("读袋锁信息成功.", tvShow);
+      });
     }
 
     @Override protected void onFailed(int errorCode) {
       super.onFailed(errorCode);
+      runOnUiThread(() -> {
+        dismissLoadingView();
+        ViewUtil.appendShow("读袋锁信息失败.cause:" + errorCode, tvShow);
+      });
     }
   }
 }

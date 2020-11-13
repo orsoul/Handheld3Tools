@@ -49,8 +49,19 @@ public class MainActivity extends BaseActivity {
     //        autoView.setAdapter(adapter);
     //        DeviceInfo.showDeviceInfo();
 
-    //        FingerPrint.getInstance().open();
-    //        FingerPrint.getInstance().startSearchFinger();
+    //new Thread() {
+    //  @Override public void run() {
+    //    try {
+    //      SerialPort serial = SerialPort
+    //          .newBuilder("/dev/ttyMT0", 115200)
+    //          .flags(0)
+    //          .parity('n')
+    //          .build();
+    //    } catch (IOException e) {
+    //      e.printStackTrace();
+    //    }
+    //  }
+    //}.start();
   }
 
   @Override
@@ -92,14 +103,14 @@ public class MainActivity extends BaseActivity {
 
   @Override
   protected void onDestroy() {
-    LogUtils.getLog2FileConfig().flushAsync();
-
     if (UhfController.getInstance().isOpen()) {
       UhfController.getInstance().release();
     }
     if (RfidController.getInstance().isOpen()) {
       RfidController.getInstance().release();
     }
+    LogUtils.getLog2FileConfig().flushAsync();
+
     super.onDestroy();
 
     AppUtil.killProcess();

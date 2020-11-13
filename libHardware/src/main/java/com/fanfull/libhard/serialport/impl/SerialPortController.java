@@ -335,6 +335,8 @@ public class SerialPortController implements ISerialPort {
       }
 
       SerialPortController controller = new SerialPortController(
+          // TODO: 2020-11-10 串口实现类
+          //new SerialPortGo(device, baudrate, dataBits, parity, stopBits, flags));
           new SerialPortRd(device, baudrate, dataBits, parity, stopBits, flags));
       controller.setKey(path);
       sControllerMap.put(path, controller);

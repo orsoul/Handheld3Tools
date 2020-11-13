@@ -52,7 +52,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
     android:checked="true"
-    android:text="NFC模式"
+    android:text="读Epc"
     app:layout_constraintBottom_toTopOf="@id/switch_check_bag_sound"
     app:layout_constraintStart_toStartOf="@id/switch_check_bag_sound" />
 

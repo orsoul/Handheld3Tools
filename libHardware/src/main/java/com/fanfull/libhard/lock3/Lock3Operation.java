@@ -6,6 +6,7 @@ import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import java.util.List;
 import org.orsoul.baselib.util.lock.Lock3Bean;
+import org.orsoul.baselib.util.lock.Lock3InfoUnit;
 
 /**
  * 锁3高频、超高频 操作类，使用前 RfidController 以及 UhfController 需要先初始化.
@@ -69,7 +70,7 @@ public class Lock3Operation {
    * 寻卡NFC后马上读tid.
    *
    * @param uid 7字节，必选
-   * @param tid 12字节，必选
+   * @param tid 12字节，可选
    * @param epc 12字节，可选，若读取会以tid作为过滤
    * @return 结果码<br />
    * 结果码=0 执行成功<br/>
@@ -78,9 +79,8 @@ public class Lock3Operation {
    * 结果码=-3 读tid失败<br/>
    * 结果码=-4 读epc失败<br/>
    */
-  public int readUidAndTid(byte[] uid, byte[] tid, @Nullable byte[] epc) {
+  public int readUidAndTid(byte[] uid, @Nullable byte[] tid, @Nullable byte[] epc) {
     if (uid == null
-        || tid == null
         || uid.length != 7) {
       return -1;
     }
@@ -90,11 +90,16 @@ public class Lock3Operation {
     if (!readSuccess) {
       return -2;
     }
-    readSuccess = uhfController.fastTid(0x00, tid);
-    if (!readSuccess) {
-      return -3;
+
+    /* 2、读Uhf tid */
+    if (tid != null) {
+      readSuccess = uhfController.fastTid(0x00, tid);
+      if (!readSuccess) {
+        return -3;
+      }
     }
 
+    /* 3、读Uhf epc */
     if (epc != null) {
       readSuccess = uhfController.read(UhfCmd.MB_EPC, 0x02, epc, UhfCmd.MB_TID, 0x00, tid);
       if (!readSuccess) {
@@ -170,7 +175,7 @@ public class Lock3Operation {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
+    List<Lock3InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
@@ -183,7 +188,7 @@ public class Lock3Operation {
       lock3Bean.uidBuff = uid;
     }
 
-    for (Lock3Bean.InfoUnit infoUnit : willReadList) {
+    for (Lock3InfoUnit infoUnit : willReadList) {
       byte[] data = new byte[infoUnit.len];
       if (rfidController.readNfc(infoUnit.sa, data, false)) {
         infoUnit.buff = data;
@@ -209,7 +214,7 @@ public class Lock3Operation {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
+    List<Lock3InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
@@ -221,7 +226,7 @@ public class Lock3Operation {
       }
       lock3Bean.uidBuff = uid;
     }
-    for (Lock3Bean.InfoUnit infoUnit : willReadList) {
+    for (Lock3InfoUnit infoUnit : willReadList) {
       if (!rfidController.writeNfc(infoUnit.sa, infoUnit.buff, false)) {
         return false;
       }

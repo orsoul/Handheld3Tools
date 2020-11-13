@@ -173,6 +173,7 @@ public class ThreadUtil {
         setRunning(true);
         stopped = false;
         ThreadRunnable.this.run();
+        onTaskFinish();
         setRunning(false);
         LogUtils.i("%s end", ThreadRunnable.this.getClass().getSimpleName());
       });
@@ -196,6 +197,9 @@ public class ThreadUtil {
 
     private synchronized void setRunning(boolean running) {
       isRunning = running;
+    }
+
+    protected void onTaskFinish() {
     }
   }
 }

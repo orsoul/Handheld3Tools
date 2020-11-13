@@ -20,21 +20,14 @@ public abstract class Lock3Util {
       (byte) 0x39, (byte) 0x48, (byte) 0x76, (byte) 0xea, (byte) 0x2c,
       (byte) 0x36, (byte) 0x47, (byte) 0x79, (byte) 0x29,
   };
-  /**
-   * 启用码 4byte：未启用 00000000
-   */
+  /** 启用码 4byte：未启用 00000000. */
   public static final byte[] ENABLE_CODE_DISABLE = new byte[4];
-  /**
-   * 启用码 4byte：已启用 FFDDFFEE
-   */
+  /** 启用码 4byte：已启用 FFDDFFEE. */
   public static final byte[] ENABLE_CODE_ENABLE = new byte[] {
-      (byte) 0xFF,
-      (byte) 0xDD, (byte) 0xFF, (byte) 0xEE,
+      (byte) 0xFF, (byte) 0xDD, (byte) 0xFF, (byte) 0xEE,
   };
-  /**
-   * 启用码 4byte：已注销 EEEEEEEE注销
-   */
-  public static final byte[] ENABLE_CODE_DISENABLE = new byte[] {
+  /** 启用码 4byte：已注销 EEEEEEEE注销. */
+  public static final byte[] ENABLE_CODE_UN_REG = new byte[] {
       (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE,
   };
   /**
@@ -50,9 +43,9 @@ public abstract class Lock3Util {
    */
   public static final int CELL_2 = 0x3C;
   /** 0xFF 测试模式 */
-  public static final int MODE_DEBUG = 0xFF;
+  public static final byte MODE_DEBUG = (byte) 0xFF;
   /** 0x00 非FF,正常模式 */
-  public static final int MODE_NORMAL = 0x00;
+  public static final byte MODE_NORMAL = 0x00;
 
   /**
    * 加密、解密标志位。1~5：对应标志位F1~F5.
@@ -145,12 +138,12 @@ public abstract class Lock3Util {
     return String.format("%.3f", vf);
   }
 
-  public static boolean checkKeyNum(int keyNum) {
+  private static boolean checkKeyNum(int keyNum) {
     return 0 <= keyNum && keyNum <= 9;
   }
 
   public static int parseKeyNum(int keyNumOriginal) {
-    int keyNum = keyNumOriginal & 0xFF;
+    int keyNum = keyNumOriginal & 0x0F;
     if (checkKeyNum(keyNum)) {
       return keyNum;
     } else {

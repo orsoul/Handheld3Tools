@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.lock.Lock3Bean;
+import org.orsoul.baselib.util.lock.Lock3InfoUnit;
 import org.orsoul.baselib.util.lock.Lock3Util;
 
 public class RfidController implements IRfidPSamOperation {
@@ -225,7 +226,7 @@ public class RfidController implements IRfidPSamOperation {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
+    List<Lock3InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
@@ -238,7 +239,7 @@ public class RfidController implements IRfidPSamOperation {
       lock3Bean.uidBuff = uid;
     }
 
-    for (Lock3Bean.InfoUnit infoUnit : willReadList) {
+    for (Lock3InfoUnit infoUnit : willReadList) {
       byte[] data = new byte[infoUnit.len];
       if (readNfc(infoUnit.sa, data, false)) {
         infoUnit.buff = data;
@@ -264,7 +265,7 @@ public class RfidController implements IRfidPSamOperation {
     if (lock3Bean == null) {
       return false;
     }
-    List<Lock3Bean.InfoUnit> willReadList = lock3Bean.getWillDoList();
+    List<Lock3InfoUnit> willReadList = lock3Bean.getWillDoList();
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
@@ -276,7 +277,7 @@ public class RfidController implements IRfidPSamOperation {
       }
       lock3Bean.uidBuff = uid;
     }
-    for (Lock3Bean.InfoUnit infoUnit : willReadList) {
+    for (Lock3InfoUnit infoUnit : willReadList) {
       if (!writeNfc(infoUnit.sa, infoUnit.buff, false)) {
         return false;
       }

@@ -29,7 +29,173 @@ public class Lock3Bean {
   /** 封签流水号11字节  0x90—0x92. */
   public static final int SA_COVER_SERIAL = 0x90;
   /** 袋流转信息，35个字长，每条记录7个字长(28byte) 0x93—0xB6. */
-  public static final int SA_HAND_OVER = 0x93;
+  public static final int SA_CIRCULATION = 0x93;
+
+  public byte[] uidBuff;
+
+  private String pieceEpc;
+  private String pieceTid;
+
+  private String bagId;
+  /** 锁片的tid. */
+  private String tidFromPiece;
+  /** 锁内超高频的tid. */
+  private String tidFromLock;
+  /** 封签事件码. */
+  private String coverCode;
+  /** 封袋流水号. */
+  private String coverSerial;
+
+  /** 标志位. */
+  private int status;
+  /** 标志位加解密选用的算法. */
+  private int keyNum;
+  /** 交接信息索引. */
+  private int handoverIndex;
+  /** 袋流转信息 索引. */
+  private int circulationIndex;
+
+  /** 基金代启用状态. 1:已启用，0:未启用，-1:已注销 */
+  private int enable;
+
+  /** 单片机工作模式. */
+  private boolean isTestMode;
+
+  /** 电压. */
+  private float voltage;
+
+  public String getTidFromPiece() {
+    return tidFromPiece;
+  }
+
+  public void setTidFromPiece(String tidFromPiece) {
+    this.tidFromPiece = tidFromPiece;
+  }
+
+  public String getTidFromLock() {
+    return tidFromLock;
+  }
+
+  public void setTidFromLock(String tidFromLock) {
+    this.tidFromLock = tidFromLock;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
+  public void setStatus(int status) {
+    this.status = status;
+  }
+
+  public float getVoltage() {
+    return voltage;
+  }
+
+  public void setVoltage(float voltage) {
+    this.voltage = voltage;
+  }
+
+  public String getPieceEpc() {
+    return pieceEpc;
+  }
+
+  public void setPieceEpc(String pieceEpc) {
+    this.pieceEpc = pieceEpc;
+  }
+
+  public String getPieceTid() {
+    return pieceTid;
+  }
+
+  public void setPieceTid(String pieceTid) {
+    this.pieceTid = pieceTid;
+  }
+
+  public String getBagId() {
+    return bagId;
+  }
+
+  public void setBagId(String bagId) {
+    this.bagId = bagId;
+  }
+
+  public String getCoverCode() {
+    return coverCode;
+  }
+
+  public void setCoverCode(String coverCode) {
+    this.coverCode = coverCode;
+  }
+
+  public String getCoverSerial() {
+    return coverSerial;
+  }
+
+  public void setCoverSerial(String coverSerial) {
+    this.coverSerial = coverSerial;
+  }
+
+  public int getKeyNum() {
+    return keyNum;
+  }
+
+  public void setKeyNum(int keyNum) {
+    this.keyNum = keyNum;
+  }
+
+  public int getHandoverIndex() {
+    return handoverIndex;
+  }
+
+  public void setHandoverIndex(int handoverIndex) {
+    this.handoverIndex = handoverIndex;
+  }
+
+  public int getCirculationIndex() {
+    return circulationIndex;
+  }
+
+  public void setCirculationIndex(int circulationIndex) {
+    this.circulationIndex = circulationIndex;
+  }
+
+  public int getEnable() {
+    return enable;
+  }
+
+  public void setEnable(int enable) {
+    this.enable = enable;
+  }
+
+  public boolean isTestMode() {
+    return isTestMode;
+  }
+
+  public void setTestMode(boolean testMode) {
+    isTestMode = testMode;
+  }
+
+  @Override public String toString() {
+    return "Lock3Bean{" +
+        "pieceEpc='" + pieceEpc + '\'' +
+        ", pieceTid='" + pieceTid + '\'' +
+        ", bagId='" + bagId + '\'' +
+        ", tidFromPiece='" + tidFromPiece + '\'' +
+        ", tidFromLock='" + tidFromLock + '\'' +
+        ", coverCode='" + coverCode + '\'' +
+        ", coverSerial='" + coverSerial + '\'' +
+        ", status=" + status +
+        ", keyNum=" + keyNum +
+        ", handoverIndex=" + handoverIndex +
+        ", circulationIndex=" + circulationIndex +
+        ", enable=" + enable +
+        ", isTestMode=" + isTestMode +
+        ", voltage=" + voltage +
+        '}';
+  }
+
+  // =======================================================
 
   public Lock3Bean(int... saArr) {
     if (saArr == null) {
@@ -41,21 +207,10 @@ public class Lock3Bean {
   public Lock3Bean() {
   }
 
-  List<InfoUnit> willReadList = new ArrayList<>();
-
-  public byte[] uidBuff;
-
-  String bagId;
-  byte[] bagIdBuff;
-
-  int status;
-  byte[] statusBuff;
-
-  float voltage;
-  byte[] voltageBuff;
+  List<Lock3InfoUnit> willReadList = new ArrayList<>();
 
   public boolean addOneSa(int sa, int len) {
-    InfoUnit infoUnit = InfoUnit.newInstance(sa, len);
+    Lock3InfoUnit infoUnit = Lock3InfoUnit.newInstance(sa, len);
     if (willReadList.contains(infoUnit)) {
       return false;
     }
@@ -64,9 +219,21 @@ public class Lock3Bean {
 
   public void addSa(int... saArr) {
     for (int i = 0; i < saArr.length; i++) {
-      InfoUnit infoUnit = InfoUnit.newInstance(saArr[i]);
-      if (willReadList.contains(infoUnit)) {
+      Lock3InfoUnit infoUnit = Lock3InfoUnit.newInstance(saArr[i]);
+      if (!willReadList.contains(infoUnit)) {
         willReadList.add(infoUnit);
+      }
+    }
+  }
+
+  public void removeSa(int... saArr) {
+    if (saArr == null || saArr.length < 1) {
+      return;
+    }
+    for (int i = 0; i < saArr.length; i++) {
+      Lock3InfoUnit unit = getInfoUnit(saArr[i]);
+      if (unit != null) {
+        willReadList.remove(unit);
       }
     }
   }
@@ -92,8 +259,8 @@ public class Lock3Bean {
         SA_KEY_NUM);
   }
 
-  public InfoUnit getInfoUnit(int sa) {
-    for (InfoUnit infoUnit : willReadList) {
+  public Lock3InfoUnit getInfoUnit(int sa) {
+    for (Lock3InfoUnit infoUnit : willReadList) {
       if (infoUnit.sa == sa) {
         return infoUnit;
       }
@@ -102,14 +269,55 @@ public class Lock3Bean {
   }
 
   public void parseInfo() {
-    for (InfoUnit infoUnit : willReadList) {
-      if (!infoUnit.haveData()) {
-        return;
+    for (Lock3InfoUnit unit : willReadList) {
+      if (!unit.haveData()) {
+        continue;
+      }
+      switch (unit.sa) {
+        case Lock3Bean.SA_BAG_ID:
+          this.bagId = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        case Lock3Bean.SA_PIECE_TID:
+          this.tidFromPiece = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        case Lock3Bean.SA_LOCK_TID:
+          this.tidFromLock = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        case Lock3Bean.SA_STATUS:
+          this.status = Lock3Util.getStatus(unit.buff[0], this.keyNum, this.uidBuff, false);
+          this.handoverIndex = unit.buff[1];
+          this.circulationIndex = unit.buff[2];
+          break;
+        case Lock3Bean.SA_ENABLE:
+          if (Arrays.equals(Lock3Util.ENABLE_CODE_ENABLE, unit.buff)) {
+            this.enable = 1;
+          } else if (Arrays.equals(Lock3Util.ENABLE_CODE_UN_REG, unit.buff)) {
+            this.enable = -1;
+          } else {
+            this.enable = 0;
+          }
+          break;
+        case Lock3Bean.SA_WORK_MODE:
+          this.isTestMode = Lock3Util.MODE_DEBUG == unit.buff[0];
+          break;
+        case Lock3Bean.SA_KEY_NUM:
+          this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
+          break;
+        case Lock3Bean.SA_VOLTAGE:
+          this.voltage = Lock3Util.parseV(unit.buff[0]);
+          break;
+        case Lock3Bean.SA_COVER_EVENT:
+          this.coverCode = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        case Lock3Bean.SA_COVER_SERIAL:
+          this.coverSerial = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        default:
       }
     }
   }
 
-  public List<InfoUnit> getWillDoList() {
+  public List<Lock3InfoUnit> getWillDoList() {
     return willReadList;
   }
 
@@ -118,90 +326,17 @@ public class Lock3Bean {
       return false;
     }
 
-    List<InfoUnit> willDoList = getWillDoList();
+    List<Lock3InfoUnit> willDoList = getWillDoList();
     if (lock3Bean.getWillDoList().size() != willDoList.size()) {
       return false;
     }
 
-    for (InfoUnit infoUnit : willDoList) {
-      InfoUnit infoUnit2 = lock3Bean.getInfoUnit(infoUnit.sa);
+    for (Lock3InfoUnit infoUnit : willDoList) {
+      Lock3InfoUnit infoUnit2 = lock3Bean.getInfoUnit(infoUnit.sa);
       if (infoUnit2 == null || Arrays.equals(infoUnit.buff, infoUnit2.buff)) {
         return false;
       }
     }
     return true;
-  }
-
-  public static class InfoUnit {
-    public int sa;
-    public int len;
-    public byte[] buff;
-    private boolean doSuccess;
-
-    private InfoUnit(int sa, int len) {
-      this.sa = sa;
-      this.len = len;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-
-      InfoUnit infoUnit = (InfoUnit) o;
-
-      if (sa != infoUnit.sa) return false;
-      return len == infoUnit.len;
-    }
-
-    @Override
-    public int hashCode() {
-      int result = sa;
-      result = 31 * result + len;
-      return result;
-    }
-
-    @Override
-    public String toString() {
-      return "InfoUnit{" +
-          "sa=" + sa +
-          ", len=" + len +
-          ", buff=" + BytesUtil.bytes2HexString(buff) +
-          '}';
-    }
-
-    public boolean isDoSuccess() {
-      return doSuccess;
-    }
-
-    public void setDoSuccess(boolean doSuccess) {
-      this.doSuccess = doSuccess;
-    }
-
-    public boolean haveData() {
-      return buff != null;
-    }
-
-    public static InfoUnit newInstance(int sa, int len) {
-      return new InfoUnit(sa, len);
-    }
-
-    public static InfoUnit newInstance(int sa) {
-      switch (sa) {
-        case SA_BAG_ID:
-        case SA_PIECE_TID:
-        case SA_LOCK_TID:
-          return new InfoUnit(sa, 12);
-        case SA_COVER_EVENT:
-          return new InfoUnit(sa, 30);
-        case SA_COVER_SERIAL:
-          return new InfoUnit(sa, 11);
-        case SA_STATUS:
-        case SA_KEY_NUM:
-        case SA_VOLTAGE:
-        default:
-          return new InfoUnit(sa, 4);
-      }
-    }
   }
 }

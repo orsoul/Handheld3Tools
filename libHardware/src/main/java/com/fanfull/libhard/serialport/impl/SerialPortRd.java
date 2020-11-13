@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/** 雨滴串口API. */
 public class SerialPortRd extends AbsSerialPort {
   private SerialPort serialPort;
 
@@ -15,7 +16,8 @@ public class SerialPortRd extends AbsSerialPort {
       int flags) throws SecurityException, IOException {
     serialPort = new SerialPort(device, baudrate, flags);
     serialPortInfo = device.getPath() + ":" + baudrate;
-    LogUtils.tag(TAG).i("open SerialPort:%s", serialPortInfo);
+    LogUtils.tag(TAG).i("open %s:%s",
+        SerialPortRd.class.getSimpleName(), serialPortInfo);
   }
 
   @Override

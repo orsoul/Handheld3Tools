@@ -13,7 +13,7 @@ public interface IUhfOperation extends IOperation {
    *
    * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
    * @param sa 读取 数据的 起始地址, 单位：字（字长: 2byte）
-   * @param dataBuff 接收数据,单位：byte；长度因为偶数
+   * @param dataBuff 接收数据,单位：byte；长度必须为偶数
    * @param timeout 超时
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
