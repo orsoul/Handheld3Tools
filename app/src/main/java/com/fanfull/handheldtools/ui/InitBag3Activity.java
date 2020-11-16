@@ -166,7 +166,7 @@ public class InitBag3Activity extends InitModuleActivity {
         if (initBagTask.isStopped()) {
           //btnOk.setEnabled(false);
           //switchCheck.setEnabled(false);
-          ClockUtil.resetRunTime();
+          ClockUtil.runTime(true);
           ThreadUtil.executeInSingleThread(initBagTask);
         } else {
           ToastUtils.showShort("正在初始化，请稍后...");

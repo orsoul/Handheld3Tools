@@ -18,10 +18,17 @@ public class ClockUtil {
 
   private static long sRunTime = 0;
 
-  /** 开始计时. */
-  public static long resetRunTime() {
-    sRunTime = System.currentTimeMillis();
-    return sRunTime;
+  /**
+   * 从开始计时 到此时的时间隔 .
+   *
+   * @param setStart true 开始计时
+   */
+  public static long runTime(boolean setStart) {
+    long reVal = System.currentTimeMillis() - sRunTime;
+    if (setStart) {
+      sRunTime = System.currentTimeMillis();
+    }
+    return reVal;
   }
 
   /** 从开始计时 到此时的时间隔 . */
@@ -30,6 +37,8 @@ public class ClockUtil {
   }
 
   /**
+   * 在同一线程执行.
+   *
    * @return 本次 clock() 与 上一次clock() 之间的 时间隔。第一次运行返回 0
    */
   public static long clock() {

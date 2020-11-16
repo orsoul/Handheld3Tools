@@ -242,7 +242,7 @@ public class ZhuangXiangActivity extends BaseActivity {
         isRunning = false;
         return;
       }
-      ClockUtil.resetRunTime();
+      ClockUtil.runTime(true);
       isRunning = true;
       boolean readSuccess = false;
       while (isRunning && ClockUtil.runTime() < runTime) {

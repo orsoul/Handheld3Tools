@@ -94,7 +94,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
     //LogUtils.i("run start");
 
     int[] fingerIdBuff = new int[2];
-    ClockUtil.resetRunTime();
+    ClockUtil.runTime(true);
     while (!stopped) {
       if (runTime <= ClockUtil.runTime()) {
         if (fingerSearchListener != null) {

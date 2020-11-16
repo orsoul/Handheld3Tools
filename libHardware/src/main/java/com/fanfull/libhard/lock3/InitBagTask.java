@@ -117,7 +117,7 @@ public class InitBagTask implements Runnable {
     /* 1、 读uid、epc、tid */
     boolean readSuccess = false;
     int failedCause = -1;
-    ClockUtil.resetRunTime();
+    ClockUtil.runTime(true);
     while (!stopped && ClockUtil.runTime() < findLockTime) {
       //if (0 == (failedCause = lock3Operation.readUidEpcTid(uid, epc, tid))) {
       if (0 == (failedCause = findUidTid(uid, tid))) {

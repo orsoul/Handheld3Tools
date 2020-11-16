@@ -314,7 +314,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
 
         boolean startRun = initBagTask.startRun();
         if (startRun) {
-          ClockUtil.resetRunTime();
+          ClockUtil.runTime(true);
           resetShowItem();
           vShow1.setDoing(true);
           mBtnOK.setEnabled(false);
