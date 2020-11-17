@@ -34,7 +34,7 @@ public class Lock3InfoUnit {
   @Override
   public String toString() {
     return "InfoUnit{" +
-        "sa=" + sa +
+        "sa=0x" + Integer.toHexString(sa).toUpperCase() +
         ", len=" + len +
         ", buff=" + BytesUtil.bytes2HexString(buff) +
         '}';
@@ -66,9 +66,12 @@ public class Lock3InfoUnit {
         return new Lock3InfoUnit(sa, 30);
       case Lock3Bean.SA_COVER_SERIAL:
         return new Lock3InfoUnit(sa, 11);
+      case Lock3Bean.SA_CIRCULATION:
+        return new Lock3InfoUnit(sa, 0);
       case Lock3Bean.SA_STATUS:
       case Lock3Bean.SA_KEY_NUM:
       case Lock3Bean.SA_VOLTAGE:
+      case Lock3Bean.SA_CIRCULATION_INDEX:
       default:
         return new Lock3InfoUnit(sa, 4);
     }

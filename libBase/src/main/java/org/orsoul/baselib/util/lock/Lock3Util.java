@@ -161,7 +161,7 @@ public abstract class Lock3Util {
       case 1:
         return "F1(空袋)";
       case 2:
-        return "F2(上锁)";
+        return "F2(已插锁片)";
       case 3:
         return "F3(已封袋)";
       case 4:

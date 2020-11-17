@@ -169,8 +169,33 @@ public class Lock3Operation {
   /**
    * 读nfc.
    *
-   * @param withFindCard true:读之前执行寻卡；false:不寻卡
+   * @param uid 7字节，传入null 不寻卡
    */
+  public boolean readLockNfc(byte[] uid, Lock3InfoUnit... willReadList) {
+    if (willReadList == null || willReadList.length == 0) {
+      return false;
+    }
+
+    if (uid != null && !rfidController.findCard(uid)) {
+      return false;
+    }
+
+    for (Lock3InfoUnit infoUnit : willReadList) {
+      byte[] data = new byte[infoUnit.len];
+      if (rfidController.readNfc(infoUnit.sa, data, false)) {
+        infoUnit.buff = data;
+        infoUnit.setDoSuccess(true);
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public boolean readLockNfc(Lock3InfoUnit... willReadList) {
+    return readLockNfc(null, willReadList);
+  }
+
   public boolean readLockNfc(Lock3Bean lock3Bean, boolean withFindCard) {
     if (lock3Bean == null) {
       return false;
@@ -179,6 +204,8 @@ public class Lock3Operation {
     if (willReadList == null || willReadList.isEmpty()) {
       return false;
     }
+
+    willReadList.toArray(new Lock3InfoUnit[0]);
 
     if (withFindCard) {
       byte[] uid = rfidController.findNfc();

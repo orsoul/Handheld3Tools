@@ -2,6 +2,8 @@ package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.libhard.lock3.ReadLockTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
@@ -24,14 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
+import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 import org.orsoul.baselib.util.lock.EnumBagType;
 import org.orsoul.baselib.util.lock.EnumCity;
 import org.orsoul.baselib.util.lock.EnumMoneyType;
+import org.orsoul.baselib.util.lock.HandoverBean;
 import org.orsoul.baselib.util.lock.Lock3Bean;
-import org.orsoul.baselib.util.lock.Lock3InfoUnit;
+import org.orsoul.baselib.util.lock.Lock3Util;
 
 public class BagCheckActivity extends InitModuleActivity {
 
@@ -174,7 +179,7 @@ public class BagCheckActivity extends InitModuleActivity {
         if (!readLockTask.isRunning()) {
           //btnOk.setEnabled(false);
           //switchCheck.setEnabled(false);
-          ClockUtil.resetRunTime();
+          ClockUtil.runTime(true);
           readLockTask.startThread();
         } else {
           ToastUtils.showShort("正在初始化，请稍后...");
@@ -205,6 +210,7 @@ public class BagCheckActivity extends InitModuleActivity {
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
         if (allLockTask.startThread()) {
+          ClockUtil.runTime(true);
           showLoadingView("正在读取袋锁信息...");
         } else {
           ToastUtils.showShort("读袋锁信息线程已在运行");
@@ -228,7 +234,10 @@ public class BagCheckActivity extends InitModuleActivity {
 
     switchCheck = findViewById(R.id.switch_check_bag_nfc_mode);
     switchCheck.setOnCheckedChangeListener(
-        (buttonView, isChecked) -> readLockTask.setReadEpc(isChecked));
+        (buttonView, isChecked) -> {
+          readLockTask.setReadEpc(isChecked);
+          allLockTask.setReadUhf(isChecked);
+        });
 
     btnOk.setEnabled(false);
     switchCheck.setEnabled(false);
@@ -378,12 +387,77 @@ public class BagCheckActivity extends InitModuleActivity {
     }
   }
 
-  private class ReadAllLockTask extends com.fanfull.libhard.lock3.ReadLockTask {
-    @Override protected void onSuccess(byte[] uid, byte[] tid, byte[] epc,
-        List<Lock3InfoUnit> infoList) {
+  private Spanned parse(Lock3Bean lock3Bean) {
+    if (lock3Bean == null) {
+      return null;
+    }
+    HtmlUtil.setDefaultColor(0x0000FF);
+    String colorText = HtmlUtil.getColorText("锁片epc：%s\n"
+            + "锁片tid：%s\n"
+            + "业务tid：%s\n"
+            + "锁内tid：%s\n"
+            + "bagId：%s\n"
+            + "标志位：%s\n"
+            + "电压：%s\n"
+            + "启用状态：%s\n"
+            + "测试模式：%s\n"
+            + "封签码：%s\n"
+            + "流水号：%s\n"
+            + "密钥编号：%s\n"
+            + "交接索引：%s\n"
+            + "袋流转索引：%s\n",
+        lock3Bean.getPieceEpc(),
+        lock3Bean.getPieceTid(),
+        lock3Bean.getTidFromPiece(),
+        lock3Bean.getTidFromLock(),
+        lock3Bean.getBagId(),
+        Lock3Util.getStatusDesc(lock3Bean.getStatus()),
+        String.format("%.3f", lock3Bean.getVoltage()),
+        lock3Bean.getEnable(),
+        lock3Bean.isTestMode(),
+        lock3Bean.getCoverCode(),
+        lock3Bean.getCoverSerial(),
+        lock3Bean.getKeyNum(),
+        lock3Bean.getHandoverIndex(),
+        lock3Bean.getCirculationIndex());
+
+    List<HandoverBean> list = lock3Bean.getHandoverBeanList();
+    if (list == null || list.isEmpty()) {
+      return Html.fromHtml(colorText);
+    }
+
+    StringBuilder sb = new StringBuilder(colorText);
+    for (HandoverBean handoverBean : list) {
+      sb.append(HtmlUtil.getColorText("业务：%s(%s)\n"
+              + "机构：%s(%s)\n"
+              + "操作人：%s\n"
+              + "复核人：%s\n"
+              + "时间：%s\n",
+          handoverBean.getFunTypeName(),
+          handoverBean.getFunction(),
+          handoverBean.getOrgancode(),
+          handoverBean.getOrgName(),
+          handoverBean.getScaner1(),
+          handoverBean.getScaner2(),
+          handoverBean.getTime())
+      );
+    }
+    return Html.fromHtml(sb.toString());
+  }
+
+  private class ReadAllLockTask extends ReadLockTask {
+    @Override protected void onProgress(int res, long progress, long total) {
+      super.onProgress(res, progress, total);
+    }
+
+    @Override protected void onSuccess(Lock3Bean lock3Bean) {
+      SoundUtils.playInitSuccessSound();
       runOnUiThread(() -> {
         dismissLoadingView();
-        ViewUtil.appendShow("读袋锁信息成功.", tvShow);
+        Spanned parse = parse(lock3Bean);
+        ViewUtil.appendShow(null, tvShow);
+        ViewUtil.appendShow(parse, tvShow);
+        ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
       });
     }
 

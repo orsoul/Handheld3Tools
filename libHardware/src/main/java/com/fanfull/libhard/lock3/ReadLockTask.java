@@ -2,12 +2,14 @@ package com.fanfull.libhard.lock3;
 
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.rfid.RfidController;
-import java.util.List;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.lock.Lock3Bean;
 import org.orsoul.baselib.util.lock.Lock3InfoUnit;
 
+/**
+ * 读袋锁任务，包括读NFC以及超高频的EPC、TID区.
+ */
 public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] uid = new byte[7];
 
@@ -15,71 +17,93 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] epc = new byte[12];
 
   private boolean isReadUhf = true;
+  private long runTime = 5000L;
+  private Lock3Bean lock3Bean;
 
-  private int[] saArr;
+  public Lock3Bean getLock3Bean() {
+    return lock3Bean;
+  }
 
-  public void setSaArr(int... saArr) {
-    this.saArr = saArr;
+  public void setLock3Bean(Lock3Bean lock3Bean) {
+    this.lock3Bean = lock3Bean;
+  }
+
+  public void setReadUhf(boolean readUhf) {
+    isReadUhf = readUhf;
+  }
+
+  public void setRunTime(long runTime) {
+    this.runTime = runTime;
   }
 
   @Override public void run() {
     Lock3Operation lock3Operation = Lock3Operation.getInstance();
-    int res = lock3Operation.readUidAndTid(uid, tid, epc);
-    if (isReadUhf) {
-      res = lock3Operation.readUidAndTid(uid, tid, epc);
-    } else {
-      boolean findCard = RfidController.getInstance().findCard(uid);
-      res = findCard ? 0 : -2;
+
+    /* 在指定时间内 寻卡NFC 和 读超高频 */
+    long start = System.currentTimeMillis();
+    while (true) {
+      int res;
+      if (isReadUhf) {
+        res = lock3Operation.readUidAndTid(uid, tid, epc);
+      } else {
+        boolean findCard = RfidController.getInstance().findCard(uid);
+        res = findCard ? 0 : -2;
+      }
+      long goingTime = System.currentTimeMillis() - start;
+      onProgress(res, goingTime, runTime);
+      if (res == 0) {
+        break;
+      } else if (runTime < goingTime) {
+        onFailed(res);
+        return;
+      }
     }
-    if (res != 0) {
-      onFailed(res);
-      return;
+
+    if (lock3Bean == null) {
+      lock3Bean = new Lock3Bean();
+      lock3Bean.addAllSa();
     }
+
+    // 暂时移除 数据长度不固定的区域（袋流转信息）
+    Lock3InfoUnit circulationUnit = lock3Bean.getInfoUnit(Lock3Bean.SA_CIRCULATION);
+    lock3Bean.removeSa(Lock3Bean.SA_CIRCULATION);
 
     /* 读nfc 长度固定的数据区 */
-    Lock3Bean lock3Bean = new Lock3Bean();
-    if (saArr == null) {
-      lock3Bean.addAllSa();
-    } else {
-      lock3Bean.addSa(saArr);
-    }
-
     boolean readLockNfc = lock3Operation.readLockNfc(lock3Bean, false);
     if (!readLockNfc) {
       onFailed(-5);
       return;
     }
 
-    /* 读nfc 长度不固定的数据区 */
-    byte[] buff = lock3Bean.getInfoUnit(Lock3Bean.SA_STATUS).buff;
-    int handOverNum = buff[2];
-    Lock3InfoUnit handoverInfo = null;
-    if (1 <= handOverNum && handOverNum <= 5) {
-      Lock3Bean bean = new Lock3Bean();
-      bean.addOneSa(Lock3Bean.SA_CIRCULATION, handOverNum * 7 * 4);
-      readLockNfc = lock3Operation.readLockNfc(bean, false);
-      if (readLockNfc) {
-        handoverInfo = bean.getInfoUnit(Lock3Bean.SA_CIRCULATION);
+    /* 读nfc 长度不固定的数据区（袋流转信息） */
+    // TODO: 2020-11-16  读nfc 长度不固定的数据区
+    Lock3InfoUnit unitStatus = lock3Bean.getInfoUnit(Lock3Bean.SA_CIRCULATION_INDEX);
+    if (circulationUnit != null && unitStatus != null) {
+      byte[] buff = unitStatus.buff;
+      //int handOverNum = buff[2];
+      int handOverNum = buff[0];
+      if (1 <= handOverNum && handOverNum <= 5) {
+        circulationUnit.len = handOverNum * 7 * 4;
+        readLockNfc = lock3Operation.readLockNfc(circulationUnit);
       }
+      LogUtils.d("handOverNum:%s, readSuccess:%s", handOverNum, readLockNfc);
+      // 无论袋流转信息是否读取成功，都将其添加回列表
+      lock3Bean.add(circulationUnit);
     }
 
-    List<Lock3InfoUnit> infoList = lock3Bean.getWillDoList();
-    if (handoverInfo != null) {
-      infoList.add(handoverInfo);
-    }
+    lock3Bean.uidBuff = uid;
     lock3Bean.parseInfo();
     if (isReadUhf) {
       lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
       lock3Bean.setPieceTid(BytesUtil.bytes2HexString(tid));
     }
     onSuccess(lock3Bean);
-    onSuccess(uid, tid, epc, infoList);
+  }
+
+  protected void onProgress(int res, long progress, long total) {
   }
 
   protected void onSuccess(Lock3Bean lock3Bean) {
-  }
-
-  protected void onSuccess(byte[] uid, byte[] tid, byte[] epc, List<Lock3InfoUnit> infoList) {
   }
 
   /**
@@ -94,6 +118,24 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
    * * 结果码=-5 读nfc失败<br/>
    */
   protected void onFailed(int errorCode) {
-    LogUtils.d("onFailed:%s", errorCode);
+    switch (errorCode) {
+      case -1:
+        LogUtils.d("onFailed:%s 参数错误", errorCode);
+        break;
+      case -2:
+        LogUtils.d("onFailed:%s nfc寻卡失败", errorCode);
+        break;
+      case -3:
+        LogUtils.d("onFailed:%s 读tid失败", errorCode);
+        break;
+      case -4:
+        LogUtils.d("onFailed:%s 读epc失败", errorCode);
+        break;
+      case -5:
+        LogUtils.d("onFailed:%s 读nfc失败", errorCode);
+        break;
+      default:
+        LogUtils.d("onFailed:%s 未定义失败", errorCode);
+    }
   }
 }

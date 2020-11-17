@@ -140,37 +140,11 @@ public class RfidOperationRd extends AbsRfidOperation {
 
   @Override
   public byte[] findNfc() {
-    //        if (!config()) {
-    //            return null;
-    //        }
-    //
-    //        byte[] cardNumber = new byte[7];
-    //        if (!Rfid.ULPcdAnticoll(cardNumber)) {
-    //            return null;
-    //        }
     return findCard(true);
   }
 
   @Override
   public byte[] findM1() {
-    //        if (isScanning()) {
-    //            return null;
-    //        } else {
-    //            setScanning(true);
-    //        }
-    //
-    //        if (!config()) {
-    //            setScanning(false);
-    //            return null;
-    //        }
-    //
-    //        byte[] uid = new byte[4];
-    //        if (Rfid.PcdAnticoll(uid)) {
-    //            ArrayUtils.reverse(uid);
-    //            setScanning(false);
-    //            return uid;
-    //        }
-    //        setScanning(false);
     return findCard(false);
   }
 
@@ -192,6 +166,30 @@ public class RfidOperationRd extends AbsRfidOperation {
     }
     LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
     return findSuccess;
+  }
+
+  public int findCard2(byte[] uidBuff) {
+    if (uidBuff == null) {
+      return -1;
+    }
+    if (!config()) {
+      return -2;
+    }
+
+    boolean findSuccess = false;
+    if (uidBuff.length == 4) {
+      findSuccess = Rfid.PcdAnticoll(uidBuff);
+    } else if (uidBuff.length == 7) {
+      findSuccess = Rfid.ULPcdAnticoll(uidBuff);
+    } else {
+      return -3;
+    }
+    LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
+    if (findSuccess) {
+      return 0;
+    } else {
+      return -4;
+    }
   }
 
   @Override

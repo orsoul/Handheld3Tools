@@ -118,6 +118,7 @@ dependencies {
 
   /* network */
   implementation 'io.netty:netty-all:4.1.10.Final'
+  implementation 'com.google.code.gson:gson:2.3.1'
 
   /* db */
   debugImplementation rootProject.ext.dependencies["debug-db"]

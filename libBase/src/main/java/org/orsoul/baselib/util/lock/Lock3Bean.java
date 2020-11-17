@@ -1,8 +1,10 @@
 package org.orsoul.baselib.util.lock;
 
+import com.apkfuns.logutils.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.orsoul.baselib.util.AESCoder;
 import org.orsoul.baselib.util.BytesUtil;
 
 public class Lock3Bean {
@@ -28,8 +30,10 @@ public class Lock3Bean {
   public static final int SA_COVER_EVENT = 0x30;
   /** 封签流水号11字节  0x90—0x92. */
   public static final int SA_COVER_SERIAL = 0x90;
-  /** 袋流转信息，35个字长，每条记录7个字长(28byte) 0x93—0xB6. */
-  public static final int SA_CIRCULATION = 0x93;
+  /** 袋流转信息index，0x93. */
+  public static final int SA_CIRCULATION_INDEX = 0x93;
+  /** 袋流转信息，35个字长，每条记录7个字长(28byte) 0x94—0xB6. */
+  public static final int SA_CIRCULATION = 0x94;
 
   public byte[] uidBuff;
 
@@ -63,6 +67,12 @@ public class Lock3Bean {
 
   /** 电压. */
   private float voltage;
+
+  private List<HandoverBean> handoverBeanList;
+
+  public List<HandoverBean> getHandoverBeanList() {
+    return handoverBeanList;
+  }
 
   public String getTidFromPiece() {
     return tidFromPiece;
@@ -207,7 +217,11 @@ public class Lock3Bean {
   public Lock3Bean() {
   }
 
-  List<Lock3InfoUnit> willReadList = new ArrayList<>();
+  private List<Lock3InfoUnit> willReadList = new ArrayList<>();
+
+  public boolean add(Lock3InfoUnit unit) {
+    return willReadList.add(unit);
+  }
 
   public boolean addOneSa(int sa, int len) {
     Lock3InfoUnit infoUnit = Lock3InfoUnit.newInstance(sa, len);
@@ -239,24 +253,44 @@ public class Lock3Bean {
   }
 
   public void addBaseSa() {
-    addSa(SA_BAG_ID, SA_STATUS, SA_KEY_NUM, SA_VOLTAGE);
+    addSa(SA_KEY_NUM, SA_BAG_ID, SA_STATUS, SA_VOLTAGE);
   }
 
   public void addInitBagSa() {
-    addSa(SA_BAG_ID, SA_STATUS, SA_KEY_NUM);
+    addSa(SA_KEY_NUM, SA_BAG_ID, SA_STATUS);
   }
 
   /** 添加固定长度的 区域，不包括交接信息、袋流转信息等非固定长度的数据区域. */
   public void addAllSa() {
-    addSa(SA_BAG_ID,
+    addSa(SA_KEY_NUM,
+        SA_BAG_ID,
         SA_PIECE_TID,
         SA_LOCK_TID,
         SA_STATUS,
         SA_ENABLE,
         SA_WORK_MODE,
+        SA_VOLTAGE,
         SA_COVER_EVENT,
-        SA_COVER_SERIAL,
-        SA_KEY_NUM);
+        SA_CIRCULATION_INDEX,
+        SA_CIRCULATION,
+        SA_COVER_SERIAL);
+  }
+
+  /** set封袋业务 需要读取的数据. */
+  public void setCoverSa() {
+    willReadList.clear();
+    addSa(SA_KEY_NUM,
+        SA_BAG_ID,
+        SA_PIECE_TID,
+        SA_LOCK_TID,
+        SA_STATUS,
+        SA_ENABLE,
+        SA_WORK_MODE,
+        SA_VOLTAGE,
+        SA_COVER_EVENT,
+        SA_CIRCULATION_INDEX,
+        SA_CIRCULATION,
+        SA_COVER_SERIAL);
   }
 
   public Lock3InfoUnit getInfoUnit(int sa) {
@@ -270,6 +304,7 @@ public class Lock3Bean {
 
   public void parseInfo() {
     for (Lock3InfoUnit unit : willReadList) {
+      LogUtils.v("%s", unit);
       if (!unit.haveData()) {
         continue;
       }
@@ -304,13 +339,26 @@ public class Lock3Bean {
           this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
           break;
         case Lock3Bean.SA_VOLTAGE:
-          this.voltage = Lock3Util.parseV(unit.buff[0]);
+          this.voltage = Lock3Util.parseV(unit.buff[3]);
           break;
         case Lock3Bean.SA_COVER_EVENT:
+          Lock3InfoUnit infoUnit = getInfoUnit(SA_PIECE_TID);
+          if (infoUnit != null && infoUnit.isDoSuccess()) {
+            AESCoder.myEncrypt(unit.buff, infoUnit.buff, false);
+          }
           this.coverCode = BytesUtil.bytes2HexString(unit.buff);
           break;
         case Lock3Bean.SA_COVER_SERIAL:
           this.coverSerial = BytesUtil.bytes2HexString(unit.buff);
+          break;
+        case Lock3Bean.SA_CIRCULATION_INDEX:
+          // TODO: 2020-11-16  读nfc 长度不固定的数据区
+          this.circulationIndex = unit.buff[0];
+          break;
+        case Lock3Bean.SA_CIRCULATION:
+          List<HandoverBean> beans = HandoverBean.parseData(unit.buff);
+          this.handoverBeanList = beans;
+          LogUtils.v("%s", beans);
           break;
         default:
       }
