@@ -1,5 +1,6 @@
 package com.fanfull.libhard.rfid;
 
+import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +68,10 @@ public class RfidController implements IRfidPSamOperation {
     return operation.findCard(uidBuff);
   }
 
+  @Override public EnumErrCode findCardRes(byte[] uidBuff) {
+    return operation.findCardRes(uidBuff);
+  }
+
   public byte[] findNfcOrM1() {
     if (isScanning()) {
       return null;
@@ -86,6 +91,15 @@ public class RfidController implements IRfidPSamOperation {
 
   @Override public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
     return operation.readNfc(sa, buff, withFindCard);
+  }
+
+  @Override public EnumErrCode readNfc(int sa, byte[] data, byte[] uid) {
+    return operation.readNfc(sa, data, uid);
+  }
+
+  /** 读nfc，不寻卡. */
+  public EnumErrCode readNfc(int sa, byte[] data) {
+    return readNfc(sa, data, null);
   }
 
   @Override public void readNfcAsync(int sa, int dataLen, boolean withFindCard) {

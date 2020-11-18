@@ -1,6 +1,7 @@
 package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
 import com.halio.Rfid;
@@ -155,40 +156,40 @@ public class RfidOperationRd extends AbsRfidOperation {
    * @return 寻卡成功 返回true
    */
   @Override public boolean findCard(byte[] uidBuff) {
-    if (uidBuff == null || !config()) {
-      return false;
-    }
-    boolean findSuccess = false;
-    if (uidBuff.length == 4) {
-      findSuccess = Rfid.PcdAnticoll(uidBuff);
-    } else if (uidBuff.length == 7) {
-      findSuccess = Rfid.ULPcdAnticoll(uidBuff);
-    }
-    LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
-    return findSuccess;
+    //if (uidBuff == null || !config()) {
+    //  return false;
+    //}
+    //boolean findSuccess = false;
+    //if (uidBuff.length == 4) {
+    //  findSuccess = Rfid.PcdAnticoll(uidBuff);
+    //} else if (uidBuff.length == 7) {
+    //  findSuccess = Rfid.ULPcdAnticoll(uidBuff);
+    //}
+    //LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
+    return findCardRes(uidBuff) == EnumErrCode.SUCCESS;
   }
 
-  public int findCard2(byte[] uidBuff) {
+  @Override public EnumErrCode findCardRes(byte[] uidBuff) {
     if (uidBuff == null) {
-      return -1;
+      return EnumErrCode.ARGS_ERR;
     }
     if (!config()) {
-      return -2;
+      return EnumErrCode.FIND_CARD_NOTHING;
     }
 
-    boolean findSuccess = false;
+    boolean findSuccess;
     if (uidBuff.length == 4) {
       findSuccess = Rfid.PcdAnticoll(uidBuff);
     } else if (uidBuff.length == 7) {
       findSuccess = Rfid.ULPcdAnticoll(uidBuff);
     } else {
-      return -3;
+      return EnumErrCode.ARGS_ERR;
     }
     LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
     if (findSuccess) {
-      return 0;
+      return EnumErrCode.SUCCESS;
     } else {
-      return -4;
+      return EnumErrCode.FIND_CARD_FAILED;
     }
   }
 
@@ -199,8 +200,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     return readSuccess;
   }
 
-  @Override
-  public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
+  @Override public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
     if (sa < 0 || buff == null || buff.length < 1) {
       LogUtils.w("check failed sa:%s buff:%s", sa, buff);
       return false;
@@ -231,6 +231,40 @@ public class RfidOperationRd extends AbsRfidOperation {
       System.arraycopy(oneWord, 0, buff, destPos, copyLen);
     }
     return true;
+  }
+
+  @Override public EnumErrCode readNfc(int sa, byte[] data, byte[] uid) {
+    if (sa < 0 || data == null || data.length < 1) {
+      LogUtils.w("check failed sa:%s buff:%s", sa, data);
+      return EnumErrCode.ARGS_ERR;
+    }
+
+    EnumErrCode res;
+    if (uid != null && uid.length == 7) {
+      res = findCardRes(uid);
+      if (res != EnumErrCode.SUCCESS) {
+        LogUtils.w("findNfc failed");
+        return res;
+      }
+    }
+
+    byte[] oneWord = new byte[4];
+    int len = data.length;
+    int wordDataLen = (len - 1) / 4 + 1;
+    for (int i = 0; i < wordDataLen; i++) {
+      byte newStart = (byte) (i + sa);
+      if (!readNfc4Byte(newStart, oneWord)) {
+        LogUtils.w("第%s次 读nfc addr[%s]失败", i, newStart);
+        return EnumErrCode.FAILED;
+      }
+      int destPos = i * 4;
+      int copyLen = len - destPos;
+      if (4 < copyLen) {
+        copyLen = 4;
+      }
+      System.arraycopy(oneWord, 0, data, destPos, copyLen);
+    }
+    return EnumErrCode.SUCCESS;
   }
 
   @Override

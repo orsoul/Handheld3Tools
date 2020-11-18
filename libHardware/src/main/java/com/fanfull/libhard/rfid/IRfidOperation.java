@@ -1,5 +1,6 @@
 package com.fanfull.libhard.rfid;
 
+import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.IOperation;
 
 public interface IRfidOperation extends IOperation {
@@ -16,9 +17,18 @@ public interface IRfidOperation extends IOperation {
 
   boolean findCard(byte[] uidBuff);
 
+  EnumErrCode findCardRes(byte[] uidBuff);
+
   boolean readNfc4Byte(int sa, byte[] buff);
 
   boolean readNfc(int sa, byte[] buff, boolean withFindCard);
+
+  /**
+   * 读NFC.
+   *
+   * @param uid 7字节数组 执行寻卡操作，null不寻卡
+   */
+  EnumErrCode readNfc(int sa, byte[] data, byte[] uid);
 
   void readNfcAsync(int sa, int dataLen, boolean withFindCard);
 

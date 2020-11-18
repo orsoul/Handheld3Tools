@@ -202,4 +202,33 @@ public class BagIdParser {
     }
     return bagIdParser.getFormatBagId();
   }
+
+  public static String getNameByType(String bagType) {
+    return EnumBagType.getNameByType(bagType);
+  }
+
+  public static String getName2ByType(String bagType) {
+    return EnumBagType.getName2ByType(bagType);
+  }
+
+  public static String getNameByBagId(String bagId) {
+    return EnumBagType.getNameByBagId(bagId);
+  }
+
+  public static String getName2ByBagId(String bagId) {
+    return EnumBagType.getName2ByBagId(bagId);
+  }
+
+  public static String getInfo(String bagId) {
+    if (!isBagId(bagId)) {
+      return null;
+    }
+    String format = String.format("%s  %s-%s",
+        getNameByBagId(bagId),
+        bagId.substring(10, 14),
+        bagId.substring(14, 18)
+    );
+    return format;
+  }
+
 }
