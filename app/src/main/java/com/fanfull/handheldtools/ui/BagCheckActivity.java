@@ -17,7 +17,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
-import com.fanfull.libhard.lock3.ReadLockTask;
+import com.fanfull.libhard.lock3.task.ReadLockTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
@@ -25,18 +25,18 @@ import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import java.util.ArrayList;
 import java.util.List;
+import org.orsoul.baselib.lock3.EnumBagType;
+import org.orsoul.baselib.lock3.EnumCity;
+import org.orsoul.baselib.lock3.EnumMoneyType;
+import org.orsoul.baselib.lock3.Lock3Util;
+import org.orsoul.baselib.lock3.bean.HandoverBean;
+import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
-import org.orsoul.baselib.util.lock.EnumBagType;
-import org.orsoul.baselib.util.lock.EnumCity;
-import org.orsoul.baselib.util.lock.EnumMoneyType;
-import org.orsoul.baselib.util.lock.HandoverBean;
-import org.orsoul.baselib.util.lock.Lock3Bean;
-import org.orsoul.baselib.util.lock.Lock3Util;
 
 public class BagCheckActivity extends InitModuleActivity {
 

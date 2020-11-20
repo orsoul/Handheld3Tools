@@ -5,8 +5,8 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import java.util.List;
-import org.orsoul.baselib.util.lock.Lock3Bean;
-import org.orsoul.baselib.util.lock.Lock3InfoUnit;
+import org.orsoul.baselib.lock3.bean.Lock3Bean;
+import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 
 /**
  * 锁3高频、超高频 操作类，使用前 RfidController 以及 UhfController 需要先初始化.

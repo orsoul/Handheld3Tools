@@ -1,4 +1,4 @@
-package org.orsoul.baselib.util;
+package org.orsoul.baselib.data.preference;
 
 import java.util.ArrayList;
 import java.util.Collection;

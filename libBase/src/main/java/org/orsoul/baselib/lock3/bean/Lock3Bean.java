@@ -1,9 +1,10 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3.bean;
 
 import com.apkfuns.logutils.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.util.AESCoder;
 import org.orsoul.baselib.util.BytesUtil;
 

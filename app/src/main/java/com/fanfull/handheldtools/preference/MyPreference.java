@@ -1,8 +1,8 @@
 package com.fanfull.handheldtools.preference;
 
 import java.util.Collection;
-import org.orsoul.baselib.util.PreferenceItem;
-import org.orsoul.baselib.util.PreferenceUtil;
+import org.orsoul.baselib.data.preference.PreferenceItem;
+import org.orsoul.baselib.data.preference.PreferenceUtil;
 
 public class MyPreference {
   static {

@@ -21,13 +21,13 @@ import com.fanfull.socket.SocketConnet;
 import com.fanfull.utils.SPUtils;
 import java.util.ArrayList;
 import java.util.List;
+import org.orsoul.baselib.lock3.bean.BagIdParser;
+import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
-import org.orsoul.baselib.util.lock.BagIdParser;
-import org.orsoul.baselib.util.lock.Lock3Bean;
 
 public class ZhuangXiangActivity extends BaseActivity {
   private final static String TAG = ZhuangXiangActivity.class.getSimpleName();

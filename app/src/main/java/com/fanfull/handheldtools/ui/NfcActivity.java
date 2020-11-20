@@ -17,13 +17,13 @@ import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
 import java.util.Arrays;
 import java.util.Random;
+import org.orsoul.baselib.lock3.Lock3Util;
+import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ViewUtil;
-import org.orsoul.baselib.util.lock.Lock3Bean;
-import org.orsoul.baselib.util.lock.Lock3Util;
 
 public class NfcActivity extends InitModuleActivity {
 

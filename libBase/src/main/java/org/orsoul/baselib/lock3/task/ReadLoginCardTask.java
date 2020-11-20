@@ -1,20 +1,16 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3.task;
 
 import android.os.SystemClock;
 import android.text.TextUtils;
 import com.apkfuns.logutils.LogUtils;
+import org.orsoul.baselib.util.ThreadUtil;
 
 /**
  * 获取登录卡ID任务.通过覆盖5个回调方法控制读卡过程
  */
-public class ReadLoginCardTask implements Runnable {
-  private boolean stopped;
+public abstract class ReadLoginCardTask extends ThreadUtil.ThreadRunnable {
   /** 读卡次数，即 readLoginCard()方法执行的次数. */
   private int readTimes = 10;
-
-  public synchronized void stop() {
-    stopped = true;
-  }
 
   public void setReadTimes(int readTimes) {
     this.readTimes = readTimes;
@@ -53,23 +49,25 @@ public class ReadLoginCardTask implements Runnable {
   }
 
   /** 单次读卡逻辑. */
-  public String readLoginCard() {
-    return null;
+  protected abstract String readLoginCard();
+
+  /** 读卡成功. */
+  protected void onReadSuccess(String userId) {
   }
 
   /** 读卡成功. */
-  public void onReadSuccess(String userId) {
+  protected void onReadSuccess(byte[] userId) {
   }
 
   /** 读卡中. */
-  public void onReading() {
+  protected void onReading() {
   }
 
   /** 手动停止读卡. */
-  public void onReadStop() {
+  protected void onReadStop() {
   }
 
   /** 读卡失败. */
-  public void onReadFailed() {
+  protected void onReadFailed() {
   }
 }

@@ -1,7 +1,8 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.orsoul.baselib.lock3.bean.BagIdParser;
 
 /**
  * 券别-币种 枚举类.

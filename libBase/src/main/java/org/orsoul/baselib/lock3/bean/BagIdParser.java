@@ -1,8 +1,9 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3.bean;
 
 import androidx.annotation.Nullable;
 import com.apkfuns.logutils.LogUtils;
 import java.util.Objects;
+import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.util.BytesUtil;
 
 /** 锁3袋id解析工具. */

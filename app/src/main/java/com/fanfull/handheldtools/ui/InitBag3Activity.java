@@ -15,21 +15,21 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
-import com.fanfull.libhard.lock3.InitBagTask;
+import com.fanfull.libhard.lock3.task.InitBagTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import org.orsoul.baselib.lock3.EnumBagType;
+import org.orsoul.baselib.lock3.EnumCity;
+import org.orsoul.baselib.lock3.EnumMoneyType;
+import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
-import org.orsoul.baselib.util.lock.BagIdParser;
-import org.orsoul.baselib.util.lock.EnumBagType;
-import org.orsoul.baselib.util.lock.EnumCity;
-import org.orsoul.baselib.util.lock.EnumMoneyType;
 
 public class InitBag3Activity extends InitModuleActivity {
 

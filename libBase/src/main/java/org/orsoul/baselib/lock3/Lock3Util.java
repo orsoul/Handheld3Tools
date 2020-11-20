@@ -1,4 +1,4 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3;
 
 /**
  * 封袋、出入库、开袋 会用到的一些方法。
@@ -54,13 +54,15 @@ public abstract class Lock3Util {
    * @param keyNum 原始 密钥 编号 A0~A9
    * @param uid 锁内NFC的UID
    * @param isEncrypt false：解密加密标志位解出明文标志位；true: 加密 明文标志位 获得 密文标志位
-   * @return -1：uid错误； -2：密钥编号错误； -3：解出的标志位错误； 明文1~5：对应标志位F1~F5；
-   * ！isPlainFlag： 加密成功返回
+   * @return 0:明文标志位超出范围;-1：uid错误； -2：密钥编号错误； -3：解出的标志位错误； 明文1~5：对应标志位F1~F5；
+   * 0
    */
-  public static int getStatus(int status, int keyNum, byte[] uid,
-      boolean isEncrypt) {
+  public static int getStatus(int status, int keyNum, byte[] uid, boolean isEncrypt) {
     if (null == uid || uid.length != 7) {
       return -1;
+    }
+    if (isEncrypt && (5 < status || status < 1)) {
+      return 0;
     }
 
     byte key = (byte) 0x0;// 解密密钥
@@ -132,10 +134,15 @@ public abstract class Lock3Util {
     return (2.5f * t) / 128;
   }
 
-  /** 解析 电压值. */
+  /** 解析 电压值，保留小数点后2位数. */
+  public static String parseV2String(float v) {
+    return String.format("%.3f", v);
+  }
+
+  /** 解析 电压值，保留小数点后2位数. */
   public static String parseV2String(byte v) {
     float vf = parseV(v);
-    return String.format("%.3f", vf);
+    return parseV2String(vf);
   }
 
   private static boolean checkKeyNum(int keyNum) {

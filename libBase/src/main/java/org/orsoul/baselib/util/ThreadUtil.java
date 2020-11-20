@@ -202,4 +202,62 @@ public class ThreadUtil {
     protected void onTaskFinish() {
     }
   }
+
+  public static abstract class TimeThreadRunnable extends ThreadRunnable {
+    /** 运行时间，单位毫秒. */
+    private long runTime = 5000L;
+    /** 运执行次数. */
+    private int runTimes = 1024;
+
+    public long getRunTime() {
+      return runTime;
+    }
+
+    public void setRunTime(long runTime) {
+      this.runTime = runTime;
+    }
+
+    public int getRunTimes() {
+      return runTimes;
+    }
+
+    public void setRunTimes(int runTimes) {
+      this.runTimes = runTimes;
+    }
+
+    @Override public void run() {
+      long start = System.currentTimeMillis();
+      int count = 0;
+      while (!isStopped()) {
+        boolean finish = handleOnce();
+        count++;
+        if (finish) {
+          onHandleFinish();
+          break;
+        }
+        long gonging = System.currentTimeMillis() - start;
+        if (runTime <= gonging) {
+          onTimeout(gonging, count);
+          break;
+        }
+        if (runTimes <= count) {
+          onTimeout(gonging, count);
+          break;
+        }
+      } // end while()
+    } // end run
+
+    /**
+     * 执行一次任务.
+     *
+     * @return 执行完成 返回true，继续执行返回false.
+     */
+    protected abstract boolean handleOnce();
+
+    protected void onHandleFinish() {
+    }
+
+    protected void onTimeout(long runTime, int runTimes) {
+    }
+  }
 }

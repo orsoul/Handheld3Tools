@@ -1,4 +1,4 @@
-package org.orsoul.baselib.util.lock;
+package org.orsoul.baselib.lock3.bean;
 
 import org.orsoul.baselib.util.BytesUtil;
 

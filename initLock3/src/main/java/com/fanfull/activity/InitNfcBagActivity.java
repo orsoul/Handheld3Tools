@@ -24,7 +24,7 @@ import com.fanfull.base.BaseActivity;
 import com.fanfull.contexts.MyContexts;
 import com.fanfull.contexts.StaticString;
 import com.fanfull.initbag3.R;
-import com.fanfull.libhard.lock3.InitBagTask;
+import com.fanfull.libhard.lock3.task.InitBagTask;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.room.Bag3Entity;
@@ -39,15 +39,15 @@ import com.orsoul.view.SpinerPopWindow;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.orsoul.baselib.lock3.EnumBagType;
+import org.orsoul.baselib.lock3.EnumCity;
+import org.orsoul.baselib.lock3.EnumMoneyType;
+import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
-import org.orsoul.baselib.util.lock.BagIdParser;
-import org.orsoul.baselib.util.lock.EnumBagType;
-import org.orsoul.baselib.util.lock.EnumCity;
-import org.orsoul.baselib.util.lock.EnumMoneyType;
 
 public class InitNfcBagActivity extends BaseActivity implements OnClickListener {
 
