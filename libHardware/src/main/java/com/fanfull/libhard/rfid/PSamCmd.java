@@ -2,7 +2,7 @@ package com.fanfull.libhard.rfid;
 
 import org.orsoul.baselib.util.BytesUtil;
 
-public abstract class PSamCmd {
+public final class PSamCmd {
   public static final int COS_RES_CARD_LEN = 12;
 
   public static final byte[] COS_RES_0 = new byte[] { (byte) 0x90, 0x00 };

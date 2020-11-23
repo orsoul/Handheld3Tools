@@ -9,7 +9,7 @@ import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
 /**
- * 读袋锁任务，包括读NFC以及超高频的EPC、TID区.
+ * 读袋锁任务，包括读NFC、可选读超高频的EPC、TID区.
  */
 public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] uid = new byte[7];

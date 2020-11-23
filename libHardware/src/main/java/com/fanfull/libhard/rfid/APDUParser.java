@@ -4,7 +4,7 @@ import com.apkfuns.logutils.LogUtils;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.DesUtil;
 
-public abstract class APDUParser {
+public final class APDUParser {
 
   /**
    * 根据输入参数生成 APDU 命令. 命令可分为四种情况: <br/>

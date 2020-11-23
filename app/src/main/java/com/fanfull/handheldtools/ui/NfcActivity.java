@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.libhard.lock3.PsamHelper;
 import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.PSamCmd;
@@ -264,7 +265,8 @@ public class NfcActivity extends InitModuleActivity {
         nfcController.writeStatus(status);
         return true;
       case KeyEvent.KEYCODE_6:
-        String cpuCard = readCpuCard();
+        //String cpuCard = readCpuCard();
+        String cpuCard = PsamHelper.readCpuCard();
         if (null != cpuCard) {
           ViewUtil.appendShow("cpuCard:" + cpuCard, tvShow);
         } else {

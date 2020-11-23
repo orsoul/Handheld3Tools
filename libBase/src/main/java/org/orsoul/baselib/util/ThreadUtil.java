@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ThreadUtil {
+public final class ThreadUtil {
   private static ExecutorService normalThreadPool;
   private static ExecutorService singleThreadPool;
 
@@ -207,7 +207,7 @@ public class ThreadUtil {
     /** 运行时间，单位毫秒. */
     private long runTime = 5000L;
     /** 运执行次数. */
-    private int runTimes = 1024;
+    private int total = 1024;
 
     public long getRunTime() {
       return runTime;
@@ -217,18 +217,23 @@ public class ThreadUtil {
       this.runTime = runTime;
     }
 
-    public int getRunTimes() {
-      return runTimes;
+    public int getTotal() {
+      return total;
     }
 
-    public void setRunTimes(int runTimes) {
-      this.runTimes = runTimes;
+    public void setTotal(int total) {
+      this.total = total;
     }
 
     @Override public void run() {
       long start = System.currentTimeMillis();
       int count = 0;
-      while (!isStopped()) {
+      while (true) {
+        if (isStopped()) {
+          onStop();
+          return;
+        }
+
         boolean finish = handleOnce();
         count++;
         if (finish) {
@@ -240,10 +245,11 @@ public class ThreadUtil {
           onTimeout(gonging, count);
           break;
         }
-        if (runTimes <= count) {
+        if (total <= count) {
           onTimeout(gonging, count);
           break;
         }
+        onHandleOnce(gonging, total);
       } // end while()
     } // end run
 
@@ -254,10 +260,18 @@ public class ThreadUtil {
      */
     protected abstract boolean handleOnce();
 
+    protected void onHandleOnce(long runTime, int total) {
+    }
+
+    /** 主动停止线程 回调. */
+    protected void onStop() {
+    }
+
+    /** 业务处理结束（即handleOnce()返回true） 回调. */
     protected void onHandleFinish() {
     }
 
-    protected void onTimeout(long runTime, int runTimes) {
+    protected void onTimeout(long runTime, int total) {
     }
   }
 }
