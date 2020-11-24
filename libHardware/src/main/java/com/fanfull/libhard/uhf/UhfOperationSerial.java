@@ -191,9 +191,9 @@ public class UhfOperationSerial extends AbsUhfOperation {
   }
 
   /**
-   * 快速读取tid，效率比通过read()获取高.
+   * 快速读取tid，效率比通过read()获取高，部分芯片或读卡器可能不支持.
    */
-  @Override public boolean fastTid(int sa, byte[] buff) {
+  public boolean fastTid(int sa, byte[] buff) {
     return 0 < fastTidCode(sa, buff);
   }
 

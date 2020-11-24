@@ -71,6 +71,10 @@ public class UhfController implements IUhfOperation {
     return uhfOperation.writeEpc(sa, data);
   }
 
+  public boolean writeEpc(byte[] data) {
+    return uhfOperation.writeEpc(0x02, data);
+  }
+
   @Override
   public boolean writeUse(int sa, byte[] data) {
     return uhfOperation.writeUse(sa, data);
@@ -94,6 +98,10 @@ public class UhfController implements IUhfOperation {
 
   @Override public boolean readTid(int sa, byte[] buff) {
     return uhfOperation.readTid(sa, buff);
+  }
+
+  public boolean readTid(byte[] buff) {
+    return uhfOperation.readTid(0x00, buff);
   }
 
   @Override public boolean readUse(int sa, byte[] buff) {

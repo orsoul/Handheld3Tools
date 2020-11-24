@@ -301,37 +301,7 @@ public class NfcActivity extends InitModuleActivity {
       default:
         break;
     }
-
     return super.onKeyDown(keyCode, event);
-  }
-
-  private String readCpuCard() {
-    byte[] cpuCardBuff = new byte[12];
-    int len = nfcController.send2Cpu(PSamCmd.CMD_COS_0, cpuCardBuff);
-    if (!APDUParser.checkReply(cpuCardBuff, len)) {
-      return null;
-    }
-
-    len = nfcController.send2Cpu(PSamCmd.CMD_COS_1, cpuCardBuff, false);
-    if (!APDUParser.checkReply(cpuCardBuff, len)) {
-      return null;
-    }
-    len = nfcController.send2Cpu(PSamCmd.CMD_COS_2, cpuCardBuff, false);
-    if (!APDUParser.checkReply(cpuCardBuff, len)) {
-      return null;
-    }
-    len = nfcController.send2Cpu(PSamCmd.CMD_COS_3, cpuCardBuff, false);
-    if (!APDUParser.checkReply(cpuCardBuff, len, 0x9100)) {
-      return null;
-    }
-    len = nfcController.send2Cpu(PSamCmd.CMD_COS_4, cpuCardBuff, false);
-    if (!APDUParser.checkReply(cpuCardBuff, len) || len != PSamCmd.COS_RES_CARD_LEN) {
-      return null;
-    }
-
-    String cpuCard = new String(cpuCardBuff, 0, len - 2);
-
-    return cpuCard;
   }
 
   @Override

@@ -73,9 +73,9 @@ public class RfidController implements IRfidPSamOperation {
   }
 
   public byte[] findNfcOrM1() {
-    if (isScanning()) {
-      return null;
-    }
+    //if (isScanning()) {
+    //  return null;
+    //}
     //        setScanning(true);
     byte[] uid = findNfc();
     if (uid == null) {

@@ -13,8 +13,8 @@ import org.orsoul.baselib.util.BytesUtil;
  * 高频卡 操作类，基于 雨滴开发板.
  */
 public class RfidOperationRd extends AbsRfidOperation {
-  private final String SERIAL_PORT_PATH = "/dev/ttyMT2";
-  private final int BUADRATE = 115200;
+  //private final String SERIAL_PORT_PATH = "/dev/ttyMT2";
+  //private final int BUADRATE = 115200;
   private SerialPortController serialPortController;
   //    private ExecutorService executor;
 
