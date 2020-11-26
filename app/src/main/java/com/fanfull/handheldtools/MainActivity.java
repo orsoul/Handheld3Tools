@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import com.apkfuns.logutils.LogUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.base.BaseActivity;
 import com.fanfull.handheldtools.base.BaseApplication;
 import com.fanfull.handheldtools.ui.AboutActivity;
@@ -62,6 +63,16 @@ public class MainActivity extends BaseActivity {
     //    }
     //  }
     //}.start();
+    //setCallback();
+  }
+
+  @Override public void onNetworkChange(boolean isConnected) {
+    LogUtils.d("网络已连接?:%s", isConnected);
+    if (isConnected) {
+      ToastUtils.showShort("网络已连接");
+    } else {
+      ToastUtils.showShort("网络断开");
+    }
   }
 
   @Override
