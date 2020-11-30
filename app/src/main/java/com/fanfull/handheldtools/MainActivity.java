@@ -38,7 +38,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
 
-    SoundUtils.loadSounds(BaseApplication.getContext());
+    SoundUtils.loadSounds(BaseApplication.getInstance());
 
     //        AutoCompleteTextView autoView = findViewById(R.id.auto);
     //        String[] ips = new String[]{

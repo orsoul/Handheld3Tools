@@ -1040,7 +1040,12 @@ public abstract class UhfCmd {
   }
 
   public static void main(String[] args) {
-    byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0, 0x0FC2A0);
-    System.out.println(BytesUtil.bytes2HexString(setPwdCmd));
+    //byte[] setPwdCmd = getSetPwdCmd(0x760039AD, null, 0, 0, 0x0FC2A0);
+    //System.out.println(BytesUtil.bytes2HexString(setPwdCmd));
+
+    byte[] test = BytesUtil.hexString2Bytes(
+        "A55A002286123456780000000000010002000600112233445566778899AABB000D0A");
+    setCheckByte(test);
+    System.out.println(BytesUtil.bytes2HexString(test));
   }
 }
