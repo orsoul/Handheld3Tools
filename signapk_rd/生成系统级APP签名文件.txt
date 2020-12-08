@@ -1,0 +1,11 @@
+使用platform.pk8和platform.x509文件生成系统签名文件，使用系统签名文件可将APP签名为系统级APP。
+打开命令行，执行如下3条命令：
+
+1. 生成platform.pem
+openssl pkcs8 -inform DER -nocrypt -in platform.pk8 -out platform.pem
+
+2. 生成platform.pk12,密码fanfull，名称fanfull_rd
+openssl pkcs12 -export -in platform.x509.pem -out platform.p12 -inkey platform.pem -password pass:fanfull -name fanfull_rd
+
+3. 生成系统签名文件fanfull_rd.keystore，储存密码：fanfull，密钥密码：fanfull， 别名：fanfull
+keytool -importkeystore -deststorepass fanfull -destkeystore ./fanfull_rd.keystore -srckeystore ./platform.p12 -srcstoretype PKCS12 -srcstorepass fanfull -alias fanfull
