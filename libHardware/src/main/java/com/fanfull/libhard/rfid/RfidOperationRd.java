@@ -193,10 +193,9 @@ public class RfidOperationRd extends AbsRfidOperation {
     }
   }
 
-  @Override
-  public boolean readNfc4Byte(int sa, byte[] data4) {
+  @Override public boolean readNfc4Byte(int sa, byte[] data4) {
     boolean readSuccess = Rfid.ULPcdRead((byte) sa, data4);
-    LogUtils.tag(TAG).v("%s:%02X(%s)", readSuccess, sa, BytesUtil.bytes2HexString(data4));
+    //LogUtils.tag(TAG).v("%s:%02X(%s)", readSuccess, sa, BytesUtil.bytes2HexString(data4));
     return readSuccess;
   }
 

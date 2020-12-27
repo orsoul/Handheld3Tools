@@ -60,7 +60,7 @@ public class Lock3Bean {
   /** 袋流转信息 索引. */
   private int circulationIndex;
 
-  /** 基金代启用状态. 1:已启用，0:未启用，-1:已注销 */
+  /** 基金代启用状态. 1:已启用，0:未启用，2:已注销，-1:未定义状态 */
   private int enable;
 
   /** 单片机工作模式. */
@@ -328,9 +328,11 @@ public class Lock3Bean {
           if (Arrays.equals(Lock3Util.ENABLE_CODE_ENABLE, unit.buff)) {
             this.enable = 1;
           } else if (Arrays.equals(Lock3Util.ENABLE_CODE_UN_REG, unit.buff)) {
-            this.enable = -1;
-          } else {
+            this.enable = 2;
+          } else if (Arrays.equals(Lock3Util.ENABLE_CODE_DISABLE, unit.buff)) {
             this.enable = 0;
+          } else {
+            this.enable = -1;
           }
           break;
         case Lock3Bean.SA_WORK_MODE:

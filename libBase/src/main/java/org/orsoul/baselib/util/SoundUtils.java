@@ -91,8 +91,8 @@ public class SoundUtils {
     mSoundIds[10] = mSoundPool.load(context, R.raw.cshi, 5);
     mSoundIds[11] = mSoundPool.load(context, R.raw.cbai, PRIORITY);
 
-    DROP_SOUND = mSoundPool.load(context, R.raw.drop, 5); // 操作正确的声音
-    FAILED_SOUND = mSoundPool.load(context, R.raw.failed, 5); // //操作错误的 声音
+    DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, 5); // 操作正确的声音
+    FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, 5); // //操作错误的 声音
     TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_scan_one, 5); // //操作错误的 声音
 
     SCAN_START_SOUND = mSoundPool.load(context, R.raw.scan_bunch_start, 1);
@@ -100,7 +100,7 @@ public class SoundUtils {
         .load(context, R.raw.scan_bunch_finish, 1);
     // WRITE_ING_DATA = mSoundPool.load(context, R.raw.dita, 5);//hu
     WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 5);
-    INIT_SUCCESS = mSoundPool.load(context, R.raw.init_success, 5);// 初始化成功
+    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 5);// 初始化成功
 
     REFRESH_SCREEN = mSoundPool.load(context, R.raw.please_refresh_screen,
         5);

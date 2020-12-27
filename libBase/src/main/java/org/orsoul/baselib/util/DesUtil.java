@@ -243,20 +243,20 @@ public class DesUtil {
     return null;
   }
 
-  private static void testKey(byte[] keyBytes) {
+  private static void testKey(byte[] keyBytes, String algorithm) {
     try {
       //第一种，Factory
       DESKeySpec keySpec = new DESKeySpec(keyBytes);
-      SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+      SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(algorithm);
       SecretKey key1 = keyFactory.generateSecret(keySpec);
 
       //第二种, Generator
-      KeyGenerator keyGenerator = KeyGenerator.getInstance("DES");
+      KeyGenerator keyGenerator = KeyGenerator.getInstance(algorithm);
       keyGenerator.init(56, new SecureRandom(keyBytes));//key为8个字节，实际用了56位； 后面随机数用key作为种子seed生成
       SecretKey key2 = keyGenerator.generateKey();
 
       //第三种， SecretKeySpec
-      SecretKey key3 = new SecretKeySpec(keyBytes, "DES");//SecretKeySpec类同时实现了Key和KeySpec接口
+      SecretKey key3 = new SecretKeySpec(keyBytes, algorithm);//SecretKeySpec类同时实现了Key和KeySpec接口
 
       //打印
       System.out.println("key1：" + BytesUtil.bytes2HexString(key1.getEncoded()));
@@ -264,12 +264,14 @@ public class DesUtil {
       System.out.println("key3：" + BytesUtil.bytes2HexString(key3.getEncoded()));
     } catch (Exception e) {
       System.out.println(e.toString());
+      e.printStackTrace();
     }
   }
 
   public static void main(String[] args) throws Exception {
 
-    testDes();
+    testKey(new byte[8], ALGORITHM_NAME_3DES);
+    //testDes();
     //int i = 2;
     //System.out.println(String.format("%d,%d,%d,%d,", i++, ++i, i, i++));
     //String s = "char *s=%c%s%c;%cprintf(s,34,s,34,10);";

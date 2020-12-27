@@ -24,6 +24,7 @@ import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class NfcActivity extends InitModuleActivity {
@@ -259,7 +260,11 @@ public class NfcActivity extends InitModuleActivity {
         }
         return true;
       case KeyEvent.KEYCODE_3:
+        ThreadUtil.execute(() -> testReadNfc());
+        break;
       case KeyEvent.KEYCODE_4:
+        ThreadUtil.execute(() -> testReadNfc2());
+        break;
       case KeyEvent.KEYCODE_5:
         int status = keyCode - KeyEvent.KEYCODE_0;
         nfcController.writeStatus(status);
@@ -302,6 +307,35 @@ public class NfcActivity extends InitModuleActivity {
         break;
     }
     return super.onKeyDown(keyCode, event);
+  }
+
+  private void testReadNfc() {
+    int len;
+    ClockUtil.runTime(true);
+    byte[] nfc = nfcController.findNfc();
+    LogUtils.d("findCard:%s", ClockUtil.runTime(true));
+    byte[] data = new byte[200];
+    boolean readNfc = nfcController.readNfc(4, data, false);
+    long runTime = ClockUtil.runTime();
+    LogUtils.d("readNfc:%s,%s,%s", runTime, readNfc, BytesUtil.bytes2HexString(data));
+  }
+
+  private void testReadNfc2() {
+    int len = 0;
+    byte[] data = new byte[4];
+    Random random = new Random();
+    ClockUtil.runTime(true);
+    byte[] nfc = nfcController.findNfc();
+    LogUtils.d("findCard:%s", ClockUtil.runTime(true));
+    for (int i = 0; i < 50; i++) {
+      int sa = random.nextInt(100) + 4;
+      boolean readNfc = nfcController.readNfc(sa, data, false);
+      if (readNfc) {
+        len++;
+      }
+    }
+    long runTime = ClockUtil.runTime();
+    LogUtils.d("readNfc:%s,%s", runTime, len);
   }
 
   @Override

@@ -204,6 +204,8 @@ public final class ThreadUtil {
   }
 
   public static abstract class TimeThreadRunnable extends ThreadRunnable {
+    /** 开始运行的时间，单位毫秒. */
+    private long startTime;
     /** 运行时间，单位毫秒. */
     private long runTime = 5000L;
     /** 运执行次数. */
@@ -225,8 +227,13 @@ public final class ThreadUtil {
       this.total = total;
     }
 
+    /** 设置任务开始运行的时间为当前时间. */
+    public void resetStartTime() {
+      startTime = System.currentTimeMillis();
+    }
+
     @Override public void run() {
-      long start = System.currentTimeMillis();
+      resetStartTime();
       int count = 0;
       while (true) {
         if (isStopped()) {
@@ -240,7 +247,7 @@ public final class ThreadUtil {
           onHandleFinish();
           break;
         }
-        long gonging = System.currentTimeMillis() - start;
+        long gonging = System.currentTimeMillis() - startTime;
         if (runTime <= gonging) {
           onTimeout(gonging, count);
           break;
@@ -260,7 +267,7 @@ public final class ThreadUtil {
      */
     protected abstract boolean handleOnce();
 
-    protected void onHandleOnce(long runTime, int total) {
+    protected void onHandleOnce(long goingTime, int total) {
     }
 
     /** 主动停止线程 回调. */

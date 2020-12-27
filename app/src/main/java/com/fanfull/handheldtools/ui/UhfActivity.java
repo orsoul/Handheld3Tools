@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.fanfull.handheldtools.LotScanTask;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.libhard.uhf.IUhfListener;
@@ -44,13 +45,13 @@ public class UhfActivity extends InitModuleActivity {
   private boolean readingLot;
   private int readLotCount;
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  private LotScanTask lotScanTask;
+
+  @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
   }
 
-  @Override
-  protected void initView() {
+  @Override protected void initView() {
     setContentView(R.layout.activity_uhf);
     tvShow = findViewById(R.id.tv_barcode_show);
     tvShow.setMovementMethod(ScrollingMovementMethod.getInstance());
@@ -107,6 +108,7 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
         //socketService = new SocketServiceDemo();
         //socketService.start();
+        lotScanTask = new LotScanTask(uhfController);
       }
 
       @Override
@@ -186,8 +188,7 @@ public class UhfActivity extends InitModuleActivity {
     uhfController.open();
   }
 
-  @Override
-  public void onClick(View v) {
+  @Override public void onClick(View v) {
     v.setEnabled(false);
     Object info;
     switch (v.getId()) {
@@ -256,8 +257,7 @@ public class UhfActivity extends InitModuleActivity {
     }
   }
 
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
         KeyEvent.keyCodeToString(keyCode),
         event.getRepeatCount(),
@@ -290,6 +290,15 @@ public class UhfActivity extends InitModuleActivity {
         LogUtils.d("write use %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
         break;
       case KeyEvent.KEYCODE_3:
+        if (lotScanTask == null) {
+          break;
+        }
+        if (lotScanTask.startThread()) {
+          ToastUtils.showShort("已开始批量扫描");
+        } else {
+          lotScanTask.stopThread();
+          ToastUtils.showShort("已停止批量扫描");
+        }
         break;
       case KeyEvent.KEYCODE_4:
 

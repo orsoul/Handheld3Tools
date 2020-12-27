@@ -10,7 +10,6 @@ import com.fanfull.handheldtools.R;
 import org.orsoul.baselib.util.ClockUtil;
 
 public abstract class InitModuleActivity extends BaseActivity implements View.OnClickListener {
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +46,9 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
                    event.isShiftPressed(),
                    event.getMetaState()
         );
+
+        LogUtils.tag("aa").d("debug");
+
         switch (keyCode) {
             case KeyEvent.KEYCODE_ENTER:
                 onEnterPress();
