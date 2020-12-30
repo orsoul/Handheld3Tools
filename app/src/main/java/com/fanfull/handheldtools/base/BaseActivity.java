@@ -11,7 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.apkfuns.logutils.LogUtils;
-import com.fanfull.handheldtools.util.DialogUtil;
+import com.fanfull.handheldtools.ui.view.DialogUtil;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
     BaseApplication.NetworkCallback {

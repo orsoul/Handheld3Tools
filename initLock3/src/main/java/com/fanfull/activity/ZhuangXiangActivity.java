@@ -181,12 +181,12 @@ public class ZhuangXiangActivity extends BaseActivity {
           mBtnOK.setText("重试");
           mBtnOK.setEnabled(true);
           ToastUtils.showShort("该袋已经装箱");
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           break;
         case READ_EPC_FAILED:
           mBtnOK.setText("重试");
           mBtnOK.setEnabled(true);
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           break;
         case READ_EPC_SUCCESS:
         case NET_INIT_SUCCESS:
@@ -282,12 +282,12 @@ public class ZhuangXiangActivity extends BaseActivity {
     protected void onReadSuccess(String bagId, boolean dataFromEpc) {
       LogUtils.d("dataFromEpc %s:%s", dataFromEpc, bagId);
       if (!BagIdParser.isBagId(bagId)) {
-        SoundUtils.playFailedSound();
+        SoundUtils.playToneFailed();
         ToastUtils.showShort("该袋未初始化");
         runOnUiThread(() -> mBtnOK.setEnabled(true));
         return;
       } else if (bagIdList.contains(bagId)) {
-        SoundUtils.playFailedSound();
+        SoundUtils.playToneFailed();
         ToastUtils.showShort("该袋已装箱");
         runOnUiThread(() -> mBtnOK.setEnabled(true));
         return;
@@ -306,7 +306,7 @@ public class ZhuangXiangActivity extends BaseActivity {
     }
 
     protected void onReadFailed() {
-      SoundUtils.playFailedSound();
+      SoundUtils.playToneFailed();
       ToastUtils.showShort("读锁失败");
       runOnUiThread(() -> {
         mBtnOK.setEnabled(true);

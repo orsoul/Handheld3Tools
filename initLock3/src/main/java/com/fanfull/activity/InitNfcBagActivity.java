@@ -738,7 +738,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
 
     @Override protected void onFailed(int readRes, String info) {
       super.onFailed(readRes, info);
-      SoundUtils.playFailedSound();
+      SoundUtils.playToneFailed();
       runOnUiThread(() -> {
         mBtnOK.setEnabled(true);
         switch (readRes) {
@@ -778,7 +778,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
         case MSG_CHECK_RES:
           mBtnOK.setEnabled(true);
           if (!(msg.obj instanceof BagIdParser)) {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             vShow1.setDoing(false, "未读到袋锁");
             vShow2.setDoing(false, "未读到袋锁");
             vShow3.setDoing(false, "未读到袋锁");
@@ -813,16 +813,16 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
             vShow3.setDoing(false, "券别不匹配");
           }
           if (!checkRes[0]) {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             ToastUtils.showShort("该袋未初始化");
             return true;
           }
           if (!checkRes[3]) {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
           } else {
             checkNumber++;
             mTvInitNumber.setText(String.valueOf(checkNumber));
-            SoundUtils.playInitSuccessSound();
+            SoundUtils.playToneSuccess();
             SoundUtils.playNumber(checkNumber);
           }
           return true;
@@ -895,7 +895,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
         case READ_EPC_FAILED:
           // 更新控件
           vShow1.setDoing(false);
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
           break;
@@ -920,7 +920,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           if (mStep != STEP_READ_RFID) {
             return true;
           }
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           vShow2.setDoing(false);
           break;
 
@@ -947,7 +947,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           // 标记 无子线程运行
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           vShow3.setDoing(false);
           break;
 
@@ -968,7 +968,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           break;
         case WRITHE_RFID_FAILED:
           vShow4.setDoing(false);
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
           break;
@@ -989,7 +989,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           break;
         case NET_INIT_FAILED:
           // mToast.cancel();
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
           mStep = STEP_READ_EPC;
@@ -999,7 +999,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           break;
 
         case NET_RP_FAILED:
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
           mStep = STEP_READ_EPC;
@@ -1010,12 +1010,12 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           break;
 
         case UPLOAD_INIT_SUCCESS:
-          SoundUtils.playInitSuccessSound();
+          SoundUtils.playToneSuccess();
           mTvInitNumber.setText(mOffCount + "");
           mOffCount++;
           break;
         case UPLOAD_INIT_FAILED:
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           mOffCount++;
           mFailedCount++;
           ToastUtils.showShort("失败" + mFailedCount + "个");
@@ -1024,7 +1024,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           mHandler.sendEmptyMessage(NET_INIT_SUCCESS);
           break;
         case SQL_INIT_FAILED:
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
 
@@ -1036,7 +1036,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           mBtnOK.setText("重新开始");
           break;
         case SQL_NET_INIT_SAME:
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           haveTaskRunning = false;
           mBtnCancel.setText("退出");
           // DialogUtil dialogUtil = new
@@ -1056,7 +1056,7 @@ public class InitNfcBagActivity extends BaseActivity implements OnClickListener 
           ToastUtils.showShort(String.valueOf(msg.obj));
           vShow4.setDoing(false, String.valueOf(msg.obj));
           mBtnOK.setEnabled(true);
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           break;
         case MSG_NET_INIT_SAME:
           dialogUtil.dismissProgressDialog();

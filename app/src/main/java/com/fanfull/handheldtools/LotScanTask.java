@@ -18,7 +18,7 @@ public class LotScanTask extends ThreadUtil.TimeThreadRunnable {
   }
 
   @Override protected boolean handleOnce() {
-    SoundUtils.playScanDiDaSound();
+    SoundUtils.playToneDiDa();
     boolean readSuccess = uhfController.readEpc(epcBuff);
     if (!readSuccess) {
       return false;

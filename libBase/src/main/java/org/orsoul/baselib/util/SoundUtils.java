@@ -93,17 +93,13 @@ public class SoundUtils {
 
     DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, 5); // 操作正确的声音
     FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, 5); // //操作错误的 声音
+    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 5);// 初始化成功
     TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_scan_one, 5); // //操作错误的 声音
+    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 5);
 
     SCAN_START_SOUND = mSoundPool.load(context, R.raw.scan_bunch_start, 1);
-    SCAN_FINISH_SOUND = mSoundPool
-        .load(context, R.raw.scan_bunch_finish, 1);
-    // WRITE_ING_DATA = mSoundPool.load(context, R.raw.dita, 5);//hu
-    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 5);
-    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 5);// 初始化成功
-
-    REFRESH_SCREEN = mSoundPool.load(context, R.raw.please_refresh_screen,
-        5);
+    SCAN_FINISH_SOUND = mSoundPool.load(context, R.raw.scan_bunch_finish, 1);
+    REFRESH_SCREEN = mSoundPool.load(context, R.raw.please_refresh_screen, 5);
     SCAN_BAG = mSoundPool.load(context, R.raw.please_scan_bag, 5);
     SCAN_PILE_BAG = mSoundPool.load(context, R.raw.please_scan_pile_bag, 5);
   }
@@ -230,22 +226,29 @@ public class SoundUtils {
     playNumber(Integer.parseInt(n));
   }
 
-  /**
-   * 播放 正常按键声音
-   */
-  public static void playDropSound() {
+  /** 播放成功声. */
+  public static void playToneSuccess() {
+    SoundUtils.play(INIT_SUCCESS);
+  }
+
+  /** 播放 正常按键声音 */
+  public static void playToneDrop() {
     SoundUtils.play(DROP_SOUND);
   }
 
-  /**
-   * 播放 错误声音
-   */
-  public static void playFailedSound() {
+  /** 播放 错误声音. */
+  public static void playToneFailed() {
     SoundUtils.play(FAILED_SOUND);
   }
 
+  /** 播放扫描音效. */
   public static void playToneScanOne() {
     SoundUtils.play(TONE_SCAN_ONE);
+  }
+
+  /** 播放 滴答声. */
+  public static void playToneDiDa() {
+    SoundUtils.play(WRITE_ING_DATA);
   }
 
   /**
@@ -260,20 +263,6 @@ public class SoundUtils {
    */
   public static void playScanFinishSound() {
     SoundUtils.play(SCAN_FINISH_SOUND);
-  }
-
-  /**
-   * 播放 滴答声
-   */
-  public static void playScanDiDaSound() {
-    SoundUtils.play(WRITE_ING_DATA);
-  }
-
-  /**
-   * 播放 初始化成功声
-   */
-  public static void playInitSuccessSound() {
-    SoundUtils.play(INIT_SUCCESS);
   }
 
   /**

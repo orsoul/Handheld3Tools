@@ -30,14 +30,14 @@ public class SerialPortRd extends AbsSerialPort {
     return serialPort.getOutputStream();
   }
 
-  @Override
-  public void close() {
-    try {
-      serialPort.getInputStream().close();
-      serialPort.getOutputStream().close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  @Override public void close() {
     serialPort.close();
+    //try {
+    //serialPort.getInputStream().close();
+    //serialPort.getOutputStream().close();
+    //  serialPort.close();
+    //} catch (IOException e) {
+    //  e.printStackTrace();
+    //}
   }
 }

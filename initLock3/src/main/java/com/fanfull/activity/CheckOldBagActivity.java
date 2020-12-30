@@ -41,14 +41,14 @@ public class CheckOldBagActivity extends BaseActivity {
         byte[] block8 = RfidController.getInstance().readM1(9);
         if (block8 != null) {
           LogUtils.d("block9:%s", BytesUtil.bytes2HexString(block8));
-          SoundUtils.playInitSuccessSound();
+          SoundUtils.playToneSuccess();
           if (block8[0] == 0x39) {
             info = "已上锁";
           } else {
             info = "已开锁";
           }
         } else {
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           info = "获取失败";
         }
         tvShow.setText(info);
@@ -62,14 +62,14 @@ public class CheckOldBagActivity extends BaseActivity {
         }
         boolean b = RfidController.getInstance().writeM1(9, bytes);
         if (b) {
-          SoundUtils.playInitSuccessSound();
+          SoundUtils.playToneSuccess();
           if (isLock) {
             info = "已上锁";
           } else {
             info = "已开锁";
           }
         } else {
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           info = "更新失败";
         }
         tvShow.setText(info);

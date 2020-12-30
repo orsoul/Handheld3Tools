@@ -159,7 +159,7 @@ public class OldBagActivity extends InitModuleActivity {
         btnReadM1.setEnabled(false);
         byte[] block8 = nfcController.read456Block();
         if (block8 != null) {
-          SoundUtils.playInitSuccessSound();
+          SoundUtils.playToneSuccess();
           m1Barcode = new String(block8);
           Spanned colorSpanned =
               HtmlUtil.getColorSpanned(0x0000FF, "\n%s - %s", m1Barcode,
@@ -170,7 +170,7 @@ public class OldBagActivity extends InitModuleActivity {
           appendShow(String.format("\n%s", hex));
           LogUtils.i("M1 hex:%s", hex);
         } else {
-          SoundUtils.playFailedSound();
+          SoundUtils.playToneFailed();
           info = "读袋锁失败";
           //appendShow(info);
         }

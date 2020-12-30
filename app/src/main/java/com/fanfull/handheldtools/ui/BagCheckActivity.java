@@ -369,10 +369,10 @@ public class BagCheckActivity extends InitModuleActivity {
         SoundUtils.playNumber(size);
         info = String.format("%s,Nfc:%s", size, bagIdNfc);
       } else if (bagIdEpc != null) {
-        SoundUtils.playFailedSound();
+        SoundUtils.playToneFailed();
         info = String.format("Epc:%s", bagIdEpc);
       } else {
-        SoundUtils.playFailedSound();
+        SoundUtils.playToneFailed();
         info = "读Nfc和Epc失败";
       }
 
@@ -380,7 +380,7 @@ public class BagCheckActivity extends InitModuleActivity {
       runOnUi(() -> {
         ViewUtil.appendShow(info, tvShow);
         if (finalOtherNoHave) {
-          SoundUtils.playInitSuccessSound();
+          SoundUtils.playToneSuccess();
           ViewUtil.appendShow("发现未在列表中", tvShow);
         }
       });
@@ -451,7 +451,7 @@ public class BagCheckActivity extends InitModuleActivity {
     }
 
     @Override protected void onSuccess(Lock3Bean lock3Bean) {
-      SoundUtils.playInitSuccessSound();
+      SoundUtils.playToneSuccess();
       runOnUiThread(() -> {
         dismissLoadingView();
         Spanned parse = parse(lock3Bean);

@@ -97,11 +97,11 @@ public class NfcActivity extends InitModuleActivity {
     byte[] nfcOrM1 = nfcController.findNfcOrM1();
     String info;
     if (nfcOrM1 != null) {
-      SoundUtils.playInitSuccessSound();
+      SoundUtils.playToneSuccess();
       info = BytesUtil.bytes2HexString(nfcOrM1);
       switchNfc.setChecked(nfcOrM1.length == 7);
     } else {
-      SoundUtils.playFailedSound();
+      SoundUtils.playToneFailed();
       info = "寻卡失败";
     }
     appendShow(info);
@@ -147,20 +147,20 @@ public class NfcActivity extends InitModuleActivity {
                 readbuf[8] == (byte) 0xFF ? "测试模式" : "产品模式",
                 BytesUtil.bytes2HexString(readbuf, 4, 8));
             info = colorSpanned;
-            SoundUtils.playInitSuccessSound();
+            SoundUtils.playToneSuccess();
           } else {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             info = "读失败";
           }
         } else {
           /* M1 模式 */
           byte[] block8 = nfcController.read456Block();
           if (block8 != null) {
-            SoundUtils.playInitSuccessSound();
+            SoundUtils.playToneSuccess();
             info = String.format("读成功：%s\n%s", BytesUtil.bytes2HexString(block8),
                 new String(block8));
           } else {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             info = "读失败";
           }
         }
@@ -172,10 +172,10 @@ public class NfcActivity extends InitModuleActivity {
           /* nfc模式 */
           boolean writeStatus = nfcController.writeStatus(1);
           if (writeStatus) {
-            SoundUtils.playInitSuccessSound();
+            SoundUtils.playToneSuccess();
             info = String.format("标志位成功写为 F1");
           } else {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             info = "写标志位失败";
           }
         } else {
@@ -185,10 +185,10 @@ public class NfcActivity extends InitModuleActivity {
           //                boolean res = nfcController.writeM1(8, data);
           boolean res = nfcController.write456Block(data, 1);
           if (res) {
-            SoundUtils.playInitSuccessSound();
+            SoundUtils.playToneSuccess();
             info = String.format("写456区成功：%s", BytesUtil.bytes2HexString(data));
           } else {
-            SoundUtils.playFailedSound();
+            SoundUtils.playToneFailed();
             info = "写8区失败";
           }
         }
