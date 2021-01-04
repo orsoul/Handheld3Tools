@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#fff"
+  android:paddingTop="40dp">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:orientation="vertical"
+    android:padding="0dp">
+
+    <TextView
+      android:id="@+id/textView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="设置IP、端口"
+      android:textColor="@android:color/black"
+      android:textSize="18sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <AutoCompleteTextView
+      android:id="@+id/auto_ip"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:completionHint="历史IP"
+      android:completionThreshold="1"
+      android:dropDownWidth="match_parent"
+      android:dropDownHeight="wrap_content"
+      android:dropDownVerticalOffset="2dp"
+      android:gravity="center"
+      android:hint="输入IP"
+      android:inputType="none"
+      android:visibility="visible"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/textView" />
+
+    <AutoCompleteTextView
+      android:id="@+id/auto_port"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:completionHint="历史端口"
+      android:completionThreshold="1"
+      android:dropDownWidth="match_parent"
+      android:dropDownHeight="wrap_content"
+      android:dropDownVerticalOffset="2dp"
+      android:gravity="center"
+      android:hint="输入端口"
+      android:inputType="number"
+      android:visibility="visible"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="@id/auto_ip"
+      app:layout_constraintTop_toBottomOf="@id/auto_ip" />
+
+    <com.deadline.statebutton.StateButton
+      android:id="@+id/btn_ip_save"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:paddingStart="16dp"
+      android:paddingTop="8dp"
+      android:paddingEnd="16dp"
+      android:text="保存"
+      app:animationDuration="200"
+      app:layout_constraintStart_toStartOf="@id/auto_port"
+      app:layout_constraintTop_toBottomOf="@id/auto_port"
+      app:normalBackgroundColor="@color/about_facebook_color"
+      app:normalTextColor="@android:color/white"
+      app:pressedBackgroundColor="@color/about_twitter_color"
+      app:pressedTextColor="@android:color/white"
+      app:radius="3dp"
+      app:round="true"
+      app:unableBackgroundColor="@color/about_separator_color"
+      app:unableTextColor="@android:color/white" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

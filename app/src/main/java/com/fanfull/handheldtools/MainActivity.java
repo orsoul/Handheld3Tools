@@ -17,6 +17,7 @@ import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
+import com.fanfull.handheldtools.ui.view.SetIpPortView;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import org.orsoul.baselib.util.AppUtil;
@@ -40,15 +41,15 @@ public class MainActivity extends BaseActivity {
 
     SoundUtils.loadSounds(BaseApplication.getInstance());
 
-    //        AutoCompleteTextView autoView = findViewById(R.id.auto);
-    //        String[] ips = new String[]{
-    //                "192.168.11.177",
-    //                "192.168.11.197",
-    //                "192.168.11.107",
-    //        };
-    //        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ips);
-    //        autoView.setAdapter(adapter);
-    //        DeviceInfo.showDeviceInfo();
+    //AutoCompleteTextView autoView = findViewById(R.id.auto);
+    //String[] ips = new String[]{
+    //        "192.168.11.177",
+    //        "192.168.11.197",
+    //        "192.168.11.107",
+    //};
+    //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ips);
+    //autoView.setAdapter(adapter);
+    //DeviceInfo.showDeviceInfo();
 
     //new Thread() {
     //  @Override public void run() {
@@ -87,6 +88,11 @@ public class MainActivity extends BaseActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
+        SetIpPortView.showIpPortSetting(this, (ip, port) -> {
+          LogUtils.d("ip:%s:%s", ip, port);
+          ToastUtils.showShort("ip:%s:%s", ip, port);
+          return false;
+        });
         break;
       case KeyEvent.KEYCODE_2:
         break;
