@@ -20,11 +20,11 @@ allprojects {
     jcenter()
     maven { url 'https://jitpack.io' }
   }
+
   task myDemo(group: 'myTask') {
     if (project.name.startsWith('lib')) {
-      //      println project.name
-      def preBuildTask = project.tasks.findByName('preBuild')
-      //      project.task('assembleAndCopyDebug').doLast {}
+//      project.properties.forEach()
+      println "getVersion:" + project.getVersion()
     }
   }
 
@@ -32,16 +32,26 @@ allprojects {
     if (project.name.startsWith('lib')) {
       dependsOn 'assembleDebug'
 
-      String srcFile = "build/outputs/aar/${project.name}-debug.aar"
-      String destProject = '../aar/'
-      String destDesktop = "D:/!Desktop/${rootProject.name}-aar/"
-
-      println "${srcFile} -> ${destDesktop}"
+      //      String destDir = "D:/!Desktop/${rootProject.name}-aar/"
+      String destDir = rootDir.toString() + '/apk/'
+      File srcFile = new File("build/outputs/aar/${project.name}-debug.aar")
 
       from srcFile
-      into destDesktop
+      into destDir
+
+      String newName = "${project.name}D_" +
+          "${getStringTime()}.aar"
+
+      File destFile = new File(destDir, srcFile.name)
+      File newNameFile = new File(destFile.parent, newName)
+      def res = destFile.renameTo(newNameFile)
+      println "${destFile.name} -> ${newNameFile.name} res:" + res
     }
   }
+}
+
+String getStringTime() {
+  return new Date().format("yyyy-MM-dd_HH_mm")
 }
 
 task clean(type: Delete) {

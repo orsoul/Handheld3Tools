@@ -84,10 +84,14 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
+# Android Profiling
+*.hprof
+
 # custom
 */build/
 /apk
 /.svn
+!*/libs/*.aar
 
 # checkstyle
 .idea/checkstyleidea-libs/
