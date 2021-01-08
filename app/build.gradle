@@ -64,7 +64,8 @@ android {
       def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
 
       // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
-      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
+      //      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
+      def releaseTime = getStringTime()
       def projectName = "手持测试"
       def apkName = "${projectName}_" +
           "${defaultConfig.versionName}_" +

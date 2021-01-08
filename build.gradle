@@ -23,7 +23,7 @@ allprojects {
 
   task myDemo(group: 'myTask') {
     if (project.name.startsWith('lib')) {
-//      project.properties.forEach()
+      //      project.properties.forEach()
       println "getVersion:" + project.getVersion()
     }
   }
@@ -38,19 +38,25 @@ allprojects {
 
       from srcFile
       into destDir
+      /* 重命名方式1： 使用一个闭合映射文件名 */
+      rename { String fileName ->
+        fileName.replace('-debug', "D-${getStringTime()}")
+      }
 
-      String newName = "${project.name}D_" +
-          "${getStringTime()}.aar"
+      /* 重命名方式2： 使用正则表达式映射文件名 */
+      //            rename '(.+)-debug(.+)', '$1D-$2'
 
-      File destFile = new File(destDir, srcFile.name)
-      File newNameFile = new File(destFile.parent, newName)
-      def res = destFile.renameTo(newNameFile)
-      println "${destFile.name} -> ${newNameFile.name} res:" + res
+      //      String newName = "${project.name}D_" +
+      //          "${getStringTime()}.aar"
+      //      File destFile = new File(destDir, srcFile.name)
+      //      File newNameFile = new File(destFile.parent, newName)
+      //      def res = destFile.renameTo(newNameFile)
+      //      println "${destFile} -> ${newNameFile} res:" + res
     }
   }
 }
 
-String getStringTime() {
+static String getStringTime() {
   return new Date().format("yyyy-MM-dd_HH_mm")
 }
 
