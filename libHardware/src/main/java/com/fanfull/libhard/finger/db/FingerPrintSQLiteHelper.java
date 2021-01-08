@@ -5,8 +5,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.bean.FingerBean;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +112,7 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
 
     ContentValues contentValues = new ContentValues();
     contentValues.put(INDEX_FINGER_INDEX, fingerIndex);
-    contentValues.put(INDEX_FINGER_FEATURE, fingerBean.getFeatureString());
+    contentValues.put(INDEX_FINGER_FEATURE, fingerBean.getFeature());
 
     String fingerId = fingerBean.getFingerId();
     String userId = fingerBean.getUserId();
@@ -288,6 +290,19 @@ public class FingerPrintSQLiteHelper extends SQLiteOpenHelper {
     cursor.close();
     LogUtils.d("queryFinger by index：%s, %s", fingerIndex, reVal);
     return reVal;
+  }
+
+  /** 获取 记录的数量. */
+  public int getAllCount() {
+    Cursor cursor = sqliteDataBase.rawQuery("select count(id) from " + TABLE_NAME, null);
+    int count;
+    if (cursor.moveToFirst()) {
+      count = cursor.getInt(0);
+    } else {
+      count = -1;
+    }
+    cursor.close();
+    return count;
   }
 
   /** 根据指纹位置 删除指纹. */

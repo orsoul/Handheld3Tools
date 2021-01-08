@@ -1,7 +1,11 @@
 package com.fanfull.libhard.finger.bean;
 
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
+import com.fanfull.libhard.finger.impl.FingerprintController;
+
 import org.orsoul.baselib.util.BytesUtil;
+
+import java.util.Arrays;
 
 /**
  * 指纹实体类.
@@ -12,6 +16,7 @@ public class FingerBean {
   private int fingerIndex = -1;
   /** 指纹特征码 512字节. */
   private byte[] fingerFeature;
+  private String feature;
 
   /** 指纹id，业务暂未需要. */
   private String fingerId;
@@ -35,12 +40,12 @@ public class FingerBean {
     this.fingerId = fingerId;
   }
 
-  public FingerBean(int fingerIndex, String fingerFeature, String fingerId,
+  public FingerBean(int fingerIndex, String feature, String fingerId,
       int fingerVersion) {
     this.fingerIndex = fingerIndex;
     this.fingerVersion = fingerVersion;
     this.fingerId = fingerId;
-    setFeatureString(fingerFeature);
+    setFeature(feature);
   }
 
   public FingerBean(int fingerIndex, byte[] fingerFeature, String fingerId) {
@@ -56,17 +61,18 @@ public class FingerBean {
     this.fingerVersion = fingerVersion;
   }
 
-  public String getFeatureString() {
-    if (fingerFeature == null) {
-      return null;
+  public String getFeature() {
+    if (feature == null && fingerFeature != null) {
+      feature = BytesUtil.bytes2HexString(fingerFeature);
     }
     //return Base64.encodeToString(fingerFeature, Base64.NO_WRAP);
-    return BytesUtil.bytes2HexString(fingerFeature);
+    return feature;
   }
 
-  public byte[] setFeatureString(String featureString) {
+  public byte[] setFeature(String featureString) {
     if (featureString != null) {
       //fingerFeature = Base64.decode(featureString, Base64.NO_WRAP);
+      feature = featureString;
       fingerFeature = BytesUtil.hexString2Bytes(featureString);
     }
     return fingerFeature;
@@ -82,7 +88,24 @@ public class FingerBean {
         ", fingerStatus='" + fingerStatus + '\'' +
         ", fingerName='" + fingerName + '\'' +
         ", userName='" + userName + '\'' +
+        ", feature='" + getFeature() + '\'' +
         '}';
+  }
+
+  @Override public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    FingerBean that = (FingerBean) o;
+
+    if (fingerIndex != that.fingerIndex) return false;
+    return Arrays.equals(fingerFeature, that.fingerFeature);
+  }
+
+  @Override public int hashCode() {
+    int result = fingerIndex;
+    result = 31 * result + Arrays.hashCode(fingerFeature);
+    return result;
   }
 
   public int getFingerIndex() {
@@ -165,11 +188,16 @@ public class FingerBean {
     return instance.saveOrUpdate(this);
   }
 
-  public int delete() {
+  public int deleteDb() {
     FingerPrintSQLiteHelper instance = FingerPrintSQLiteHelper.getInstance();
     if (instance == null) {
       return -1;
     }
     return instance.delete(this);
+  }
+
+  public boolean delete(boolean deleteDb) {
+    boolean delete = FingerprintController.getInstance().delete(this, deleteDb);
+    return delete;
   }
 }

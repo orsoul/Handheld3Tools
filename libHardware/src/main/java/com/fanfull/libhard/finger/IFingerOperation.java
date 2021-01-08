@@ -50,7 +50,7 @@ public interface IFingerOperation extends IOperation {
   /**
    * 获取指纹库中指纹的数量.
    *
-   * @return 获取成功返回 指纹数量
+   * @return 获取成功返回 0
    */
   int getFingerNum(int[] fingerNumBuff);
 

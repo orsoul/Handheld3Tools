@@ -1,11 +1,13 @@
 package com.fanfull.libhard.finger.impl;
 
 import android.content.Context;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.IFingerListener;
 import com.fanfull.libhard.finger.IFingerOperation;
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +140,7 @@ public class FingerprintController implements IFingerOperation {
     }
     boolean deleteInLib = deleteFinger(fingerBean.getFingerIndex());
     if (deleteDb && deleteInLib) {
-      return 0 < fingerBean.delete();
+      return 0 < fingerBean.deleteDb();
     }
 
     return deleteInLib;
@@ -176,6 +178,34 @@ public class FingerprintController implements IFingerOperation {
     return operation.clearFinger();
   }
 
+  public void clearFingerInDb() {
+    fingerPrintSQLiteHelper.clearAll();
+  }
+
+  /**
+   * 获取数据库中指纹数量.
+   *
+   * @return 获取成功返回指纹数量，否则返回-1
+   */
+  public int getFingerNumInDb() {
+    return fingerPrintSQLiteHelper.getAllCount();
+  }
+
+  /**
+   * 获取指纹硬件模块中指纹数量.
+   *
+   * @return 获取成功返回指纹数量，否则返回-1
+   */
+  public int getFingerNumInHardware() {
+    int[] numBuff = new int[1];
+    int res = getFingerNum(numBuff);
+    if (res == 0) {
+      return numBuff[0];
+    } else {
+      return -1;
+    }
+  }
+
   /** 清空指纹库 和 数据库中指纹. */
   public boolean clearFingerAll() {
     boolean clear = operation.clearFinger();
@@ -183,6 +213,21 @@ public class FingerprintController implements IFingerOperation {
       fingerPrintSQLiteHelper.clearAll();
     }
     return clear;
+  }
+
+  /**
+   * 同步数据库中指纹 到 指纹模块.
+   *
+   * @return 同步成功返回同步的数量，否则返回负数.
+   */
+  public int syncFingerDb2Lib() {
+    boolean b = clearFinger();
+    if (!b) {
+      return -1;
+    }
+    List<FingerBean> fingerBeans = fingerPrintSQLiteHelper.queryAllFinger();
+    int count = loadFinger(fingerBeans);
+    return count;
   }
 
   @Override

@@ -1,15 +1,17 @@
 package com.fanfull.libhard.finger.impl;
 
 import android.os.SystemClock;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.AbsFingerOperation;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
-import java.io.IOException;
-import java.util.Arrays;
+
 import org.orsoul.baselib.util.BytesUtil;
+
+import java.io.IOException;
 
 public class FingerOperationRd extends AbsFingerOperation {
   private final String SERIAL_PORT_PATH = "/dev/ttyMT0";
@@ -102,7 +104,7 @@ public class FingerOperationRd extends AbsFingerOperation {
       SerialPortController.witchMode = SerialPortController.WITCH_MODE_FINGER;
       SystemClock.sleep(600);
     }
-    LogUtils.d("%s", Arrays.toString(res));
+    //LogUtils.d("%s", Arrays.toString(res));
     return true;
   }
 
