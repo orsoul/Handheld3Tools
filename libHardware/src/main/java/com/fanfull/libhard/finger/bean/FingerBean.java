@@ -61,6 +61,9 @@ public class FingerBean {
     this.fingerVersion = fingerVersion;
   }
 
+  public FingerBean() {
+  }
+
   public String getFeature() {
     if (feature == null && fingerFeature != null) {
       feature = BytesUtil.bytes2HexString(fingerFeature);

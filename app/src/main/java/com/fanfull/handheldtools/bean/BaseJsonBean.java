@@ -6,6 +6,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.orsoul.baselib.util.ClassUtil;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.List;
 public class BaseJsonBean<T> {
   int code;
   T data;
+  List<T> list;
 
   public BaseJsonBean() {
   }
@@ -22,6 +25,11 @@ public class BaseJsonBean<T> {
   public BaseJsonBean(int code, T data) {
     this.code = code;
     this.data = data;
+  }
+
+  public BaseJsonBean(int code, List<T> list) {
+    this.code = code;
+    this.list = list;
   }
 
   public int getCode() {
@@ -40,12 +48,26 @@ public class BaseJsonBean<T> {
     this.data = data;
   }
 
+  public List<T> getList() {
+    return list;
+  }
+
+  public void setList(List<T> list) {
+    this.list = list;
+  }
+
   public String toJsonString() {
     return new Gson().toJson(this);
   }
 
   @Override public String toString() {
     return toJsonString();
+  }
+
+  public static <T extends BaseJsonBean> T parseJson2Obj(String json, Class<T> clz) {
+    Class[] generics = ClassUtil.getGenericsFromClass(clz);
+    Type type = new ParameterizedTypeImpl(clz, generics);
+    return new Gson().fromJson(json, type);
   }
 
   public static <T> BaseJsonBean<T> jsonString2Obj(String json, Class<T> clazz) {
@@ -62,40 +84,26 @@ public class BaseJsonBean<T> {
   }
 
   public static void main(String[] args) {
-    show2();
+    show1();
   }
 
-  private static void show1() {
-    String jsonObj =
-        "{\"code\":1,\"data\":{\"uid\":70080,\"cid\":\"0023200002\",\"name\":\"a01\",\"privileges\":[\"audit\",\"isolate\",\"operate\"]}}";
-    String jsonArr =
-        "{\"code\":1,\"data\":[{\"uid\":70080,\"cid\":\"0023200002\",\"name\":\"a01\",\"privileges\":[\"audit\",\"isolate\",\"operate\"]},{\"uid\":67562,\"cid\":\"0023200001\",\"name\":\"a02\",\"privileges\":[\"audit\",\"isolate\",\"operate\"]},{\"uid\":70080,\"cid\":\"1000000002\",\"name\":\"a04\",\"privileges\":[\"audit\",\"isolate\",\"operate\"]}]}";
-    BaseJsonBean<UserInfoBean> jsonBeanObj =
-        BaseJsonBean.jsonString2Obj(jsonObj, UserInfoBean.class);
-    System.out.println(jsonBeanObj);
-
-    BaseJsonBean<List<UserInfoBean>> jsonBeanList =
-        BaseJsonBean.jsonString2List(jsonArr, UserInfoBean.class);
-    System.out.println(jsonBeanList);
-  }
-
-  private static void show2() {
+  static void show1() {
     Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
-        System.out.println("shouldSkipField:" + f.getName());
-        return !f.getName().equals("fingerIndex")
+        //System.out.println("shouldSkipField:" + f.getName());
+        return !f.getName().equals("list")
+            && !f.getName().equals("fingerIndex")
             && !f.getName().equals("userId")
             && !f.getName().equals("feature")
             && !f.getName().equals("fingerName");
       }
 
       @Override public boolean shouldSkipClass(Class<?> clazz) {
-        //System.out.println("shouldSkipClass:" + clazz);
         return false;
       }
     }).create();
 
-    FingerBean fingerBean = new FingerBean(7, "CCCC", "fingerId", 0);
+    FingerBean fingerBean = new FingerBean(7, "ABCDEF", "fingerId", 0);
     fingerBean.setUserId("userId");
     fingerBean.setFingerName("fingerName");
     fingerBean.setUserName("setUserName");
@@ -103,7 +111,24 @@ public class BaseJsonBean<T> {
     list.add(fingerBean);
     String s = gson.toJson(list);
     System.out.printf("json:%s\n", s);
-    System.out.printf("json:%s\n", new Gson().toJson(list));
+
+    BaseJsonBean<FingerBean> baseJsonBean = new BaseJsonBean<>(0, list);
+    String json = gson.toJson(baseJsonBean);
+    System.out.printf("json:%s\n", json);
+
+    BaseJsonBean<FingerBean> fingerBeanBaseJsonBean =
+        BaseJsonBean.jsonString2Obj(json, FingerBean.class);
+    System.out.println(fingerBeanBaseJsonBean);
+
+    json =
+        "{\"version\":0,\"list\":[{\"fingerIndex\":7,\"feature\":\"ABCDEF\",\"userId\":\"userId\",\"fingerVersion\":0,\"fingerNum\":0,\"fingerStatus\":0,\"fingerName\":\"fingerName\"}]}";
+    //Type type = new ParameterizedTypeImpl(FingerListBean.class, new Class[] { FingerBean.class });
+    //Object o = new Gson().fromJson(
+    //    json,
+    //    type);
+    //System.out.println(o);
+    //FingerListBean listBean = BaseJsonBean.parseJson2Obj(json, FingerListBean.class);
+    //System.out.println(listBean);
   }
 
   public static class ParameterizedTypeImpl implements ParameterizedType {

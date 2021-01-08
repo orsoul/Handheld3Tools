@@ -37,7 +37,7 @@ dependencies {
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
   // gson
-  implementation 'com.google.code.gson:gson:2.3.1'
+  implementation 'com.google.code.gson:gson:2.8.5'
 
   // log & util
   api 'com.blankj:utilcodex:1.29.0'
