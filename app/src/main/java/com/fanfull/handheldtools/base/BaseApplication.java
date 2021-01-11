@@ -1,22 +1,20 @@
 package com.fanfull.handheldtools.base;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkRequest;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
-import androidx.annotation.RequiresApi;
+
 import com.amitshekhar.DebugDB;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.BuildConfig;
 import com.wanjian.cockroach.Cockroach;
-import java.lang.reflect.Method;
+
 import org.orsoul.baselib.NetworkCallbackApplication;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.LogHelper;
+
+import java.lang.reflect.Method;
 
 public class BaseApplication extends NetworkCallbackApplication {
   private static BaseApplication context;
@@ -32,15 +30,6 @@ public class BaseApplication extends NetworkCallbackApplication {
     LogHelper.initLog(true);
     LogHelper.initFileLog(true, this);
     initCrashHandler();
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  private void setNetworkCallback(ConnectivityManager.NetworkCallback callback) {
-    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    if (cm == null) {
-      return;
-    }
-    cm.requestNetwork(new NetworkRequest.Builder().build(), callback);
   }
 
   private void initCrashHandler() {
