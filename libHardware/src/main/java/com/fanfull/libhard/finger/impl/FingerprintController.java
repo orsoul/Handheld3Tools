@@ -107,13 +107,16 @@ public class FingerprintController implements IFingerOperation {
   }
 
   /** 加载指纹特征码到指纹库. 返回成功添加的数量 */
-  public int loadFinger(FingerBean... fingerBeans) {
-    if (fingerBeans == null) {
+  public int loadFinger(FingerBean bean, FingerBean... fingerBeans) {
+    if (bean == null) {
       return FingerPrintCmd.RES_CODE_ARGS_WRONG;
     }
 
     List<FingerBean> list = new ArrayList<>();
-    Collections.addAll(list, fingerBeans);
+    list.add(bean);
+    if (fingerBeans != null) {
+      Collections.addAll(list, fingerBeans);
+    }
     return loadFinger(list);
   }
 

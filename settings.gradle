@@ -1,2 +1,4 @@
-include ':app', ':libBase', ':libHardware'
-//rootProject.name='HandheldTools'
+include ':app', ':libBase', ':libHardware', ':app-watch'
+project(':app-watch').projectDir = new File(rootDir.getParent(), 'FF_WatchVault/app')
+
+rootProject.name='HandheldTools'

@@ -2,6 +2,7 @@ package com.fanfull.libhard.finger.impl;
 
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
+
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
@@ -93,6 +94,9 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
   public void run() {
     //LogUtils.i("run start");
 
+    if (fingerSearchListener != null) {
+      fingerSearchListener.todoBeforeRun();
+    }
     int[] fingerIdBuff = new int[2];
     ClockUtil.runTime(true);
     while (!stopped) {
@@ -206,6 +210,9 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
      * 确认码=01H 表示收包有错<br/>
      */
     default void onFailed(boolean isAddMode, int errorCode) {
+    }
+
+    default void todoBeforeRun() {
     }
   }
 }

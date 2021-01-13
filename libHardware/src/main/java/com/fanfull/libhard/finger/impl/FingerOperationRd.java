@@ -353,7 +353,7 @@ public class FingerOperationRd extends AbsFingerOperation {
     byte[] buff;
     buff = serialPortController.sendAndWaitReceive(FingerPrintCmd.CMD_SEARCH_IDENTIFY, 1500);
     int res = FingerPrintCmd.getFingerRes(buff);
-    LogUtils.d("searchFinger:%s", res);
+    LogUtils.v("searchFinger:%s", res);
 
     if (res == FingerPrintCmd.RES_CODE_SUCCESS) {
       fingerIndexBuff[0] = (buff[10] << 8) | (buff[11] & 0xFF);
