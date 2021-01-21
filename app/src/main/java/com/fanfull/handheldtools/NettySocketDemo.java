@@ -1,5 +1,9 @@
 package com.fanfull.handheldtools;
 
+import org.orsoul.baselib.util.BytesUtil;
+
+import java.util.UUID;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -13,8 +17,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import java.util.UUID;
-import org.orsoul.baselib.util.BytesUtil;
 
 public class NettySocketDemo {
   public static void main(String[] args) throws Exception {
@@ -50,9 +52,9 @@ public class NettySocketDemo {
               ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(
                   Integer.MAX_VALUE, // 解码的帧的最大长度
                   2, // head1长度,属性的起始位（偏移位），包中存放有整个大数据包长度的字节，这段字节的其实位置
-                  4, // length长度,属性的长度，即存放整个大数据包长度的字节所占的长度
-                  2, // head2长度,调节值，在总长被定义为包含包头长度时，修正信息长度
-                  8)); // 跳过的字节数，根据需要我们跳过lengthFieldLength个字节，以便接收端直接接受到不含“长度属性”的内容
+                  2, // length长度,属性的长度，即存放整个大数据包长度的字节所占的长度
+                  1, // head2长度,调节值，在总长被定义为包含包头长度时，修正信息长度
+                  4)); // 跳过的字节数，根据需要我们跳过lengthFieldLength个字节，以便接收端直接接受到不含“长度属性”的内容
 
               // LengthFieldPrepender是一个编码器，主要是在响应字节数据前面添加字节长度字段
               //ch.pipeline().addLast(new LengthFieldPrepender(2));
@@ -133,12 +135,17 @@ public class NettySocketDemo {
         ByteBuf bb = (ByteBuf) msg;
 
         int readableBytes = bb.readableBytes();
-        System.out.println("readableBytes:" + readableBytes);
+        int type = bb.getUnsignedByte(0);
+        System.out.printf("readableBytes:%s,type:%s\n", readableBytes, type);
 
         byte[] data = new byte[readableBytes];
+        byte[] data2 = new byte[readableBytes - 1];
+        bb.getBytes(1, data2);
         ByteBuf byteBuf = bb.readBytes(data);
         System.out.println("data:" + BytesUtil.bytes2HexString(data));
-        System.out.println("byteBuf:" + byteBuf);
+        System.out.println("data2:" + BytesUtil.bytes2HexString(data2));
+        //System.out.println("byteBuf:" + byteBuf);
+        System.out.println("json:" + new String(data2));
         //System.out.println("byteBuf:" + byteBuf.to);
 
         //byte b1 = bb.readByte();
