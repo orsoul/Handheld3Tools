@@ -7,16 +7,22 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.LotScanTask;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnInputConfirmListener;
+
+import org.orsoul.baselib.util.BytesUtil;
+import org.orsoul.baselib.util.ClockUtil;
+import org.orsoul.baselib.util.ViewUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,9 +31,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
-import org.orsoul.baselib.util.ViewUtil;
 
 public class UhfActivity extends InitModuleActivity {
 

@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
+
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;

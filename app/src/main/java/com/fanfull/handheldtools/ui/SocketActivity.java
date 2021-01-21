@@ -7,18 +7,19 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
 import com.fanfull.handheldtools.context.Contexts;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.InputConfirmPopupView;
 import com.lxj.xpopup.interfaces.OnInputConfirmListener;
-import java.util.Objects;
+
 import org.orsoul.baselib.io.socketClient.Options;
 import org.orsoul.baselib.io.socketClient.impl.BaseSocketClient;
 import org.orsoul.baselib.io.socketClient.interf.ISocketClientListener;
@@ -26,6 +27,8 @@ import org.orsoul.baselib.io.transfer.IoTransferListener;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
+
+import java.util.Objects;
 
 public class SocketActivity extends InitModuleActivity {
   private TextView tvShow;

@@ -9,14 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
+
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;

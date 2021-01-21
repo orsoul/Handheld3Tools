@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.base;
+package com.fanfull.handheldtools.ui.base;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,13 +8,16 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.handheldtools.MyApplication;
 import com.fanfull.handheldtools.ui.view.DialogUtil;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
-    BaseApplication.NetworkCallback {
+    MyApplication.NetworkCallback {
 
   protected DialogUtil dialogUtil;
   private BroadcastReceiver broadcastReceiver;
@@ -24,7 +27,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     super.onCreate(savedInstanceState);
     initView();
     dialogUtil = new DialogUtil(this);
-    BaseApplication.addNetworkCallback(this);
+    MyApplication.addNetworkCallback(this);
   }
 
   protected void regReceiver() {
@@ -102,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     LogUtils.i("onDestroy: %s ", this.getClass().getSimpleName());
     dialogUtil.destroy();
     dialogUtil = null;
-    BaseApplication.removeNetworkCallback(this);
+    MyApplication.removeNetworkCallback(this);
     super.onDestroy();
   }
 }

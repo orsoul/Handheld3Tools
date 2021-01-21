@@ -13,18 +13,18 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.task.ReadLockTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
-import java.util.ArrayList;
-import java.util.List;
+
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
 import org.orsoul.baselib.lock3.EnumMoneyType;
@@ -37,6 +37,9 @@ import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BagCheckActivity extends InitModuleActivity {
 

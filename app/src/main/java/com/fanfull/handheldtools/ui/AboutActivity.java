@@ -1,14 +1,17 @@
 package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
+
 import com.amitshekhar.DebugDB;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.handheldtools.BuildConfig;
-import com.fanfull.handheldtools.base.BaseActivity;
+import com.fanfull.handheldtools.ui.base.BaseActivity;
+
+import org.orsoul.baselib.util.DeviceInfoUtils;
+
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
-import org.orsoul.baselib.util.DeviceInfoUtils;
 
 public class AboutActivity extends BaseActivity {
 

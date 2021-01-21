@@ -4,10 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.fanfull.handheldtools.base.BaseActivity;
-import com.fanfull.handheldtools.base.BaseApplication;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BagCheckActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
@@ -17,9 +16,11 @@ import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
+import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortView;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundUtils;
@@ -39,7 +40,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
 
-    SoundUtils.loadSounds(BaseApplication.getInstance());
+    SoundUtils.loadSounds(MyApplication.getInstance());
 
     //AutoCompleteTextView autoView = findViewById(R.id.auto);
     //String[] ips = new String[]{

@@ -8,16 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.base.InitModuleActivity;
+import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.PsamHelper;
 import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
-import java.util.Arrays;
-import java.util.Random;
+
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
@@ -26,6 +26,9 @@ import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundUtils;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class NfcActivity extends InitModuleActivity {
 

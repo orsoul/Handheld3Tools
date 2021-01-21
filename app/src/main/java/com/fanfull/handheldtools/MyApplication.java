@@ -1,4 +1,4 @@
-package com.fanfull.handheldtools.base;
+package com.fanfull.handheldtools;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -7,7 +7,6 @@ import android.widget.Toast;
 import com.amitshekhar.DebugDB;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.fanfull.handheldtools.BuildConfig;
 import com.wanjian.cockroach.Cockroach;
 
 import org.orsoul.baselib.NetworkCallbackApplication;
@@ -16,10 +15,10 @@ import org.orsoul.baselib.util.LogHelper;
 
 import java.lang.reflect.Method;
 
-public class BaseApplication extends NetworkCallbackApplication {
-  private static BaseApplication context;
+public class MyApplication extends NetworkCallbackApplication {
+  private static MyApplication context;
 
-  public static BaseApplication getInstance() {
+  public static MyApplication getInstance() {
     return context;
   }
 

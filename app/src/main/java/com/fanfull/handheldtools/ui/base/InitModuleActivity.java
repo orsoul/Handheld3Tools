@@ -1,12 +1,15 @@
-package com.fanfull.handheldtools.base;
+package com.fanfull.handheldtools.ui.base;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+
 import androidx.annotation.Nullable;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
+
 import org.orsoul.baselib.util.ClockUtil;
 
 public abstract class InitModuleActivity extends BaseActivity implements View.OnClickListener {
