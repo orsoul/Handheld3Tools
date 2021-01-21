@@ -1,11 +1,7 @@
 package org.orsoul.baselib.io.socketClient.impl;
 
 import com.apkfuns.logutils.LogUtils;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.HashSet;
-import java.util.Set;
+
 import org.orsoul.baselib.io.socketClient.GeneralException;
 import org.orsoul.baselib.io.socketClient.Options;
 import org.orsoul.baselib.io.socketClient.interf.ISocketClient;
@@ -13,6 +9,12 @@ import org.orsoul.baselib.io.socketClient.interf.ISocketClientListener;
 import org.orsoul.baselib.io.transfer.BaseIoTransfer;
 import org.orsoul.baselib.io.transfer.IoTransferListener;
 import org.orsoul.baselib.util.ThreadUtil;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 基本的socket客户端，提供收发功能、断线重连功能、回复超时监听功能.
@@ -83,12 +85,12 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
 
       setIoTransferListener(this);
       startReceive();
+      connected = true;
 
       // 3. 通知应用上层，连接已经成功建立
       for (ISocketClientListener listener : listenerSet) {
         listener.onConnect(ops.serverIp, ops.serverPort);
       }
-      connected = true;
     } catch (IOException e) {
       // 创建连接 异常
       GeneralException
@@ -112,7 +114,14 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
   }
 
   public void connectOnNewThread() {
-    ThreadUtil.execute(() -> connect());
+    ThreadUtil.execute(() -> {
+      connect();
+      while (canAutoReconnect && !isConnected()) {
+        LogUtils.i("canAutoReconnect: %s:%s", ops.serverIp, ops.serverPort);
+        ThreadUtil.sleep(ops.reconnectInterval);
+        connect();
+      }
+    });
   }
 
   /**
@@ -141,7 +150,7 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
   }
 
   @Override public boolean onReceive(byte[] data) {
-    LogUtils.d("rec:%s", new String(data));
+    //LogUtils.d("rec:%s", new String(data));
     for (ISocketClientListener listener : listenerSet) {
       listener.onReceive(data);
     }

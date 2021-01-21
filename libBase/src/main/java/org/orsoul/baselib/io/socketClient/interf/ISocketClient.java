@@ -11,7 +11,7 @@ public interface ISocketClient {
 
   boolean addSocketClientListener(ISocketClientListener listener);
 
-  /** 连接服务器 */
+  /** 连接服务器，连接成功或已经连接返回true. */
   boolean connect();
 
   /** 断开和服务器的连接 */

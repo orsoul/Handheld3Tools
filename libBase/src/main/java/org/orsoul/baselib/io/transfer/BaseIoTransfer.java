@@ -1,14 +1,16 @@
 package org.orsoul.baselib.io.transfer;
 
 import com.apkfuns.logutils.LogUtils;
+
+import org.orsoul.baselib.util.ClockUtil;
+import org.orsoul.baselib.util.ThreadUtil;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.orsoul.baselib.util.ClockUtil;
-import org.orsoul.baselib.util.ThreadUtil;
 
 /**
  * io流 数据收发.
@@ -54,7 +56,7 @@ public abstract class BaseIoTransfer implements IoTransfer, Runnable {
       return true;
     }
 
-    receiverThread = new Thread(this, TAG + "Thread");
+    receiverThread = new Thread(this, TAG + "-Thread");
     receiverThread.start();
     return true;
   }

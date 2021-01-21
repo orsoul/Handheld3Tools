@@ -1,6 +1,7 @@
 package org.orsoul.baselib.util;
 
 import com.apkfuns.logutils.LogUtils;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -172,6 +173,7 @@ public final class ThreadUtil {
         LogUtils.i("%s run", ThreadRunnable.this.getClass().getSimpleName());
         setRunning(true);
         stopped = false;
+        onTaskBefore();
         ThreadRunnable.this.run();
         onTaskFinish();
         setRunning(false);
@@ -199,6 +201,11 @@ public final class ThreadUtil {
       isRunning = running;
     }
 
+    /** run()开始前执行， */
+    protected void onTaskBefore() {
+    }
+
+    /** run()结束后执行. */
     protected void onTaskFinish() {
     }
   }
@@ -243,11 +250,13 @@ public final class ThreadUtil {
 
         boolean finish = handleOnce();
         count++;
+        long gonging = System.currentTimeMillis() - startTime;
+        onHandleOnce(gonging, total);
+
         if (finish) {
           onHandleFinish();
           break;
         }
-        long gonging = System.currentTimeMillis() - startTime;
         if (runTime <= gonging) {
           onTimeout(gonging, count);
           break;
@@ -256,7 +265,6 @@ public final class ThreadUtil {
           onTimeout(gonging, count);
           break;
         }
-        onHandleOnce(gonging, total);
       } // end while()
     } // end run
 
@@ -278,6 +286,7 @@ public final class ThreadUtil {
     protected void onHandleFinish() {
     }
 
+    /** 任务执行达到终止条件时 回调. */
     protected void onTimeout(long runTime, int total) {
     }
   }

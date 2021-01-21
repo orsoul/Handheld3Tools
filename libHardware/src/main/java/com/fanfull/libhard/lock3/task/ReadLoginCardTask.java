@@ -3,6 +3,7 @@ package com.fanfull.libhard.lock3.task;
 import com.fanfull.libhard.lock3.PsamHelper;
 import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
+
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
@@ -44,7 +45,7 @@ public abstract class ReadLoginCardTask extends ThreadUtil.TimeThreadRunnable {
   @Override protected void onStop() {
   }
 
-  /** 单次读卡逻辑，默认读取M1卡的uid，若要读cup卡或其他类型需要自行覆盖. */
+  /** 单次读卡逻辑，默认读取M1卡的uid，若要读他类型需要自行覆盖. */
   protected byte[] readLoginCard() {
     byte[] cardBuff = null;
     boolean readSuccess = false;
