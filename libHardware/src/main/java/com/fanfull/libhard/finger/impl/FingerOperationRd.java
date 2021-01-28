@@ -65,6 +65,9 @@ public class FingerOperationRd extends AbsFingerOperation {
 
   @Override
   public void release() {
+    if (serialPortController == null) {
+      return;
+    }
     serialPortController.removeSerialPortListener(serialPortListener);
     serialPortController.countUse(false);
     if (serialPortController.getUseCount() == 0) {
@@ -106,6 +109,16 @@ public class FingerOperationRd extends AbsFingerOperation {
     }
     //LogUtils.d("%s", Arrays.toString(res));
     return true;
+  }
+
+  @Override public void setStatus(boolean pause) {
+    if (pause) {
+      GpioController.getInstance().set(64, false);
+      GpioController.getInstance().set(62, false);
+    } else {
+      GpioController.getInstance().set(64, true);
+      GpioController.getInstance().set(62, true);
+    }
   }
 
   /**

@@ -1,11 +1,14 @@
 package com.fanfull.libhard.uhf;
 
 import android.os.SystemClock;
+
 import androidx.annotation.NonNull;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -24,6 +27,7 @@ public class UhfOperationSerial extends AbsUhfOperation {
   @Override
   public boolean open() throws SecurityException {
     if (isOpen) {
+      setStatus(false);
       if (uhfListener != null) {
         uhfListener.onOpen(true);
       }
@@ -63,10 +67,12 @@ public class UhfOperationSerial extends AbsUhfOperation {
 
   @Override
   public void release() {
-    serialPortController.removeSerialPortListener(serialPortListener);
-    serialPortController.countUse(false);
-    if (serialPortController.getUseCount() == 0) {
-      serialPortController.close();
+    if (serialPortController != null) {
+      serialPortController.removeSerialPortListener(serialPortListener);
+      serialPortController.countUse(false);
+      if (serialPortController.getUseCount() == 0) {
+        serialPortController.close();
+      }
     }
     isOpen = false;
   }
@@ -110,6 +116,16 @@ public class UhfOperationSerial extends AbsUhfOperation {
     }
     LogUtils.tag(TAG).v("%s", Arrays.toString(res));
     return true;
+  }
+
+  @Override public void setStatus(boolean pause) {
+    if (pause) {
+      GpioController.getInstance().set(64, false);
+      GpioController.getInstance().set(62, true);
+    } else {
+      GpioController.getInstance().set(64, true);
+      GpioController.getInstance().set(62, false);
+    }
   }
 
   /**

@@ -233,9 +233,12 @@ public class FingerprintController implements IFingerOperation {
     return count;
   }
 
-  @Override
-  public void setListener(IFingerListener listener) {
+  @Override public void setListener(IFingerListener listener) {
     operation.setListener(listener);
+  }
+
+  @Override public void setStatus(boolean pause) {
+    operation.setStatus(pause);
   }
 
   private static class SingletonHolder {

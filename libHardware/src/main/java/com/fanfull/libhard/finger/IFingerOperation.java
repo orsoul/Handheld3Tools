@@ -61,4 +61,7 @@ public interface IFingerOperation extends IOperation {
   boolean clearFinger();
 
   void setListener(IFingerListener listener);
+
+  /** 设置gpio口状态. */
+  void setStatus(boolean pause);
 }

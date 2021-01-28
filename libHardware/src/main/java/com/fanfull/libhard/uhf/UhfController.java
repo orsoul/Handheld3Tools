@@ -122,6 +122,10 @@ public class UhfController implements IUhfOperation {
     return uhfOperation.getPower();
   }
 
+  @Override public void setStatus(boolean pause) {
+    uhfOperation.setStatus(pause);
+  }
+
   private static class SingletonHolder {
     private static final UhfController instance = new UhfController(new UhfOperationSerial());
   }

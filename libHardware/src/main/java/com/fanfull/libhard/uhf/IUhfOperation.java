@@ -96,4 +96,7 @@ public interface IUhfOperation extends IOperation {
    * @return 获取失败返回null；否则[0]为读功率，[1]为写功率，[2]天线id，[3]是否闭环：1是、0否
    */
   byte[] getPower();
+
+  /** 设置gpio口状态. */
+  void setStatus(boolean pause);
 }

@@ -33,6 +33,11 @@ public final class ThreadUtil {
     normalThreadPool.execute(task);
   }
 
+  public static ExecutorService getNormalThreadPool() {
+    createNormalThreadPool();
+    return normalThreadPool;
+  }
+
   public static void executeInSingleThread(Runnable task) {
     if (singleThreadPool == null) {
       synchronized (ThreadUtil.class) {
@@ -56,28 +61,22 @@ public final class ThreadUtil {
    *
    * @return 被中断返回false
    */
-  public static boolean sleep(long millis) {
+  public static boolean sleep(long milliseconds) {
     try {
-      Thread.sleep(millis);
+      //Thread.sleep(milliseconds);
+      TimeUnit.MILLISECONDS.sleep(milliseconds);
       return true;
     } catch (InterruptedException e) {
       return false;
     }
   }
 
-  public static void interrupt(Thread t) {
+  public static boolean sleepSeconds(int seconds) {
     try {
-      t.interrupt();
-    } catch (Exception e) {
-    }
-  }
-
-  public static void stop(Thread t, long millis) {
-    interrupt(t);
-
-    try {
-      t.join(millis);
-    } catch (Exception e) {
+      TimeUnit.SECONDS.sleep(seconds);
+      return true;
+    } catch (InterruptedException e) {
+      return false;
     }
   }
 
@@ -113,20 +112,6 @@ public final class ThreadUtil {
     }
   }
 
-  public static void sleepSeconds(int seconds) {
-    try {
-      TimeUnit.SECONDS.sleep(seconds);
-    } catch (InterruptedException e) {
-    }
-  }
-
-  public static void sleepMilliseconds(long milliseconds) {
-    try {
-      TimeUnit.MILLISECONDS.sleep(milliseconds);
-    } catch (InterruptedException e) {
-    }
-  }
-
   /**
    * 获取格式化线程名的 ThreadFactory
    *
@@ -159,6 +144,10 @@ public final class ThreadUtil {
     private boolean isRunning;
     /** 线程停止标志. */
     protected boolean stopped;
+    /**
+     * 当前 运行任务的 线程，任务运行时赋值，任务结束时置为null.
+     */
+    private Thread runningThread;
 
     /**
      * 使用线程池 执行 当前任务.
@@ -171,12 +160,14 @@ public final class ThreadUtil {
       }
       execute(() -> {
         LogUtils.i("%s run", ThreadRunnable.this.getClass().getSimpleName());
+        runningThread = Thread.currentThread();
         setRunning(true);
         stopped = false;
         onTaskBefore();
         ThreadRunnable.this.run();
         onTaskFinish();
         setRunning(false);
+        runningThread = null;
         LogUtils.i("%s end", ThreadRunnable.this.getClass().getSimpleName());
       });
       return true;
@@ -199,6 +190,20 @@ public final class ThreadUtil {
 
     private synchronized void setRunning(boolean running) {
       isRunning = running;
+    }
+
+    public synchronized void interrupt() {
+      if (runningThread != null) {
+        runningThread.interrupt();
+      }
+    }
+
+    public synchronized Thread getRunningThread() {
+      return runningThread;
+    }
+
+    private synchronized void setRunningThread(Thread runningThread) {
+      this.runningThread = runningThread;
     }
 
     /** run()开始前执行， */

@@ -2,8 +2,8 @@ package com.fanfull.libhard.gpio;
 
 public abstract class AbsGpio implements IGpio {
 
-    protected static final int HIGH = 1;
-    protected static final int LOW = 0;
+  public static final int HIGH = 1;
+  public static final int LOW = 0;
     protected boolean isInit;
 
     @Override
