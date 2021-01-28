@@ -27,6 +27,8 @@ import org.orsoul.baselib.util.SoundUtils;
 
 public class MainActivity extends BaseActivity {
 
+  //private AudioManager audio;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -66,6 +68,7 @@ public class MainActivity extends BaseActivity {
     //  }
     //}.start();
     //setCallback();
+    //audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
   }
 
   @Override public void onNetworkChange(boolean isConnected) {
@@ -77,8 +80,7 @@ public class MainActivity extends BaseActivity {
     }
   }
 
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
         KeyEvent.keyCodeToString(keyCode),
         event.getRepeatCount(),
@@ -96,17 +98,25 @@ public class MainActivity extends BaseActivity {
         });
         break;
       case KeyEvent.KEYCODE_2:
+        SoundUtils.setVolume(true);
         break;
       case KeyEvent.KEYCODE_3:
         break;
       case KeyEvent.KEYCODE_4:
       case KeyEvent.KEYCODE_5:
+        SoundUtils.setVolume(8, true);
+        break;
       case KeyEvent.KEYCODE_6:
+        CrashLogUtil.logException(new RuntimeException("test log exception"));
         break;
       case KeyEvent.KEYCODE_7:
         throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
-        CrashLogUtil.logException(new RuntimeException("test log exception"));
+        SoundUtils.setVolume(false);
+        //audio.adjustStreamVolume(
+        //    AudioManager.STREAM_MUSIC,
+        //    AudioManager.ADJUST_LOWER,
+        //    AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
         break;
       case KeyEvent.KEYCODE_SHIFT_LEFT:
       case KeyEvent.KEYCODE_F2:

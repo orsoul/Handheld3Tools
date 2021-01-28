@@ -1,13 +1,17 @@
 package org.orsoul.baselib.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.SystemClock;
+
+import com.blankj.utilcode.util.Utils;
+
 import org.orsoul.baselib.R;
 
 /**
- * 播放声音的工具类
+ * 播放声音的工具类.
  */
 public class SoundUtils {
 
@@ -15,12 +19,13 @@ public class SoundUtils {
   private static final int MAX_STREAMS = 32;
 
   /** 声道音量 */
-  private static final float DEFAULT_VOLUME = 0.5f;
+  private static final float DEFAULT_VOLUME = 1.0f;
   private static float volume = DEFAULT_VOLUME;
   private static final int PRIORITY = 1; // 指定播放声音的优先级，数值越高，优先级越大。
   /** 指定是否循环。-1表示无限循环，0播放1次,n 表示 循环 n次 */
   private static final int LOOP = 0;
-  private static final float RATE = 1; // 指定播放速率。1.0为原始频率,2.0 为两倍播放
+  /** 播放速率0.5~2。1.0为原始频率,2.0 为两倍播放. */
+  private static final float RATE = 1; // 指定
 
   private static boolean isSilence;
 
@@ -79,7 +84,7 @@ public class SoundUtils {
     // mSoundIds[11] = mSoundPool.load(context, R.raw.bai, PRIORITY);
 
     mSoundIds[0] = mSoundPool.load(context, R.raw.c0, PRIORITY);
-    mSoundIds[1] = mSoundPool.load(context, R.raw.c1, 5); // 使用频率比较高的声音优先级设5
+    mSoundIds[1] = mSoundPool.load(context, R.raw.c1, PRIORITY); // 使用频率比较高的声音优先级设5
     mSoundIds[2] = mSoundPool.load(context, R.raw.c2, PRIORITY);
     mSoundIds[3] = mSoundPool.load(context, R.raw.c3, PRIORITY);
     mSoundIds[4] = mSoundPool.load(context, R.raw.c4, PRIORITY);
@@ -88,14 +93,14 @@ public class SoundUtils {
     mSoundIds[7] = mSoundPool.load(context, R.raw.c7, PRIORITY);
     mSoundIds[8] = mSoundPool.load(context, R.raw.c8, PRIORITY);
     mSoundIds[9] = mSoundPool.load(context, R.raw.c9, PRIORITY);
-    mSoundIds[10] = mSoundPool.load(context, R.raw.cshi, 5);
+    mSoundIds[10] = mSoundPool.load(context, R.raw.cshi, PRIORITY);
     mSoundIds[11] = mSoundPool.load(context, R.raw.cbai, PRIORITY);
 
-    DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, 5); // 操作正确的声音
-    FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, 5); // //操作错误的 声音
-    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 5);// 初始化成功
-    TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_scan_one, 5); // //操作错误的 声音
-    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 5);
+    DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, 1); // 操作正确的声音
+    FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, 1); // //操作错误的 声音
+    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 1);// 初始化成功
+    TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_scan_one, 1); // //操作错误的 声音
+    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 1);
 
     SCAN_START_SOUND = mSoundPool.load(context, R.raw.scan_bunch_start, 1);
     SCAN_FINISH_SOUND = mSoundPool.load(context, R.raw.scan_bunch_finish, 1);
@@ -105,7 +110,52 @@ public class SoundUtils {
   }
 
   /**
-   * 设置播放音量
+   * 设置 系统多媒体音量.同时显示音量控制UI和播放声音
+   *
+   * @param raise true增加音量
+   */
+  public static void setVolume(boolean raise) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    int dire = raise ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER;
+    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, dire,
+        AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
+    //int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    //int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    //LogUtils.d("%s / %s", volume, volumeMax);
+  }
+
+  /**
+   * 设置 系统多媒体音量.
+   *
+   * @param volume 0 ~ 15, 若小于0，设为最大音量的70%
+   * @param showUi true显示音量控制UI
+   */
+  public static void setVolume(int volume, boolean showUi) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    if (volume < 0) {
+      int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+      volume = (int) (volumeMax * 0.7F);
+    }
+    int flag = showUi ? AudioManager.FLAG_SHOW_UI : 0;
+    audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, flag);
+  }
+
+  /**
+   * 设置 soundPool 播放音量.
    *
    * @param volume 0~1f
    */
@@ -113,7 +163,7 @@ public class SoundUtils {
     SoundUtils.volume = volume;
   }
 
-  public static void setVolume(boolean silence) {
+  public static void setVolumeSilence(boolean silence) {
     if (silence) {
       isSilence = true;
       //setVolume(0);

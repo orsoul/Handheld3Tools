@@ -2,9 +2,13 @@ package org.orsoul.baselib.util;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
+
 import com.apkfuns.logutils.LogUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,19 +30,19 @@ public class SoundPoolUtil {
   private SoundPoolUtil() {
     idCache = new HashMap<>();
     sidCache = new ArrayList<>();
-    //        if(Build.VERSION.SDK_INT >=  Build.VERSION_CODES.LOLLIPOP){
-    //            AudioAttributes aab = new AudioAttributes.Builder()
-    //                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-    //                    .setUsage(AudioAttributes.USAGE_MEDIA)
-    //                    .build() ;
-    //            mSoundPool = new SoundPool.Builder()
-    //                    .setMaxStreams(MAX_STREAMS)
-    //                    .setAudioAttributes(aab)
-    //                    .build() ;
-    //        }else{
-    //           mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.USE_DEFAULT_STREAM_TYPE, 0);
-    //        }
-    mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.USE_DEFAULT_STREAM_TYPE, 0);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      AudioAttributes aab = new AudioAttributes.Builder()
+          .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+          .setUsage(AudioAttributes.USAGE_MEDIA)
+          .build();
+      mSoundPool = new SoundPool.Builder()
+          .setMaxStreams(MAX_STREAMS)
+          .setAudioAttributes(aab)
+          .build();
+    } else {
+      mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.USE_DEFAULT_STREAM_TYPE, 0);
+    }
+    //mSoundPool = new SoundPool(MAX_STREAMS, AudioManager.USE_DEFAULT_STREAM_TYPE, 0);
     mSoundPool.setOnLoadCompleteListener(new MyOnLoadCompleteListener());
   }
 
