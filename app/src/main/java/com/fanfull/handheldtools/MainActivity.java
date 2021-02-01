@@ -118,6 +118,11 @@ public class MainActivity extends BaseActivity {
         //    AudioManager.ADJUST_LOWER,
         //    AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
         break;
+      case KeyEvent.KEYCODE_9:
+        new Thread(() -> {
+          int t = 12 / (1 - 1);
+        }).start();
+        break;
       case KeyEvent.KEYCODE_SHIFT_LEFT:
       case KeyEvent.KEYCODE_F2:
         startActivity(new Intent(this, AboutActivity.class));
