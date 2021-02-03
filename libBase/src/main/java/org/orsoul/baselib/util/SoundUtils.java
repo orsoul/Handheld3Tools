@@ -96,17 +96,17 @@ public class SoundUtils {
     mSoundIds[10] = mSoundPool.load(context, R.raw.cshi, PRIORITY);
     mSoundIds[11] = mSoundPool.load(context, R.raw.cbai, PRIORITY);
 
-    DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, 1); // 操作正确的声音
-    FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, 1); // //操作错误的 声音
-    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, 1);// 初始化成功
-    TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_scan_one, 1); // //操作错误的 声音
-    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, 1);
+    DROP_SOUND = mSoundPool.load(context, R.raw.tone_drop, PRIORITY); // 操作正确的声音
+    FAILED_SOUND = mSoundPool.load(context, R.raw.tone_failed, PRIORITY); // //操作错误的 声音
+    INIT_SUCCESS = mSoundPool.load(context, R.raw.tone_success, PRIORITY);// 初始化成功
+    TONE_SCAN_ONE = mSoundPool.load(context, R.raw.tone_biu, PRIORITY); // //操作错误的 声音
+    WRITE_ING_DATA = mSoundPool.load(context, R.raw.dida1018, PRIORITY);
 
-    SCAN_START_SOUND = mSoundPool.load(context, R.raw.scan_bunch_start, 1);
-    SCAN_FINISH_SOUND = mSoundPool.load(context, R.raw.scan_bunch_finish, 1);
-    REFRESH_SCREEN = mSoundPool.load(context, R.raw.please_refresh_screen, 5);
-    SCAN_BAG = mSoundPool.load(context, R.raw.please_scan_bag, 5);
-    SCAN_PILE_BAG = mSoundPool.load(context, R.raw.please_scan_pile_bag, 5);
+    SCAN_START_SOUND = mSoundPool.load(context, R.raw.scan_bunch_start, PRIORITY);
+    SCAN_FINISH_SOUND = mSoundPool.load(context, R.raw.scan_bunch_finish, PRIORITY);
+    REFRESH_SCREEN = mSoundPool.load(context, R.raw.please_refresh_screen, PRIORITY);
+    SCAN_BAG = mSoundPool.load(context, R.raw.please_scan_bag, PRIORITY);
+    SCAN_PILE_BAG = mSoundPool.load(context, R.raw.please_scan_pile_bag, PRIORITY);
   }
 
   /**
@@ -198,7 +198,9 @@ public class SoundUtils {
     for (int i = 0; i < indexs.length; i++) {
       SoundUtils.play(mSoundIds[indexs[i]]);
       // 连续 报数的 时间 隔
-      SystemClock.sleep(PLAY_INTERVAL);
+      if (i < indexs.length - 1) {
+        SystemClock.sleep(PLAY_INTERVAL);
+      }
     }
   }
 

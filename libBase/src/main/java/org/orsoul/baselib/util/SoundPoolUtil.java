@@ -1,13 +1,16 @@
 package org.orsoul.baselib.util;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.SystemClock;
 
 import com.apkfuns.logutils.LogUtils;
+import com.blankj.utilcode.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,14 +23,27 @@ public class SoundPoolUtil {
   private static final String TAG = SoundPoolUtil.class.getSimpleName();
 
   /** SoundPool对象中允许同时存在的最大流的数量 */
-  private static final int MAX_STREAMS = 32;
+  protected static final int MAX_STREAMS = 32;
 
-  private SoundPool mSoundPool;
-  private boolean isLoadC = false;
+  /** 声道音量. */
+  protected static final float DEFAULT_VOLUME = 1.0F;
+  /** 声道音量. */
+  protected static final int DEFAULT_PRIORITY = 1;
+  /** 指定是否循环播放。0表示无限循环，n播放n次. */
+  protected static final int DEFAULT_TIMES = 1;
+  /** 播放速率0.5~2。1.0为原始频率,2.0 为两倍播放. */
+  protected static final float DEFAULT_RATE = 1;
+
+  protected SoundPool mSoundPool;
+  protected float volume = DEFAULT_VOLUME;
+  protected boolean isSilence;
+
+  protected boolean isLoadC = false;
+
   private Map<String, Integer> idCache;
   private List<Integer> sidCache;
 
-  private SoundPoolUtil() {
+  protected SoundPoolUtil() {
     idCache = new HashMap<>();
     sidCache = new ArrayList<>();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -55,11 +71,68 @@ public class SoundPoolUtil {
   }
 
   private class MyOnLoadCompleteListener implements SoundPool.OnLoadCompleteListener {
-
     @Override
     public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
       isLoadC = true;
     }
+  }
+
+  /**
+   * 设置 系统多媒体音量.同时显示音量控制UI和播放声音
+   *
+   * @param raise true增加音量
+   */
+  public static void setAudioVolume(boolean raise) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    int dire = raise ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER;
+    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, dire,
+        AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
+    //int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    //int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    //LogUtils.d("%s / %s", volume, volumeMax);
+  }
+
+  /**
+   * 设置 系统多媒体音量.
+   *
+   * @param volume 0 ~ 15, 若小于0，设为最大音量的70%
+   * @param showUi true显示音量控制UI
+   */
+  public static void setAudioVolume(int volume, boolean showUi) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    if (volume < 0) {
+      int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+      volume = (int) (volumeMax * 0.7F);
+    }
+    int flag = showUi ? AudioManager.FLAG_SHOW_UI : 0;
+    audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, flag);
+  }
+
+  /**
+   * 设置 soundPool 播放音量.
+   *
+   * @param volume 0~1f
+   */
+  public void setVolume(float volume) {
+    this.volume = volume;
+  }
+
+  public void setSilence(boolean silence) {
+    this.isSilence = silence;
   }
 
   /**
@@ -146,6 +219,13 @@ public class SoundPoolUtil {
     }
   }
 
+  public int load(Context context, int res) {
+    if (checkSoundPool()) {
+      return mSoundPool.load(context, res, DEFAULT_PRIORITY);
+    }
+    return -1;
+  }
+
   /**
    * 播放指定音频，并返用于停止、暂停、恢复的StreamId
    */
@@ -183,6 +263,52 @@ public class SoundPoolUtil {
       }
     }
     return streamId;
+  }
+
+  /**
+   * @param leftVolume 左声道音量：0~1.0
+   * @param rightVolume 右声道音量：0~1.0
+   * @param times 播放次数，0播放无限次。
+   * @param rate 播放速度，范围：0.5~2倍速
+   */
+  public int play(int id, float leftVolume, float rightVolume, int times, float rate) {
+    if (checkSoundPool() && !isSilence) {
+      return mSoundPool.play(id, leftVolume, rightVolume, DEFAULT_PRIORITY, times - 1, rate);
+    }
+    return -1;
+  }
+
+  public int play(int id, float volume, int times, float rate) {
+    return play(id, volume, volume, times, rate);
+  }
+
+  public int play(int id, int times, float rate) {
+    return play(id, volume, times, rate);
+  }
+
+  public int play(int id, int times) {
+    return play(id, times, DEFAULT_RATE);
+  }
+
+  public int play(int id) {
+    return play(id, DEFAULT_TIMES);
+  }
+
+  public void playArr(float rate, int interval, int... ids) {
+    if (isSilence) {
+      return;
+    }
+    for (int i = 0; i < ids.length; i++) {
+      play(ids[i], 1, rate);
+      // 时间 隔
+      if (i < ids.length - 1) {
+        SystemClock.sleep(Math.round(interval * rate));
+      }
+    }
+  }
+
+  public void playArr(int interval, int... ids) {
+    playArr(1, interval, ids);
   }
 
   /**

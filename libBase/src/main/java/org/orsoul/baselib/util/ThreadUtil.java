@@ -161,6 +161,7 @@ public final class ThreadUtil {
       execute(() -> {
         LogUtils.i("%s run", ThreadRunnable.this.getClass().getSimpleName());
         runningThread = Thread.currentThread();
+        Thread.interrupted();
         setRunning(true);
         stopped = false;
         onTaskBefore();
@@ -176,6 +177,14 @@ public final class ThreadUtil {
     /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
     public synchronized void stopThread() {
       stopped = true;
+    }
+
+    /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
+    public synchronized void stopThread(boolean interrupt) {
+      stopped = true;
+      if (interrupt) {
+        interrupt();
+      }
     }
 
     /** 获取 当前线程停止标志. */

@@ -29,7 +29,7 @@ import org.orsoul.baselib.lock3.EnumMoneyType;
 import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
-import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
@@ -267,7 +267,7 @@ public class InitBag3Activity extends InitModuleActivity {
 
     @Override protected void onSuccess(BagIdParser bagIdParser) {
       super.onSuccess(bagIdParser);
-      SoundUtils.playToneSuccess();
+      SoundHelper.playToneSuccess();
       long runTime = ClockUtil.runTime();
       ToastUtils.showShort("初始化成，用时：%.2f秒", runTime / 1000.0);
       runOnUiThread(() -> {

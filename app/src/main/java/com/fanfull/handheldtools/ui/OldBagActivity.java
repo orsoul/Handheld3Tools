@@ -22,7 +22,7 @@ import com.fanfull.libhard.rfid.RfidController;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
-import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ThreadUtil;
 
 public class OldBagActivity extends InitModuleActivity {
@@ -108,7 +108,7 @@ public class OldBagActivity extends InitModuleActivity {
           //                    appendShow(String.format("\n%s: %s", ++recCount, barcode));
           btnScan.setText("扫描");
         });
-        SoundUtils.playToneScanOne();
+        SoundHelper.playToneBiu();
       }
     });
 
@@ -161,7 +161,7 @@ public class OldBagActivity extends InitModuleActivity {
         btnReadM1.setEnabled(false);
         byte[] block8 = nfcController.read456Block();
         if (block8 != null) {
-          SoundUtils.playToneSuccess();
+          SoundHelper.playToneSuccess();
           m1Barcode = new String(block8);
           Spanned colorSpanned =
               HtmlUtil.getColorSpanned(0x0000FF, "\n%s - %s", m1Barcode,
@@ -172,7 +172,7 @@ public class OldBagActivity extends InitModuleActivity {
           appendShow(String.format("\n%s", hex));
           LogUtils.i("M1 hex:%s", hex);
         } else {
-          SoundUtils.playToneFailed();
+          SoundHelper.playToneFailed();
           info = "读袋锁失败";
           //appendShow(info);
         }

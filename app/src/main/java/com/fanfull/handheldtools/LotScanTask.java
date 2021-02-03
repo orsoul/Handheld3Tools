@@ -3,8 +3,9 @@ package com.fanfull.handheldtools;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+
 import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ThreadUtil;
 
 public class LotScanTask extends ThreadUtil.TimeThreadRunnable {
@@ -18,7 +19,7 @@ public class LotScanTask extends ThreadUtil.TimeThreadRunnable {
   }
 
   @Override protected boolean handleOnce() {
-    SoundUtils.playToneDiDa();
+    SoundHelper.playToneDiDa();
     boolean readSuccess = uhfController.readEpc(epcBuff);
     if (!readSuccess) {
       return false;
@@ -27,7 +28,7 @@ public class LotScanTask extends ThreadUtil.TimeThreadRunnable {
     for (int i = 0; i < TIMES_READ_TID; i++) {
       readSuccess = uhfController.read(UhfCmd.MB_TID, 0x00, tidBuff, UhfCmd.MB_EPC, 0x02, epcBuff);
       if (readSuccess) {
-        SoundUtils.playToneScanOne();
+        SoundHelper.playToneBiu();
         resetStartTime();
         LogUtils.d("success tid:%s - %s", BytesUtil.bytes2HexString(tidBuff), i + 1);
         break;

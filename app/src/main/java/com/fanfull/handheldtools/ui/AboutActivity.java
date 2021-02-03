@@ -1,6 +1,7 @@
 package com.fanfull.handheldtools.ui;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 
 import com.amitshekhar.DebugDB;
 import com.apkfuns.logutils.LogUtils;
@@ -9,6 +10,7 @@ import com.fanfull.handheldtools.BuildConfig;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 
 import org.orsoul.baselib.util.DeviceInfoUtils;
+import org.orsoul.baselib.util.SoundHelper;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
@@ -50,6 +52,17 @@ public class AboutActivity extends BaseActivity {
     }
 
     setContentView(aboutPage.create());
+  }
+
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (KeyEvent.KEYCODE_0 <= keyCode && keyCode <= KeyEvent.KEYCODE_9) {
+      //
+      //SoundUtils.playNumber(keyCode - KeyEvent.KEYCODE_0);
+      SoundHelper.playNum(keyCode - KeyEvent.KEYCODE_0);
+    } else if (KeyEvent.KEYCODE_PERIOD == keyCode) {
+      SoundHelper.playNum((int) (Math.random() * 1000), 1.2F);
+    }
+    return super.onKeyDown(keyCode, event);
   }
 
   @Override public void onBackPressed() {

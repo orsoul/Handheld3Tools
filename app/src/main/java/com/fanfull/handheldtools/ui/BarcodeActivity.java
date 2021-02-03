@@ -18,7 +18,7 @@ import com.fanfull.libhard.barcode.impl.BarcodeController;
 
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
-import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ThreadUtil;
 
 public class BarcodeActivity extends InitModuleActivity {
@@ -104,7 +104,7 @@ public class BarcodeActivity extends InitModuleActivity {
         }
 
         if (switchSound.isChecked()) {
-          SoundUtils.playToneScanOne();
+          SoundHelper.playToneBiu();
         }
       }
     });

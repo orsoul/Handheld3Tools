@@ -23,7 +23,7 @@ import com.fanfull.libhard.uhf.UhfController;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
-import org.orsoul.baselib.util.SoundUtils;
+import org.orsoul.baselib.util.SoundHelper;
 
 public class MainActivity extends BaseActivity {
 
@@ -42,7 +42,10 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
 
-    SoundUtils.loadSounds(MyApplication.getInstance());
+    //SoundUtils.loadSounds(MyApplication.getInstance());
+    SoundHelper.loadSounds(MyApplication.getInstance());
+    //SoundHelper.getInstance().loadTone(getApplicationContext());
+    //SoundHelper.getInstance().loadNum(getApplicationContext());
 
     //AutoCompleteTextView autoView = findViewById(R.id.auto);
     //String[] ips = new String[]{
@@ -98,13 +101,13 @@ public class MainActivity extends BaseActivity {
         });
         break;
       case KeyEvent.KEYCODE_2:
-        SoundUtils.setVolume(true);
+        SoundHelper.setAudioVolume(true);
         break;
       case KeyEvent.KEYCODE_3:
         break;
       case KeyEvent.KEYCODE_4:
       case KeyEvent.KEYCODE_5:
-        SoundUtils.setVolume(8, true);
+        SoundHelper.setAudioVolume(8, true);
         break;
       case KeyEvent.KEYCODE_6:
         CrashLogUtil.logException(new RuntimeException("test log exception"));
@@ -112,7 +115,7 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_7:
         throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
-        SoundUtils.setVolume(false);
+        SoundHelper.setAudioVolume(false);
         //audio.adjustStreamVolume(
         //    AudioManager.STREAM_MUSIC,
         //    AudioManager.ADJUST_LOWER,
