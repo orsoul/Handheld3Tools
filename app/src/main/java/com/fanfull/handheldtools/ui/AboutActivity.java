@@ -54,14 +54,45 @@ public class AboutActivity extends BaseActivity {
     setContentView(aboutPage.create());
   }
 
+  private int soundId = -1;
+
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (KeyEvent.KEYCODE_0 <= keyCode && keyCode <= KeyEvent.KEYCODE_9) {
+    SoundHelper soundHelper = SoundHelper.getInstance();
+    if (KeyEvent.KEYCODE_1 <= keyCode && keyCode <= KeyEvent.KEYCODE_8) {
       //
       //SoundUtils.playNumber(keyCode - KeyEvent.KEYCODE_0);
       SoundHelper.playNum(keyCode - KeyEvent.KEYCODE_0);
     } else if (KeyEvent.KEYCODE_PERIOD == keyCode) {
       SoundHelper.playNum((int) (Math.random() * 1000), 1.2F);
+    } else {
+      switch (keyCode) {
+        case KeyEvent.KEYCODE_0:
+          if (soundId < 1) {
+            soundId = soundHelper.play(
+                SoundHelper.TONE_DIDA, soundHelper.getVolume(0.7F), 0, 1);
+          }
+          LogUtils.d("%s:%s", SoundHelper.TONE_DIDA, soundId);
+          break;
+        case KeyEvent.KEYCODE_DEL:
+          if (0 < soundId) {
+            soundHelper.stop(soundId);
+            soundId = -1;
+          }
+          break;
+        case KeyEvent.KEYCODE_9:
+          if (0 < soundId) {
+            soundHelper.resume(soundId);
+          }
+          break;
+        case KeyEvent.KEYCODE_SHIFT_LEFT:
+        case KeyEvent.KEYCODE_F2:
+          if (0 < soundId) {
+            soundHelper.pause(soundId);
+          }
+          break;
+      }
     }
+
     return super.onKeyDown(keyCode, event);
   }
 

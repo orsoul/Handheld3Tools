@@ -55,29 +55,33 @@ public class SoundHelper extends SoundPoolUtil {
     SingletonHolder.instance.loadNum(context);
   }
 
+  public static int playReply(int id, float percentVolume) {
+    return SingletonHolder.instance.play(id, getInstance().getVolume(percentVolume), 0, 1);
+  }
+
   /** 播放成功声. */
-  public static void playToneSuccess() {
-    SingletonHolder.instance.play(TONE_SUCCESS);
+  public static int playToneSuccess() {
+    return SingletonHolder.instance.play(TONE_SUCCESS);
   }
 
   /** 播放 正常按键声音 */
-  public static void playToneDrop() {
-    SingletonHolder.instance.play(TONE_DROP);
+  public static int playToneDrop() {
+    return SingletonHolder.instance.play(TONE_DROP);
   }
 
   /** 播放 错误声音. */
-  public static void playToneFailed() {
-    SingletonHolder.instance.play(TONE_FAILED);
+  public static int playToneFailed() {
+    return SingletonHolder.instance.play(TONE_FAILED);
   }
 
   /** 播放扫描音效. */
-  public static void playToneBiu() {
-    SingletonHolder.instance.play(TONE_BIU);
+  public static int playToneBiu() {
+    return SingletonHolder.instance.play(TONE_BIU);
   }
 
   /** 播放 滴答声. */
-  public static void playToneDiDa() {
-    SingletonHolder.instance.play(TONE_DIDA);
+  public static int playToneDiDa() {
+    return SingletonHolder.instance.play(TONE_DIDA);
   }
 
   public static void playNum(int num, float rate) {

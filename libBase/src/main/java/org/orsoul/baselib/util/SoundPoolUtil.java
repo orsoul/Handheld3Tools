@@ -131,6 +131,15 @@ public class SoundPoolUtil {
     this.volume = volume;
   }
 
+  /**
+   * 按百分比 获取当前音量.
+   *
+   * @param percent 0~2.0
+   */
+  public float getVolume(float percent) {
+    return this.volume * percent;
+  }
+
   public void setSilence(boolean silence) {
     this.isSilence = silence;
   }

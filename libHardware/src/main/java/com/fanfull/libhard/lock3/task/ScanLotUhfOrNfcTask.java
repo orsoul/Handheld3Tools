@@ -5,6 +5,7 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 
+import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTask.ScanLotBean> {
@@ -63,14 +64,20 @@ public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTas
   }
 
   protected ScanLotBean scanOnceNfc() {
-    EnumErrCode enumErrCode = rfidController.readNfc(0x04, epcBuff, uidBuff);
+    EnumErrCode enumErrCode = rfidController.readNfc(Lock3Bean.SA_BAG_ID, epcBuff, uidBuff);
     boolean readSuccess = enumErrCode == EnumErrCode.SUCCESS;
+    if (!readSuccess) {
+      return null;
+    }
+
+    readSuccess = rfidController.readNfc(Lock3Bean.SA_PIECE_TID, tidBuff, false);
     if (!readSuccess) {
       return null;
     }
 
     String bagId = BytesUtil.bytes2HexString(epcBuff);
     ScanLotBean scanLotBean = new ScanLotBean(bagId, true);
+    scanLotBean.setTid(BytesUtil.bytes2HexString(tidBuff));
     scanLotBean.setUid(BytesUtil.bytes2HexString(uidBuff));
 
     return scanLotBean;
