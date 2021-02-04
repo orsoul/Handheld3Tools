@@ -4,19 +4,21 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
-import java.util.Arrays;
-import java.util.Random;
+
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.ClockUtil;
+
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * 锁3 初始化逻辑：.
  * 1、寻卡NFC、读超高频EPC及TID；
  * 2、生成袋id、密钥等信息，写入NFC；
  * 3、袋id写入EPC；
- * 3、将写入的信息从锁中读出，检查写入-读出的信息是否一样，确保写入成功；
+ * 4、将写入的信息从锁中读出，检查写入-读出的信息是否一样，确保写入成功；
  */
 public class InitBagTask implements Runnable {
   public static final int RES_FIND_NFC = 1;
@@ -31,7 +33,7 @@ public class InitBagTask implements Runnable {
   public static final int RES_EPC_DATA_NOT_EQUALS = 9;
 
   public byte[] uid = new byte[7];
-  public byte[] tid = new byte[6];
+  public byte[] tid = new byte[12];
 
   private boolean stopped = true;
   /** 尝试读袋锁的 持续时间. */
@@ -43,6 +45,8 @@ public class InitBagTask implements Runnable {
   /** 记录袋信息，用于生成袋id. */
   private BagIdParser bagIdParser = new BagIdParser();
 
+  private boolean isInitUhf = true;
+
   public void setCheckData(boolean checkData) {
     isCheckData = checkData;
   }
@@ -51,6 +55,14 @@ public class InitBagTask implements Runnable {
     if (bagIdParser != null) {
       this.bagIdParser = bagIdParser;
     }
+  }
+
+  public boolean isInitUhf() {
+    return isInitUhf;
+  }
+
+  public void setInitUhf(boolean initUhf) {
+    isInitUhf = initUhf;
   }
 
   public BagIdParser getBagIdParser() {
@@ -93,9 +105,9 @@ public class InitBagTask implements Runnable {
     this.stopped = true;
   }
 
-  public int findUidTid(byte[] uid, byte[] tid6) {
+  public int findUidTid(byte[] uid, byte[] tid6, boolean isReadTid) {
     if (uid == null || tid6 == null
-        || uid.length != 7 || tid6.length != 6) {
+        || uid.length != 7 || tid6.length != 12) {
       return -1;
     }
 
@@ -105,7 +117,7 @@ public class InitBagTask implements Runnable {
       return RES_FIND_NFC;
     }
     /* 2、读 tid */
-    if (!UhfController.getInstance().fastTid(0x03, tid6)) {
+    if (isReadTid && !UhfController.getInstance().fastTid(0x00, tid6)) {
       return RES_READ_TID;
     }
     return 0;
@@ -114,6 +126,7 @@ public class InitBagTask implements Runnable {
   @Override public void run() {
     stopped = false;
     onStart(bagIdParser);
+    boolean initUhf = isInitUhf;
     Lock3Operation lock3Operation = Lock3Operation.getInstance();
     /* 1、 读uid、epc、tid */
     boolean readSuccess = false;
@@ -121,7 +134,7 @@ public class InitBagTask implements Runnable {
     ClockUtil.runTime(true);
     while (!stopped && ClockUtil.runTime() < findLockTime) {
       //if (0 == (failedCause = lock3Operation.readUidEpcTid(uid, epc, tid))) {
-      if (0 == (failedCause = findUidTid(uid, tid))) {
+      if (0 == (failedCause = findUidTid(uid, tid, initUhf))) {
         readSuccess = true;
         break;
       } else {
@@ -175,6 +188,11 @@ public class InitBagTask implements Runnable {
     initLock3Bean.getInfoUnit(Lock3Bean.SA_STATUS).buff = sa10;
     initLock3Bean.getInfoUnit(Lock3Bean.SA_KEY_NUM).buff = sa14;
 
+    if (!initUhf) {
+      Arrays.fill(tid, (byte) 0x7B);
+    }
+    initLock3Bean.getInfoUnit(Lock3Bean.SA_LOCK_TID).buff = tid;
+
     boolean writeLockNfc = lock3Operation.writeLockNfc(initLock3Bean, false);
     if (!writeLockNfc) {
       info = "写NFC 失败";
@@ -187,7 +205,10 @@ public class InitBagTask implements Runnable {
     }
 
     /* 3、 袋id 写入超高频卡epc区 */
-    boolean writeEpd = lock3Operation.writeEpcFilterTid(sa4, tid, readWriteEpcTimes);
+    boolean writeEpd = true;
+    if (initUhf) {
+      writeEpd = lock3Operation.writeEpcFilterTid(sa4, tid, readWriteEpcTimes);
+    }
     if (!writeEpd) {
       info = "写EPC 失败";
       LogUtils.i(info);
@@ -224,8 +245,11 @@ public class InitBagTask implements Runnable {
       stopped = true;
       return;
     }
-    byte[] readEpc = lock3Operation.readEpcFilterTid(tid, readWriteEpcTimes);
-    if (readEpc == null) {
+    byte[] readEpc = null;
+    if (initUhf) {
+      readEpc = lock3Operation.readEpcFilterTid(tid, readWriteEpcTimes);
+    }
+    if (initUhf && readEpc == null) {
       info = "重读EPC 失败";
       LogUtils.i(info);
       onFailed(RES_READ_EPC, info);
@@ -234,7 +258,7 @@ public class InitBagTask implements Runnable {
     } else {
       onProgress(RES_READ_EPC);
     }
-    boolean epcEquals = Arrays.equals(sa4, readEpc);
+    boolean epcEquals = !initUhf || Arrays.equals(sa4, readEpc);
     if (!epcEquals) {
       info = "写入-读出EPC数据 不一致";
       LogUtils.i(info);
@@ -265,13 +289,13 @@ public class InitBagTask implements Runnable {
         LogUtils.d("写NFC成功");
         break;
       case RES_WRITE_EPC:
-        LogUtils.d("写EPC成功");
+        LogUtils.d("写EPC成功" + isInitUhf);
         break;
       case RES_READ_NFC:
         LogUtils.d("读NFC成功");
         break;
       case RES_READ_EPC:
-        LogUtils.d("读EPC成功");
+        LogUtils.d("读EPC成功" + isInitUhf);
         break;
     }
   }

@@ -1,12 +1,14 @@
 package org.orsoul.baselib.lock3.bean;
 
 import com.apkfuns.logutils.LogUtils;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.util.AESCoder;
 import org.orsoul.baselib.util.BytesUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Lock3Bean {
   /** 锁内袋id. */
@@ -258,7 +260,8 @@ public class Lock3Bean {
   }
 
   public void addInitBagSa() {
-    addSa(SA_KEY_NUM, SA_BAG_ID, SA_STATUS);
+    //addSa(SA_KEY_NUM, SA_BAG_ID, SA_STATUS);
+    addSa(SA_KEY_NUM, SA_BAG_ID, SA_LOCK_TID, SA_STATUS);
   }
 
   /** 添加固定长度的 区域，不包括交接信息、袋流转信息等非固定长度的数据区域. */

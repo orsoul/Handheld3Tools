@@ -1,12 +1,15 @@
 package com.fanfull.libhard.lock3;
 
 import androidx.annotation.Nullable;
+
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
-import java.util.List;
+
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
+
+import java.util.List;
 
 /**
  * 锁3高频、超高频 操作类，使用前 RfidController 以及 UhfController 需要先初始化.
@@ -125,9 +128,9 @@ public class Lock3Operation {
   }
 
   /**
-   * 获取epc区12字节，tid过滤，过滤地址为0x03.
+   * 获取epc区12字节，tid过滤，过滤地址为0x00.
    *
-   * @param filterBuff 6字节 tid
+   * @param filterBuff 12字节 tid
    * @param times 1~50
    */
   public byte[] readEpcFilterTid(byte[] filterBuff, int times) {
@@ -137,7 +140,7 @@ public class Lock3Operation {
       times = 50;
     }
     for (int i = 0; i < times; i++) {
-      byte[] epc = uhfController.read(UhfCmd.MB_EPC, 0x02, 12, filterBuff, UhfCmd.MB_TID, 0x03);
+      byte[] epc = uhfController.read(UhfCmd.MB_EPC, 0x02, 12, filterBuff, UhfCmd.MB_TID, 0x00);
       if (epc != null) {
         return epc;
       }
@@ -146,10 +149,10 @@ public class Lock3Operation {
   }
 
   /**
-   * 写袋id到epc，tid过滤，过滤地址为0x03.
+   * 写袋id到epc，tid过滤，过滤地址为0x12.
    *
    * @param epcBuff 12字节 袋id
-   * @param filterBuff 6字节 tid
+   * @param filterBuff 12字节 tid
    * @param times 1~50
    */
   public boolean writeEpcFilterTid(byte[] epcBuff, byte[] filterBuff, int times) {
@@ -159,7 +162,7 @@ public class Lock3Operation {
       times = 50;
     }
     for (int i = 0; i < times; i++) {
-      if (uhfController.write(UhfCmd.MB_EPC, 0x02, epcBuff, UhfCmd.MB_TID, 0x03, filterBuff)) {
+      if (uhfController.write(UhfCmd.MB_EPC, 0x02, epcBuff, UhfCmd.MB_TID, 0x00, filterBuff)) {
         return true;
       }
     }
