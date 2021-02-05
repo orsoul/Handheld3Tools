@@ -96,7 +96,7 @@ public class Lock3Operation {
 
     /* 2、读Uhf tid */
     if (tid != null) {
-      readSuccess = uhfController.fastTid(0x00, tid);
+      readSuccess = uhfController.readTid(0x00, tid);
       if (!readSuccess) {
         return -3;
       }

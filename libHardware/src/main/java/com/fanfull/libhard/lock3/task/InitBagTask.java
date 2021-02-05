@@ -117,7 +117,7 @@ public class InitBagTask implements Runnable {
       return RES_FIND_NFC;
     }
     /* 2、读 tid */
-    if (isReadTid && !UhfController.getInstance().fastTid(0x00, tid6)) {
+    if (isReadTid && !UhfController.getInstance().readTid(0x00, tid6)) {
       return RES_READ_TID;
     }
     return 0;
