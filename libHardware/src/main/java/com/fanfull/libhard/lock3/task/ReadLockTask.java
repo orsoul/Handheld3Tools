@@ -3,6 +3,7 @@ package com.fanfull.libhard.lock3.task;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
+
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 import org.orsoul.baselib.util.BytesUtil;
@@ -97,6 +98,9 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
     if (isReadUhf) {
       lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
       lock3Bean.setPieceTid(BytesUtil.bytes2HexString(tid));
+    } else {
+      lock3Bean.setPieceEpc(null);
+      lock3Bean.setPieceTid(null);
     }
     onSuccess(lock3Bean);
   }

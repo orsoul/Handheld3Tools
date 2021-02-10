@@ -179,13 +179,11 @@ public class BagCheckActivity extends InitModuleActivity {
   @Override public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_check_bag_scan:
-        if (!readLockTask.isRunning()) {
-          //btnOk.setEnabled(false);
-          //switchCheck.setEnabled(false);
+        if (allLockTask.startThread()) {
           ClockUtil.runTime(true);
-          readLockTask.startThread();
+          showLoadingView("正在读取袋锁信息...");
         } else {
-          ToastUtils.showShort("正在初始化，请稍后...");
+          ToastUtils.showShort("读袋锁信息线程已在运行");
         }
         break;
       case R.id.btn_check_bag_stopScan:
@@ -212,11 +210,11 @@ public class BagCheckActivity extends InitModuleActivity {
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        if (allLockTask.startThread()) {
+        if (!readLockTask.isRunning()) {
           ClockUtil.runTime(true);
-          showLoadingView("正在读取袋锁信息...");
+          readLockTask.startThread();
         } else {
-          ToastUtils.showShort("读袋锁信息线程已在运行");
+          ToastUtils.showShort("正在初始化，请稍后...");
         }
         return true;
     }
@@ -458,9 +456,13 @@ public class BagCheckActivity extends InitModuleActivity {
       runOnUiThread(() -> {
         dismissLoadingView();
         Spanned parse = parse(lock3Bean);
-        ViewUtil.appendShow(null, tvShow);
-        ViewUtil.appendShow(parse, tvShow);
-        ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
+        //ViewUtil.appendShow(null, tvShow);
+        //ViewUtil.appendShow(parse, tvShow);
+        tvShow.setText(parse);
+        //tvShow.append("\n");
+        tvShow.append("\n用时：" + ClockUtil.runTime());
+        //ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
+        //tvShow.scrollTo(0, 0);
       });
     }
 
