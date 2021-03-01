@@ -1,6 +1,6 @@
 # Built application files
 *.apk
-#*.aar
+*.aar
 *.ap_
 *.aab
 
@@ -92,6 +92,7 @@ lint/tmp/
 /apk
 /.svn
 !*/libs/*.aar
+!.idea/workspace.xml
 
 # checkstyle
 .idea/checkstyleidea-libs/

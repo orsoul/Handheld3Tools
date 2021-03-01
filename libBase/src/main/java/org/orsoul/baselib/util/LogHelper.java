@@ -2,6 +2,7 @@ package org.orsoul.baselib.util;
 
 import android.content.Context;
 import android.os.Environment;
+
 import com.apkfuns.log2file.LogFileEngineFactory;
 import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
@@ -10,12 +11,14 @@ import com.blankj.utilcode.util.AppUtils;
 public class LogHelper {
 
   private static final String TAG_LOG = "myLog";
-  public static final String LOG_FILE_PATH;
+  public static final String PATH_DIR;
+  public static final String PATH_LOG_DIR;
 
   static {
     /* /!appName/logs/ */
-    LOG_FILE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()
-        + "/!" + AppUtils.getAppName() + "/logs/";
+    PATH_DIR = Environment.getExternalStorageDirectory().getAbsolutePath()
+        + "/!" + AppUtils.getAppName();
+    PATH_LOG_DIR = PATH_DIR + "/logs/";
   }
 
   public static void initLog(boolean allowLog) {
@@ -32,7 +35,7 @@ public class LogHelper {
       int level) {
     LogUtils.getLog2FileConfig().configLog2FileEnable(allowLog)
         // targetSdkVersion >= 23 需要确保有写sdcard权限
-        .configLog2FilePath(LOG_FILE_PATH)
+        .configLog2FilePath(PATH_LOG_DIR)
         .configLog2FileLevel(level)
         .configLog2FileNameFormat(fileNameFormat)
         .configLogFileEngine(new LogFileEngineFactory(context));

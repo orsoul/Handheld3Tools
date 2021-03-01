@@ -21,6 +21,7 @@ import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
+import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.io.IOException;
@@ -260,6 +261,8 @@ public class UhfActivity extends InitModuleActivity {
     }
   }
 
+  boolean isRead;
+
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
         KeyEvent.keyCodeToString(keyCode),
@@ -272,6 +275,32 @@ public class UhfActivity extends InitModuleActivity {
     boolean res;
     byte[] data = new byte[12];
     switch (keyCode) {
+      case KeyEvent.KEYCODE_0:
+        if (isRead) {
+          isRead = false;
+          break;
+        } else {
+          isRead = true;
+          int[] count = new int[1];
+          ThreadUtil.execute(() -> {
+            while (isRead) {
+              //runOnUi(() -> btnReadEpc.performClick());
+              byte[] epc = new byte[12];
+              uhfController.readEpc(epc);
+              String s = BytesUtil.bytes2HexString(epc);
+              //SystemClock.sleep(50);
+              //runOnUi(new Runnable() {
+              //  @Override public void run() {
+              //
+              //  }
+              //});
+              //runOnUi(() -> ViewUtil.appendShow((++count[0]) + ":" + s + "", tvShow));
+              runOnUi(() -> tvShow.setText((++count[0]) + ":" + s + "\n"));
+              SystemClock.sleep(50);
+            }
+          });
+        }
+        break;
       case KeyEvent.KEYCODE_1:
         byte[] writeBuff = readBuff;
         if (writeBuff == null) {
@@ -384,6 +413,7 @@ public class UhfActivity extends InitModuleActivity {
       socketService.closeService();
     }
     uhfController.release();
+    isRead = false;
     super.onDestroy();
   }
 

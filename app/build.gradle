@@ -9,7 +9,7 @@ android {
     targetSdkVersion rootProject.ext.android.targetSdkVersion
 
     versionCode 3
-    versionName "v0.1.2"
+    versionName "v0.1.3"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {
@@ -55,33 +55,55 @@ android {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       debuggable = true
+      signingConfig signingConfigs.systemSign
     }
   }
 
-  applicationVariants.all { variant ->
-    if (variant.buildType.name != "debug") {
-      // apk 输出路径: rootDir/apk/
-      def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
+  task copyRelease(type: Copy, group: 'myTask', description: 'assembleRelease构建项目，复制apk') {
+    dependsOn 'assembleRelease'
+    //      String destDir = "D:/!Desktop/${rootProject.name}-aar/"
+    String destDir = "${rootDir}/apk/"
+    //  File srcFile = new File("build/outputs/apk/${project.name}-debug.aar")
+    File srcFile = new File("build/outputs/apk/release/app-release.apk")
 
-      // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
-      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
-      def projectName = "手持测试"
-      def apkName = "${projectName}_" +
-          "${defaultConfig.versionName}_" +
-          "${variant.buildType.name}_" +
-          "${releaseTime}.apk"
-      // gradle 3.3+
-      variant.getPackageApplicationProvider().get().outputDirectory = apkDirectory
-      variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { apkData ->
-        apkData.outputFileName = apkName
-      }
-      // gradle 3.0+
-      //            variant.getPackageApplication().outputDirectory = apkDirectory
-      //            variant.getPackageApplication().outputScope.apkDatas.forEach { apkData ->
-      //                apkData.outputFileName = apkName
-      //            }
+    from srcFile
+    into destDir
+
+    /* 重命名方式1： 使用一个闭合映射文件名 */
+    String projectName = "手持测试"
+    String apkName = "${projectName}_" +
+        "${defaultConfig.versionName}_" +
+        "release_" +
+        "${new Date().format("yyyy-MM-dd_HH_mm")}"
+    rename { String fileName ->
+      fileName.replace('app-release', "${apkName}")
     }
   }
+
+//  applicationVariants.all { variant ->
+//    if (variant.buildType.name != "debug") {
+//      // apk 输出路径: rootDir/apk/
+//      def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
+//
+//      // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
+//      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
+//      def projectName = "手持测试"
+//      def apkName = "${projectName}_" +
+//          "${defaultConfig.versionName}_" +
+//          "${variant.buildType.name}_" +
+//          "${releaseTime}.apk"
+//      // gradle 3.3+
+//      variant.getPackageApplicationProvider().get().outputDirectory = apkDirectory
+//      variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { apkData ->
+//        apkData.outputFileName = apkName
+//      }
+//      // gradle 3.0+
+//      //            variant.getPackageApplication().outputDirectory = apkDirectory
+//      //            variant.getPackageApplication().outputScope.apkDatas.forEach { apkData ->
+//      //                apkData.outputFileName = apkName
+//      //            }
+//    }
+//  }
 
   compileOptions {
     sourceCompatibility = 1.8

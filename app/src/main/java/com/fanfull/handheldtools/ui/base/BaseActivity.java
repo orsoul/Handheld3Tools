@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -14,7 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.MyApplication;
+import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.view.DialogUtil;
+
+import org.orsoul.baselib.util.SoundHelper;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
     MyApplication.NetworkCallback {
@@ -96,8 +100,37 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     dialogUtil.dismissLoadingView();
   }
 
-  @Override
-  public void onClick(View v) {
+  @Override public void onClick(View v) {
+  }
+
+  @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    //LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
+    //    KeyEvent.keyCodeToString(keyCode),
+    //    event.getRepeatCount(),
+    //    event.getAction(),
+    //    event.isLongPress(),
+    //    event.isShiftPressed(),
+    //    event.getMetaState()
+    //);
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_2:
+        SoundHelper.setAudioVolume(true);
+        break;
+      case KeyEvent.KEYCODE_5:
+        SoundHelper.setAudioVolume(8, true);
+        break;
+      case KeyEvent.KEYCODE_8:
+        SoundHelper.setAudioVolume(false);
+        break;
+      case KeyEvent.KEYCODE_SHIFT_LEFT:
+      case KeyEvent.KEYCODE_F2:
+        startActivity(new Intent(this, AboutActivity.class));
+        break;
+      default:
+        return super.onKeyDown(keyCode, event);
+    }
+
+    return super.onKeyDown(keyCode, event);
   }
 
   @Override

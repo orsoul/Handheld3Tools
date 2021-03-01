@@ -26,11 +26,7 @@ import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.SoundHelper;
 
 public class MainActivity extends BaseActivity {
-
-  //private AudioManager audio;
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     findViewById(R.id.btn_uhf).setOnClickListener(this);
@@ -137,8 +133,7 @@ public class MainActivity extends BaseActivity {
     return super.onKeyDown(keyCode, event);
   }
 
-  @Override
-  protected void onDestroy() {
+  @Override protected void onDestroy() {
     if (UhfController.getInstance().isOpen()) {
       UhfController.getInstance().release();
     }

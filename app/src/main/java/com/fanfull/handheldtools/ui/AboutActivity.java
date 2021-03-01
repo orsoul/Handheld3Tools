@@ -3,12 +3,12 @@ package com.fanfull.handheldtools.ui;
 import android.os.Bundle;
 import android.view.KeyEvent;
 
-import com.amitshekhar.DebugDB;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.handheldtools.BuildConfig;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 
+import org.orsoul.baselib.NetworkCallbackApplication;
 import org.orsoul.baselib.util.DeviceInfoUtils;
 import org.orsoul.baselib.util.SoundHelper;
 
@@ -44,7 +44,7 @@ public class AboutActivity extends BaseActivity {
     aboutPage.addItem(element);
 
     if (BuildConfig.DEBUG) {
-      String addressLog = DebugDB.getAddressLog();
+      String addressLog = NetworkCallbackApplication.getDebugDBAddress();
       LogUtils.i("DebugDB:%s", addressLog);
       element = new Element();
       element.setTitle(String.format("数据管理：\n%s", addressLog));

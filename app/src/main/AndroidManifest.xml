@@ -23,10 +23,9 @@
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
   <!-- SD卡 -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
   <application
     android:name=".MyApplication"
@@ -37,7 +36,9 @@
     android:theme="@style/AppTheme"
     tools:ignore="GoogleAppIndexingWarning"
     tools:replace="android:allowBackup">
-    <activity android:name=".ui.BagCheckActivity"></activity>
+    <activity
+      android:name=".ui.BagCheckActivity"
+      android:label="@string/main_check_bag" />
     <activity
       android:name=".ui.AboutActivity"
       android:launchMode="singleTask" />

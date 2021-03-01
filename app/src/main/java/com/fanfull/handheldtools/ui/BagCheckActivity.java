@@ -461,6 +461,7 @@ public class BagCheckActivity extends InitModuleActivity {
         tvShow.setText(parse);
         //tvShow.append("\n");
         tvShow.append("\n用时：" + ClockUtil.runTime());
+        LogUtils.d("\n%s", tvShow.getText());
         //ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
         //tvShow.scrollTo(0, 0);
       });

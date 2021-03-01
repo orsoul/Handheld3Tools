@@ -4,6 +4,9 @@ import android.content.Context;
 
 import org.orsoul.baselib.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /** 常用音效、数字音效工具类. */
 public class SoundHelper extends SoundPoolUtil {
 
@@ -57,6 +60,64 @@ public class SoundHelper extends SoundPoolUtil {
 
   public static int playReply(int id, float percentVolume) {
     return SingletonHolder.instance.play(id, getInstance().getVolume(percentVolume), 0, 1);
+  }
+
+  private static PlayLoopTimer playLoopTimer;
+
+  public static void playLoop(int id, float volume, float rate, long period, int times) {
+    synchronized (SoundHelper.class) {
+      if (playLoopTimer == null) {
+        playLoopTimer = new PlayLoopTimer(id, volume, rate, period, times);
+      } else {
+        playLoopTimer.cancel();
+        playLoopTimer = new PlayLoopTimer(id, volume, rate, period, times);
+      }
+    }
+    playLoopTimer.play();
+  }
+
+  public static void stopLoop() {
+    if (playLoopTimer != null) {
+      playLoopTimer.stop();
+    }
+  }
+
+  /** 以固定的速率 播放音效. */
+  static class PlayLoopTimer extends Timer {
+    private int id;
+    private float volume;
+    private float rate;
+    private long period;
+    private int times;
+
+    public PlayLoopTimer(int id, float volume, float rate, long period, int times) {
+      this.id = id;
+      this.volume = volume;
+      this.rate = rate;
+      this.period = period;
+      this.times = times;
+    }
+
+    private boolean isPlaying;
+    private int playCount;
+
+    public void play() {
+      scheduleAtFixedRate(new TimerTask() {
+        @Override public void run() {
+          SoundHelper.getInstance().play(id, volume, 1, rate);
+          playCount++;
+          if (times != 0 && times <= playCount) {
+            stop();
+          }
+        }
+      }, 0, period);
+      isPlaying = true;
+    }
+
+    public void stop() {
+      cancel();
+      isPlaying = false;
+    }
   }
 
   /** 播放成功声. */
