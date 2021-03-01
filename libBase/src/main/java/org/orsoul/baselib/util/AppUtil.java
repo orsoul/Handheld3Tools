@@ -4,7 +4,9 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
+
 import com.blankj.utilcode.util.Utils;
+
 import java.util.List;
 
 public final class AppUtil {

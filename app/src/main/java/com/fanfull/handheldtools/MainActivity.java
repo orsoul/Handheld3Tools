@@ -23,6 +23,7 @@ import com.fanfull.libhard.uhf.UhfController;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
+import org.orsoul.baselib.util.DeviceInfoUtils;
 import org.orsoul.baselib.util.SoundHelper;
 
 public class MainActivity extends BaseActivity {
@@ -100,8 +101,12 @@ public class MainActivity extends BaseActivity {
         SoundHelper.setAudioVolume(true);
         break;
       case KeyEvent.KEYCODE_3:
+        DeviceInfoUtils.shutdown(true);
         break;
       case KeyEvent.KEYCODE_4:
+        //DeviceInfoUtils.reboot(this);
+        //DeviceInfoUtils.reboot2(this);
+        break;
       case KeyEvent.KEYCODE_5:
         SoundHelper.setAudioVolume(8, true);
         break;
