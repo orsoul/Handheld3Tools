@@ -233,27 +233,27 @@ public class NfcActivity extends InitModuleActivity {
         }
         return true;
       case KeyEvent.KEYCODE_1:
-        len = nfcController.send2PSam(PSamCmd.genCmdGetInfo(1, 0), pSamBuff);
-        if (0 < len) {
-          String s = BytesUtil.bytes2HexString(pSamBuff, len);
-          if (APDUParser.checkReply(pSamBuff, len)) {
-            ViewUtil.appendShow("获取信息 成功:" + s, tvShow);
-          } else {
-            ViewUtil.appendShow("获取信息 失败:" + s, tvShow);
-          }
+        //len = nfcController.send2PSam(PSamCmd.genCmdGetInfo(1, 0), pSamBuff);
+        //if (0 < len) {
+        //  String s = BytesUtil.bytes2HexString(pSamBuff, len);
+        //  if (APDUParser.checkReply(pSamBuff, len)) {
+        //    ViewUtil.appendShow("获取信息 成功:" + s, tvShow);
+        //  } else {
+        //    ViewUtil.appendShow("获取信息 失败:" + s, tvShow);
+        //  }
+        //} else {
+        //  ViewUtil.appendShow("获取信息 执行失败", tvShow);
+        //}
+        //return true;
+        byte[] bytes = new byte[16];
+        Arrays.fill(bytes, (byte) 0x39);
+        boolean b = nfcController.writeM1(9, bytes);
+        if (b) {
+          ViewUtil.appendShow("写第9区39 成功", tvShow);
         } else {
-          ViewUtil.appendShow("获取信息 执行失败", tvShow);
+          ViewUtil.appendShow("写第9区 失败", tvShow);
         }
         return true;
-      //byte[] bytes = new byte[16];
-      //Arrays.fill(bytes, (byte) 0x39);
-      //boolean b = nfcController.writeM1(9, bytes);
-      //if (b) {
-      //  ViewUtil.appendShow("写第9区39 成功", tvShow);
-      //} else {
-      //  ViewUtil.appendShow("写第9区 失败", tvShow);
-      //}
-      //return true;
       case KeyEvent.KEYCODE_2:
         byte[] block9 = nfcController.readM1(9);
         if (block9 != null) {

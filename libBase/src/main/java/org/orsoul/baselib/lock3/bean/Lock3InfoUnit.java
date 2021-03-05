@@ -59,9 +59,10 @@ public class Lock3InfoUnit {
   public static Lock3InfoUnit newInstance(int sa) {
     switch (sa) {
       case Lock3Bean.SA_BAG_ID:
-      case Lock3Bean.SA_PIECE_TID:
       case Lock3Bean.SA_LOCK_TID:
         return new Lock3InfoUnit(sa, 12);
+      case Lock3Bean.SA_PIECE_TID:
+        return new Lock3InfoUnit(sa, 6);
       case Lock3Bean.SA_COVER_EVENT:
         return new Lock3InfoUnit(sa, 30);
       case Lock3Bean.SA_COVER_SERIAL:

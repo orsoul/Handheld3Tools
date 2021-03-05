@@ -1,5 +1,6 @@
 package com.fanfull.handheldtools.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Html;
@@ -18,12 +19,14 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
+import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.lock3.task.ReadLockTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.lxj.xpopup.XPopup;
 
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
@@ -31,6 +34,8 @@ import org.orsoul.baselib.lock3.EnumMoneyType;
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
+import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
+import org.orsoul.baselib.util.AESCoder;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
@@ -46,7 +51,7 @@ public class BagCheckActivity extends InitModuleActivity {
   private TextView tvShow;
   private Button btnOk;
   private Button btnShow;
-  private Switch switchCheck;
+  private Switch switchUhf;
 
   private UhfController uhfController;
   private RfidController rfidController;
@@ -154,21 +159,22 @@ public class BagCheckActivity extends InitModuleActivity {
           ViewUtil.appendShow("高频模块初始成功", tvShow);
           readLockTask = new ReadNfcEpcTask();
           allLockTask = new ReadAllLockTask();
+          allLockTask.setReadUhf(switchUhf.isChecked());
           //initBagTask = new InitBag3Activity.MyInitBagTask();
           //initSpinner();
           btnOk.setEnabled(true);
-          switchCheck.setEnabled(true);
-          switchCheck.setChecked(false);
+          switchUhf.setEnabled(true);
+          //switchUhf.setChecked(false);
         });
       }
 
-      @Override
-      public void onReceiveData(byte[] data) {
+      @Override public void onReceiveData(byte[] data) {
         LogUtils.d("recNfc:%s", BytesUtil.bytes2HexString(data));
       }
     });
 
     showLoadingView("正在初始化模块...");
+    //ViewUtil.appendShow("", tvShow);
     uhfController.open();
   }
 
@@ -187,16 +193,17 @@ public class BagCheckActivity extends InitModuleActivity {
         }
         break;
       case R.id.btn_check_bag_stopScan:
-        String info;
-        if (readLockTask != null) {
-          info = String.format("天线柜未读到：%s", readLockTask.otherNoHaveList);
-          LogUtils.wtf("手持已扫：%s", readLockTask.scanList);
-        } else {
-          info = "未初始化模块";
-        }
-        LogUtils.wtf(info);
-        LogUtils.getLog2FileConfig().flushAsync();
-        ViewUtil.appendShow(info, tvShow);
+        showSetUhfPower(this);
+        //String info;
+        //if (readLockTask != null) {
+        //  info = String.format("天线柜未读到：%s", readLockTask.otherNoHaveList);
+        //  LogUtils.wtf("手持已扫：%s", readLockTask.scanList);
+        //} else {
+        //  info = "未初始化模块";
+        //}
+        //LogUtils.wtf(info);
+        //LogUtils.getLog2FileConfig().flushAsync();
+        //ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.tv_check_bag_show:
         if (3 == ClockUtil.fastClickTimes()) {
@@ -208,15 +215,36 @@ public class BagCheckActivity extends InitModuleActivity {
   }
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    int fn = -1;
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        if (!readLockTask.isRunning()) {
-          ClockUtil.runTime(true);
-          readLockTask.startThread();
-        } else {
-          ToastUtils.showShort("正在初始化，请稍后...");
-        }
-        return true;
+      case KeyEvent.KEYCODE_2:
+      case KeyEvent.KEYCODE_3:
+      case KeyEvent.KEYCODE_4:
+        fn = keyCode - KeyEvent.KEYCODE_0;
+        break;
+      //Lock3Operation.getInstance().writeLockNfc();
+      //if (!readLockTask.isRunning()) {
+      //  ClockUtil.runTime(true);
+      //  readLockTask.startThread();
+      //} else {
+      //  ToastUtils.showShort("正在初始化，请稍后...");
+      //}
+      //return true;
+    }
+    if (0 < fn) {
+      boolean res = Lock3Operation.getInstance().setLockStatus(fn);
+      String info;
+      if (res) {
+        info = String.format("更改成功， %s", Lock3Util.getStatusDesc(fn));
+        SoundHelper.playToneSuccess();
+      } else {
+        info = String.format("更改失败， F%s", fn);
+        SoundHelper.playToneFailed();
+      }
+      LogUtils.d(info);
+      ViewUtil.appendShow(info, tvShow);
+      return true;
     }
     return super.onKeyDown(keyCode, event);
   }
@@ -233,15 +261,15 @@ public class BagCheckActivity extends InitModuleActivity {
     btnShow = findViewById(R.id.btn_check_bag_stopScan);
     btnShow.setOnClickListener(this);
 
-    switchCheck = findViewById(R.id.switch_check_bag_nfc_mode);
-    switchCheck.setOnCheckedChangeListener(
+    switchUhf = findViewById(R.id.switch_check_bag_nfc_mode);
+    switchUhf.setOnCheckedChangeListener(
         (buttonView, isChecked) -> {
           readLockTask.setReadEpc(isChecked);
           allLockTask.setReadUhf(isChecked);
         });
 
     btnOk.setEnabled(false);
-    switchCheck.setEnabled(false);
+    //switchUhf.setEnabled(true);
   }
 
   private void initSpinner() {
@@ -393,6 +421,19 @@ public class BagCheckActivity extends InitModuleActivity {
       return null;
     }
     HtmlUtil.setDefaultColor(0x0000FF);
+    LogUtils.d("原始封签码:%s", lock3Bean.getCoverCode());
+
+    String coverCode;
+    Lock3InfoUnit infoUnit = lock3Bean.getInfoUnit(Lock3Bean.SA_PIECE_TID);
+    Lock3InfoUnit infoUnitCover = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
+    if (infoUnit != null && infoUnit.isDoSuccess()) {
+      boolean b = AESCoder.myEncrypt(infoUnitCover.buff, infoUnit.buff, false);
+      coverCode = String.format("%s-解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff), b);
+      //LogUtils.d("解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff));
+    } else {
+      coverCode = String.format("%s-解密异常", BytesUtil.bytes2HexString(infoUnitCover.buff));
+      //coverCode = "解密异常";
+    }
     String colorText = HtmlUtil.getColorText("锁片epc：%s\n"
             + "锁片tid：%s\n"
             + "业务tid：%s\n"
@@ -406,7 +447,7 @@ public class BagCheckActivity extends InitModuleActivity {
             + "流水号：%s\n"
             + "密钥编号：%s\n"
             + "交接索引：%s\n"
-            + "袋流转索引：%s\n",
+            + "========================\n袋流转索引：%s\n",
         lock3Bean.getPieceEpc(),
         lock3Bean.getPieceTid(),
         lock3Bean.getTidFromPiece(),
@@ -416,7 +457,7 @@ public class BagCheckActivity extends InitModuleActivity {
         String.format("%.3f", lock3Bean.getVoltage()),
         lock3Bean.getEnable(),
         lock3Bean.isTestMode(),
-        lock3Bean.getCoverCode(),
+        coverCode,
         lock3Bean.getCoverSerial(),
         lock3Bean.getKeyNum(),
         lock3Bean.getHandoverIndex(),
@@ -429,6 +470,10 @@ public class BagCheckActivity extends InitModuleActivity {
 
     StringBuilder sb = new StringBuilder(colorText);
     for (HandoverBean handoverBean : list) {
+      String orgName = handoverBean.getOrgName();
+      if (orgName == null) {
+        orgName = "无机构名";
+      }
       sb.append(HtmlUtil.getColorText("业务：%s(%s)\n"
               + "机构：%s(%s)\n"
               + "操作人：%s\n"
@@ -437,13 +482,46 @@ public class BagCheckActivity extends InitModuleActivity {
           handoverBean.getFunTypeName(),
           handoverBean.getFunction(),
           handoverBean.getOrgancode(),
-          handoverBean.getOrgName(),
+          orgName,
           handoverBean.getScaner1(),
           handoverBean.getScaner2(),
           handoverBean.getTime())
       );
     }
     return Html.fromHtml(sb.toString());
+  }
+
+  public void showSetUhfPower(Context context) {
+    new XPopup.Builder(context).asInputConfirm(
+        "输入功率", "功率范围：5 ~ 25", "读功率.写功率", text -> {
+          if (text == null) {
+            return;
+          }
+
+          if (!text.matches("\\d+\\.\\d+")) {
+            ToastUtils.showShort("输入格式不合法，正确格式：6.12");
+            return;
+          }
+
+          String[] split = text.split("\\.");
+          int r = Integer.parseInt(split[0]);
+          int w = Integer.parseInt(split[1]);
+          if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
+              UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
+            ToastUtils.showShort("功率超出允许范围");
+            return;
+          }
+
+          boolean b = uhfController.setPower(r, w, 0, true, false);
+          String res1;
+          if (b) {
+            res1 = String.format("设置读/写功率成功：%s / %s", r, w);
+          } else {
+            res1 = "设置功率失败";
+          }
+          ToastUtils.showShort(res1);
+          ViewUtil.appendShow(res1, tvShow);
+        }).show();
   }
 
   private class ReadAllLockTask extends ReadLockTask {
@@ -457,10 +535,11 @@ public class BagCheckActivity extends InitModuleActivity {
         dismissLoadingView();
         Spanned parse = parse(lock3Bean);
         //ViewUtil.appendShow(null, tvShow);
-        //ViewUtil.appendShow(parse, tvShow);
+        ViewUtil.appendShow(parse, tvShow);
         tvShow.setText(parse);
         //tvShow.append("\n");
-        tvShow.append("\n用时：" + ClockUtil.runTime());
+        tvShow.append("\n用时：" + ClockUtil.runTime() + "\n");
+        tvShow.scrollTo(0, 0);
         LogUtils.d("\n%s", tvShow.getText());
         //ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
         //tvShow.scrollTo(0, 0);

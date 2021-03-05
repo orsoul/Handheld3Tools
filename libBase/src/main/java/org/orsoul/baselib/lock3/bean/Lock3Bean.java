@@ -3,7 +3,6 @@ package org.orsoul.baselib.lock3.bean;
 import com.apkfuns.logutils.LogUtils;
 
 import org.orsoul.baselib.lock3.Lock3Util;
-import org.orsoul.baselib.util.AESCoder;
 import org.orsoul.baselib.util.BytesUtil;
 
 import java.util.ArrayList;
@@ -348,10 +347,6 @@ public class Lock3Bean {
           this.voltage = Lock3Util.parseV(unit.buff[3]);
           break;
         case Lock3Bean.SA_COVER_EVENT:
-          Lock3InfoUnit infoUnit = getInfoUnit(SA_PIECE_TID);
-          if (infoUnit != null && infoUnit.isDoSuccess()) {
-            AESCoder.myEncrypt(unit.buff, infoUnit.buff, false);
-          }
           this.coverCode = BytesUtil.bytes2HexString(unit.buff);
           break;
         case Lock3Bean.SA_COVER_SERIAL:

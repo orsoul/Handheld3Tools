@@ -1,9 +1,11 @@
 package com.fanfull.handheldtools.ui.view;
 
 import android.content.Context;
+
 import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.handheldtools.preference.MyPreference;
 import com.lxj.xpopup.XPopup;
+
 import java.util.ArrayList;
 import java.util.Set;
 

@@ -91,7 +91,7 @@ public class DeviceInfoUtils {
       //获得shutdown()方法
       Method shutdown = oIPowerManager.getClass().getMethod(
           "shutdown", boolean.class, boolean.class);
-      //调用shutdown()方法
+      //调用shutdown()方法 shutdown(boolean confirm, boolean wait) ?
       shutdown.invoke(oIPowerManager, needConfirm, false);
     } catch (Exception e) {
       LogUtils.w("%s", e.getMessage());

@@ -15,7 +15,7 @@ import org.orsoul.baselib.util.ThreadUtil;
 public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] uid = new byte[7];
 
-  private byte[] tid = new byte[12];
+  private byte[] tid = new byte[6];
   private byte[] epc = new byte[12];
 
   private boolean isReadUhf = true;
@@ -43,7 +43,7 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
 
     /* 在指定时间内 寻卡NFC 和 读超高频 */
     long start = System.currentTimeMillis();
-    while (true) {
+    while (!isStopped()) {
       int res;
       if (isReadUhf) {
         res = lock3Operation.readUidAndTid(uid, tid, epc);

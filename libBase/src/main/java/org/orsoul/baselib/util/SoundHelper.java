@@ -58,6 +58,20 @@ public class SoundHelper extends SoundPoolUtil {
     SingletonHolder.instance.loadNum(context);
   }
 
+  private static int toneDadaId;
+
+  public static int playToneDadaLoop(float volume, float rate) {
+    if (toneDadaId != -1) {
+      stopToneDataLoop();
+    }
+    return toneDadaId = SingletonHolder.instance.play(TONE_DIDA, volume, 0, rate);
+  }
+
+  public static void stopToneDataLoop() {
+    SingletonHolder.instance.stop(toneDadaId);
+    toneDadaId = -1;
+  }
+
   public static int playReply(int id, float percentVolume) {
     return SingletonHolder.instance.play(id, getInstance().getVolume(percentVolume), 0, 1);
   }
@@ -157,5 +171,10 @@ public class SoundHelper extends SoundPoolUtil {
 
   public static void playNum(int num) {
     playNum(num, 1.0F);
+  }
+
+  public static void playNum(String num) {
+    int n = Integer.parseInt(num);
+    playNum(n, 1.0F);
   }
 }

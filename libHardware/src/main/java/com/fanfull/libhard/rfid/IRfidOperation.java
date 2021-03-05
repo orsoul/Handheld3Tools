@@ -7,16 +7,28 @@ public interface IRfidOperation extends IOperation {
 
   void setListener(IRfidListener listener);
 
+  /** 7字节的NFC. */
   byte[] findNfc();
 
   void findNfcAsync();
 
+  /** 4字节的M1卡. */
   byte[] findM1();
 
   void findM1Async();
 
+  /**
+   * 高频卡 寻卡.
+   *
+   * @param uidBuff 4字节的M1卡 或 7字节的NFC
+   */
   boolean findCard(byte[] uidBuff);
 
+  /**
+   * 高频卡 寻卡.
+   *
+   * @param uidBuff 4字节的M1卡 或 7字节的NFC
+   */
   EnumErrCode findCardRes(byte[] uidBuff);
 
   boolean readNfc4Byte(int sa, byte[] buff);

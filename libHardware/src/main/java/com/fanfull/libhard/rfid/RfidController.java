@@ -2,12 +2,14 @@ package com.fanfull.libhard.rfid;
 
 import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.barcode.BarcodeUtil;
-import java.util.Arrays;
-import java.util.List;
+
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 import org.orsoul.baselib.util.BytesUtil;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class RfidController implements IRfidPSamOperation {
   private static final RfidController ourInstance = new RfidController(new RfidPSamOperationRd());
@@ -52,11 +54,30 @@ public class RfidController implements IRfidPSamOperation {
     operation.findNfcAsync();
   }
 
-  @Override
-  public byte[] findM1() {
+  @Override public byte[] findM1() {
     byte[] uid = operation.findM1();
-    BytesUtil.reverse(uid);
     return uid;
+  }
+
+  @Override public byte[] findNfc() {
+    return operation.findNfc();
+  }
+
+  /**
+   * 读取M1卡 卡号.雨滴读卡器读出的数据 进行逆序
+   *
+   * @return 4byte
+   */
+  public byte[] getM1CardId() {
+    byte[] m1 = findM1();
+    if (operation instanceof RfidPSamOperationRd
+        || operation instanceof RfidOperationRd) {
+      BytesUtil.reverse(m1);
+    }
+    //if (m1 != null) {
+    //  return BytesUtil.bytes2HexString(m1);
+    //}
+    return m1;
   }
 
   @Override
@@ -112,11 +133,6 @@ public class RfidController implements IRfidPSamOperation {
 
   @Override public boolean writeNfc(int sa, byte[] buff, boolean withFindCard) {
     return operation.writeNfc(sa, buff, withFindCard);
-  }
-
-  @Override
-  public byte[] findNfc() {
-    return operation.findNfc();
   }
 
   @Override public boolean readM1(int block, byte[] dataBuff) {

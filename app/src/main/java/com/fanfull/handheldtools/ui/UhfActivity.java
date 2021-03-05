@@ -17,7 +17,6 @@ import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
@@ -44,7 +43,7 @@ public class UhfActivity extends InitModuleActivity {
   private UhfController uhfController;
   private SocketServiceDemo socketService;
 
-  private byte[] readBuff;
+  private byte[] buff12;
   private boolean fastIdOn;
   private boolean readingLot;
   private int readLotCount;
@@ -113,6 +112,7 @@ public class UhfActivity extends InitModuleActivity {
         //socketService = new SocketServiceDemo();
         //socketService.start();
         lotScanTask = new LotScanTask(uhfController);
+        buff12 = new byte[12];
       }
 
       @Override
@@ -197,27 +197,33 @@ public class UhfActivity extends InitModuleActivity {
     Object info;
     switch (v.getId()) {
       case R.id.btn_uhf_read_epc:
-        readBuff = uhfController.readEpcWithTid(500);
-        if (readBuff == null) {
-          info = "读epc失败";
-        } else if (readBuff.length == 24) {
-          info = String.format("epc:%s\ntid:%s",
-              BytesUtil.bytes2HexString(readBuff, 0, 12),
-              BytesUtil.bytes2HexString(readBuff, 12, readBuff.length));
+        ClockUtil.runTime(true);
+        boolean res = uhfController.readEpc(buff12);
+        long t = ClockUtil.runTime();
+        if (!res) {
+          info = String.format("读epc失败,用时:%s", t);
+        } else if (buff12.length == 24) {
+          info = String.format("epc:%s\ntid:%s,用时:%s",
+              BytesUtil.bytes2HexString(buff12, 0, 12),
+              BytesUtil.bytes2HexString(buff12, 12, buff12.length), t);
         } else {
-          info = String.format("epc:%s", BytesUtil.bytes2HexString(readBuff));
+          info = String.format("epc:%s,用时:%s", BytesUtil.bytes2HexString(buff12), t);
         }
+        LogUtils.d(info);
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_tid:
         byte[] tidBuff = new byte[12];
-        boolean tidLen = uhfController.fastTid(0, tidBuff);
+        ClockUtil.runTime(true);
+        boolean tidLen = uhfController.readTid(tidBuff);
+        t = ClockUtil.runTime();
         if (!tidLen) {
-          info = "读tid失败";
+          info = String.format("读tid失败,用时:%s", t);
         } else {
-          readBuff = tidBuff;
-          info = String.format("tid:%s", BytesUtil.bytes2HexString(readBuff));
+          buff12 = tidBuff;
+          info = String.format("tid:%s,用时:%s", BytesUtil.bytes2HexString(buff12), t);
         }
+        LogUtils.d(info);
         ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_read_use:
@@ -239,6 +245,7 @@ public class UhfActivity extends InitModuleActivity {
               power[0], power[1], power[2], power[3] == 0 ? "开环" : "闭环");
         }
         ViewUtil.appendShow(info, tvShow);
+        showSetPower();
         break;
       case R.id.tv_barcode_show:
         if (3 == ClockUtil.fastClickTimes()) {
@@ -249,16 +256,16 @@ public class UhfActivity extends InitModuleActivity {
     v.setEnabled(true);
   }
 
-  @Override
-  protected void onEnterPress() {
+  @Override protected void onEnterPress() {
+    btnReadEpc.performClick();
     //        LogUtils.d("onEnterPress");
-    if (readingLot) {
-      return;
-    }
-    if (uhfController.isOpen()) {
-      readLotCount = 0;
-      readingLot = uhfController.send(UhfCmd.getReadLotCmd(20));
-    }
+    //if (readingLot) {
+    //  return;
+    //}
+    //if (uhfController.isOpen()) {
+    //  readLotCount = 0;
+    //  readingLot = uhfController.send(UhfCmd.getReadLotCmd(20));
+    //}
   }
 
   boolean isRead;
@@ -302,17 +309,22 @@ public class UhfActivity extends InitModuleActivity {
         }
         break;
       case KeyEvent.KEYCODE_1:
-        byte[] writeBuff = readBuff;
+        byte[] writeBuff = buff12;
         if (writeBuff == null) {
           writeBuff = new byte[12];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
         }
+        testWriteFilter();
+        break;
+      case KeyEvent.KEYCODE_2:
+        writeBuff = BytesUtil.hexString2Bytes("050278012102251624070002");
         //uhfController.writeAsync(UhfCmd.MB_EPC, 0x02, writeBuff, null, 0, 0);
         res = uhfController.write(UhfCmd.MB_EPC, 0x02, writeBuff, 500, 0, 0, null);
         LogUtils.d("write epc %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
-        break;
-      case KeyEvent.KEYCODE_2:
-        writeBuff = readBuff;
+        if (true) {
+          return false;
+        }
+        writeBuff = buff12;
         if (writeBuff == null) {
           writeBuff = new byte[12];
           Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
@@ -335,53 +347,22 @@ public class UhfActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_4:
 
         //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
-        res = uhfController.read(UhfCmd.MB_TID, 0x00, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        res = uhfController.read(UhfCmd.MB_TID, 0x00, data, 500, UhfCmd.MB_TID, 0, buff12);
         LogUtils.d("read tid %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_5:
         //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
-        res = uhfController.read(UhfCmd.MB_EPC, 0x02, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        res = uhfController.read(UhfCmd.MB_EPC, 0x02, data, 500, UhfCmd.MB_TID, 0, buff12);
         LogUtils.d("read epc %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_6:
         //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x00, 32));
         data = new byte[16];
-        res = uhfController.read(UhfCmd.MB_USE, 0x00, data, 500, UhfCmd.MB_TID, 0, readBuff);
+        res = uhfController.read(UhfCmd.MB_USE, 0x00, data, 500, UhfCmd.MB_TID, 0, buff12);
         LogUtils.d("read use %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_7:
-        new XPopup.Builder(this).asInputConfirm(
-            "输入功率", "功率范围：5 ~ 25", "读功率.写功率", new OnInputConfirmListener() {
-              @Override public void onConfirm(String text) {
-                if (text == null) {
-                  return;
-                }
 
-                if (!text.matches("\\d+\\.\\d+")) {
-                  ToastUtils.showShort("输入格式不合法，正确格式：6.12");
-                  return;
-                }
-
-                String[] split = text.split("\\.");
-                int r = Integer.parseInt(split[0]);
-                int w = Integer.parseInt(split[1]);
-                if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
-                    UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
-                  ToastUtils.showShort("功率超出允许范围");
-                  return;
-                }
-
-                boolean b = uhfController.setPower(r, w, 0, true, false);
-                String res;
-                if (b) {
-                  res = String.format("设置读/写功率成功：%s / %s", r, w);
-                } else {
-                  res = "设置功率失败";
-                }
-                ToastUtils.showShort(res);
-                ViewUtil.appendShow(res, tvShow);
-              }
-            }).show();
         break;
       case KeyEvent.KEYCODE_8:
         //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0x0FC2A0);
@@ -404,17 +385,68 @@ public class UhfActivity extends InitModuleActivity {
     return super.onKeyDown(keyCode, event);
   }
 
-  private void initSocketService() {
-  }
-
-  @Override
-  protected void onDestroy() {
+  @Override protected void onDestroy() {
     if (socketService != null) {
       socketService.closeService();
     }
     uhfController.release();
     isRead = false;
     super.onDestroy();
+  }
+
+  private void showSetPower() {
+    new XPopup.Builder(this).asInputConfirm(
+        "输入功率", "功率范围：5 ~ 25,输入6.8即读写功率分别为6、8", "读功率.写功率", text -> {
+          if (text == null) {
+            return;
+          }
+
+          if (!text.matches("\\d+\\.\\d+")) {
+            ToastUtils.showLong("输入格式不合法，正确格式：6.8，读写功率分别为6、8");
+            return;
+          }
+
+          String[] split = text.split("\\.");
+          int r = Integer.parseInt(split[0]);
+          int w = Integer.parseInt(split[1]);
+          if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
+              UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
+            ToastUtils.showShort("功率超出允许范围");
+            return;
+          }
+
+          boolean b = uhfController.setPower(r, w, 0, true, false);
+          String res1;
+          if (b) {
+            res1 = String.format("设置读/写功率成功：%s / %s", r, w);
+          } else {
+            res1 = "设置功率失败";
+          }
+          ToastUtils.showShort(res1);
+          ViewUtil.appendShow(res1, tvShow);
+        }).show();
+  }
+
+  private void testWriteFilter() {
+    byte[] tid6 = new byte[6];
+    boolean res = uhfController.read(UhfCmd.MB_TID, 0x03, tid6,
+        500, UhfCmd.MB_TID, 0x03, null);
+    if (!res) {
+      LogUtils.d("%s", "read tid6 failed");
+      return;
+    }
+    LogUtils.d("tid6:%s", BytesUtil.bytes2HexString(tid6));
+    byte[] epc12 = new byte[12];
+    Arrays.fill(epc12, (byte) new Random().nextInt(256));
+    //epc12 = BytesUtil.hexString2Bytes("05532103044A45D23E618072");
+
+    res = uhfController.write(UhfCmd.MB_EPC, 0x02, epc12,
+        500, UhfCmd.MB_TID, 0x03, tid6);
+    if (!res) {
+      LogUtils.d("%s", "write epc12 failed");
+    } else {
+      LogUtils.d("epc12:%s", BytesUtil.bytes2HexString(epc12));
+    }
   }
 
   static class SocketServiceDemo extends Thread {
@@ -476,11 +508,10 @@ public class UhfActivity extends InitModuleActivity {
       return false;
     }
 
-    @Override
-    public void run() {
+    @Override public void run() {
       try {
         serverSocket = new ServerSocket(12345, 3);
-        String format = String.format("server %s run", serverSocket.getLocalSocketAddress());
+        String format = String.format("server %s run", serverSocket.getInetAddress());
         LogUtils.d(format);
 
         byte[] buff = new byte[1024 * 16];

@@ -4,6 +4,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@color/color_bg_gray"
   android:focusable="true"
   android:focusableInTouchMode="true"
   tools:context=".ui.NfcActivity">
@@ -15,10 +16,11 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginEnd="8dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="5dp"
+    android:background="@android:color/white"
     android:padding="5dp"
-    android:text="正在初始化..."
-    app:layout_constraintBottom_toTopOf="@id/switch_check_bag_nfc_mode"
+    android:text="正在初始化...\n"
+    app:layout_constraintBottom_toTopOf="@+id/btn_check_bag_scan"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +43,7 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
     android:padding="5dp"
-    android:text="show"
+    android:text="功率设置"
     app:layout_constraintBottom_toBottomOf="@id/btn_check_bag_scan"
     app:layout_constraintEnd_toStartOf="@id/btn_check_bag_scan"
     app:layout_constraintTop_toTopOf="@id/btn_check_bag_scan" />
@@ -50,21 +52,10 @@
     android:id="@+id/switch_check_bag_nfc_mode"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="5dp"
-    android:checked="true"
-    android:text="读Epc"
-    app:layout_constraintBottom_toTopOf="@id/switch_check_bag_sound"
-    app:layout_constraintStart_toStartOf="@id/switch_check_bag_sound" />
-
-  <Switch
-    android:id="@+id/switch_check_bag_sound"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
     android:layout_marginStart="16dp"
-    android:layout_marginBottom="8dp"
     android:checked="true"
-    android:text="扫描音效"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintStart_toStartOf="parent" />
-
+    android:text="读超高频"
+    app:layout_constraintBottom_toBottomOf="@+id/btn_check_bag_stopScan"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/btn_check_bag_stopScan" />
 </androidx.constraintlayout.widget.ConstraintLayout>

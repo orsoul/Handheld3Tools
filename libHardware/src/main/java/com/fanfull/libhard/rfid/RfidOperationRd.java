@@ -6,8 +6,10 @@ import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
 import com.halio.Rfid;
 import com.rd.io.Platform;
-import java.util.concurrent.Executors;
+
 import org.orsoul.baselib.util.BytesUtil;
+
+import java.util.concurrent.Executors;
 
 /**
  * 高频卡 操作类，基于 雨滴开发板.
@@ -139,13 +141,11 @@ public class RfidOperationRd extends AbsRfidOperation {
     return reVal;
   }
 
-  @Override
-  public byte[] findNfc() {
+  @Override public byte[] findNfc() {
     return findCard(true);
   }
 
-  @Override
-  public byte[] findM1() {
+  @Override public byte[] findM1() {
     return findCard(false);
   }
 
@@ -156,16 +156,6 @@ public class RfidOperationRd extends AbsRfidOperation {
    * @return 寻卡成功 返回true
    */
   @Override public boolean findCard(byte[] uidBuff) {
-    //if (uidBuff == null || !config()) {
-    //  return false;
-    //}
-    //boolean findSuccess = false;
-    //if (uidBuff.length == 4) {
-    //  findSuccess = Rfid.PcdAnticoll(uidBuff);
-    //} else if (uidBuff.length == 7) {
-    //  findSuccess = Rfid.ULPcdAnticoll(uidBuff);
-    //}
-    //LogUtils.tag(TAG).v("findSuccess %s:%s", findSuccess, BytesUtil.bytes2HexString(uidBuff));
     return findCardRes(uidBuff) == EnumErrCode.SUCCESS;
   }
 

@@ -152,8 +152,7 @@ public class MainActivity extends BaseActivity {
     AppUtil.killProcess();
   }
 
-  @Override
-  public void onClick(View v) {
+  @Override public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_uhf:
         startActivity(new Intent(this, UhfActivity.class));

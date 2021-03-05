@@ -1,77 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context=".ui.UhfActivity"
-    >
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:focusable="true"
+  android:focusableInTouchMode="true"
+  tools:context=".ui.UhfActivity">
 
   <TextView
-      android:id="@+id/tv_barcode_show"
-      android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginEnd="8dp"
-      android:layout_marginBottom="5dp"
-      android:padding="0dp"
-      android:text="正在初始化..."
-      app:layout_constraintBottom_toTopOf="@id/btn_uhf_read_epc"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+    android:id="@+id/tv_barcode_show"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="5dp"
+    android:padding="0dp"
+    android:text="正在初始化..."
+    app:layout_constraintBottom_toTopOf="@id/layout"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
 
-  <Button
+  <LinearLayout
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <Button
       android:id="@+id/btn_uhf_read_epc"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="2dp"
-      android:layout_marginBottom="5dp"
+      android:layout_weight="1"
       android:enabled="true"
-      android:padding="0dp"
-      android:text="快读EPC"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      />
+      android:text="EPC" />
 
-  <Button
+    <Button
       android:id="@+id/btn_uhf_read_tid"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="2dp"
-      android:padding="0dp"
-      android:text="快读TID"
-      app:layout_constraintBottom_toBottomOf="@id/btn_uhf_read_epc"
-      app:layout_constraintEnd_toStartOf="@id/btn_uhf_read_epc"
-      app:layout_constraintTop_toTopOf="@id/btn_uhf_read_epc"
-      />
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="TID" />
 
-  <Button
+    <Button
       android:id="@+id/btn_uhf_read_use"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="2dp"
-      android:padding="0dp"
-      android:text="读Use"
-      app:layout_constraintBottom_toBottomOf="@id/btn_uhf_read_epc"
-      app:layout_constraintEnd_toStartOf="@id/btn_uhf_read_tid"
-      app:layout_constraintTop_toTopOf="@id/btn_uhf_read_epc"
-      />
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="USE" />
 
-  <Button
+    <Button
       android:id="@+id/btn_uhf_get_power"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="2dp"
-      android:padding="0dp"
-      android:text="获取功率"
-      app:layout_constraintBottom_toBottomOf="@id/btn_uhf_read_epc"
-      app:layout_constraintEnd_toStartOf="@id/btn_uhf_read_use"
-      app:layout_constraintTop_toTopOf="@id/btn_uhf_read_epc"
-      />
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="设功率" />
 
+  </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

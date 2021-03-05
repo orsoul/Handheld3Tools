@@ -1,6 +1,7 @@
 package org.orsoul.baselib.util;
 
 import java.security.Key;
+
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -261,10 +262,23 @@ public abstract class AESCoder {
     plain[0] ^= key;
   }
 
-  /**
-   * @throws Exception
-   */
+  private static void testMyEncrypt() {
+    String text = "055321B3044C46D23E618077259A288E1800087101001005210305173805";
+    String pwd = "259A288E1800";
+    byte[] data = BytesUtil.hexString2Bytes(text);
+    byte[] key = BytesUtil.hexString2Bytes(pwd);
+    boolean b = myEncrypt(data, key, true);
+    System.out.printf("加密:%s, data:%s\n", b, BytesUtil.bytes2HexString(data));
+
+    b = myEncrypt(data, key, false);
+    System.out.printf("解密:%s, data:%s\n", b, BytesUtil.bytes2HexString(data));
+  }
+
   public static void main(String[] args) throws Exception {
+    testMyEncrypt();
+  }
+
+  private static void test() throws Exception {
     String key = "$%&tF6&7G6R*&=[l";
     String plain = "6427D532D93B68F4B41EB80DE1276AA61E651938091F72C3D181EC5792596478-24";
     // plain = "";

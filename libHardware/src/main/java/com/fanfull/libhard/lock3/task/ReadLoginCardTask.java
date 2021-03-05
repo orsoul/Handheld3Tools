@@ -51,8 +51,9 @@ public abstract class ReadLoginCardTask extends ThreadUtil.TimeThreadRunnable {
     boolean readSuccess = false;
     switch (cardType) {
       case CARD_M1:
-        cardBuff = new byte[4];
-        readSuccess = RfidController.getInstance().findCard(cardBuff);
+        cardBuff = RfidController.getInstance().getM1CardId();
+        //readSuccess = RfidController.getInstance().findCard(cardBuff);
+        readSuccess = cardBuff != null;
         break;
       case CARD_CUP:
         cardBuff = new byte[PSamCmd.COS_RES_CARD_LEN];

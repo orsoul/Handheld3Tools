@@ -6,6 +6,7 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 
+import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 
@@ -94,9 +95,10 @@ public class Lock3Operation {
       return -2;
     }
 
+    int sa = 0x03;
     /* 2、读Uhf tid */
     if (tid != null) {
-      readSuccess = uhfController.readTid(0x00, tid);
+      readSuccess = uhfController.readTid(sa, tid);
       if (!readSuccess) {
         return -3;
       }
@@ -104,7 +106,7 @@ public class Lock3Operation {
 
     /* 3、读Uhf epc */
     if (epc != null) {
-      readSuccess = uhfController.read(UhfCmd.MB_EPC, 0x02, epc, UhfCmd.MB_TID, 0x00, tid);
+      readSuccess = uhfController.read(UhfCmd.MB_EPC, 0x02, epc, UhfCmd.MB_TID, sa, tid);
       if (!readSuccess) {
         return -4;
       }
@@ -268,5 +270,33 @@ public class Lock3Operation {
   /** 写nfc，写之前执行寻卡. */
   public boolean writeLockNfc(Lock3Bean lock3Bean) {
     return writeLockNfc(lock3Bean, true);
+  }
+
+  /**
+   * 设置标志位.1~4 对应 F1~F4
+   *
+   * @param status 1~4
+   */
+  public boolean setLockStatus(int status) {
+    byte[] uid = rfidController.findNfc();
+    if (uid == null) {
+      return false;
+    } else if (4 < status || status < 1) {
+      return false;
+    }
+
+    Lock3Bean lock3Bean = new Lock3Bean();
+    Lock3InfoUnit unitKey = Lock3InfoUnit.newInstance(Lock3Bean.SA_KEY_NUM);
+    unitKey.buff = new byte[4];
+    unitKey.buff[0] = (byte) 0xA0;
+    lock3Bean.add(unitKey);
+
+    Lock3InfoUnit unitFlag = Lock3InfoUnit.newInstance(Lock3Bean.SA_STATUS);
+    int statusEncrypt = Lock3Util.getStatus(status, 0, uid, true);
+    unitFlag.buff = new byte[4];
+    unitFlag.buff[0] = (byte) statusEncrypt;
+    lock3Bean.add(unitFlag);
+
+    return Lock3Operation.getInstance().writeLockNfc(lock3Bean, false);
   }
 }
