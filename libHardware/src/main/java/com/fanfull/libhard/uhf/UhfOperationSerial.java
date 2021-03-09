@@ -67,6 +67,7 @@ public class UhfOperationSerial extends AbsUhfOperation {
 
   @Override
   public void release() {
+    setListener(null);
     if (serialPortController != null) {
       serialPortController.removeSerialPortListener(serialPortListener);
       serialPortController.countUse(false);
