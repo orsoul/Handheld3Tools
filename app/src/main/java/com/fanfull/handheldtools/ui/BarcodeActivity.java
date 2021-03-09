@@ -62,7 +62,7 @@ public class BarcodeActivity extends InitModuleActivity {
     showLoadingView("正在打开二维读头...");
     barcodeController.setBarcodeListener(new IBarcodeListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.setText("打开失败.");
@@ -75,11 +75,11 @@ public class BarcodeActivity extends InitModuleActivity {
       }
 
       @Override public void onScan() {
-        runOnUi(() -> btnScan.setEnabled(false));
+        runOnUiThread(() -> btnScan.setEnabled(false));
       }
 
       @Override public void onStopScan() {
-        runOnUi(() -> btnScan.setEnabled(true));
+        runOnUiThread(() -> btnScan.setEnabled(true));
       }
 
       @Override public void onReceiveData(byte[] data) {
@@ -92,7 +92,7 @@ public class BarcodeActivity extends InitModuleActivity {
           barcode = new String(data);
         }
         boolean repScan = switchRep.isChecked();
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           Spanned colorSpanned = HtmlUtil.getColorSpanned("\n%s: %s", ++recCount, barcode);
           appendShow(colorSpanned);
           //                    appendShow(String.format("\n%s: %s", ++recCount, barcode));

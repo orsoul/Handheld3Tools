@@ -69,7 +69,7 @@ public class BagCheckActivity extends InitModuleActivity {
 
     uhfController.setListener(new IUhfListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           if (!openSuccess) {
             dismissLoadingView();
             ViewUtil.appendShow("超高频初始失败.", tvShow);
@@ -148,7 +148,7 @@ public class BagCheckActivity extends InitModuleActivity {
     rfidController.setListener(new IRfidListener() {
       @Override
       public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             ViewUtil.appendShow("高频模块初始失败", tvShow);
@@ -406,7 +406,7 @@ public class BagCheckActivity extends InitModuleActivity {
       }
 
       boolean finalOtherNoHave = otherNoHave;
-      runOnUi(() -> {
+      runOnUiThread(() -> {
         ViewUtil.appendShow(info, tvShow);
         if (finalOtherNoHave) {
           SoundHelper.playToneSuccess();

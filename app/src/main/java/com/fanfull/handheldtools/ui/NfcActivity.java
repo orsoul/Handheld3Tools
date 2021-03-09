@@ -74,7 +74,7 @@ public class NfcActivity extends InitModuleActivity {
     nfcController.setListener(new IRfidListener() {
       @Override
       public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (openSuccess) {
             tvShow.setText("初始化成功\n按键1 -> 写39\n按键2 -> 读39\n按键0 -> psam随机数\n按键6 -> cpu卡\n");

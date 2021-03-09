@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.apkfuns.logutils.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.LotScanTask;
 import com.fanfull.handheldtools.R;
@@ -82,7 +83,7 @@ public class UhfActivity extends InitModuleActivity {
     uhfController = UhfController.getInstance();
     uhfController.setListener(new IUhfListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.setText("初始化失败");
@@ -91,13 +92,11 @@ public class UhfActivity extends InitModuleActivity {
           tvShow.setText("打开成功.\n"
               + "3连接击->清空\n"
               + "Enter->开始/停止 连续扫描\n"
-              + "按键1->随机写EPC 12byte\n"
-              + "按键2->随机写USE 32byte\n"
-              + "按键4->读TID 12byte\n"
-              + "按键5->读EPC 12byte\n"
-              + "按键6->读USE 32byte\n"
-              + "按键7->设置功率\n"
-              + "按键8->开启 EPC、TID同读\n"
+              + "按键1->快读TID 12byte\n"
+              + "按键3->同读epc、tid\n"
+              + "按键4->随机写EPC 12byte\n"
+              + "按键6->随机写USE 32byte\n"
+              + "按键7->开启 EPC、TID同读\n"
               + "按键9->关闭 EPC、TID同读\n\n");
           btnReadEpc.setEnabled(true);
           btnReadTid.setEnabled(true);
@@ -109,8 +108,6 @@ public class UhfActivity extends InitModuleActivity {
         uhfController.send(UhfCmd.CMD_GET_DEVICE_ID);
         SystemClock.sleep(50);
         uhfController.send(UhfCmd.CMD_GET_FAST_ID);
-        //socketService = new SocketServiceDemo();
-        //socketService.start();
         lotScanTask = new LotScanTask(uhfController);
         buff12 = new byte[12];
       }
@@ -291,88 +288,105 @@ public class UhfActivity extends InitModuleActivity {
           int[] count = new int[1];
           ThreadUtil.execute(() -> {
             while (isRead) {
-              //runOnUi(() -> btnReadEpc.performClick());
+              //runOnUiThread(() -> btnReadEpc.performClick());
               byte[] epc = new byte[12];
               uhfController.readEpc(epc);
               String s = BytesUtil.bytes2HexString(epc);
-              //SystemClock.sleep(50);
-              //runOnUi(new Runnable() {
-              //  @Override public void run() {
-              //
-              //  }
-              //});
-              //runOnUi(() -> ViewUtil.appendShow((++count[0]) + ":" + s + "", tvShow));
-              runOnUi(() -> tvShow.setText((++count[0]) + ":" + s + "\n"));
+              runOnUiThread(() -> tvShow.setText((++count[0]) + ":" + s + "\n"));
               SystemClock.sleep(50);
             }
           });
         }
         break;
       case KeyEvent.KEYCODE_1:
-        byte[] writeBuff = buff12;
-        if (writeBuff == null) {
-          writeBuff = new byte[12];
-          Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
+        ClockUtil.runTime(true);
+        boolean fastTid = uhfController.fastTid(0, buff12);
+        long t = ClockUtil.runTime();
+        String info;
+        if (!fastTid) {
+          info = String.format("快读Tid失败,用时:%s", t);
+        } else {
+          info = String.format("快读Tid:%s,用时:%s", BytesUtil.bytes2HexString(buff12), t);
         }
-        testWriteFilter();
+        LogUtils.d(info);
+        ViewUtil.appendShow(info, tvShow);
         break;
       case KeyEvent.KEYCODE_2:
-        writeBuff = BytesUtil.hexString2Bytes("050278012102251624070002");
-        //uhfController.writeAsync(UhfCmd.MB_EPC, 0x02, writeBuff, null, 0, 0);
-        res = uhfController.write(UhfCmd.MB_EPC, 0x02, writeBuff, 500, 0, 0, null);
-        LogUtils.d("write epc %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
-        if (true) {
-          return false;
-        }
-        writeBuff = buff12;
-        if (writeBuff == null) {
-          writeBuff = new byte[12];
-          Arrays.fill(writeBuff, (byte) new Random().nextInt(256));
-        }
-        //uhfController.writeAsync(UhfCmd.MB_USE, 0x4, writeBuff, null, 0, 0);
-        res = uhfController.write(UhfCmd.MB_USE, 0x01, writeBuff, 500, 0, 0, null);
-        LogUtils.d("write use %s:%s", res, BytesUtil.bytes2HexString(writeBuff));
         break;
       case KeyEvent.KEYCODE_3:
-        if (lotScanTask == null) {
-          break;
-        }
-        if (lotScanTask.startThread()) {
-          ToastUtils.showShort("已开始批量扫描");
+        //if (lotScanTask == null) {
+        //  break;
+        //}
+        //if (lotScanTask.startThread()) {
+        //  ToastUtils.showShort("已开始批量扫描");
+        //} else {
+        //  lotScanTask.stopThread();
+        //  ToastUtils.showShort("已停止批量扫描");
+        //}
+
+        ClockUtil.runTime(true);
+        byte[] bytes = uhfController.readEpcWithTid(200);
+        t = ClockUtil.runTime();
+        //String info;
+        if (bytes == null) {
+          info = String.format("读epcTid失败,用时:%s", t);
+        } else if (bytes.length == 24) {
+          info = String.format("epc:%s\ntid:%s,用时:%s",
+              BytesUtil.bytes2HexString(bytes, 0, 12),
+              BytesUtil.bytes2HexString(bytes, 12, bytes.length), t);
         } else {
-          lotScanTask.stopThread();
-          ToastUtils.showShort("已停止批量扫描");
+          info = String.format("epc:%s,用时:%s", BytesUtil.bytes2HexString(bytes), t);
         }
+        LogUtils.d(info);
+        ViewUtil.appendShow(info, tvShow);
         break;
       case KeyEvent.KEYCODE_4:
+        Arrays.fill(buff12, (byte) new Random().nextInt(256));
 
-        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_TID, 0x00, 12));
-        res = uhfController.read(UhfCmd.MB_TID, 0x00, data, 500, UhfCmd.MB_TID, 0, buff12);
-        LogUtils.d("read tid %s:%s", res, BytesUtil.bytes2HexString(data));
+        ClockUtil.runTime(true);
+        boolean writeEpc = uhfController.writeEpc(buff12);
+        t = ClockUtil.runTime();
+        if (!writeEpc) {
+          info = String.format("随机写epc失败,用时：%s", t);
+        } else {
+          info = String.format("随机写epd：%s,用时：%s", BytesUtil.bytes2HexString(buff12), t);
+        }
+        LogUtils.d(info);
+        ViewUtil.appendShow(info, tvShow);
+        //testWriteFilter();
         break;
       case KeyEvent.KEYCODE_5:
-        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_EPC, 0x02, 12));
-        res = uhfController.read(UhfCmd.MB_EPC, 0x02, data, 500, UhfCmd.MB_TID, 0, buff12);
-        LogUtils.d("read epc %s:%s", res, BytesUtil.bytes2HexString(data));
         break;
       case KeyEvent.KEYCODE_6:
-        //uhfController.send(UhfCmd.getReadCmd(UhfCmd.MB_USE, 0x00, 32));
-        data = new byte[16];
-        res = uhfController.read(UhfCmd.MB_USE, 0x00, data, 500, UhfCmd.MB_TID, 0, buff12);
-        LogUtils.d("read use %s:%s", res, BytesUtil.bytes2HexString(data));
+        Arrays.fill(buff12, (byte) new Random().nextInt(256));
+        ClockUtil.runTime(true);
+        boolean writeUse = uhfController.writeUse(0, buff12);
+        t = ClockUtil.runTime();
+        if (!writeUse) {
+          info = String.format("随机写use失败,用时：%s", t);
+        } else {
+          info = String.format("随机写use：%s,用时：%s", BytesUtil.bytes2HexString(buff12), t);
+        }
+        LogUtils.d(info);
+        ViewUtil.appendShow(info, tvShow);
         break;
       case KeyEvent.KEYCODE_7:
-
+        //if (socketService == null) {
+        //  socketService = new SocketServiceDemo();
+        //  socketService.start();
+        //} else {
+        //  socketService.closeService();
+        //}
+        fastIdOn = true;
+        uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
         break;
       case KeyEvent.KEYCODE_8:
         //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0x0FC2A0);
         //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0b11111100000000000000);
         //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B00000000001111111111);
         //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111111111111111);
-        byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111110000000000);
-        uhfController.send(setPwdCmd);
-        //fastIdOn = true;
-        //uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
+        //byte[] setPwdCmd = UhfCmd.getSetPwdCmd(0x00000000, null, 0, 0, 0B11111111110000000000);
+        //uhfController.send(setPwdCmd);
         break;
       case KeyEvent.KEYCODE_9:
         fastIdOn = false;
@@ -401,14 +415,17 @@ public class UhfActivity extends InitModuleActivity {
             return;
           }
 
-          if (!text.matches("\\d+\\.\\d+")) {
+          if (!text.matches("\\d+[\\.\\d+]*")) {
             ToastUtils.showLong("输入格式不合法，正确格式：6.8，读写功率分别为6、8");
             return;
           }
 
           String[] split = text.split("\\.");
           int r = Integer.parseInt(split[0]);
-          int w = Integer.parseInt(split[1]);
+          int w = r;
+          if (split.length == 2) {
+            w = Integer.parseInt(split[1]);
+          }
           if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
               UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
             ToastUtils.showShort("功率超出允许范围");
@@ -449,7 +466,7 @@ public class UhfActivity extends InitModuleActivity {
     }
   }
 
-  static class SocketServiceDemo extends Thread {
+  class SocketServiceDemo extends Thread {
     private ServerSocket serverSocket;
     private Socket client;
     private boolean canRun;
@@ -510,9 +527,12 @@ public class UhfActivity extends InitModuleActivity {
 
     @Override public void run() {
       try {
-        serverSocket = new ServerSocket(12345, 3);
-        String format = String.format("server %s run", serverSocket.getInetAddress());
+        int port = 12345;
+        serverSocket = new ServerSocket(port, 3);
+        String format = String.format("server run, %s:%s", NetworkUtils.getIPAddress(true), port);
         LogUtils.d(format);
+        String finalFormat = format;
+        runOnUiThread(() -> ViewUtil.appendShow(finalFormat, tvShow));
 
         byte[] buff = new byte[1024 * 16];
         canRun = true;
@@ -522,6 +542,8 @@ public class UhfActivity extends InitModuleActivity {
             format = String.format("%s connected", client.getInetAddress());
             ToastUtils.showShort(format);
             LogUtils.d(format);
+            String finalFormat1 = format;
+            runOnUiThread(() -> ViewUtil.appendShow(finalFormat1, tvShow));
           }
           InputStream in = client.getInputStream();
           int len = in.read(buff);
@@ -529,10 +551,16 @@ public class UhfActivity extends InitModuleActivity {
             format = String.format("%s disconnected", client.getInetAddress());
             ToastUtils.showShort(format);
             LogUtils.d(format);
+            String finalFormat2 = format;
+            runOnUiThread(() -> ViewUtil.appendShow(finalFormat2, tvShow));
             client.close();
             client = null;
           } else {
             handlerRec(buff, len);
+            //String s = handlerCmd(new String(buff, 0, len));
+            //boolean send = send(s);
+            //String finalFormat2 = String.format("send %s:%s", send, s);
+            //runOnUiThread(() -> ViewUtil.appendShow(finalFormat2, tvShow));
           }
         }
       } catch (IOException e) {

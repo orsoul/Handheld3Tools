@@ -69,7 +69,7 @@ public class OldBagActivity extends InitModuleActivity {
     showLoadingView("正在初始化...");
     barcodeController.setBarcodeListener(new IBarcodeListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.append("\n二维读头打开失败");
@@ -83,12 +83,12 @@ public class OldBagActivity extends InitModuleActivity {
       }
 
       @Override public void onScan() {
-        runOnUi(() -> btnScan.setText("取消扫描"));
+        runOnUiThread(() -> btnScan.setText("取消扫描"));
       }
 
       @Override public void onStopScan() {
-        runOnUi(() -> btnScan.setText("扫描"));
-        //runOnUi(() -> btnScan.setEnabled(true));
+        runOnUiThread(() -> btnScan.setText("扫描"));
+        //runOnUiThread(() -> btnScan.setEnabled(true));
       }
 
       @Override public void onReceiveData(byte[] data) {
@@ -99,7 +99,7 @@ public class OldBagActivity extends InitModuleActivity {
         } else {
           barcode = new String(data);
         }
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           Spanned colorSpanned =
               HtmlUtil.getColorSpanned(0x000066, "\n%s - %s", barcode,
                   TextUtils.equals(barcode, m1Barcode));
@@ -115,7 +115,7 @@ public class OldBagActivity extends InitModuleActivity {
     nfcController = RfidController.getInstance();
     nfcController.setListener(new IRfidListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.setText("\n高频模块 初始化失败");

@@ -54,7 +54,7 @@ public class InitBag3Activity extends InitModuleActivity {
 
     uhfController.setListener(new IUhfListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           if (!openSuccess) {
             dismissLoadingView();
             ViewUtil.appendShow("超高频初始失败.", tvShow);
@@ -133,7 +133,7 @@ public class InitBag3Activity extends InitModuleActivity {
     rfidController.setListener(new IRfidListener() {
       @Override
       public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             ViewUtil.appendShow("高频模块初始失败", tvShow);

@@ -23,15 +23,10 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
 
     protected void onEnterPress() {}
 
-    protected void runOnUi(Runnable runnable) {
-        runOnUiThread(runnable);
+    @Override public void onClick(View v) {
     }
 
-    @Override
-    public void onClick(View v) {}
-
-    @Override
-    public void onBackPressed() {
+    @Override public void onBackPressed() {
         if (!ClockUtil.isFastDoubleClick()) {
             ToastUtils.showShort(R.string.text_click_again_quit);
             return;
@@ -39,15 +34,14 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
         super.onBackPressed();
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
         LogUtils.v("%s:  RepeatCount:%s Action:%s long:%s shift:%s meta:%X",
-                   KeyEvent.keyCodeToString(keyCode),
-                   event.getRepeatCount(),
-                   event.getAction(),
-                   event.isLongPress(),
-                   event.isShiftPressed(),
-                   event.getMetaState()
+            KeyEvent.keyCodeToString(keyCode),
+            event.getRepeatCount(),
+            event.getAction(),
+            event.isLongPress(),
+            event.isShiftPressed(),
+            event.getMetaState()
         );
 
         LogUtils.tag("aa").d("debug");

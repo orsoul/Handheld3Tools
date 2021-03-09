@@ -108,7 +108,7 @@ public class FingerActivity extends InitModuleActivity {
     uhfController = UhfController.getInstance();
     uhfController.setListener(new IUhfListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             ViewUtil.appendShow("超高频 初始化失败！！", tvShow);
@@ -174,7 +174,7 @@ public class FingerActivity extends InitModuleActivity {
     fingerprintController = FingerprintController.getInstance();
     fingerprintController.setListener(new IFingerListener() {
       @Override public void onOpen(boolean openSuccess) {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
             tvShow.setText("模块初始化失败！！！");
@@ -209,7 +209,7 @@ public class FingerActivity extends InitModuleActivity {
       int count;
 
       @Override public void onNoFinger() {
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           count++;
           showLoadingView("感应器无指纹 " + count);
         });
@@ -217,7 +217,7 @@ public class FingerActivity extends InitModuleActivity {
 
       @Override public void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
         count = 0;
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           ViewUtil.appendShow(String.format("添加成功，FingerIndex：%s, 保存在数据库？：%s",
               fingerBean.getFingerIndex(), isSaveInDB), tvShow);
           btnSearch.setEnabled(true);
@@ -228,7 +228,7 @@ public class FingerActivity extends InitModuleActivity {
 
       @Override public void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
         count = 0;
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           ViewUtil.appendShow(String.format("搜索成功，FingerIndex：%s, 保存在数据库？：%s",
               fingerBean.getFingerIndex(), isSaveInDB), tvShow);
           if (isSaveInDB) {
@@ -244,7 +244,7 @@ public class FingerActivity extends InitModuleActivity {
       @Override public void onSearchNoMatch() {
         count = 0;
         fingerPrintTask.stopThread();
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           ViewUtil.appendShow("未匹配到指纹", tvShow);
           btnSearch.setEnabled(true);
@@ -258,7 +258,7 @@ public class FingerActivity extends InitModuleActivity {
           return;
         }
         count = 0;
-        runOnUi(() -> {
+        runOnUiThread(() -> {
           dismissLoadingView();
           if (isAddMode) {
             ViewUtil.appendShow(String.format("添加失败，case:%s", errorCode), tvShow);
@@ -297,7 +297,7 @@ public class FingerActivity extends InitModuleActivity {
         ThreadUtil.execute(() -> {
           int[] resBuff = new int[2];
           int res1 = fingerprintController.operation.searchFinger2(resBuff);
-          runOnUi(() -> {
+          runOnUiThread(() -> {
             if (res1 == 0) {
               ViewUtil.appendShow(String.format("搜索成功，fingerID：%s,    score:%s",
                   resBuff[0], resBuff[1]), tvShow);
@@ -327,7 +327,7 @@ public class FingerActivity extends InitModuleActivity {
                   FingerBean fingerBean = new FingerBean(fingerId, fingerFeature);
                   dbId[0] = fingerPrintDbHelper.saveOrUpdate(fingerBean);
                 }
-                runOnUi(() -> {
+                runOnUiThread(() -> {
                   if (res1 == 0) {
                     ViewUtil.appendShow(
                         String.format("添加成功，fingerId：%s，db Id：%s", fingerId, dbId[0]), tvShow);
@@ -364,7 +364,7 @@ public class FingerActivity extends InitModuleActivity {
         showLoadingView();
         ThreadUtil.execute(() -> {
           int res1 = fingerprintController.loadFinger(fingerBeans);
-          runOnUi(() -> {
+          runOnUiThread(() -> {
             ViewUtil.appendShow(String.format("从数据库加载数量：%s / %s", res1, fingerBeans.size()),
                 tvShow);
             dismissLoadingView();
