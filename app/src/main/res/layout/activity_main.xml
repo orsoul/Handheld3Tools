@@ -110,5 +110,15 @@
       app:layout_constraintEnd_toEndOf="@id/btn_finger"
       app:layout_constraintStart_toStartOf="@id/btn_finger"
       app:layout_constraintTop_toBottomOf="@id/btn_finger" />
+
+    <Button
+      android:id="@+id/btn_sound"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_sound"
+      app:layout_constraintEnd_toEndOf="@id/btn_old_bag"
+      app:layout_constraintStart_toStartOf="@id/btn_old_bag"
+      app:layout_constraintTop_toBottomOf="@id/btn_old_bag" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

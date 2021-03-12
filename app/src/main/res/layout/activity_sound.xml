@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context=".ui.SoundActivity">
+
+  <SeekBar
+    android:id="@+id/sb_sound"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+
+  <EditText
+    android:id="@+id/et_sound_times"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:hint="次数(0无限)"
+    android:inputType="number"
+    app:layout_constraintBottom_toTopOf="@id/layout"
+    app:layout_constraintEnd_toStartOf="@id/et_sound_period"
+    app:layout_constraintHorizontal_chainStyle="spread"
+    app:layout_constraintHorizontal_weight="1"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <EditText
+    android:id="@+id/et_sound_period"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="间隔(毫秒,0无限)"
+    android:inputType="number"
+    app:layout_constraintBottom_toBottomOf="@id/et_sound_times"
+    app:layout_constraintHorizontal_weight="1"
+    app:layout_constraintLeft_toRightOf="@id/et_sound_times"
+    app:layout_constraintRight_toLeftOf="@id/btn_sound_play"
+    app:layout_constraintTop_toTopOf="@id/et_sound_times" />
+
+  <Button
+    android:id="@+id/btn_sound_play"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="播放"
+    app:layout_constraintBottom_toBottomOf="@id/et_sound_times"
+    app:layout_constraintHorizontal_weight="0.8"
+    app:layout_constraintLeft_toRightOf="@id/et_sound_period"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="@id/et_sound_times" />
+
+  <LinearLayout
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <Button
+      android:id="@+id/btn_sound_play_num"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="报数" />
+
+    <Button
+      android:id="@+id/btn_sound_play_success"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="成功" />
+
+    <Button
+      android:id="@+id/btn_sound_play_failed"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="失败" />
+
+    <Button
+      android:id="@+id/btn_sound_play_drop"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:enabled="true"
+      android:text="强调" />
+
+  </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

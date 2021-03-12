@@ -44,6 +44,7 @@ import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BagCheckActivity extends InitModuleActivity {
@@ -427,7 +428,8 @@ public class BagCheckActivity extends InitModuleActivity {
     Lock3InfoUnit infoUnit = lock3Bean.getInfoUnit(Lock3Bean.SA_PIECE_TID);
     Lock3InfoUnit infoUnitCover = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
     if (infoUnit != null && infoUnit.isDoSuccess()) {
-      boolean b = AESCoder.myEncrypt(infoUnitCover.buff, infoUnit.buff, false);
+      byte[] key = Arrays.copyOf(infoUnit.buff, 6);
+      boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
       coverCode = String.format("%s-解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff), b);
       //LogUtils.d("解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff));
     } else {

@@ -15,6 +15,7 @@ import com.fanfull.handheldtools.ui.InitBag3Activity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
+import com.fanfull.handheldtools.ui.SoundActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortView;
@@ -38,6 +39,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_barcode).setOnClickListener(this);
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
+    findViewById(R.id.btn_sound).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -177,6 +179,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_check_bag:
         startActivity(new Intent(this, BagCheckActivity.class));
+        break;
+      case R.id.btn_sound:
+        startActivity(new Intent(this, SoundActivity.class));
         break;
     }
   }

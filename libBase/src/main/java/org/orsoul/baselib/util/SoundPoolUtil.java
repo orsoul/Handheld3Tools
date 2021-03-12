@@ -106,6 +106,10 @@ public class SoundPoolUtil {
    * @param showUi true显示音量控制UI
    */
   public static void setAudioVolume(int volume, boolean showUi) {
+    setAudioVolume(volume, showUi, false);
+  }
+
+  public static void setAudioVolume(int volume, boolean showUi, boolean playSound) {
     Application app = Utils.getApp();
     if (app == null) {
       return;
@@ -118,8 +122,34 @@ public class SoundPoolUtil {
       int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
       volume = (int) (volumeMax * 0.7F);
     }
-    int flag = showUi ? AudioManager.FLAG_SHOW_UI : 0;
+    int flag = 0;
+    if (showUi) {
+      flag |= AudioManager.FLAG_SHOW_UI;
+    }
+    if (playSound) {
+      flag |= AudioManager.FLAG_PLAY_SOUND;
+    }
     audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, flag);
+  }
+
+  /**
+   * 获取多媒体 音量.
+   *
+   * @param isMax true 获取最大音量，否则获取 当前音量.
+   */
+  public static int getAudioVolume(boolean isMax) {
+    Application app = Utils.getApp();
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return -1;
+    }
+    int volume;
+    if (isMax) {
+      volume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    } else {
+      volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    }
+    return volume;
   }
 
   /**

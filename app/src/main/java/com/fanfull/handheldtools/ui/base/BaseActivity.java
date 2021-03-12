@@ -100,6 +100,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     dialogUtil.dismissLoadingView();
   }
 
+  protected void onEnterPress() {
+  }
+
   @Override public void onClick(View v) {
   }
 
@@ -117,10 +120,13 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         SoundHelper.setAudioVolume(true);
         break;
       case KeyEvent.KEYCODE_5:
-        SoundHelper.setAudioVolume(8, true);
+        SoundHelper.setAudioVolume(8, true, true);
         break;
       case KeyEvent.KEYCODE_8:
         SoundHelper.setAudioVolume(false);
+        break;
+      case KeyEvent.KEYCODE_ENTER:
+        onEnterPress();
         break;
       case KeyEvent.KEYCODE_SHIFT_LEFT:
       case KeyEvent.KEYCODE_F2:
