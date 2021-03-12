@@ -9,13 +9,15 @@ import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ThreadUtil;
 
+import java.util.Arrays;
+
 /**
  * 读袋锁任务，包括读NFC、可选读超高频的EPC、TID区.
  */
 public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] uid = new byte[7];
 
-  private byte[] tid = new byte[6];
+  private byte[] tid = new byte[12];
   private byte[] epc = new byte[12];
 
   private boolean isReadUhf = true;
@@ -43,7 +45,11 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
 
     /* 在指定时间内 寻卡NFC 和 读超高频 */
     long start = System.currentTimeMillis();
-    while (!isStopped()) {
+    while (true) {
+      if (isStopped()) {
+        onStop();
+        return;
+      }
       int res;
       if (isReadUhf) {
         res = lock3Operation.readUidAndTid(uid, tid, epc);
@@ -54,11 +60,18 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
       long goingTime = System.currentTimeMillis() - start;
       onProgress(res, goingTime, runTime);
       if (res == 0) {
+        if (isReadUhf) {
+          onReadUhfSuccess(epc, tid);
+        }
         break;
       } else if (runTime < goingTime) {
         onFailed(res);
         return;
       }
+    }
+
+    if (isStopped()) {
+      return;
     }
 
     if (lock3Bean == null) {
@@ -98,6 +111,8 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
     if (isReadUhf) {
       lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
       lock3Bean.setPieceTid(BytesUtil.bytes2HexString(tid));
+      lock3Bean.pieceEpcBuff = Arrays.copyOf(epc, epc.length);
+      lock3Bean.pieceTidBuff = Arrays.copyOf(tid, tid.length);
     } else {
       lock3Bean.setPieceEpc(null);
       lock3Bean.setPieceTid(null);
@@ -106,6 +121,9 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   }
 
   protected void onProgress(int res, long progress, long total) {
+  }
+
+  protected void onReadUhfSuccess(byte[] epc, byte[] tid) {
   }
 
   protected void onSuccess(Lock3Bean lock3Bean) {

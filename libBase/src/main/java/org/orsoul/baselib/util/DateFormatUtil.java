@@ -37,7 +37,7 @@ import java.util.Date;
  * @author orsoul
  * @常用格式: "yyyy-MM-dd HH:mm:ss"
  */
-public abstract class DateFormatUtil {
+public final class DateFormatUtil {
 
   /** 默认 时间的 字符串格式 */
   public static final String FORMAT_NORMAL = "yyyy-MM-dd HH:mm:ss";
@@ -172,5 +172,18 @@ public abstract class DateFormatUtil {
    */
   public static long parseString2Long(String strTime) {
     return parseString2Long(strTime, FORMAT_NORMAL);
+  }
+
+  public static void main(String[] args) {
+    new DateFormatUtil().test();
+  }
+
+  void test() {
+    String dateString = "2021-01-01";
+    Date date = parseString2Date(dateString, "yyyy-MM-dd");
+    System.out.printf("%s\n", date);
+
+    String stringTime = getStringTime(date.getTime(), FORMAT_NORMAL);
+    System.out.printf("%s\n", stringTime);
   }
 }

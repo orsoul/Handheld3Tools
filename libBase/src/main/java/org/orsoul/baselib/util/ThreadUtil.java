@@ -149,6 +149,22 @@ public final class ThreadUtil {
      */
     private Thread runningThread;
 
+    private boolean isRestart;
+
+    /**
+     * 停止当前任务，重新执行任务.
+     *
+     * @return 当前任务正在运行返回false；
+     */
+    public boolean restartThread() {
+      if (isRunning()) {
+        isRestart = true;
+        stopThread(true);
+        return false;
+      }
+      return startThread();
+    }
+
     /**
      * 使用线程池 执行 当前任务.
      *
@@ -169,14 +185,19 @@ public final class ThreadUtil {
         onTaskFinish();
         setRunning(false);
         runningThread = null;
+
+        if (isRestart) {
+          isRestart = false;
+          startThread();
+        }
         LogUtils.i("%s end", ThreadRunnable.this.getClass().getSimpleName());
       });
       return true;
     }
 
-    /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
+    /** 设置标志位停止并中断当前线程，线程是否已经停止运行应用isRunning()判断. */
     public synchronized void stopThread() {
-      stopped = true;
+      stopThread(true);
     }
 
     /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
@@ -219,6 +240,10 @@ public final class ThreadUtil {
     protected void onTaskBefore() {
     }
 
+    /** 主动停止线程 回调. */
+    protected void onStop() {
+    }
+
     /** run()结束后执行. */
     protected void onTaskFinish() {
     }
@@ -227,10 +252,13 @@ public final class ThreadUtil {
   public static abstract class TimeThreadRunnable extends ThreadRunnable {
     /** 开始运行的时间，单位毫秒. */
     private long startTime;
-    /** 运行时间，单位毫秒. */
+    /** 运行时间，单位毫秒，0或负数 表示不限时，默认值5秒. */
     private long runTime = 5000L;
-    /** 运执行次数. */
-    private int total = 1024;
+    /** 执行的最大次数，0或负数 表示无限次. */
+    private int total;
+
+    /** handleOnce() 已执行次数. */
+    protected int runCount;
 
     public long getRunTime() {
       return runTime;
@@ -255,7 +283,7 @@ public final class ThreadUtil {
 
     @Override public void run() {
       resetStartTime();
-      int count = 0;
+      runCount = 0;
       while (true) {
         if (isStopped()) {
           onStop();
@@ -263,20 +291,20 @@ public final class ThreadUtil {
         }
 
         boolean finish = handleOnce();
-        count++;
-        long gonging = System.currentTimeMillis() - startTime;
-        onHandleOnce(gonging, total);
+        runCount++;
+        long going = System.currentTimeMillis() - startTime;
+        onHandleOnce(going, runCount);
 
         if (finish) {
           onHandleFinish();
           break;
         }
-        if (runTime <= gonging) {
-          onTimeout(gonging, count);
+        if (0 < runTime && runTime <= going) {
+          onTimeout(going, runCount);
           break;
         }
-        if (total <= count) {
-          onTimeout(gonging, count);
+        if (0 < total && total <= runCount) {
+          onTimeout(going, runCount);
           break;
         }
       } // end while()
@@ -289,11 +317,11 @@ public final class ThreadUtil {
      */
     protected abstract boolean handleOnce();
 
-    protected void onHandleOnce(long goingTime, int total) {
-    }
-
-    /** 主动停止线程 回调. */
-    protected void onStop() {
+    /**
+     * @param goingTime 任务已运行时间
+     * @param runCount 任务已执行次数
+     */
+    protected void onHandleOnce(long goingTime, int runCount) {
     }
 
     /** 业务处理结束（即handleOnce()返回true） 回调. */

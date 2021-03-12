@@ -72,32 +72,87 @@ public class SoundHelper extends SoundPoolUtil {
     toneDadaId = -1;
   }
 
-  public static int playReply(int id, float percentVolume) {
+  public static int playRepeat(int id, float percentVolume) {
     return SingletonHolder.instance.play(id, getInstance().getVolume(percentVolume), 0, 1);
   }
 
-  private static PlayLoopTimer playLoopTimer;
+  public static class PlaySoundTask extends ThreadUtil.TimeThreadRunnable {
+    private int id;
+    private float volume = 1F;
+    private float rate = 1F;
+    private long period = 500;
 
-  public static void playLoop(int id, float volume, float rate, long period, int times) {
-    synchronized (SoundHelper.class) {
-      if (playLoopTimer == null) {
-        playLoopTimer = new PlayLoopTimer(id, volume, rate, period, times);
-      } else {
-        playLoopTimer.cancel();
-        playLoopTimer = new PlayLoopTimer(id, volume, rate, period, times);
-      }
+    public int getId() {
+      return id;
     }
-    playLoopTimer.play();
-  }
 
-  public static void stopLoop() {
-    if (playLoopTimer != null) {
-      playLoopTimer.stop();
+    public void setId(int id) {
+      this.id = id;
+    }
+
+    public float getVolume() {
+      return volume;
+    }
+
+    public void setVolume(float volume) {
+      this.volume = volume;
+    }
+
+    public float getRate() {
+      return rate;
+    }
+
+    public void setRate(float rate) {
+      this.rate = rate;
+    }
+
+    public long getPeriod() {
+      return period;
+    }
+
+    public void setPeriod(long period) {
+      this.period = period;
+    }
+
+    public void set(int id, float volume, float rate, long period, int times, long runTime) {
+      setId(id);
+      setVolume(volume);
+      setRate(rate);
+      setPeriod(period);
+
+      setTotal(times);
+      setRunTime(runTime);
+    }
+
+    public boolean play(int id, float volume, float rate, long period, int times, long runTime) {
+      set(id, volume, rate, period, times, runTime);
+      return startThread();
+    }
+
+    public boolean play(int id) {
+      if (id <= 0) {
+        return false;
+      }
+      setId(id);
+      return startThread();
+    }
+
+    @Override protected boolean handleOnce() {
+      if (id <= 0) {
+        return true;
+      }
+
+      SoundHelper.getInstance().play(id, volume, 1, rate);
+      int total = getTotal();
+      if (runCount < total || total <= 0) {
+        ThreadUtil.sleep(period);
+      }
+      return false;
     }
   }
 
   /** 以固定的速率 播放音效. */
-  static class PlayLoopTimer extends Timer {
+  private class PlayLoopTimer extends Timer {
     private int id;
     private float volume;
     private float rate;

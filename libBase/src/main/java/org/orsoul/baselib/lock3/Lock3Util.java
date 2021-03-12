@@ -47,6 +47,9 @@ public abstract class Lock3Util {
   /** 0x00 非FF,正常模式 */
   public static final byte MODE_NORMAL = 0x00;
 
+  public static final byte FLAG_CHECK_STATUS_REG = (byte) 0xDA;
+  public static final byte FLAG_CHECK_STATUS_CHECKED = (byte) 0xDC;
+
   /**
    * 加密、解密标志位。1~5：对应标志位F1~F5.
    *

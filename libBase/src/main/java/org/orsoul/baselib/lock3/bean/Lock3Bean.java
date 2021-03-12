@@ -16,6 +16,8 @@ public class Lock3Bean {
   public static final int SA_PIECE_TID = 0x07;
   /** 锁内UHF的tid 0x0A~0x0C. */
   public static final int SA_LOCK_TID = 0x0A;
+  /** 空袋检测 标志位 0x0D. */
+  public static final int SA_CHECK_STATUS = 0x0D;
   /** 标志位 0x10. */
   public static final int SA_STATUS = 0x10;
   /** 启用码 0x11. 启用码  FFDDFFEE已启用，EEEEEEEE注销 000000尚未启用 */
@@ -38,6 +40,11 @@ public class Lock3Bean {
   public static final int SA_CIRCULATION = 0x94;
 
   public byte[] uidBuff;
+
+  /** 锁片epc 12字节. */
+  public byte[] pieceEpcBuff;
+  /** 锁片tid 12字节. */
+  public byte[] pieceTidBuff;
 
   private String pieceEpc;
   private String pieceTid;

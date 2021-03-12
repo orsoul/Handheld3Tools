@@ -95,9 +95,12 @@ public class Lock3Operation {
       return -2;
     }
 
-    int sa = 0x03;
+    int sa = 0x00;
     /* 2、读Uhf tid */
     if (tid != null) {
+      if (tid.length == 6) {
+        sa = 0x03;
+      }
       readSuccess = uhfController.readTid(sa, tid);
       if (!readSuccess) {
         return -3;
