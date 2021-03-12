@@ -1,7 +1,7 @@
 package com.fanfull.libhard.uhf;
 
 public class UhfController implements IUhfOperation {
-  private static final int DEFAULT_TIMEOUT = 100;
+  private static final int DEFAULT_TIMEOUT = 300;
   private IUhfOperation uhfOperation;
 
   private UhfController(IUhfOperation uhfOperation) {
