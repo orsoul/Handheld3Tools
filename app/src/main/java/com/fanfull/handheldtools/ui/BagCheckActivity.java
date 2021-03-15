@@ -1,6 +1,5 @@
 package com.fanfull.handheldtools.ui;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Html;
@@ -26,7 +25,6 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
-import com.lxj.xpopup.XPopup;
 
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
@@ -436,7 +434,8 @@ public class BagCheckActivity extends InitModuleActivity {
       coverCode = String.format("%s-解密异常", BytesUtil.bytes2HexString(infoUnitCover.buff));
       //coverCode = "解密异常";
     }
-    String colorText = HtmlUtil.getColorText("锁片epc：%s\n"
+    String colorText = HtmlUtil.getColorText(
+        "锁片epc：%s\n"
             + "锁片tid：%s\n"
             + "业务tid：%s\n"
             + "锁内tid：%s\n"
@@ -491,39 +490,6 @@ public class BagCheckActivity extends InitModuleActivity {
       );
     }
     return Html.fromHtml(sb.toString());
-  }
-
-  public void showSetUhfPower(Context context) {
-    new XPopup.Builder(context).asInputConfirm(
-        "输入功率", "功率范围：5 ~ 25", "读功率.写功率", text -> {
-          if (text == null) {
-            return;
-          }
-
-          if (!text.matches("\\d+\\.\\d+")) {
-            ToastUtils.showShort("输入格式不合法，正确格式：6.12");
-            return;
-          }
-
-          String[] split = text.split("\\.");
-          int r = Integer.parseInt(split[0]);
-          int w = Integer.parseInt(split[1]);
-          if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
-              UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
-            ToastUtils.showShort("功率超出允许范围");
-            return;
-          }
-
-          boolean b = uhfController.setPower(r, w, 0, true, false);
-          String res1;
-          if (b) {
-            res1 = String.format("设置读/写功率成功：%s / %s", r, w);
-          } else {
-            res1 = "设置功率失败";
-          }
-          ToastUtils.showShort(res1);
-          ViewUtil.appendShow(res1, tvShow);
-        }).show();
   }
 
   private class ReadAllLockTask extends ReadLockTask {

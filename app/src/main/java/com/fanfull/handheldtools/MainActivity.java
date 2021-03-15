@@ -10,6 +10,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BagCheckActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
+import com.fanfull.handheldtools.ui.CoverBagActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
 import com.fanfull.handheldtools.ui.NfcActivity;
@@ -40,6 +41,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_finger).setOnClickListener(this);
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
     findViewById(R.id.btn_sound).setOnClickListener(this);
+    findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -182,6 +184,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_sound:
         startActivity(new Intent(this, SoundActivity.class));
+        break;
+      case R.id.btn_main_cover_bag:
+        startActivity(new Intent(this, CoverBagActivity.class));
         break;
     }
   }
