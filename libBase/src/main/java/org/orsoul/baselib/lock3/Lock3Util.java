@@ -1,5 +1,7 @@
 package org.orsoul.baselib.lock3;
 
+import java.util.Arrays;
+
 /**
  * 封袋、出入库、开袋 会用到的一些方法。
  */
@@ -30,6 +32,15 @@ public abstract class Lock3Util {
   public static final byte[] ENABLE_CODE_UN_REG = new byte[] {
       (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE,
   };
+
+  /** 启用状态：未启用. */
+  public static final int ENABLE_STATUS_DISABLE = 0;
+  /** 启用状态：已启用. */
+  public static final int ENABLE_STATUS_ENABLE = 1;
+  /** 启用状态：已注销. */
+  public static final int ENABLE_STATUS_UN_REG = 2;
+  /** 启用状态：未定义. */
+  public static final int ENABLE_STATUS_UNDEFINE = -1;
   /**
    * 最低电压值 2.85v
    */
@@ -146,6 +157,27 @@ public abstract class Lock3Util {
   public static String parseV2String(byte v) {
     float vf = parseV(v);
     return parseV2String(vf);
+  }
+
+  /** 检查电压值 是否在 合适范围.2.85~5 */
+  public static boolean checkV(float v) {
+    return LOWEST_V <= v && v < 5;
+  }
+
+  public static boolean checkEnableCode(byte[] enableCode) {
+    return Arrays.equals(ENABLE_CODE_ENABLE, enableCode);
+  }
+
+  public static int getEnableStatus(byte[] enableCode) {
+    if (Arrays.equals(Lock3Util.ENABLE_CODE_ENABLE, enableCode)) {
+      return Lock3Util.ENABLE_STATUS_ENABLE;
+    } else if (Arrays.equals(Lock3Util.ENABLE_CODE_UN_REG, enableCode)) {
+      return Lock3Util.ENABLE_STATUS_UN_REG;
+    } else if (Arrays.equals(Lock3Util.ENABLE_CODE_DISABLE, enableCode)) {
+      return Lock3Util.ENABLE_STATUS_DISABLE;
+    } else {
+      return Lock3Util.ENABLE_STATUS_UNDEFINE;
+    }
   }
 
   private static boolean checkKeyNum(int keyNum) {

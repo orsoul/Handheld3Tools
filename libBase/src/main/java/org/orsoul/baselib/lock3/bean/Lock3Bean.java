@@ -10,11 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Lock3Bean {
-  /** 锁内袋id. */
+  /** NFC内袋id. */
   public static final int SA_BAG_ID = 0x04;
-  /** 锁片tid 0x07~0x09. */
+  /** NFC内，锁片tid，也称业务tid， 0x07~0x09. */
   public static final int SA_PIECE_TID = 0x07;
-  /** 锁内UHF的tid 0x0A~0x0C. */
+  /** NFC内，锁内UHF的tid 0x0A~0x0C. */
   public static final int SA_LOCK_TID = 0x0A;
   /** 空袋检测 标志位 0x0D. */
   public static final int SA_CHECK_STATUS = 0x0D;
@@ -45,14 +45,16 @@ public class Lock3Bean {
   public byte[] pieceEpcBuff;
   /** 锁片tid 12字节. */
   public byte[] pieceTidBuff;
-
+  /** 锁片epc. */
   private String pieceEpc;
+  /** 锁片tid. */
   private String pieceTid;
 
+  /** NFC内袋id. */
   private String bagId;
-  /** 锁片的tid. */
+  /** NFC内，锁片tid，也称业务tid，0x07~0x09. */
   private String tidFromPiece;
-  /** 锁内超高频的tid. */
+  /** NFC内，锁内UHF的tid，0x0A~0x0C. */
   private String tidFromLock;
   /** 封签事件码. */
   private String coverCode;
@@ -62,7 +64,7 @@ public class Lock3Bean {
   /** 标志位. */
   private int status;
   /** 标志位加解密选用的算法. */
-  private int keyNum;
+  private int keyNum = -2;
   /** 交接信息索引. */
   private int handoverIndex;
   /** 袋流转信息 索引. */
@@ -328,27 +330,19 @@ public class Lock3Bean {
         case Lock3Bean.SA_LOCK_TID:
           this.tidFromLock = BytesUtil.bytes2HexString(unit.buff);
           break;
+        case Lock3Bean.SA_KEY_NUM:
+          this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
+          break;
         case Lock3Bean.SA_STATUS:
           this.status = Lock3Util.getStatus(unit.buff[0], this.keyNum, this.uidBuff, false);
           this.handoverIndex = unit.buff[1];
           this.circulationIndex = unit.buff[2];
           break;
         case Lock3Bean.SA_ENABLE:
-          if (Arrays.equals(Lock3Util.ENABLE_CODE_ENABLE, unit.buff)) {
-            this.enable = 1;
-          } else if (Arrays.equals(Lock3Util.ENABLE_CODE_UN_REG, unit.buff)) {
-            this.enable = 2;
-          } else if (Arrays.equals(Lock3Util.ENABLE_CODE_DISABLE, unit.buff)) {
-            this.enable = 0;
-          } else {
-            this.enable = -1;
-          }
+          this.enable = Lock3Util.getEnableStatus(unit.buff);
           break;
         case Lock3Bean.SA_WORK_MODE:
           this.isTestMode = Lock3Util.MODE_DEBUG == unit.buff[0];
-          break;
-        case Lock3Bean.SA_KEY_NUM:
-          this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
           break;
         case Lock3Bean.SA_VOLTAGE:
           this.voltage = Lock3Util.parseV(unit.buff[3]);
