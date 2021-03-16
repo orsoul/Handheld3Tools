@@ -53,6 +53,7 @@ public class Lock3Bean {
 
   /** NFC内袋id. */
   private String bagId;
+  public byte[] bagIdBuff;
   /** NFC内，锁片tid，也称业务tid，0x07~0x09. */
   private String tidFromPiece;
   /** NFC内，锁内UHF的tid，0x0A~0x0C. */
@@ -61,7 +62,6 @@ public class Lock3Bean {
   private String coverCode;
   /** 封袋流水号. */
   private String coverSerial;
-  public byte[] keyTid6;
 
   /** 空袋检测 标志位:0xDA,0xDC. */
   private int statusCheck;
@@ -336,6 +336,7 @@ public class Lock3Bean {
       switch (unit.sa) {
         case Lock3Bean.SA_BAG_ID:
           this.bagId = BytesUtil.bytes2HexString(unit.buff);
+          this.bagIdBuff = unit.buff;
           break;
         case Lock3Bean.SA_PIECE_TID:
           this.tidFromPiece = BytesUtil.bytes2HexString(unit.buff);

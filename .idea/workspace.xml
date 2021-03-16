@@ -34,6 +34,14 @@
         <option name="packageNamePattern" value="" />
         <option name="pid" value="" />
       </filter>
+      <filter>
+        <option name="logLevel" value="verbose" />
+        <option name="logMessagePattern" value="" />
+        <option name="logTagPattern" value="Rfid" />
+        <option name="name" value="Rfid" />
+        <option name="packageNamePattern" value="" />
+        <option name="pid" value="" />
+      </filter>
     </filters>
   </component>
   <component name="AndroidLayouts">
@@ -42,17 +50,14 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="warn" />
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="uhf" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f027fc9f-6f81-4324-bd1a-6df88ddb44c3" name="Default Changelist" comment="- 移除沉冗资源&#10;-">
+    <list default="true" id="f027fc9f-6f81-4324-bd1a-6df88ddb44c3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SoundActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SoundActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/base/BaseActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/base/BaseActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_sound.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_sound.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundPoolUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundPoolUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3Bean.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3Bean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/CoverOpenTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/CoverOpenTask.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -114,6 +119,13 @@
   <component name="FavoritesManager">
     <favorites_list name="HandheldTools" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -124,16 +136,20 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="DEBUGGABLE_DEVICE" value="raindi-pe900_4g-SN-S46SEAKZ6H5LKJMR" />
+    <property name="DEBUGGABLE_DEVICE" value="raindi-pe900_4g-SN-LBFI8PYLJV4SQSGM" />
     <property name="DEBUGGABLE_PROCESS" value="com.fanfull.handheldtools" />
     <property name="DEBUGGER_ID" value="Auto" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="android.sdk.path" value="D:/Java/sdk2" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FF_WatchVault" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
   </component>
   <component name="RecentsManager">
     <key name="android.template.-471445314">
+      <recent name="com.fanfull.handheldtools.ui" />
+    </key>
+    <key name="android.template.1177572095">
       <recent name="com.fanfull.handheldtools.ui" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -415,7 +431,84 @@
       <option name="project" value="LOCAL" />
       <updated>1615533544046</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="- 移除沉冗资源&#10;-">
+      <created>1615536381601</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1615536381601</updated>
+    </task>
+    <task id="LOCAL-00014" summary="- 移除沉冗资源&#10;-">
+      <created>1615536485035</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1615536485035</updated>
+    </task>
+    <task id="LOCAL-00015" summary="- 调整Uhf读取数据 默认等待时间">
+      <created>1615544288908</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1615544288909</updated>
+    </task>
+    <task id="LOCAL-00016" summary="- 各业务检查袋锁任务">
+      <created>1615803868681</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1615803868681</updated>
+    </task>
+    <task id="LOCAL-00017" summary="- 模拟封袋">
+      <created>1615803893766</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1615803893766</updated>
+    </task>
+    <task id="LOCAL-00018" summary="- [fix] 高频释放 取消监听&#10;- uhf 读写epc 新增tid过滤方法">
+      <created>1615889459307</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1615889459307</updated>
+    </task>
+    <task id="LOCAL-00019" summary="- 读写袋锁逻辑">
+      <created>1615889527199</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1615889527199</updated>
+    </task>
+    <task id="LOCAL-00020" summary="-">
+      <created>1615892020213</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1615892020213</updated>
+    </task>
+    <task id="LOCAL-00021" summary="- 模拟封袋、开袋">
+      <created>1615892173396</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1615892173396</updated>
+    </task>
+    <task id="LOCAL-00022" summary="- 移除沉冗资源&#10;-">
+      <created>1615892191412</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1615892191412</updated>
+    </task>
+    <task id="LOCAL-00023" summary="- 移除沉冗资源&#10;-">
+      <created>1615892242791</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1615892242791</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -443,7 +536,15 @@
     <MESSAGE value="- 读锁任务调整" />
     <MESSAGE value="- 声音重复播放任务、日期工具" />
     <MESSAGE value="- 声音测试" />
-    <option name="LAST_COMMIT_MESSAGE" value="- 声音测试" />
+    <MESSAGE value="- 调整Uhf读取数据 默认等待时间" />
+    <MESSAGE value="- 各业务检查袋锁任务" />
+    <MESSAGE value="- 模拟封袋" />
+    <MESSAGE value="- [fix] 高频释放 取消监听&#10;- uhf 读写epc 新增tid过滤方法" />
+    <MESSAGE value="- 读写袋锁逻辑" />
+    <MESSAGE value="-" />
+    <MESSAGE value="- 模拟封袋、开袋" />
+    <MESSAGE value="- 移除沉冗资源&#10;-" />
+    <option name="LAST_COMMIT_MESSAGE" value="- 移除沉冗资源&#10;-" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -452,58 +553,62 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="507" y="216" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1600.860@0.0.1600.860" timestamp="1615361910817" />
-    <state x="561" y="73" key="#com.intellij.ide.util.MemberChooser" timestamp="1615534515763">
+    <state x="561" y="73" key="#com.intellij.ide.util.MemberChooser" timestamp="1615878414219">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="561" y="73" key="#com.intellij.ide.util.MemberChooser/0.0.1600.860@0.0.1600.860" timestamp="1615534515763" />
+    <state x="561" y="73" key="#com.intellij.ide.util.MemberChooser/0.0.1600.860@0.0.1600.860" timestamp="1615878414219" />
     <state x="390" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1615531742267">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="390" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1600.860@0.0.1600.860" timestamp="1615531742267" />
-    <state x="643" y="181" key="AndroidProcessChooserDialog" timestamp="1614937571996">
+    <state x="643" y="181" key="AndroidProcessChooserDialog" timestamp="1615894320716">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="643" y="181" key="AndroidProcessChooserDialog/0.0.1600.860@0.0.1600.860" timestamp="1614937571996" />
-    <state x="332" y="0" key="CommitChangelistDialog2" timestamp="1615533542599">
+    <state x="643" y="181" key="AndroidProcessChooserDialog/0.0.1600.860@0.0.1600.860" timestamp="1615894320716" />
+    <state x="332" y="0" key="CommitChangelistDialog2" timestamp="1615892242007">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="332" y="0" key="CommitChangelistDialog2/0.0.1600.860@0.0.1600.860" timestamp="1615533542599" />
-    <state x="92" y="92" width="1416" height="676" key="DiffContextDialog" timestamp="1615536375197">
+    <state x="332" y="0" key="CommitChangelistDialog2/0.0.1600.860@0.0.1600.860" timestamp="1615892242007" />
+    <state x="92" y="92" width="1416" height="676" key="DiffContextDialog" timestamp="1615896441889">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="92" y="92" width="1416" height="676" key="DiffContextDialog/0.0.1600.860@0.0.1600.860" timestamp="1615536375197" />
-    <state width="1544" height="299" key="GridCell.Tab.0.bottom" timestamp="1615532724744">
+    <state x="92" y="92" width="1416" height="676" key="DiffContextDialog/0.0.1600.860@0.0.1600.860" timestamp="1615896441889" />
+    <state x="530" y="129" key="FileChooserDialogImpl" timestamp="1615538188516">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="299" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1615532724744" />
-    <state width="1544" height="299" key="GridCell.Tab.0.center" timestamp="1615532724743">
+    <state x="530" y="129" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1615538188516" />
+    <state width="1544" height="283" key="GridCell.Tab.0.bottom" timestamp="1615896095739">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="299" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1615532724743" />
-    <state width="1544" height="299" key="GridCell.Tab.0.left" timestamp="1615532724743">
+    <state width="1544" height="283" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1615896095739" />
+    <state width="1544" height="283" key="GridCell.Tab.0.center" timestamp="1615896095739">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="299" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1615532724743" />
-    <state width="1544" height="299" key="GridCell.Tab.0.right" timestamp="1615532724744">
+    <state width="1544" height="283" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1615896095739" />
+    <state width="1544" height="283" key="GridCell.Tab.0.left" timestamp="1615896095739">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="299" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1615532724744" />
-    <state width="1544" height="244" key="GridCell.Tab.1.bottom" timestamp="1614946261471">
+    <state width="1544" height="283" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1615896095739" />
+    <state width="1544" height="283" key="GridCell.Tab.0.right" timestamp="1615896095739">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="244" key="GridCell.Tab.1.bottom/0.0.1600.860@0.0.1600.860" timestamp="1614946261471" />
-    <state width="1544" height="244" key="GridCell.Tab.1.center" timestamp="1614946261471">
+    <state width="1544" height="283" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1615896095739" />
+    <state width="1544" height="159" key="GridCell.Tab.1.bottom" timestamp="1615894542708">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="244" key="GridCell.Tab.1.center/0.0.1600.860@0.0.1600.860" timestamp="1614946261471" />
-    <state width="1544" height="244" key="GridCell.Tab.1.left" timestamp="1614946261470">
+    <state width="1544" height="159" key="GridCell.Tab.1.bottom/0.0.1600.860@0.0.1600.860" timestamp="1615894542708" />
+    <state width="1544" height="159" key="GridCell.Tab.1.center" timestamp="1615894542707">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="244" key="GridCell.Tab.1.left/0.0.1600.860@0.0.1600.860" timestamp="1614946261470" />
-    <state width="1544" height="244" key="GridCell.Tab.1.right" timestamp="1614946261471">
+    <state width="1544" height="159" key="GridCell.Tab.1.center/0.0.1600.860@0.0.1600.860" timestamp="1615894542707" />
+    <state width="1544" height="159" key="GridCell.Tab.1.left" timestamp="1615894542707">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state width="1544" height="244" key="GridCell.Tab.1.right/0.0.1600.860@0.0.1600.860" timestamp="1614946261471" />
+    <state width="1544" height="159" key="GridCell.Tab.1.left/0.0.1600.860@0.0.1600.860" timestamp="1615894542707" />
+    <state width="1544" height="159" key="GridCell.Tab.1.right" timestamp="1615894542707">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state width="1544" height="159" key="GridCell.Tab.1.right/0.0.1600.860@0.0.1600.860" timestamp="1615894542707" />
     <state x="280" y="114" key="IDE.errors.dialog" timestamp="1614924530690">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
@@ -512,30 +617,34 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="498" y="75" key="RollbackChangesDialog/0.0.1600.860@0.0.1600.860" timestamp="1615533412302" />
-    <state x="-73" y="9" key="ScreenshotViewer.Dimensions" timestamp="1615517576323">
+    <state x="-97" y="9" key="ScreenshotViewer.Dimensions" timestamp="1615895872061">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="-73" y="9" key="ScreenshotViewer.Dimensions/0.0.1600.860@0.0.1600.860" timestamp="1615517576323" />
-    <state x="292" y="99" key="Vcs.Push.Dialog.v2" timestamp="1615365147922">
+    <state x="-97" y="9" key="ScreenshotViewer.Dimensions/0.0.1600.860@0.0.1600.860" timestamp="1615895872061" />
+    <state x="292" y="99" key="Vcs.Push.Dialog.v2" timestamp="1615544303838">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="292" y="99" key="Vcs.Push.Dialog.v2/0.0.1600.860@0.0.1600.860" timestamp="1615365147922" />
-    <state x="526" y="242" key="edit.logcat.filter.dialog.dimensions" timestamp="1615253795823">
+    <state x="292" y="99" key="Vcs.Push.Dialog.v2/0.0.1600.860@0.0.1600.860" timestamp="1615544303838" />
+    <state x="559" y="328" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615800475938">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="526" y="242" key="edit.logcat.filter.dialog.dimensions/0.0.1600.860@0.0.1600.860" timestamp="1615253795823" />
+    <state x="559" y="328" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1600.860@0.0.1600.860" timestamp="1615800475938" />
+    <state x="410" y="183" key="edit.logcat.filter.dialog.dimensions" timestamp="1615875098133">
+      <screen x="0" y="0" width="1600" height="860" />
+    </state>
+    <state x="410" y="183" key="edit.logcat.filter.dialog.dimensions/0.0.1600.860@0.0.1600.860" timestamp="1615875098133" />
     <state x="333" y="49" width="933" height="762" key="find.popup" timestamp="1615260180550">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="333" y="49" width="933" height="762" key="find.popup/0.0.1600.860@0.0.1600.860" timestamp="1615260180550" />
-    <state x="482" y="112" key="git4idea.rebase.GitRebaseEditor" timestamp="1615533487884">
+    <state x="482" y="112" key="git4idea.rebase.GitRebaseEditor" timestamp="1615892257762">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="482" y="112" key="git4idea.rebase.GitRebaseEditor/0.0.1600.860@0.0.1600.860" timestamp="1615533487884" />
-    <state x="610" y="300" key="git4idea.rebase.GitUnstructuredEditor" timestamp="1615533494708">
+    <state x="482" y="112" key="git4idea.rebase.GitRebaseEditor/0.0.1600.860@0.0.1600.860" timestamp="1615892257762" />
+    <state x="610" y="300" key="git4idea.rebase.GitUnstructuredEditor" timestamp="1615892262827">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="610" y="300" key="git4idea.rebase.GitUnstructuredEditor/0.0.1600.860@0.0.1600.860" timestamp="1615533494708" />
+    <state x="610" y="300" key="git4idea.rebase.GitUnstructuredEditor/0.0.1600.860@0.0.1600.860" timestamp="1615892262827" />
     <state x="379" y="-1" width="840" height="1034" key="search.everywhere.popup" timestamp="1615256808233">
       <screen x="0" y="0" width="1600" height="860" />
     </state>

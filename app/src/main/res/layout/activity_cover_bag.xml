@@ -17,7 +17,7 @@
     android:layout_marginBottom="8dp"
     android:background="@android:color/white"
     android:padding="5dp"
-    android:text="正在初始化...\n"
+    android:text=""
     app:layout_constraintBottom_toTopOf="@+id/layout"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -41,12 +41,12 @@
       android:text="封袋" />
 
     <Button
-      android:id="@+id/btn_sound_play_success"
+      android:id="@+id/btn_cover_bag_open"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:enabled="true"
-      android:text="成功" />
+      android:text="开袋" />
 
     <Button
       android:id="@+id/btn_sound_play_failed"

@@ -441,6 +441,7 @@ public class BagCheckActivity extends InitModuleActivity {
             + "锁内tid：%s\n"
             + "bagId：%s\n"
             + "标志位：%s\n"
+            + "空袋检测位：%s\n"
             + "电压：%s\n"
             + "启用状态：%s\n"
             + "测试模式：%s\n"
@@ -455,8 +456,9 @@ public class BagCheckActivity extends InitModuleActivity {
         lock3Bean.getTidFromLock(),
         lock3Bean.getBagId(),
         Lock3Util.getStatusDesc(lock3Bean.getStatus()),
+        Lock3Util.getStatusCheckDesc(lock3Bean.getStatusCheck()),
         String.format("%.3f", lock3Bean.getVoltage()),
-        lock3Bean.getEnable(),
+        Lock3Util.getEnableDesc(lock3Bean.getEnable()),
         lock3Bean.isTestMode(),
         coverCode,
         lock3Bean.getCoverSerial(),

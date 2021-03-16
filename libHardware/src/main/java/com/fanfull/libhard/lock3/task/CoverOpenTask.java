@@ -347,7 +347,7 @@ public abstract class CoverOpenTask extends ReadLockTask {
 
     if (taskType == CoverOpenTask.TASK_TYPE_COVER) {
       //  ====== 封袋业务 ====== 1. 写epc
-      lock3BeanWrite.pieceEpcBuff = new byte[12];
+      lock3BeanWrite.pieceEpcBuff = lock3Bean.bagIdBuff;
       lock3BeanWrite.pieceTidBuff = lock3Bean.pieceTidBuff;
 
       // 2. 写封签事件码
