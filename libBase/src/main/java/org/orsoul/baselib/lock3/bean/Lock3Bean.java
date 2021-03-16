@@ -17,7 +17,7 @@ public class Lock3Bean {
   /** NFC内，锁内UHF的tid 0x0A~0x0C. */
   public static final int SA_LOCK_TID = 0x0A;
   /** 空袋检测 标志位 0x0D. */
-  public static final int SA_CHECK_STATUS = 0x0D;
+  public static final int SA_STATUS_CHECK = 0x0D;
   /** 标志位 0x10. */
   public static final int SA_STATUS = 0x10;
   /** 启用码 0x11. 启用码  FFDDFFEE已启用，EEEEEEEE注销 000000尚未启用 */
@@ -49,6 +49,7 @@ public class Lock3Bean {
   private String pieceEpc;
   /** 锁片tid. */
   private String pieceTid;
+  public HandoverBean handoverBean;
 
   /** NFC内袋id. */
   private String bagId;
@@ -60,7 +61,10 @@ public class Lock3Bean {
   private String coverCode;
   /** 封袋流水号. */
   private String coverSerial;
+  public byte[] keyTid6;
 
+  /** 空袋检测 标志位:0xDA,0xDC. */
+  private int statusCheck;
   /** 标志位. */
   private int status;
   /** 标志位加解密选用的算法. */
@@ -181,6 +185,14 @@ public class Lock3Bean {
     this.circulationIndex = circulationIndex;
   }
 
+  public int getStatusCheck() {
+    return statusCheck;
+  }
+
+  public void setStatusCheck(int statusCheck) {
+    this.statusCheck = statusCheck;
+  }
+
   public int getEnable() {
     return enable;
   }
@@ -278,6 +290,7 @@ public class Lock3Bean {
         SA_BAG_ID,
         SA_PIECE_TID,
         SA_LOCK_TID,
+        SA_STATUS_CHECK,
         SA_STATUS,
         SA_ENABLE,
         SA_WORK_MODE,
@@ -337,6 +350,9 @@ public class Lock3Bean {
           this.status = Lock3Util.getStatus(unit.buff[0], this.keyNum, this.uidBuff, false);
           this.handoverIndex = unit.buff[1];
           this.circulationIndex = unit.buff[2];
+          break;
+        case Lock3Bean.SA_STATUS_CHECK:
+          this.statusCheck = unit.buff[0] & 0xFF;
           break;
         case Lock3Bean.SA_ENABLE:
           this.enable = Lock3Util.getEnableStatus(unit.buff);

@@ -60,7 +60,7 @@ public class Lock3InfoUnit {
     switch (sa) {
       case Lock3Bean.SA_BAG_ID:
       case Lock3Bean.SA_LOCK_TID:
-        return new Lock3InfoUnit(sa, 12);
+        //return new Lock3InfoUnit(sa, 12);
       case Lock3Bean.SA_PIECE_TID:
         return new Lock3InfoUnit(sa, 12);
       case Lock3Bean.SA_COVER_EVENT:
@@ -70,7 +70,7 @@ public class Lock3InfoUnit {
       case Lock3Bean.SA_CIRCULATION:
         return new Lock3InfoUnit(sa, 0);
       case Lock3Bean.SA_STATUS:
-      case Lock3Bean.SA_CHECK_STATUS:
+      case Lock3Bean.SA_STATUS_CHECK:
       case Lock3Bean.SA_KEY_NUM:
       case Lock3Bean.SA_VOLTAGE:
       case Lock3Bean.SA_CIRCULATION_INDEX:

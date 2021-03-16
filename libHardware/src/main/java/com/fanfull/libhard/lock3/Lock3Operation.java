@@ -2,11 +2,13 @@ package com.fanfull.libhard.lock3;
 
 import androidx.annotation.Nullable;
 
+import com.fanfull.libhard.rfid.IRfidOperation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 
 import org.orsoul.baselib.lock3.Lock3Util;
+import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 
@@ -241,6 +243,51 @@ public class Lock3Operation {
   }
 
   /**
+   * 写锁3，可写epc、nfc、袋流转信息.
+   *
+   * @return 所有信息写入成功返回true.
+   */
+  public boolean writeLock(Lock3Bean lock3Bean) {
+    if (lock3Bean == null) {
+      return false;
+    }
+
+    boolean reVal = false;
+    if (lock3Bean.pieceEpcBuff != null) {
+      reVal = uhfController.writeEpc(lock3Bean.pieceEpcBuff);
+      if (!reVal) {
+        return false;
+      }
+    }
+
+    byte[] uid = rfidController.findNfc();
+    if (uid == null) {
+      return false;
+    }
+    lock3Bean.uidBuff = uid;
+
+    if (lock3Bean.handoverBean != null) {
+      reVal = 0 < writeHandoverInfo(lock3Bean.handoverBean, false);
+      if (!reVal) {
+        return false;
+      }
+    }
+
+    List<Lock3InfoUnit> willReadList = lock3Bean.getWillDoList();
+    if (willReadList == null || willReadList.isEmpty()) {
+      return reVal;
+    }
+
+    for (Lock3InfoUnit infoUnit : willReadList) {
+      if (!rfidController.writeNfc(infoUnit.sa, infoUnit.buff, false)) {
+        return false;
+      }
+      infoUnit.setDoSuccess(true);
+    }
+    return true;
+  }
+
+  /**
    * 写nfc.
    *
    * @param withFindCard true:写之前执行寻卡；false:不寻卡
@@ -276,16 +323,21 @@ public class Lock3Operation {
   }
 
   /**
-   * 设置标志位.1~4 对应 F1~F4
+   * 设置标志位.1~5 对应 F1~F5
    *
-   * @param status 1~4
+   * @param status 1~5
+   * @param uid 为null，执行寻卡操作，否则后续的读写均不再寻卡.
    */
-  public boolean setLockStatus(int status) {
-    byte[] uid = rfidController.findNfc();
+  public boolean setLockStatus(int status, byte[] uid) {
+    if (5 < status || status < 1) {
+      return false;
+    }
+
     if (uid == null) {
-      return false;
-    } else if (4 < status || status < 1) {
-      return false;
+      uid = rfidController.findNfc();
+      if (uid == null) {
+        return false;
+      }
     }
 
     Lock3Bean lock3Bean = new Lock3Bean();
@@ -301,5 +353,58 @@ public class Lock3Operation {
     lock3Bean.add(unitFlag);
 
     return Lock3Operation.getInstance().writeLockNfc(lock3Bean, false);
+  }
+
+  public boolean setLockStatus(int status) {
+    return setLockStatus(status, null);
+  }
+
+  /**
+   * 往NFC写袋流转信息.
+   *
+   * @return 写入成功 返回 写入后袋流转信息记录的数目，error：<br/>
+   * 0:参数错误<br/>
+   * -1:获取记录数目失败<br/>
+   * -2:获取记录数目 超出范围<br/>
+   * -3:写记录失败<br/>
+   */
+  public static int writeHandoverInfo(HandoverBean handoverBean, boolean withFindCard) {
+    if (handoverBean == null || handoverBean.getFunction() < HandoverBean.FUN_COVER_BAG) {
+      return 0;
+    }
+
+    byte[] numBuff = new byte[1];
+    boolean writeRes;
+
+    // 流转记录写入的位置，封袋业务作为第一条记录
+    int saData = HandoverBean.SA_DATA;
+    // 已保存记录的数量
+    int savedNum = 0;
+
+    IRfidOperation rfidController = RfidController.getInstance();
+    if (HandoverBean.FUN_COVER_BAG < handoverBean.getFunction()) {
+      // 其他业务 读取已保存的记录数目
+      writeRes = rfidController.readNfc(HandoverBean.SA_INDEX, numBuff, withFindCard);
+      if (!writeRes) {
+        return -1;  // 获取记录数目失败
+      } else if (9 < numBuff[0] || numBuff[0] < 1) {
+        return -2; // 记录数目超出范围
+      }
+      savedNum = numBuff[0];
+      saData += savedNum * 7; // 一条记录7个字长，28byte
+      withFindCard = false;
+    }
+    //handoverBean.setTimeSecond(LoginInfo.currentTimeMillisFix());
+    writeRes = rfidController.writeNfc(
+        saData, handoverBean.toBytes(), withFindCard);
+    if (writeRes) {
+      numBuff[0] = (byte) (savedNum + 1);
+      writeRes = rfidController.writeNfc(
+          HandoverBean.SA_INDEX, numBuff, false);
+    }
+    if (!writeRes) {
+      return -3;  // 写记录失败
+    }
+    return savedNum + 1;
   }
 }

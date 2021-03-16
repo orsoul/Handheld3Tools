@@ -58,8 +58,15 @@ public abstract class Lock3Util {
   /** 0x00 非FF,正常模式 */
   public static final byte MODE_NORMAL = 0x00;
 
-  public static final byte FLAG_CHECK_STATUS_REG = (byte) 0xDA;
-  public static final byte FLAG_CHECK_STATUS_CHECKED = (byte) 0xDC;
+  /** 封袋更新nfc失败时，复写epc的字节数据. */
+  public static final byte REWRITE_EPC = 0x7B;
+
+  /** 空袋检测 标志位: 空袋已检测. */
+  public static final int FLAG_CHECK_STATUS_REG = 0xDA;
+  /** 空袋检测 标志位: 确认 空袋已检测. */
+  public static final int FLAG_CHECK_STATUS_CHECKED = FLAG_CHECK_STATUS_REG ^ 0xFF;
+  /** 空袋检测 标志位: 确认 空袋未检测. */
+  public static final int FLAG_CHECK_STATUS_FAILED = 0xFA;
 
   /**
    * 加密、解密标志位。1~5：对应标志位F1~F5.
@@ -180,6 +187,40 @@ public abstract class Lock3Util {
     }
   }
 
+  public static boolean checkStatusCheck(int statusCheck) {
+    return statusCheck == FLAG_CHECK_STATUS_REG;
+  }
+
+  public static String getEnableDesc(int enableCode) {
+    switch (enableCode) {
+      case ENABLE_STATUS_DISABLE:
+        return "未启用 (0)";
+      case ENABLE_STATUS_ENABLE:
+        return "已启用 (1)";
+      case ENABLE_STATUS_UN_REG:
+        return "已注销 (2)";
+      default:
+        return String.format("未定义 (%s)", enableCode);
+    }
+  }
+
+  public static String getEnableDesc(byte[] enableCode) {
+    return getEnableDesc(getEnableStatus(enableCode));
+  }
+
+  public static String getStatusCheckDesc(int statusCheck) {
+    switch (statusCheck) {
+      case FLAG_CHECK_STATUS_REG:
+        return String.format("已空袋检测(0x%02X)", statusCheck);
+      case FLAG_CHECK_STATUS_CHECKED:
+        return String.format("确认已检测(0x%02X)", statusCheck);
+      case FLAG_CHECK_STATUS_FAILED:
+        return String.format("确认未检测(0x%02X)", statusCheck);
+      default:
+        return String.format("未检测(0x%02X)", statusCheck);
+    }
+  }
+
   private static boolean checkKeyNum(int keyNum) {
     return 0 <= keyNum && keyNum <= 9;
   }
@@ -209,9 +250,21 @@ public abstract class Lock3Util {
       case 4:
         return "F4(已开袋)";
       case 5:
-        return "F5(电量低)";
+        return "F5(报警)";
       default:
         return String.valueOf(status);
     }
+  }
+
+  public static void main(String[] args) {
+    byte b = (byte) FLAG_CHECK_STATUS_REG;
+    System.out.println(b);
+    System.out.println(b & 0xFF);
+    System.out.println(b ^ 0xFF);
+    System.out.println((byte) (b ^ 0xFF));
+    System.out.println((b ^ 0xFF) & 0xFF);
+
+    System.out.println(FLAG_CHECK_STATUS_CHECKED);
+    System.out.println(FLAG_CHECK_STATUS_CHECKED & 0xFF);
   }
 }

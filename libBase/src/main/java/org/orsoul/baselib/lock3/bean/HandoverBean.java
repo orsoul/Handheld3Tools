@@ -1,18 +1,21 @@
 package org.orsoul.baselib.lock3.bean;
 
 import android.util.SparseArray;
+
 import com.apkfuns.logutils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.orsoul.baselib.util.BytesUtil;
+import org.orsoul.baselib.util.DateFormatUtil;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.DateFormatUtil;
 
 /**
  * 交接信息实体类.
@@ -63,7 +66,8 @@ public class HandoverBean {
   public static JSONObject orgMap;
 
   int function; // 1
-  String organcode; // "002706001"
+  /** 机构号，数字串. 002706001 */
+  String organcode;
   String time; // "20170426155745"
   String scaner1; // "张三(123456xx)"
   String scaner2; // "李四(123456xx)"
@@ -141,6 +145,11 @@ public class HandoverBean {
       }
     }
     return orgName;
+  }
+
+  public HandoverBean setOrgName(String orgName) {
+    this.orgName = orgName;
+    return this;
   }
 
   public String getFunTypeName() {
