@@ -75,6 +75,29 @@ public class UhfController implements IUhfOperation {
     return uhfOperation.writeEpc(0x02, data);
   }
 
+  /**
+   * 写epc区，tid区过滤.
+   *
+   * @param sa 从 0x02 开始
+   * @param epcDate epc区数据，长度为偶数，2~12字节.
+   * @param msa 从 0x00 开始
+   * @param tidDataFilter tid区过滤数据，长度为偶数，2~12字节.
+   */
+  public boolean writeEpcFilterTid(int sa, byte[] epcDate, int msa, byte[] tidDataFilter) {
+    return write(UhfCmd.MB_EPC, sa, epcDate,
+        UhfCmd.MB_TID, msa, tidDataFilter);
+  }
+
+  /**
+   * 写epc区，tid区过滤.epc、tid均为12字节
+   *
+   * @param epcDate epc区数据，长度必须为12字节.
+   * @param tidDataFilter tid区过滤数据，长度必须为12字节.
+   */
+  public boolean writeEpcFilterTid(byte[] epcDate, byte[] tidDataFilter) {
+    return writeEpcFilterTid(0x02, epcDate, 0x00, tidDataFilter);
+  }
+
   @Override
   public boolean writeUse(int sa, byte[] data) {
     return uhfOperation.writeUse(sa, data);
@@ -94,6 +117,29 @@ public class UhfController implements IUhfOperation {
 
   public boolean readEpc(byte[] buff) {
     return uhfOperation.readEpc(0x02, buff);
+  }
+
+  /**
+   * 读epc区，tid区过滤.
+   *
+   * @param sa 从 0x02 开始
+   * @param epcDate epc区数据，长度为偶数，2~12字节.
+   * @param msa 从 0x00 开始
+   * @param tidDataFilter tid区过滤数据，长度为偶数，2~12字节.
+   */
+  public boolean readEpcFilterTid(int sa, byte[] epcDate, int msa, byte[] tidDataFilter) {
+    return read(UhfCmd.MB_EPC, sa, epcDate,
+        UhfCmd.MB_TID, msa, tidDataFilter);
+  }
+
+  /**
+   * 读epc区，tid区过滤.epc、tid均为12字节
+   *
+   * @param epcDate epc区数据，长度必须为12字节.
+   * @param tidDataFilter tid区过滤数据，长度必须为12字节.
+   */
+  public boolean readEpcFilterTid(byte[] epcDate, byte[] tidDataFilter) {
+    return readEpcFilterTid(0x02, epcDate, 0x00, tidDataFilter);
   }
 
   @Override public boolean readTid(int sa, byte[] buff) {

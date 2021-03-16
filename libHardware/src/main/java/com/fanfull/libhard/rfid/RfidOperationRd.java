@@ -66,8 +66,8 @@ public class RfidOperationRd extends AbsRfidOperation {
     return reVal;
   }
 
-  @Override
-  public void release() {
+  @Override public void release() {
+    setListener(null);
     Rfid.closeCommPort();
     isOpen = false;
   }
@@ -87,7 +87,7 @@ public class RfidOperationRd extends AbsRfidOperation {
 
   private boolean config() {
     if (!Rfid.PcdConfigISOType(Rfid.ISOTYPE_14443A)) {
-      LogUtils.w("PcdConfigISOType() failed ");
+      LogUtils.tag(TAG).w("PcdConfigISOType() failed ");
       return false;
     }
 
@@ -191,14 +191,14 @@ public class RfidOperationRd extends AbsRfidOperation {
 
   @Override public boolean readNfc(int sa, byte[] buff, boolean withFindCard) {
     if (sa < 0 || buff == null || buff.length < 1) {
-      LogUtils.w("check failed sa:%s buff:%s", sa, buff);
+      LogUtils.tag(TAG).w("check failed sa:%s buff:%s", sa, buff);
       return false;
     }
 
     if (withFindCard) {
       byte[] uid = findCard(true);
       if (uid == null) {
-        LogUtils.w("findNfc failed");
+        LogUtils.tag(TAG).w("findNfc failed");
         return false;
       }
     }
@@ -209,7 +209,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     for (int i = 0; i < wordDataLen; i++) {
       byte newStart = (byte) (i + sa);
       if (!readNfc4Byte(newStart, oneWord)) {
-        LogUtils.w("第%s次 读nfc addr[%s]失败", i, newStart);
+        LogUtils.tag(TAG).w("第%s次 读nfc addr[%s]失败", i, newStart);
         return false;
       }
       int destPos = i * 4;
@@ -219,12 +219,13 @@ public class RfidOperationRd extends AbsRfidOperation {
       }
       System.arraycopy(oneWord, 0, buff, destPos, copyLen);
     }
+    LogUtils.tag(TAG).d("read sa:%02X-%s", sa, BytesUtil.bytes2HexString(buff));
     return true;
   }
 
   @Override public EnumErrCode readNfc(int sa, byte[] data, byte[] uid) {
     if (sa < 0 || data == null || data.length < 1) {
-      LogUtils.w("check failed sa:%s buff:%s", sa, data);
+      LogUtils.tag(TAG).w("check failed sa:%s buff:%s", sa, data);
       return EnumErrCode.ARGS_ERR;
     }
 
@@ -232,7 +233,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     if (uid != null && uid.length == 7) {
       res = findCardRes(uid);
       if (res != EnumErrCode.SUCCESS) {
-        LogUtils.w("findNfc failed");
+        LogUtils.tag(TAG).w("findNfc failed");
         return res;
       }
     }
@@ -243,7 +244,7 @@ public class RfidOperationRd extends AbsRfidOperation {
     for (int i = 0; i < wordDataLen; i++) {
       byte newStart = (byte) (i + sa);
       if (!readNfc4Byte(newStart, oneWord)) {
-        LogUtils.w("第%s次 读nfc addr[%s]失败", i, newStart);
+        LogUtils.tag(TAG).w("第%s次 读nfc addr[%s]失败", i, newStart);
         return EnumErrCode.FAILED;
       }
       int destPos = i * 4;
@@ -266,14 +267,14 @@ public class RfidOperationRd extends AbsRfidOperation {
   @Override
   public boolean writeNfc(int sa, byte[] buff, boolean withFindCard) {
     if (sa < 0 || buff == null || buff.length < 1) {
-      LogUtils.w("check failed sa:%s buff:%s", sa, buff);
+      LogUtils.tag(TAG).w("check failed sa:%s buff:%s", sa, buff);
       return false;
     }
 
     if (withFindCard) {
       byte[] uid = findCard(true);
       if (uid == null) {
-        LogUtils.w("findNfc failed");
+        LogUtils.tag(TAG).w("findNfc failed");
         return false;
       }
     }
@@ -291,10 +292,11 @@ public class RfidOperationRd extends AbsRfidOperation {
 
       byte newStart = (byte) (i + sa);
       if (!writeNfc4Byte(newStart, oneWord)) {
-        LogUtils.w("第%s次 写nfc addr[%02X]失败", i, newStart);
+        LogUtils.tag(TAG).w("第%s次 写nfc addr[%02X]失败", i, newStart);
         return false;
       }
     }
+    LogUtils.tag(TAG).d("write sa:%02X-%s", sa, BytesUtil.bytes2HexString(buff));
     return true;
   }
 
