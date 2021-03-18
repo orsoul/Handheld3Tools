@@ -254,7 +254,7 @@ public class Lock3Operation {
 
     boolean reVal = false;
     if (lock3Bean.pieceEpcBuff != null) {
-      reVal = uhfController.writeEpc(lock3Bean.pieceEpcBuff);
+      reVal = uhfController.writeEpcFilterTid(lock3Bean.pieceEpcBuff, lock3Bean.pieceTidBuff);
       if (!reVal) {
         return false;
       }
@@ -372,6 +372,10 @@ public class Lock3Operation {
     if (handoverBean == null || handoverBean.getFunction() < HandoverBean.FUN_COVER_BAG) {
       return 0;
     }
+    byte[] data = handoverBean.toBytes();
+    if (data == null || data.length != HandoverBean.ONE_ITEM_LEN) {
+      return 0;
+    }
 
     byte[] numBuff = new byte[1];
     boolean writeRes;
@@ -395,8 +399,7 @@ public class Lock3Operation {
       withFindCard = false;
     }
     //handoverBean.setTimeSecond(LoginInfo.currentTimeMillisFix());
-    writeRes = rfidController.writeNfc(
-        saData, handoverBean.toBytes(), withFindCard);
+    writeRes = rfidController.writeNfc(saData, data, withFindCard);
     if (writeRes) {
       numBuff[0] = (byte) (savedNum + 1);
       writeRes = rfidController.writeNfc(

@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.DateFormatUtil;
+import org.orsoul.baselib.util.RegularUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -232,7 +233,26 @@ public class HandoverBean {
     return handoverBean;
   }
 
+  public boolean checkData() {
+    if (FUN_RECEIVE < function
+        || function < FUN_COVER_BAG
+        //|| organcode == null
+        || !RegularUtil.matchDecimalString(organcode)
+        || scaner1 == null
+        || scaner2 == null) {
+      LogUtils.i("%s", "function=" + function +
+          ", organcode='" + organcode + '\'' +
+          ", scaner1='" + scaner1 + '\'' +
+          ", scaner2='" + scaner2);
+      return false;
+    }
+    return true;
+  }
+
   public byte[] toBytes() {
+    if (!checkData()) {
+      return null;
+    }
     byte[] funBuff = new byte[] { (byte) function, 0, 0, 0 };
     int org = Integer.parseInt(organcode);
     byte[] orgBuff = BytesUtil.long2Bytes(org, 4);
