@@ -48,7 +48,13 @@ public interface IRfidOperation extends IOperation {
 
   boolean writeNfc(int sa, byte[] buff, boolean withFindCard);
 
-  boolean readM1(int block, byte[] dataBuff);
+  /**
+   * @param block 待读的块区号.
+   * @param dataBuff 16字节块区数据
+   * @param uid 4字节的uid，若执行寻卡，用于存放寻到的数据；若不寻卡，则作为已寻到的数据
+   * @param withFindCard true 执行寻卡操作，否则不寻卡.
+   */
+  boolean readM1(int block, byte[] dataBuff, byte[] uid, boolean withFindCard);
 
   boolean writeM1(int block, byte[] data16);
 }

@@ -135,10 +135,25 @@ public class RfidController implements IRfidPSamOperation {
     return operation.writeNfc(sa, buff, withFindCard);
   }
 
-  @Override public boolean readM1(int block, byte[] dataBuff) {
-    return operation.readM1(block, dataBuff);
+  @Override public boolean readM1(int block, byte[] dataBuff, byte[] uid, boolean withFindCard) {
+    return operation.readM1(block, dataBuff, uid, withFindCard);
   }
 
+  /**
+   * 读M1卡，寻卡.
+   *
+   * @param uid 必须是 4字节 接收数据
+   */
+  public boolean readM1(int block, byte[] dataBuff, byte[] uid) {
+    return readM1(block, dataBuff, uid, true);
+  }
+
+  /** 读M1卡，寻卡. */
+  public boolean readM1(int block, byte[] dataBuff) {
+    return readM1(block, dataBuff, new byte[4], true);
+  }
+
+  /** 读M1卡，寻卡. */
   public byte[] readM1(int block) {
     byte[] data = new byte[16];
     boolean readSuccess = readM1(block, data);

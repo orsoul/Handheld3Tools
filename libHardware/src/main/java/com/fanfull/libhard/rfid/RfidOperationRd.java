@@ -300,8 +300,16 @@ public class RfidOperationRd extends AbsRfidOperation {
     return true;
   }
 
-  @Override public boolean readM1(int block, byte[] dataBuff) {
-    if (dataBuff == null || dataBuff.length != 16 || !authM1(block)) {
+  @Override public boolean readM1(int block, byte[] dataBuff, byte[] uid, boolean withFindCard) {
+    if (dataBuff == null || dataBuff.length != 16 || uid == null || uid.length != 4) {
+      LogUtils.tag(TAG).w("block:%s, data:%s, uid:%s, find:%s",
+          block, BytesUtil.bytes2HexString(dataBuff), BytesUtil.bytes2HexString(uid), withFindCard);
+      return false;
+    }
+    if (withFindCard && !findCard(uid)) {
+      return false;
+    }
+    if (!authM1(uid, block)) {
       return false;
     }
     boolean readSuccess = Rfid.PcdRead((byte) block, dataBuff);
