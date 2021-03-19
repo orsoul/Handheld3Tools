@@ -10,7 +10,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
-import com.fanfull.libhard.lock3.task.CoverOpenTask;
+import com.fanfull.libhard.lock3.task.CoverBagTask;
 
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
@@ -36,7 +36,6 @@ public class CoverBagActivity extends InitModuleActivity {
 
     coverBagTask = new MyCoverBagTask();
     Lock3Bean lock3Bean = new Lock3Bean();
-    lock3Bean.removeSa();
     lock3Bean.addSa(
         Lock3Bean.SA_BAG_ID,
         Lock3Bean.SA_PIECE_TID,
@@ -50,7 +49,7 @@ public class CoverBagActivity extends InitModuleActivity {
         Lock3Bean.SA_COVER_EVENT
     );
     coverBagTask.setLock3Bean(lock3Bean);
-    coverBagTask.setTaskType(CoverOpenTask.TASK_TYPE_COVER);
+    coverBagTask.setTaskType(CoverBagTask.TASK_TYPE_COVER);
 
     handoverBean = new HandoverBean()
         .setOrgancode("002706001")
@@ -76,7 +75,7 @@ public class CoverBagActivity extends InitModuleActivity {
   @Override public void onClick(View v) {
     switch (v.getId()) {
       case R.id.btn_cover_bag_cover:
-        coverBagTask.setTaskType(CoverOpenTask.TASK_TYPE_COVER);
+        coverBagTask.setTaskType(CoverBagTask.TASK_TYPE_COVER);
         handoverBean.setFunction(HandoverBean.FUN_COVER_BAG);
         if (coverBagTask.startThread()) {
           ClockUtil.runTime(true);
@@ -86,7 +85,7 @@ public class CoverBagActivity extends InitModuleActivity {
         }
         break;
       case R.id.btn_cover_bag_open:
-        coverBagTask.setTaskType(CoverOpenTask.TASK_TYPE_OPEN);
+        coverBagTask.setTaskType(CoverBagTask.TASK_TYPE_OPEN);
         handoverBean.setFunction(HandoverBean.FUN_OPEN_BAG);
         if (coverBagTask.startThread()) {
           ClockUtil.runTime(true);
@@ -112,7 +111,7 @@ public class CoverBagActivity extends InitModuleActivity {
     super.onDestroy();
   }
 
-  class MyCoverBagTask extends CoverOpenTask {
+  class MyCoverBagTask extends CoverBagTask {
 
     @Override public boolean onCheckSuccess(Lock3Bean lock3Bean) {
       Lock3InfoUnit unitEvent = Lock3InfoUnit.newInstance(Lock3Bean.SA_COVER_EVENT);
@@ -123,11 +122,11 @@ public class CoverBagActivity extends InitModuleActivity {
 
       handoverBean.setTimeSecond(System.currentTimeMillis());
       Lock3Bean lock3BeanWrite = genLock3Bean2Write(lock3Bean, handoverBean, unitEvent);
-      updateLockOnNewThread(lock3BeanWrite);
-      return false;
+      writeLock(lock3BeanWrite);
+      return true;
     }
 
-    @Override public boolean onUpdateSuccess(Lock3Bean lock3Bean) {
+    @Override public boolean onWriteSuccess(Lock3Bean lock3Bean) {
       long l = ClockUtil.runTime();
       String format = String.format("执行成功，耗时：%.3f 秒", l / 1000.0);
       LogUtils.d(format);
@@ -198,7 +197,7 @@ public class CoverBagActivity extends InitModuleActivity {
       return false;
     }
 
-    @Override public boolean onUpdateFailed(int res, Lock3Bean lock3Bean) {
+    @Override public boolean onWriteFailed(int res, Lock3Bean lock3Bean) {
       String msg;
       switch (res) {
         case WRITE_RES_ARGS_WRONG:
@@ -218,6 +217,10 @@ public class CoverBagActivity extends InitModuleActivity {
       }
       LogUtils.d("onUpdateFailed：%s，%s", res, msg);
       sb.append(msg).append('\n');
+      return false;
+    }
+
+    @Override public boolean onWaitWriteTimeout(Lock3Bean lock3Bean) {
       return false;
     }
 

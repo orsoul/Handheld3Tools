@@ -123,6 +123,53 @@ public class Lock3Operation {
    * 寻卡NFC后马上读tid.
    *
    * @param uid 7字节，必选
+   * @param tid 12字节，可选
+   * @param epc 12字节，可选，若读取会以tid作为过滤
+   * @return 结果码<br />
+   * 结果码=0 执行成功<br/>
+   * 结果码=-1 参数错误<br/>
+   * 结果码=-2 nfc寻卡失败<br/>
+   * 结果码=-3 读tid失败<br/>
+   * 结果码=-4 读epc失败<br/>
+   */
+  public int readUidEpcFilterTid(byte[] uid, @Nullable byte[] tid, @Nullable byte[] epc) {
+    if (uid == null
+        || uid.length != 7) {
+      return -1;
+    }
+
+    /* 1、读Nfc uid */
+    boolean readSuccess = rfidController.findCard(uid);
+    if (!readSuccess) {
+      return -2;
+    }
+
+    int sa = 0x00;
+    /* 2、读Uhf tid */
+    if (tid != null) {
+      if (tid.length == 6) {
+        sa = 0x03;
+      }
+      readSuccess = uhfController.readEpcFilterTid(epc, tid);
+      if (!readSuccess) {
+        return -3;
+      }
+    }
+
+    /* 3、读Uhf epc */
+    if (epc != null) {
+      readSuccess = uhfController.read(UhfCmd.MB_EPC, 0x02, epc, UhfCmd.MB_TID, sa, tid);
+      if (!readSuccess) {
+        return -4;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * 寻卡NFC后马上读tid.
+   *
+   * @param uid 7字节，必选
    * @param tid 12字节，必选
    * @return 结果码<br />
    * 结果码=0 执行成功<br/>

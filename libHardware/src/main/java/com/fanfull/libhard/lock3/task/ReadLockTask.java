@@ -17,10 +17,13 @@ import java.util.Arrays;
 public class ReadLockTask extends ThreadUtil.ThreadRunnable {
   private byte[] uid = new byte[7];
 
-  private byte[] tid = new byte[12];
-  private byte[] epc = new byte[12];
+  private byte[] tid;
+  private byte[] epc;
+  private byte[] tidFilter;
 
   private boolean isReadUhf = true;
+  private boolean isReadTid = true;
+  private boolean isReadEpc = true;
   private long runTime = 5000L;
   private Lock3Bean lock3Bean;
 
@@ -36,13 +39,42 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
     isReadUhf = readUhf;
   }
 
+  public void setReadTid(boolean readTid) {
+    isReadTid = readTid;
+  }
+
+  public void setReadEpc(boolean readEpc) {
+    isReadEpc = readEpc;
+  }
+
+  public void setTidFilter(byte[] tidFilter) {
+    this.tidFilter = tidFilter;
+  }
+
   public void setRunTime(long runTime) {
     this.runTime = runTime;
   }
 
   @Override public void run() {
-    Lock3Operation lock3Operation = Lock3Operation.getInstance();
+    if (isReadUhf) {
+      if (isReadEpc && epc == null) {
+        epc = new byte[12];
+      }
+      if (isReadTid && tid == null) {
+        tid = new byte[12];
+      }
+    }
 
+    byte[] epc = isReadUhf && isReadEpc ? this.epc : null;
+    byte[] tid = null;
+    if (isReadUhf && isReadTid) {
+      if (tidFilter != null) {
+        tid = tidFilter;
+      } else {
+        tid = this.tid;
+      }
+    }
+    Lock3Operation lock3Operation = Lock3Operation.getInstance();
     /* 在指定时间内 寻卡NFC 和 读超高频 */
     long start = System.currentTimeMillis();
     while (true) {
@@ -52,7 +84,13 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
       }
       int res;
       if (isReadUhf) {
-        res = lock3Operation.readUidAndTid(uid, tid, epc);
+        LogUtils.d("filterTid:%s", BytesUtil.bytes2HexString(tid));
+        if (tidFilter != null) {
+          // 以tid过滤 不再读取tid，读取成功的话 过滤tid 等同 tid
+          res = lock3Operation.readUidEpcFilterTid(uid, tid, epc);
+        } else {
+          res = lock3Operation.readUidAndTid(uid, tid, epc);
+        }
       } else {
         boolean findCard = RfidController.getInstance().findCard(uid);
         res = findCard ? 0 : -2;
@@ -109,10 +147,18 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
     lock3Bean.uidBuff = uid;
     lock3Bean.parseInfo();
     if (isReadUhf) {
-      lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
-      lock3Bean.setPieceTid(BytesUtil.bytes2HexString(tid));
-      lock3Bean.pieceEpcBuff = Arrays.copyOf(epc, epc.length);
-      lock3Bean.pieceTidBuff = Arrays.copyOf(tid, tid.length);
+      if (epc != null) {
+        lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
+        lock3Bean.pieceEpcBuff = Arrays.copyOf(epc, epc.length);
+      } else {
+        lock3Bean.setPieceEpc(null);
+      }
+      if (tid != null) {
+        lock3Bean.setPieceTid(BytesUtil.bytes2HexString(tid));
+        lock3Bean.pieceTidBuff = Arrays.copyOf(tid, tid.length);
+      } else {
+        lock3Bean.setPieceTid(null);
+      }
     } else {
       lock3Bean.setPieceEpc(null);
       lock3Bean.setPieceTid(null);
