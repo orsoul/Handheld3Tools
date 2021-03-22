@@ -24,11 +24,8 @@ public class Lock3InfoUnit {
     return len == infoUnit.len;
   }
 
-  @Override
-  public int hashCode() {
-    int result = sa;
-    result = 31 * result + len;
-    return result;
+  @Override public int hashCode() {
+    return super.hashCode();
   }
 
   @Override

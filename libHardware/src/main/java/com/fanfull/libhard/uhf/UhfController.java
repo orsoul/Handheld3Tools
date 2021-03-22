@@ -146,8 +146,17 @@ public class UhfController implements IUhfOperation {
     return uhfOperation.readTid(sa, buff);
   }
 
+  /** 无过滤读取12字节tid. */
   public boolean readTid(byte[] buff) {
     return uhfOperation.readTid(0x00, buff);
+  }
+
+  /** 无过滤读取12字节tid，然后以此tid过滤读取12字节epc. */
+  public boolean readTidAndEpc(byte[] tidBuff, byte[] epcBuff) {
+    if (readTid(tidBuff)) {
+      return readEpcFilterTid(epcBuff, tidBuff);
+    }
+    return false;
   }
 
   @Override public boolean readUse(int sa, byte[] buff) {

@@ -44,6 +44,7 @@ import org.orsoul.baselib.util.ViewUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class BagCheckActivity extends InitModuleActivity {
 
@@ -52,11 +53,14 @@ public class BagCheckActivity extends InitModuleActivity {
   private Button btnShow;
   private Switch switchUhf;
 
-  private UhfController uhfController;
-  private RfidController rfidController;
+  //private UhfController uhfController;
+  //private RfidController rfidController;
 
   private ReadNfcEpcTask readLockTask;
   private ReadAllLockTask allLockTask;
+
+  private byte[] buffTid;
+  private byte[] buffEpc;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -71,7 +75,7 @@ public class BagCheckActivity extends InitModuleActivity {
         runOnUiThread(() -> {
           if (!openSuccess) {
             dismissLoadingView();
-            ViewUtil.appendShow("超高频初始失败.", tvShow);
+            ViewUtil.appendShow("超高频初始失败!!!", tvShow);
             return;
           }
           //tvShow.setText("打开成功.\n"
@@ -81,7 +85,7 @@ public class BagCheckActivity extends InitModuleActivity {
           //    + "按键8->开启 EPC、TID同读\n"
           //    + "按键9->关闭 EPC、TID同读\n\n");
           //ViewUtil.appendShow("超高频初始成功", tvShow);
-          ViewUtil.appendShow("超高频初始成功.", tvShow);
+          ViewUtil.appendShow("超高频初始成功", tvShow);
           rfidController.open();
         });
 
@@ -150,12 +154,15 @@ public class BagCheckActivity extends InitModuleActivity {
         runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
-            ViewUtil.appendShow("高频模块初始失败", tvShow);
+            ViewUtil.appendShow("高频模块初始失败!!!", tvShow);
             return;
           }
           // TODO: 2020-11-13 初始化成功
           //tvShow.setText("初始化成功");
-          ViewUtil.appendShow("高频模块初始成功", tvShow);
+          //ViewUtil.appendShow("高频模块初始成功", tvShow);
+          ViewUtil.appendShow("高频模块初始成功\n"
+              + "按键1~4->F1~F4\n"
+              + "按键6->读tid后过滤读epc", tvShow);
           readLockTask = new ReadNfcEpcTask();
           allLockTask = new ReadAllLockTask();
           allLockTask.setReadUhf(switchUhf.isChecked());
@@ -214,6 +221,10 @@ public class BagCheckActivity extends InitModuleActivity {
   }
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (event.getRepeatCount() != 0) {
+      return true;
+    }
+
     int fn = -1;
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
@@ -221,6 +232,24 @@ public class BagCheckActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_3:
       case KeyEvent.KEYCODE_4:
         fn = keyCode - KeyEvent.KEYCODE_0;
+        break;
+      case KeyEvent.KEYCODE_6:
+        if (buffTid == null) {
+          buffTid = new byte[12];
+          buffEpc = new byte[12];
+        }
+        boolean b = uhfController.readTidAndEpc(buffTid, buffEpc);
+        String msg;
+        if (b) {
+          SoundHelper.playToneSuccess();
+          String tid = BytesUtil.bytes2HexString(buffTid);
+          msg = String.format("epc:%s\ntid:%s-%s",
+              BytesUtil.bytes2HexString(buffEpc), tid.substring(0, 12), tid.substring(12));
+        } else {
+          SoundHelper.playToneFailed();
+          msg = "读取tid、epc失败";
+        }
+        ViewUtil.appendShow(msg, tvShow);
         break;
       //Lock3Operation.getInstance().writeLockNfc();
       //if (!readLockTask.isRunning()) {
@@ -434,9 +463,22 @@ public class BagCheckActivity extends InitModuleActivity {
       coverCode = String.format("%s-解密异常", BytesUtil.bytes2HexString(infoUnitCover.buff));
       //coverCode = "解密异常";
     }
+
+    String pieceTid = lock3Bean.getPieceTid();
+    String compareMsg;
+    if (pieceTid == null) {
+      compareMsg = "未读锁片";
+    } else {
+      String tid6 = lock3Bean.getTidFromPiece().substring(0, 12);
+      String tid12 = pieceTid.substring(12);
+      compareMsg = String.format("%s，%s",
+          tid12, Objects.equals(tid6, tid12) ? "相等" : "不相等");
+    }
+
     String colorText = HtmlUtil.getColorText(
         "锁片epc：%s\n"
             + "锁片tid：%s\n"
+            + "后六tid：%s\n" // 业务tid对比
             + "业务tid：%s\n"
             + "锁内tid：%s\n"
             + "bagId：%s\n"
@@ -452,12 +494,13 @@ public class BagCheckActivity extends InitModuleActivity {
             + "========================\n袋流转索引：%s\n",
         lock3Bean.getPieceEpc(),
         lock3Bean.getPieceTid(),
+        compareMsg,
         lock3Bean.getTidFromPiece(),
         lock3Bean.getTidFromLock(),
         lock3Bean.getBagId(),
         Lock3Util.getStatusDesc(lock3Bean.getStatus()),
         Lock3Util.getStatusCheckDesc(lock3Bean.getStatusCheck()),
-        String.format("%.3f", lock3Bean.getVoltage()),
+        Lock3Util.parseV2String(lock3Bean.getVoltage()),
         Lock3Util.getEnableDesc(lock3Bean.getEnable()),
         lock3Bean.isTestMode(),
         coverCode,
@@ -500,12 +543,12 @@ public class BagCheckActivity extends InitModuleActivity {
     }
 
     @Override protected void onSuccess(Lock3Bean lock3Bean) {
-      SoundHelper.playToneSuccess();
       runOnUiThread(() -> {
+        SoundHelper.playToneSuccess();
         dismissLoadingView();
         Spanned parse = parse(lock3Bean);
         //ViewUtil.appendShow(null, tvShow);
-        ViewUtil.appendShow(parse, tvShow);
+        //ViewUtil.appendShow(parse, tvShow);
         tvShow.setText(parse);
         //tvShow.append("\n");
         tvShow.append("\n用时：" + ClockUtil.runTime() + "\n");
@@ -517,10 +560,31 @@ public class BagCheckActivity extends InitModuleActivity {
     }
 
     @Override protected void onFailed(int errorCode) {
-      super.onFailed(errorCode);
+      String msg;
+      switch (errorCode) {
+        case -1:
+          msg = String.format("读袋锁信息失败，cause：%s 参数错误", errorCode);
+          break;
+        case -2:
+          msg = String.format("读袋锁信息失败，cause：%s nfc寻卡失败", errorCode);
+          break;
+        case -3:
+          msg = String.format("读袋锁信息失败，cause：%s 读tid失败", errorCode);
+          break;
+        case -4:
+          msg = String.format("读袋锁信息失败，cause：%s 读epc失败", errorCode);
+          break;
+        case -5:
+          msg = String.format("读袋锁信息失败，cause：%s 读nfc失败", errorCode);
+          break;
+        default:
+          msg = String.format("读袋锁信息失败，cause：%s 未定义失败", errorCode);
+      }
+      LogUtils.d("%s", msg);
       runOnUiThread(() -> {
+        SoundHelper.playToneFailed();
         dismissLoadingView();
-        ViewUtil.appendShow("读袋锁信息失败.cause:" + errorCode, tvShow);
+        ViewUtil.appendShow(msg, tvShow);
       });
     }
   }

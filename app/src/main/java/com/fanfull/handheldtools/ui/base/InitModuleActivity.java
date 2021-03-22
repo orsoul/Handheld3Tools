@@ -90,20 +90,23 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
   }
 
   protected void showSetUhfPower(Context context) {
-    new XPopup.Builder(context).asInputConfirm(
-        "输入功率", "功率范围：5 ~ 25", "读功率.写功率", text -> {
+    new XPopup.Builder(this).asInputConfirm(
+        "输入功率", "功率范围：6 ~ 25,输入6.8即读写功率分别为6、8", "读功率.写功率", text -> {
           if (text == null) {
             return;
           }
 
-          if (!text.matches("\\d+\\.\\d+")) {
-            ToastUtils.showShort("输入格式不合法，正确格式：6.12");
+          if (!text.matches("\\d+[\\.\\d+]*")) {
+            ToastUtils.showLong("输入格式不合法，正确格式：6.8，读写功率分别为6、8");
             return;
           }
 
           String[] split = text.split("\\.");
           int r = Integer.parseInt(split[0]);
-          int w = Integer.parseInt(split[1]);
+          int w = r;
+          if (split.length == 2) {
+            w = Integer.parseInt(split[1]);
+          }
           if (UhfCmd.MAX_POWER < r || r < UhfCmd.MIN_POWER ||
               UhfCmd.MAX_POWER < w || w < UhfCmd.MIN_POWER) {
             ToastUtils.showShort("功率超出允许范围");
