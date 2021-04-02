@@ -40,6 +40,8 @@ public class HandoverBean {
   public static final int FUN_OUT_OPEN = 8;
   /** 接收. */
   public static final int FUN_RECEIVE = 9;
+  /** 款项分配. */
+  public static final int FUN_ALLOCATION = 11;
 
   /** 已保存记录数量的存储位置. */
   public static final int SA_INDEX = 0x93;

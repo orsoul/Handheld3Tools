@@ -80,6 +80,30 @@ public final class ThreadUtil {
     }
   }
 
+  /**
+   * 等待超时返回true，等待被中断或唤醒返回false.
+   *
+   * @param obj 以此对象为锁同步等待，
+   */
+  public static boolean waitTimeout(Object obj, long timeout) {
+    if (obj == null) {
+      return false;
+    }
+    long waitTime = 0;
+    try {
+      //LogUtils.v("waiting");
+      synchronized (obj) {
+        waitTime = System.currentTimeMillis();
+        obj.wait(timeout);
+      }
+    } catch (InterruptedException e) {
+      //LogUtils.v("wait Interrupt");
+    }
+    waitTime = System.currentTimeMillis() - waitTime;
+    //LogUtils.v("waite time " + waitTime);
+    return timeout <= waitTime;
+  }
+
   public static void waitObject(Object obj) {
     try {
       obj.wait();

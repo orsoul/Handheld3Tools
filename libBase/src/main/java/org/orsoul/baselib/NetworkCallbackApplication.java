@@ -40,8 +40,8 @@ public abstract class NetworkCallbackApplication extends Application {
       private boolean isConnected;
 
       @Override public void onAvailable(Network network) {
+        LogUtils.v("isConnected:%s network:%s", isConnected, network);
         if (!isConnected) {
-          LogUtils.v("onAvailable %s", network);
           isConnected = true;
           for (NetworkCallback networkCallback : networkCallbackSet) {
             networkCallback.onNetworkChange(true);
@@ -50,7 +50,7 @@ public abstract class NetworkCallbackApplication extends Application {
       }
 
       @Override public void onLost(Network network) {
-        LogUtils.v("onLost %s", network);
+        LogUtils.v("isConnected:%s network:%s", isConnected, network);
         isConnected = false;
         for (NetworkCallback networkCallback : networkCallbackSet) {
           networkCallback.onNetworkChange(false);
@@ -99,12 +99,22 @@ public abstract class NetworkCallbackApplication extends Application {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public static boolean addNetworkCallback(NetworkCallback callback) {
-    return networkCallbackSet.add(callback);
+    if (callback == null) {
+      LogUtils.d("add null");
+      return false;
+    }
+    boolean add = networkCallbackSet.add(callback);
+    LogUtils.d("add %s,%s", add, callback);
+    LogUtils.v("all %s", networkCallbackSet);
+    return add;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public static boolean removeNetworkCallback(NetworkCallback callback) {
-    return networkCallbackSet.remove(callback);
+    boolean add = networkCallbackSet.remove(callback);
+    LogUtils.d("remove %s,%s", add, callback);
+    LogUtils.v("all %s", networkCallbackSet);
+    return add;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

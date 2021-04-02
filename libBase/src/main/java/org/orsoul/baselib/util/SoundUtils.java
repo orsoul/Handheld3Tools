@@ -209,7 +209,7 @@ public class SoundUtils {
    *
    * @param n 需要 播报 的数字, 范围应在 0~999
    */
-  public static void playNumber(int n) {
+  public static void playNum(int n) {
     if (isSilence) {
       return;
     }
@@ -274,8 +274,8 @@ public class SoundUtils {
    *
    * @param n 需要 播报 的 字符串形式的 数字, 范围应在 1~999
    */
-  public static void playNumber(String n) {
-    playNumber(Integer.parseInt(n));
+  public static void playNum(String n) {
+    playNum(Integer.parseInt(n));
   }
 
   /** 播放成功声. */
@@ -336,5 +336,80 @@ public class SoundUtils {
    */
   public static void playRefreshScreen() {
     SoundUtils.play(REFRESH_SCREEN);
+  }
+
+  /**
+   * 设置 系统多媒体音量.同时显示音量控制UI和播放声音
+   *
+   * @param raise true增加音量
+   */
+  public static void setAudioVolume(boolean raise) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    int dire = raise ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER;
+    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, dire,
+        AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
+    //int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    //int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    //LogUtils.d("%s / %s", volume, volumeMax);
+  }
+
+  /**
+   * 设置 系统多媒体音量.
+   *
+   * @param volume 0 ~ 15, 若小于0，设为最大音量的70%
+   * @param showUi true显示音量控制UI
+   */
+  public static void setAudioVolume(int volume, boolean showUi) {
+    setAudioVolume(volume, showUi, false);
+  }
+
+  public static void setAudioVolume(int volume, boolean showUi, boolean playSound) {
+    Application app = Utils.getApp();
+    if (app == null) {
+      return;
+    }
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return;
+    }
+    if (volume < 0) {
+      int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+      volume = (int) (volumeMax * 0.7F);
+    }
+    int flag = 0;
+    if (showUi) {
+      flag |= AudioManager.FLAG_SHOW_UI;
+    }
+    if (playSound) {
+      flag |= AudioManager.FLAG_PLAY_SOUND;
+    }
+    audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, flag);
+  }
+
+  /**
+   * 获取多媒体 音量.
+   *
+   * @param isMax true 获取最大音量，否则获取 当前音量.
+   */
+  public static int getAudioVolume(boolean isMax) {
+    Application app = Utils.getApp();
+    AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
+    if (audio == null) {
+      return -1;
+    }
+    int volume;
+    if (isMax) {
+      volume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+    } else {
+      volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    }
+    return volume;
   }
 }

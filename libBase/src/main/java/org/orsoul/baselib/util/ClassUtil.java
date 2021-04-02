@@ -23,6 +23,7 @@ public final class ClassUtil {
     Type type = test.getClass().getGenericSuperclass();
     //showObjectClass(TestSub.class);
     showInterface(TestSub.class);
+    showObjectClass(TestSub.class);
 
     type = String.class.getGenericSuperclass();
     //showObjectClass(String.class);
@@ -41,13 +42,13 @@ public final class ClassUtil {
     if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
       Type[] types = parameterizedType.getActualTypeArguments();
-      System.out.println(Arrays.toString(types));
+      System.out.printf("showObjectClass %s: %s\n", clz.getSimpleName(), Arrays.toString(types));
     }
   }
 
   static void showInterface(Class clz) {
     Type[] types = clz.getGenericInterfaces();
-    System.out.println(Arrays.toString(types));
+    System.out.printf("showInterface %s: %s\n", clz.getSimpleName(), Arrays.toString(types));
     //if (type instanceof ParameterizedType) {
     //  ParameterizedType parameterizedType = (ParameterizedType) type;
     //  Type[] types = parameterizedType.getActualTypeArguments();

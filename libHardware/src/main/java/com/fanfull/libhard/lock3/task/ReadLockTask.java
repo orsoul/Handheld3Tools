@@ -144,8 +144,6 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
       lock3Bean.add(circulationUnit);
     }
 
-    lock3Bean.uidBuff = uid;
-    lock3Bean.parseInfo();
     if (isReadUhf) {
       if (epc != null) {
         lock3Bean.setPieceEpc(BytesUtil.bytes2HexString(epc));
@@ -163,6 +161,10 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
       lock3Bean.setPieceEpc(null);
       lock3Bean.setPieceTid(null);
     }
+
+    lock3Bean.uidBuff = uid;
+    lock3Bean.parseInfo();
+
     onSuccess(lock3Bean);
   }
 

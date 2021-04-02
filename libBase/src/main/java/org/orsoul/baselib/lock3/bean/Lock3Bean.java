@@ -328,6 +328,9 @@ public class Lock3Bean {
   }
 
   public void parseInfo() {
+    LogUtils.d("PieceTid:%s", getPieceTid());
+    LogUtils.d("PieceEpc:%s", getPieceEpc());
+    LogUtils.d("uid:%s", BytesUtil.bytes2HexString(uidBuff));
     for (Lock3InfoUnit unit : willReadList) {
       LogUtils.v("%s", unit);
       if (!unit.haveData()) {
@@ -337,49 +340,63 @@ public class Lock3Bean {
         case Lock3Bean.SA_BAG_ID:
           this.bagId = BytesUtil.bytes2HexString(unit.buff);
           this.bagIdBuff = unit.buff;
+          LogUtils.d("bagId:%s", bagId);
           break;
         case Lock3Bean.SA_PIECE_TID:
           this.tidFromPiece = BytesUtil.bytes2HexString(unit.buff);
+          LogUtils.d("tidFromPiece:%s", tidFromPiece);
           break;
         case Lock3Bean.SA_LOCK_TID:
           this.tidFromLock = BytesUtil.bytes2HexString(unit.buff);
+          LogUtils.d("tidFromLock:%s", tidFromLock);
           break;
         case Lock3Bean.SA_KEY_NUM:
           this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
+          LogUtils.d("keyNum:%s", keyNum);
           break;
         case Lock3Bean.SA_STATUS:
           this.status = Lock3Util.getStatus(unit.buff[0], this.keyNum, this.uidBuff, false);
           this.handoverIndex = unit.buff[1];
           this.circulationIndex = unit.buff[2];
+          LogUtils.d("status:%s", status);
           break;
         case Lock3Bean.SA_STATUS_CHECK:
           this.statusCheck = unit.buff[0] & 0xFF;
+          LogUtils.d("statusCheck:%s", statusCheck);
           break;
         case Lock3Bean.SA_ENABLE:
           this.enable = Lock3Util.getEnableStatus(unit.buff);
+          LogUtils.d("enable:%s", enable);
           break;
         case Lock3Bean.SA_WORK_MODE:
           this.isTestMode = Lock3Util.MODE_DEBUG == unit.buff[0];
+          LogUtils.d("isTestMode:%s", isTestMode);
           break;
         case Lock3Bean.SA_VOLTAGE:
           this.voltage = Lock3Util.parseV(unit.buff[3]);
+          LogUtils.d("voltage:%s", voltage);
           break;
         case Lock3Bean.SA_COVER_EVENT:
           this.coverCode = BytesUtil.bytes2HexString(unit.buff);
+          LogUtils.d("coverCode:%s", coverCode);
           break;
         case Lock3Bean.SA_COVER_SERIAL:
           this.coverSerial = BytesUtil.bytes2HexString(unit.buff);
+          LogUtils.d("coverSerial:%s", coverSerial);
           break;
         case Lock3Bean.SA_CIRCULATION_INDEX:
           // TODO: 2020-11-16  读nfc 长度不固定的数据区
           this.circulationIndex = unit.buff[0];
+          LogUtils.d("circulationIndex:%s", circulationIndex);
           break;
         case Lock3Bean.SA_CIRCULATION:
           List<HandoverBean> beans = HandoverBean.parseData(unit.buff);
           this.handoverBeanList = beans;
+          LogUtils.d("HandoverBean num:%s", beans.size());
           LogUtils.v("%s", beans);
           break;
         default:
+          LogUtils.d("undefine %s", unit);
       }
     }
   }

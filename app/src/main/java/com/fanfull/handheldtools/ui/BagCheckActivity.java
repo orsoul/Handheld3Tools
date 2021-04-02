@@ -25,6 +25,8 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.interfaces.OnConfirmListener;
 
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
@@ -38,10 +40,8 @@ import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundHelper;
-import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -56,7 +56,6 @@ public class BagCheckActivity extends InitModuleActivity {
   //private UhfController uhfController;
   //private RfidController rfidController;
 
-  private ReadNfcEpcTask readLockTask;
   private ReadAllLockTask allLockTask;
 
   private byte[] buffTid;
@@ -98,8 +97,7 @@ public class BagCheckActivity extends InitModuleActivity {
         }
       }
 
-      @Override
-      public void onReceiveData(byte[] data) {
+      @Override public void onReceiveData(byte[] data) {
         byte[] parseData = UhfCmd.parseData(data);
         if (parseData == null) {
           LogUtils.i("parseData failed:%s", BytesUtil.bytes2HexString(data));
@@ -149,8 +147,7 @@ public class BagCheckActivity extends InitModuleActivity {
     });
 
     rfidController.setListener(new IRfidListener() {
-      @Override
-      public void onOpen(boolean openSuccess) {
+      @Override public void onOpen(boolean openSuccess) {
         runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
@@ -163,7 +160,6 @@ public class BagCheckActivity extends InitModuleActivity {
           ViewUtil.appendShow("高频模块初始成功\n"
               + "按键1~4->F1~F4\n"
               + "按键6->读tid后过滤读epc", tvShow);
-          readLockTask = new ReadNfcEpcTask();
           allLockTask = new ReadAllLockTask();
           allLockTask.setReadUhf(switchUhf.isChecked());
           //initBagTask = new InitBag3Activity.MyInitBagTask();
@@ -292,7 +288,6 @@ public class BagCheckActivity extends InitModuleActivity {
     switchUhf = findViewById(R.id.switch_check_bag_nfc_mode);
     switchUhf.setOnCheckedChangeListener(
         (buttonView, isChecked) -> {
-          readLockTask.setReadEpc(isChecked);
           allLockTask.setReadUhf(isChecked);
         });
 
@@ -350,98 +345,6 @@ public class BagCheckActivity extends InitModuleActivity {
     uhfController.release();
     rfidController.release();
     super.onDestroy();
-  }
-
-  private class ReadNfcEpcTask extends ThreadUtil.ThreadRunnable {
-
-    public List<String> scanList;
-    public List<String> otherNoHaveList;
-    public List<String> otherList;
-    byte[] bagIdBuff = new byte[12];
-    byte[] epcBuff = new byte[12];
-    boolean isReadEpc = true;
-
-    public void setReadEpc(boolean isChecked) {
-      isReadEpc = isChecked;
-    }
-
-    public ReadNfcEpcTask() {
-      scanList = new ArrayList<>(300);
-      otherNoHaveList = new ArrayList<>();
-      otherList = new ArrayList<>(300);
-      String[] split =
-          "0502710104B58EFA6F57800A,0502710104228BFA6F578098,050271010470B0FA6F5780F1,050271010495C1520F5580AF,05027101041468FA6F57804D,05027101046F87FA6F5780D9,05027101049F670A1A55804E,0502710104B37F1A745A800B,05027101041A8CFA6F5780A7,05027101045EA4520F558001,0502710104C265FA6F578096,050271010431380A1A5580BF,0502710104AC65FA6F5780F8,05027101045294520F55803D,050271010488B4FA6F57800D,05027101045167FA6F578007,05027101047868FA6F578021,05027101045169FA6F578009,05027101043588FA6F57808C,05027101042B9C520F55804C,05027101047B8C520F55800C,0502710104ABB5FA6F57802F,0502710104C9692A7057805E,05027101049166FA6F5780C6,050271010499A7520F5580C5,0502710104B3B3FA6F578031,05027101043CB3FA6F5780BE,0502710104938AFA6F578028,05027101047DB3FA6F5780FF,0502710104A4A5520F5580FA,05027101043D62FA6F57806E,05027501047FC8321E44802C,05027101042886FA6F57809F,050271010491B2FA6F578012,05027101040A8CFA6F5780B7,050271010479B3FA6F5780FB,0502710104378EFA6F578088,05027101047E8BFA6F5780C4,0502710104B88FFA6F578006,050271010449A1520F558013,05027101047C8CFA6F5780C1,050271010448B0FA6F5780C9,05027101043BBD520F55807D,0502710104A5660A1A558075,05027101047FB3FA6F5780FD,050271010414380A1A55809A,05027101040B8CFA6F5780B6,050271010425380A1A5580AB,0502710104BF352A70578074,05027101041869FA6F578040,0502710104AD87FA6F57801B,0502710104B6350A1A558035,050271010431B4FA6F5780B4,050271010446B3FA6F5780C4,05027101044EB0FA6F5780CF,05027101049DBC0A1A558097,05027101048769FA6F5780DF,0502710104B89C520F5580DF,0502710104158DFA6F5780A9,0502710104B29C520F5580D5,050271010443BE520F558006,050271010437690A1A5580E8,050271010491BC0A1A55809B,05027101048E380A1A558000,05027101046DA3520F558035,05027101047187FA6F5780C7,0502710104628EFA6F5780DD,0502710104118DFA6F5780AD,050271010478BE520F55803D,05027101043EB2FA6F5780BD,0502710104B08BFA6F57800A,050271010447C90A1A558038,0502710104229F520F558046,0502710104208F520F558054,05027101043CB8520F55807F,0502710104AF52420F558016,0502710104B486FA6F578003,0502710104B3340A1A558031,05027101042794520F558048,0502710104249C520F558043,05027101048EBE0A1A558086,0502710104D069FA6F578088,0502710104CE68FA6F578097,0502710104988EFA6F578027,05027101046763FA6F578035,050271010430B0FA6F5780B1,0502710104AD670A1A55807C,0502710104178BFA6F5780AD,05027101041B690A1A5580C4,05027101040A69FA6F578052,05027101042A300A1A5580AC,050271010440310A1A5580C7,050271010431BD0A1A55803A,0502710104B2380A1A55803C,050271010497C80A1A5580E9,05027101043A310A1A5580BD,0502710104458CFA6F5780F8,05027101042E9F520F55804A,050271010427B1FA6F5780A7,050271010432690A1A5580ED,0502710104698D520F55801F,0502710104AB660A1A55807B,050271010444B2FA6F5780C7,0502710104B58DFA6F578009,050271010477BC520F558030,0502710104888F520F5580FC,05027101047DC00A1A55800B,050271010495670A1A558044,050271010451320A1A5580D5,0502710104188BFA6F5780A2,0502710104A2BC0A1A5580A8,05027101045DBF520F558019,050271010464BD0A1A55806F,0502710104748CFA6F5780C9,05027101045AB0FA6F5780DB,050271010448C00A1A55803E,05027101040C8C520F55807B,05027101042C9C520F55804B,05027101048486FA6F578033,05027101047C9C520F55801B,05027101047AB1FA6F5780FA,0502710104CB662A70578053,05027101041C9C520F55807B,05027101048869FA6F5780D0,05027101046BB4FA6F5780EE,05027101042AB1FA6F5780AA,05027101048A64FA6F5780DF,05027101041467FA6F578042,0502710104598BFA6F5780E3,05027101043792520F55805E,050271010473A6520F55802E,05027101047FBD520F558039,0502710104CC68FA6F578095,0502710104979B520F5580F7,050271010453B4FA6F5780D6,05027101047AA7520F558026,0502710104219C520F558046,0502710104A2B2FA6F578021,0502710104C964FA6F57809C,0502710104AEB0FA6F57802F,0502710104CF68FA6F578096,05027101045B89FA6F5780E3,05027101043C9C520F55805B,05027101046C690A1A5580B3,050271010457B0FA6F5780D6,050271010418690A1A5580C7,05027101043193520F558059,05027101048069FA6F5780D8,050271010433330A1A5580B6,05027101046B670A1A5580BA,0502710104BE662A70578026,0502710104CC692A7057805B,050271010482B2FA6F578001,05027101049593520F5580FD,0502710104189B520F558078,0502710104CC662A70578054,0502710104B28BFA6F578008,050271010428690A1A5580F7,0502710104A78FFA6F578019,0502710104289C520F55804F,0502710104588BFA6F5780E2,05027101048E9C520F5580E9,05027101047FB2FA6F5780FC,050271010468A3520F558030,05027101049ABC0A1A558090,0502710104B2B3FA6F578030,0502710104A0330A1A558025,05027101049EC1520F5580A4,0502710104674042315080F7,050271010476670A1A5580A7,0502710104B7B2FA6F578034,050271010456A1520F55800C,05027101041C690A1A5580C3,05027101044C69FA6F578014"
-              .split(",");
-      for (String bagId : split) {
-        otherList.add(bagId);
-      }
-    }
-
-    @Override public void run() {
-      boolean readNfc = rfidController.readNfc(Lock3Bean.SA_BAG_ID, bagIdBuff, true);
-      boolean readEpc = false;
-      if (isReadEpc) {
-        readEpc = uhfController.readEpc(epcBuff);
-      }
-
-      String bagIdNfc = null;
-      String bagIdEpc = null;
-      if (readNfc) {
-        bagIdNfc = BytesUtil.bytes2HexString(bagIdBuff);
-      }
-      if (readEpc) {
-        bagIdEpc = BytesUtil.bytes2HexString(epcBuff);
-      }
-      onRead(bagIdNfc, bagIdEpc);
-    } // end run()
-
-    protected void onRead(String bagIdNfc, String bagIdEpc) {
-      String info;
-      boolean otherNoHave = false;
-      if (bagIdNfc != null && bagIdEpc != null) {
-        if (!scanList.contains(bagIdNfc)) {
-          scanList.add(bagIdNfc);
-        } else {
-          //scanList.indexOf(bagIdNfc);
-        }
-        if (!otherList.contains(bagIdNfc)) {
-          otherNoHaveList.add(bagIdNfc);
-          otherNoHave = true;
-        }
-        int size = scanList.indexOf(bagIdNfc) + 1;
-        SoundHelper.playNum(size);
-        info = String.format("%s,Nfc:%s\n%s,Epc:%s", size, bagIdNfc, size, bagIdEpc);
-      } else if (bagIdNfc != null) {
-        if (!scanList.contains(bagIdNfc)) {
-          scanList.add(bagIdNfc);
-        } else {
-          //scanList.indexOf(bagIdNfc);
-        }
-        if (!otherList.contains(bagIdNfc)) {
-          otherNoHaveList.add(bagIdNfc);
-          otherNoHave = true;
-        }
-        //int size = scanList.size();
-        int size = scanList.indexOf(bagIdNfc) + 1;
-        SoundHelper.playNum(size);
-        info = String.format("%s,Nfc:%s", size, bagIdNfc);
-      } else if (bagIdEpc != null) {
-        SoundHelper.playToneFailed();
-        info = String.format("Epc:%s", bagIdEpc);
-      } else {
-        SoundHelper.playToneFailed();
-        info = "读Nfc和Epc失败";
-      }
-
-      boolean finalOtherNoHave = otherNoHave;
-      runOnUiThread(() -> {
-        ViewUtil.appendShow(info, tvShow);
-        if (finalOtherNoHave) {
-          SoundHelper.playToneSuccess();
-          ViewUtil.appendShow("发现未在列表中", tvShow);
-        }
-      });
-    }
   }
 
   private Spanned parse(Lock3Bean lock3Bean) {
@@ -563,22 +466,22 @@ public class BagCheckActivity extends InitModuleActivity {
       String msg;
       switch (errorCode) {
         case -1:
-          msg = String.format("读袋锁信息失败，cause：%s 参数错误", errorCode);
+          msg = String.format("读袋锁失败，cause：%s 参数错误", errorCode);
           break;
         case -2:
-          msg = String.format("读袋锁信息失败，cause：%s nfc寻卡失败", errorCode);
+          msg = String.format("读袋锁失败，cause：%s nfc寻卡失败", errorCode);
           break;
         case -3:
-          msg = String.format("读袋锁信息失败，cause：%s 读tid失败", errorCode);
+          msg = String.format("读袋锁失败，cause：%s 读tid失败", errorCode);
           break;
         case -4:
-          msg = String.format("读袋锁信息失败，cause：%s 读epc失败", errorCode);
+          msg = String.format("读袋锁失败，cause：%s 读epc失败", errorCode);
           break;
         case -5:
-          msg = String.format("读袋锁信息失败，cause：%s 读nfc失败", errorCode);
+          msg = String.format("读袋锁失败，cause：%s 读nfc失败", errorCode);
           break;
         default:
-          msg = String.format("读袋锁信息失败，cause：%s 未定义失败", errorCode);
+          msg = String.format("读袋锁失败，cause：%s 未定义失败", errorCode);
       }
       LogUtils.d("%s", msg);
       runOnUiThread(() -> {
@@ -587,5 +490,19 @@ public class BagCheckActivity extends InitModuleActivity {
         ViewUtil.appendShow(msg, tvShow);
       });
     }
+  }
+
+  void show() {
+    long i = 2l + 12;
+    new XPopup.Builder(this)
+        .asConfirm(null, "您可以复用项目已有布局，来使用XPopup强大的交互能力和逻辑封装，弹窗的布局完全由你自己控制。\n" +
+                "需要注意的是：你自己的布局必须提供一些控件Id，否则XPopup找不到View。\n具体需要提供哪些Id，请查看WIKI[内置弹窗]一章。",
+            "关闭", "XPopup牛逼",
+            new OnConfirmListener() {
+              @Override
+              public void onConfirm() {
+              }
+            }, null, false)//绑定已有布局
+        .show();
   }
 }

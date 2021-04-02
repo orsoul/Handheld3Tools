@@ -9,7 +9,7 @@ import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTask.ScanLotBean> {
-  protected boolean isNfcMode;
+  protected boolean isReadNfc;
   protected boolean isReadTid = true;
   protected int readTidTimes = 3;
   private byte[] epcBuff = new byte[12];
@@ -24,16 +24,16 @@ public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTas
     this.rfidController = rfidController;
   }
 
-  public boolean isNfcMode() {
-    return isNfcMode;
+  public boolean isReadNfc() {
+    return isReadNfc;
   }
 
-  public void setNfcMode(boolean nfcMode) {
-    isNfcMode = nfcMode;
+  public void setReadNfc(boolean readNfc) {
+    isReadNfc = readNfc;
   }
 
   @Override protected ScanLotBean scanOnce() {
-    return isNfcMode ? scanOnceNfc() : scanOnceUhf();
+    return isReadNfc ? scanOnceNfc() : scanOnceUhf();
   }
 
   protected ScanLotBean scanOnceUhf() {

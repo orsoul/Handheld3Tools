@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * 封袋、出入库、开袋 会用到的一些方法。
  */
-public abstract class Lock3Util {
+public final class Lock3Util {
   /**
    * 十套代表F1-->F4的标志 和单片机A版本对接的，请勿修改
    */

@@ -199,11 +199,11 @@ public abstract class CoverBagTask extends ReadLockTask {
     Lock3InfoUnit unitPieceTid = lock3Bean.getInfoUnit(Lock3Bean.SA_PIECE_TID);
     if (unitPieceTid != null) {
       String pieceTid = lock3Bean.getPieceTid();
-      String pieceTid6 = pieceTid.substring(12);
       String businessTid = lock3Bean.getTidFromPiece();
       if (!pieceTid.equals(businessTid)) {
         LogUtils.i("\n锁片Tid：%s\n业务Tid：%s", pieceTid, businessTid);
         String businessTid6 = businessTid.substring(0, 12);
+        String pieceTid6 = pieceTid.substring(12);
         if (!pieceTid6.equals(businessTid6)) {
           LogUtils.i("\n锁片Tid6：%s\n业务Tid6：%s", pieceTid6, businessTid6);
           check = onCheckFailed(CHECK_RES_TID_NOT_EQUALS, lock3Bean);
@@ -215,11 +215,16 @@ public abstract class CoverBagTask extends ReadLockTask {
     }
 
     /* 6.封签事件码 解密、格式检查 */
-    Lock3InfoUnit unitEvent = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
-    if (unitEvent != null) {
-      Lock3InfoUnit infoUnit = lock3Bean.getInfoUnit(Lock3Bean.SA_PIECE_TID);
-      Lock3InfoUnit infoUnitCover = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
-      byte[] key = Arrays.copyOf(infoUnit.buff, 6);
+    Lock3InfoUnit infoUnitCover = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
+    if (infoUnitCover != null && unitPieceTid != null) {
+      byte[] key;
+      // 业务tid与锁片tid一样，使用完整的12字节tid作为密钥;否则只用前6个字节作为密钥
+      if (Arrays.equals(lock3Bean.pieceTidBuff, unitPieceTid.buff)) {
+        key = Arrays.copyOf(unitPieceTid.buff, unitPieceTid.buff.length);
+      } else {
+        key = Arrays.copyOf(unitPieceTid.buff, 6);
+      }
+      LogUtils.d("解密key:%s", BytesUtil.bytes2HexString(key));
       boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
       infoUnitCover.buff[3] = (byte) (infoUnitCover.buff[3] & 0x0F);
       String eventCode = BytesUtil.bytes2HexString(infoUnitCover.buff);
@@ -290,8 +295,6 @@ public abstract class CoverBagTask extends ReadLockTask {
       //unitEvent.buff = BytesUtil.concatArray(bagIdBuff, tid2, bagIdBuff);
       //AESCoder.myEncrypt(unitEvent.buff, tid2, true);
       //lock3BeanWrite.add(unitEvent);
-      lock3BeanWrite.getWillDoList().addAll(Arrays.asList(infoUnits));
-
       // 3. 写入锁片tid
       byte[] tid1 = Arrays.copyOf(lock3Bean.pieceTidBuff, 6);
       byte[] tid2 = Arrays.copyOfRange(lock3Bean.pieceTidBuff, 6, 12);
@@ -326,6 +329,8 @@ public abstract class CoverBagTask extends ReadLockTask {
       lock3BeanWrite.add(unitStatus);
     }
 
+    lock3BeanWrite.getWillDoList().addAll(Arrays.asList(infoUnits));
+
     lock3BeanWrite.handoverBean = handoverBean;
 
     //boolean b = Lock3Operation.getInstance().writeLock(lock3BeanWrite);
@@ -343,7 +348,7 @@ public abstract class CoverBagTask extends ReadLockTask {
     boolean res = false;
 
     /* 1、封袋任务 或 开袋任务 写 nfc */
-    if (taskType == TASK_TYPE_COVER || taskType == TASK_TYPE_OPEN) {
+    if (true || taskType == TASK_TYPE_COVER || taskType == TASK_TYPE_OPEN) {
       List<Lock3InfoUnit> willReadList = lock3BeanWrite.getWillDoList();
       if (willReadList == null || willReadList.isEmpty()) {
         onWriteFailed(WRITE_RES_ARGS_WRONG, lock3BeanWrite);

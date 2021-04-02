@@ -1,9 +1,6 @@
 package org.orsoul.baselib.data;
 
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.orsoul.baselib.util.ClassUtil;
 
@@ -81,25 +78,81 @@ public class BaseJsonBean<T> {
     return new Gson().fromJson(json, type);
   }
 
-  public static void main(String[] args) {
-    show1();
+  /**
+   * 根据json字符串生成 T<G> 类型的实体.
+   *
+   * @param clz 主类class
+   * @param genericClz 主类泛型的class
+   */
+  public static <T, G> T json2Obj(String json, Class<T> clz, Class<G> genericClz) {
+    // 生成 T<G>
+    Type type = new ParameterizedTypeImpl(clz, new Class[] { genericClz });
+    return new Gson().fromJson(json, type);
   }
 
-  static void show1() {
-    Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
-      @Override public boolean shouldSkipField(FieldAttributes f) {
-        //System.out.println("shouldSkipField:" + f.getName());
-        return !f.getName().equals("list")
-            && !f.getName().equals("fingerIndex")
-            && !f.getName().equals("userId")
-            && !f.getName().equals("feature")
-            && !f.getName().equals("fingerName");
-      }
+  /**
+   * 根据json字符串生成 T<T> 类型的实体.
+   *
+   * @param clz 主类及其泛型的class
+   */
+  public static <T> T json2Obj(String json, Class<T> clz) {
+    return json2Obj(json, clz, clz);
+  }
 
-      @Override public boolean shouldSkipClass(Class<?> clazz) {
-        return false;
-      }
-    }).create();
+  /**
+   * 根据json字符串生成 T<List<G>> 类型的实体.
+   *
+   * @param clz 主类class
+   * @param genericClz 主类泛型的class
+   */
+  public static <T, G> T json2ListObj(String json, Class<T> clz, Class<G> genericClz) {
+    // 生成 T<List<G>> 中的 List<G>
+    Type listType = new BaseJsonBean.ParameterizedTypeImpl(List.class, new Class[] { genericClz });
+    // 有List<G>后 生成完整的 T<List<G>>
+    Type type = new BaseJsonBean.ParameterizedTypeImpl(clz, new Type[] { listType });
+    return new Gson().fromJson(json, type);
+  }
+
+  /**
+   * 根据json字符串生成 T<List<T>> 类型的实体.
+   *
+   * @param clz 主类及其泛型的class
+   */
+  public static <T> T json2ListObj(String json, Class<T> clz) {
+    return json2ListObj(json, clz, clz);
+  }
+
+  public static void main(String[] args) {
+    testJson2Obj();
+    testJson2ListObj();
+  }
+
+  static class Home {
+    String adds;
+  }
+
+  static class Person extends BaseJsonBean<Home> {
+    String name;
+  }
+
+  static class Boss extends BaseJsonBean<List<Home>> {
+    String name;
+  }
+
+  static void testJson2Obj() {
+    System.out.println("==== testJson2Obj ====");
+
+    String json = "{\"code\":1,\"name\":\"Jack\",\"data\":{\"adds\":\"深圳\"}}";
+    System.out.printf("json:%s\n", json);
+    Person person = json2Obj(json, Person.class, Home.class);
+    System.out.printf("person:%s\n", person);
+  }
+
+  static void testJson2ListObj() {
+    String json = "{\"code\":1,\"name\":\"Jack\",\"data\":[{\"adds\":\"北京\"},{\"adds\":\"深圳\"}]}";
+    Boss person = json2ListObj(json, Boss.class, Home.class);
+    System.out.printf("Boss:%s\n", person);
+    System.out.printf("json:%s\n", json);
   }
 
   public static class ParameterizedTypeImpl implements ParameterizedType {
