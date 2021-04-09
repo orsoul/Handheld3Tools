@@ -329,7 +329,9 @@ public abstract class CoverBagTask extends ReadLockTask {
       lock3BeanWrite.add(unitStatus);
     }
 
-    lock3BeanWrite.getWillDoList().addAll(Arrays.asList(infoUnits));
+    if (infoUnits != null) {
+      lock3BeanWrite.getWillDoList().addAll(Arrays.asList(infoUnits));
+    }
 
     lock3BeanWrite.handoverBean = handoverBean;
 
@@ -348,29 +350,20 @@ public abstract class CoverBagTask extends ReadLockTask {
     boolean res = false;
 
     /* 1、封袋任务 或 开袋任务 写 nfc */
-    if (true || taskType == TASK_TYPE_COVER || taskType == TASK_TYPE_OPEN) {
-      List<Lock3InfoUnit> willReadList = lock3BeanWrite.getWillDoList();
-      if (willReadList == null || willReadList.isEmpty()) {
-        onWriteFailed(WRITE_RES_ARGS_WRONG, lock3BeanWrite);
-        return;
-      }
 
+    List<Lock3InfoUnit> willReadList = lock3BeanWrite.getWillDoList();
+    if (willReadList != null && !willReadList.isEmpty()) {
       for (Lock3InfoUnit infoUnit : willReadList) {
         if (RfidController.getInstance().writeNfc(infoUnit.sa, infoUnit.buff, false)) {
           infoUnit.setDoSuccess(true);
           continue;
         }
-        //if (taskType == TASK_TYPE_COVER) {
-        //  // 封袋业务 更新nfc失败，覆盖epc
-        //  byte[] epc = new byte[12];
-        //  Arrays.fill(epc, Lock3Util.REWRITE_EPC);
-        //  res = UhfController.getInstance().writeEpcFilterTid(
-        //      epc, lock3BeanWrite.pieceTidBuff);
-        //  LogUtils.wtf("复写epc:%s", res);
-        //}
         onWriteFailed(WRITE_RES_WRITE_NFC_FAILED, lock3BeanWrite);
         return;
       }
+    } else if (taskType == TASK_TYPE_COVER || taskType == TASK_TYPE_OPEN) {
+      onWriteFailed(WRITE_RES_ARGS_WRONG, lock3BeanWrite);
+      return;
     }
 
     /* 2、封袋任务 写epc */

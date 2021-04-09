@@ -1,5 +1,7 @@
 package com.fanfull.libjava.io.transfer;
 
+import com.fanfull.libjava.util.ThreadUtil;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -180,7 +182,7 @@ public abstract class BaseIoTransfer implements IoTransfer, Runnable {
 
     /** 开启新线程 进行计时，成功发送数据后调用. */
     public void startClock() {
-      //ThreadUtil.execute(this);
+      ThreadUtil.execute(this);
     }
 
     /** 唤醒 计时线程，接收线程收到数据后调用. */
