@@ -3,9 +3,8 @@ package com.fanfull.libhard.lock3.task;
 import com.fanfull.libhard.lock3.PsamHelper;
 import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
-
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ThreadUtil;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
 /**
  * 获取登录卡ID任务.通过覆盖5个回调方法控制读卡过程，默认读m1卡uid

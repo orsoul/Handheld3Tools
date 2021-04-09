@@ -1,8 +1,7 @@
 package org.orsoul.baselib.data;
 
+import com.fanfull.libjava.util.ClassUtil;
 import com.google.gson.Gson;
-
-import org.orsoul.baselib.util.ClassUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

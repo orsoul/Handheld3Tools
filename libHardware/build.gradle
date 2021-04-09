@@ -35,7 +35,6 @@ dependencies {
   implementation project(':libBase')
 
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
-  
   // SerialPort
   api 'com.github.licheedev:Android-SerialPort-API:2.0.0'
 

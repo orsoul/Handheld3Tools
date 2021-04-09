@@ -55,21 +55,80 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f027fc9f-6f81-4324-bd1a-6df88ddb44c3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/LoginInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libJava/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libJava/build.gradle" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/MyClass.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/LotScanTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/LotScanTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/BagCheckActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/BagCheckActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/NetworkCallbackApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/NetworkCallbackApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/BarcodeActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/BarcodeActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/CoverBagActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/CoverBagActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/FingerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/FingerActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/InitBag3Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/InitBag3Activity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/NfcActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/NfcActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/OldBagActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/OldBagActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SocketActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SocketActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SoundActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SoundActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/UhfActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/UhfActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/base/InitModuleActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/base/InitModuleActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/view/FullScreenPopupSetIp.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/view/FullScreenPopupSetIp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/netty/BaseTcpBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/netty/BaseTcpBean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/netty/NettySocketDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/netty/NettySocketDemo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/data/BaseJsonBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/data/BaseJsonBean.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/Lock3Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/Lock3Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/SocketDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/SocketDemo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/GeneralException.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/GeneralException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/Options.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/Options.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/impl/BaseSocketClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/impl/BaseSocketClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/interf/ISocketClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/interf/ISocketClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/interf/ISocketClientListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/interf/ISocketClientListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/socketClient/interf/ISocketMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/socketClient/interf/ISocketMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/transfer/BaseIoTransfer.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/transfer/BaseIoTransfer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/transfer/IoTransfer.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/transfer/IoTransfer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/io/transfer/IoTransferListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/io/transfer/IoTransferListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/BagIdParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/BagIdParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/HandoverBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/HandoverBean.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3Bean.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3Bean.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ClassUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ClassUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ThreadUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ThreadUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3InfoUnit.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/Lock3InfoUnit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/LoginInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/lock3/bean/LoginInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/AESCoder.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/AESCoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/BytesUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/BytesUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ClassUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/ClassUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ClockUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/ClockUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/CrashLogUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/CrashLogUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/DateFormatUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/DateFormatUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/DateUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/DateUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/DesUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/DesUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/MessageDigestUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/MessageDigestUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/MoneyConvert.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/MoneyConvert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/RegularUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/RegularUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/SoundHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/ThreadUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libtcp/util/ThreadUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/barcode/BarcodeUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/barcode/BarcodeUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/barcode/impl/BarcodeOperationRd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/barcode/impl/BarcodeOperationRd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/bean/FingerBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/bean/FingerBean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerOperationRd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerOperationRd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintCmd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintCmd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/CoverBagTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/CoverBagTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/InitBagTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/InitBagTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ReadLockTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ReadLockTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ReadLoginCardTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ReadLoginCardTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ScanLotTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ScanLotTask.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ScanLotUhfOrNfcTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/lock3/task/ScanLotUhfOrNfcTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/APDUParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/APDUParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/PSamCmd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/PSamCmd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidController.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidOperationRd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidOperationRd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidPSamOperationRd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/rfid/RfidPSamOperationRd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/serialport/AbsSerialPort.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/serialport/AbsSerialPort.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/serialport/impl/SerialPortController.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/serialport/impl/SerialPortController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/uhf/UhfCmd.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/uhf/UhfCmd.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,13 +137,14 @@
   </component>
   <component name="ChangesViewManager">
     <option name="groupingKeys">
+      <option value="directory" />
       <option value="module" />
     </option>
   </component>
   <component name="CoverageViewManager">
     <option name="myElementSize" value="122" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="SN-5975PNTGFITSSSVW" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="SN-655HGQGAZL7DAYQ4" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -152,10 +212,17 @@
     <property name="DEBUGGABLE_PROCESS" value="com.fanfull.handheldtools" />
     <property name="DEBUGGER_ID" value="Auto" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="android.sdk.path" value="D:/Java/sdk2" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FF_Lock3Init" />
-    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/libTcp/src/main/java/com/fanfull/libtcp/util" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.17" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="nele.options" />
+  </component>
+  <component name="PsdUISettings">
+    <option name="LAST_EDITED_BUILD_TYPE" value="release" />
   </component>
   <component name="RecentsManager">
     <key name="android.template.-471445314">
@@ -165,9 +232,14 @@
       <recent name="com.fanfull.handheldtools.ui" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.fanfull.libtcp.util" />
       <recent name="org.orsoul.baselib.data" />
       <recent name="org.orsoul.baselib.lock3.bean" />
       <recent name="com.fanfull.libhard.uhf" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\workspace\fanfull\FF_Handheld3Tools\libTcp\src\main\java\com\fanfull\libtcp\util" />
+      <recent name="D:\workspace\fanfull\FF_Handheld3Tools\libTcp\src\main\java\com\fanfull\libtcp" />
     </key>
   </component>
   <component name="RunManager" selected="Android App.app">
@@ -319,6 +391,19 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="SocketDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.fanfull.libtcp.io.SocketDemo" />
+      <module name="libJava" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.fanfull.libtcp.io.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="FF_Handheld3Tools:app [copyRelease]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -340,6 +425,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.SocketDemo" />
         <item itemvalue="Application.DateUtil" />
         <item itemvalue="Application.DateFormatUtil" />
         <item itemvalue="Application.AESCoder" />
@@ -564,7 +650,14 @@
       <option name="project" value="LOCAL" />
       <updated>1616406346314</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="- 封袋任务调整">
+      <created>1617356879780</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1617356879780</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -604,7 +697,8 @@
     <MESSAGE value="- 读m1增强" />
     <MESSAGE value="- 封袋任务 调整" />
     <MESSAGE value="- 袋锁检测调整" />
-    <option name="LAST_COMMIT_MESSAGE" value="- 袋锁检测调整" />
+    <MESSAGE value="- 封袋任务调整" />
+    <option name="LAST_COMMIT_MESSAGE" value="- 封袋任务调整" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -613,6 +707,10 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="292" y="6" key="#Inspections/0.0.1600.860@0.0.1600.860" timestamp="1616557290023" />
+    <state x="358" y="188" key="#PSD" timestamp="1617938542358">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="358" y="188" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1617938542358" />
     <state x="507" y="216" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1615361910817">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
@@ -625,38 +723,48 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="390" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1600.860@0.0.1600.860" timestamp="1615531742267" />
+    <state x="627" y="209" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1617938077269">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="627" y="209" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1617938077269" />
     <state x="643" y="181" key="AndroidProcessChooserDialog" timestamp="1616403485489">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="643" y="181" key="AndroidProcessChooserDialog/0.0.1600.860@0.0.1600.860" timestamp="1616403485489" />
-    <state x="332" y="0" key="CommitChangelistDialog2" timestamp="1616406343420">
+    <state x="332" y="0" key="CommitChangelistDialog2" timestamp="1617356869027">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="332" y="0" key="CommitChangelistDialog2/0.0.1600.860@0.0.1600.860" timestamp="1616406343420" />
-    <state x="92" y="92" width="1416" height="676" key="DiffContextDialog" timestamp="1617341740024">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="332" y="0" key="CommitChangelistDialog2/0.0.1600.860@0.0.1600.860" timestamp="1617356869027" />
+    <state x="110" y="111" width="1700" height="818" key="DiffContextDialog" timestamp="1617948007374">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="92" y="92" width="1416" height="676" key="DiffContextDialog/0.0.1600.860@0.0.1600.860" timestamp="1617341740024" />
-    <state x="530" y="129" key="FileChooserDialogImpl" timestamp="1616136837052">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="110" y="111" width="1700" height="818" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1617948007374" />
+    <state x="636" y="156" key="FileChooserDialogImpl" timestamp="1617937309622">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="530" y="129" key="FileChooserDialogImpl/0.0.1600.860@0.0.1600.860" timestamp="1616136837052" />
-    <state width="1544" height="175" key="GridCell.Tab.0.bottom" timestamp="1617341640148">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="636" y="156" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1617937309622" />
+    <state width="1864" height="242" key="GridCell.Tab.0.bottom" timestamp="1617946738301">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1544" height="175" key="GridCell.Tab.0.bottom/0.0.1600.860@0.0.1600.860" timestamp="1617341640148" />
-    <state width="1544" height="175" key="GridCell.Tab.0.center" timestamp="1617341640148">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state width="1864" height="242" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1617946738301" />
+    <state width="1864" height="242" key="GridCell.Tab.0.center" timestamp="1617946738300">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1544" height="175" key="GridCell.Tab.0.center/0.0.1600.860@0.0.1600.860" timestamp="1617341640148" />
-    <state width="1544" height="175" key="GridCell.Tab.0.left" timestamp="1617341640148">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state width="1864" height="242" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1617946738300" />
+    <state width="1864" height="242" key="GridCell.Tab.0.left" timestamp="1617946738300">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1544" height="175" key="GridCell.Tab.0.left/0.0.1600.860@0.0.1600.860" timestamp="1617341640148" />
-    <state width="1544" height="175" key="GridCell.Tab.0.right" timestamp="1617341640148">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state width="1864" height="242" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1617946738300" />
+    <state width="1864" height="242" key="GridCell.Tab.0.right" timestamp="1617946738300">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1544" height="175" key="GridCell.Tab.0.right/0.0.1600.860@0.0.1600.860" timestamp="1617341640148" />
+    <state width="1864" height="242" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1617946738300" />
     <state width="1544" height="205" key="GridCell.Tab.1.bottom" timestamp="1616407718852">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
@@ -685,22 +793,28 @@
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="-221" y="19" key="ScreenshotViewer.Dimensions/0.0.1600.860@0.0.1600.860" timestamp="1616406306919" />
-    <state x="292" y="99" key="Vcs.Push.Dialog.v2" timestamp="1616156413351">
+    <state x="345" y="63" key="SettingsEditor" timestamp="1617939047070">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="345" y="63" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1617939047070" />
+    <state x="292" y="99" key="Vcs.Push.Dialog.v2" timestamp="1617357818347">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
-    <state x="292" y="99" key="Vcs.Push.Dialog.v2/0.0.1600.860@0.0.1600.860" timestamp="1616156413351" />
-    <state x="559" y="328" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1615800475938">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="292" y="99" key="Vcs.Push.Dialog.v2/0.0.1600.860@0.0.1600.860" timestamp="1617357818347" />
+    <state x="671" y="397" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1617939256448">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="559" y="328" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1600.860@0.0.1600.860" timestamp="1615800475938" />
+    <state x="671" y="397" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1617939256448" />
     <state x="410" y="183" key="edit.logcat.filter.dialog.dimensions" timestamp="1615875098133">
       <screen x="0" y="0" width="1600" height="860" />
     </state>
     <state x="410" y="183" key="edit.logcat.filter.dialog.dimensions/0.0.1600.860@0.0.1600.860" timestamp="1615875098133" />
-    <state x="333" y="49" width="933" height="762" key="find.popup" timestamp="1615260180550">
-      <screen x="0" y="0" width="1600" height="860" />
+    <state x="400" y="59" width="1120" height="922" key="find.popup" timestamp="1617947412962">
+      <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="333" y="49" width="933" height="762" key="find.popup/0.0.1600.860@0.0.1600.860" timestamp="1615260180550" />
+    <state x="400" y="59" width="1120" height="922" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1617947412962" />
     <state x="482" y="112" key="git4idea.rebase.GitRebaseEditor" timestamp="1616156400728">
       <screen x="0" y="0" width="1600" height="860" />
     </state>

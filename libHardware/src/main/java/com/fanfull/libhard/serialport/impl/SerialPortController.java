@@ -3,6 +3,9 @@ package com.fanfull.libhard.serialport.impl;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.serialport.ISerialPort;
 import com.fanfull.libhard.serialport.ISerialPortListener;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,8 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
 
 public class SerialPortController implements ISerialPort {
   public static final long SWICHT_MODE_WAIT_TIME = 50;

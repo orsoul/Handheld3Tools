@@ -2,8 +2,7 @@ package com.fanfull.libhard.finger.bean;
 
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.finger.impl.FingerprintController;
-
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 import java.util.Arrays;
 

@@ -1,24 +1,25 @@
 package com.fanfull.libhard.barcode;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.util.BytesUtil;
 import com.hardware.Hardware;
+
 import java.util.Arrays;
-import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 老锁二维码 解密工具
  */
-public abstract class BarcodeUtil {
-    public static final int ORIGINAL_DATA_LEN = 23;
-    public static final int DECODE_DATA_LEN = 38;
+public final class BarcodeUtil {
+  public static final int ORIGINAL_DATA_LEN = 23;
+  public static final int DECODE_DATA_LEN = 38;
 
-    public static byte[] decodeBarcode(byte[] data, int length) {
-        //jQqgP/-Qt(<aq1UY'8d*
-        //053101001000002010109031317002911101
-        //mHKb`#l7r=<aq1UY'8d*
-        //053101001000009010109031317002911101
-        //+^JRwAk7#)<aq1UY'8d*
-        //053101001000006010109031317002911101
+  public static byte[] decodeBarcode(byte[] data, int length) {
+    //jQqgP/-Qt(<aq1UY'8d*
+    //053101001000002010109031317002911101
+    //mHKb`#l7r=<aq1UY'8d*
+    //053101001000009010109031317002911101
+    //+^JRwAk7#)<aq1UY'8d*
+    //053101001000006010109031317002911101
         if (ORIGINAL_DATA_LEN == length) {// 读到正确的数据
             byte[] barcodeBuff = new byte[DECODE_DATA_LEN];
             System.arraycopy(data, 0, barcodeBuff, 0, length);

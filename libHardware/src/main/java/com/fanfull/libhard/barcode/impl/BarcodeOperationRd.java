@@ -2,15 +2,17 @@ package com.fanfull.libhard.barcode.impl;
 
 import android.content.Context;
 import android.os.SystemClock;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.barcode.AbsBarcodeOperation;
 import com.fanfull.libhard.barcode.IBarcodeListener;
+import com.fanfull.libjava.util.BytesUtil;
 import com.rd.barcodeScanTest.NewApiService;
 import com.rd.barcodeScanTest.ScanApi;
+
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 雨滴二维码扫描 实现类

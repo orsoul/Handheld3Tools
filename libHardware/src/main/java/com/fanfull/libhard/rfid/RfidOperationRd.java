@@ -4,10 +4,9 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
+import com.fanfull.libjava.util.BytesUtil;
 import com.halio.Rfid;
 import com.rd.io.Platform;
-
-import org.orsoul.baselib.util.BytesUtil;
 
 import java.util.concurrent.Executors;
 

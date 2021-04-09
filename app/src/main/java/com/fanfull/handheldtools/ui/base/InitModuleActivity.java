@@ -12,9 +12,8 @@ import com.fanfull.handheldtools.R;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.ClockUtil;
 import com.lxj.xpopup.XPopup;
-
-import org.orsoul.baselib.util.ClockUtil;
 
 public abstract class InitModuleActivity extends BaseActivity implements View.OnClickListener {
   protected UhfController uhfController;

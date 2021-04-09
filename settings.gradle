@@ -1,4 +1,4 @@
-include ':app', ':libBase', ':libHardware', ':app-watch'
+include ':app', ':libBase', ':libHardware', ':app-watch', ':libJava'
 project(':app-watch').projectDir = new File(rootDir.getParent(), 'FF_WatchVault/app')
 
 rootProject.name='HandheldTools'

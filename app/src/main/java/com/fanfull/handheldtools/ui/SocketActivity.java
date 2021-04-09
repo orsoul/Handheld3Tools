@@ -19,16 +19,16 @@ import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.io.socketClient.Options;
+import com.fanfull.libjava.io.socketClient.impl.BaseSocketClient;
+import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
+import com.fanfull.libjava.io.transfer.IoTransferListener;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.InputConfirmPopupView;
 import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 
-import org.orsoul.baselib.io.socketClient.Options;
-import org.orsoul.baselib.io.socketClient.impl.BaseSocketClient;
-import org.orsoul.baselib.io.socketClient.interf.ISocketClientListener;
-import org.orsoul.baselib.io.transfer.IoTransferListener;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.io.UnsupportedEncodingException;

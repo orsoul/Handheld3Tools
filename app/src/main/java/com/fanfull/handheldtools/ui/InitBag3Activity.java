@@ -22,15 +22,15 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
 import org.orsoul.baselib.lock3.EnumMoneyType;
 import org.orsoul.baselib.lock3.bean.BagIdParser;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.SoundHelper;
-import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class InitBag3Activity extends InitModuleActivity {

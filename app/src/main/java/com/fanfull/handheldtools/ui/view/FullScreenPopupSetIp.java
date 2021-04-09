@@ -7,12 +7,15 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+
 import androidx.annotation.NonNull;
+
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
+import com.fanfull.libjava.util.RegularUtil;
 import com.lxj.xpopup.impl.FullScreenPopupView;
+
 import java.util.List;
-import org.orsoul.baselib.util.RegularUtil;
 
 public class FullScreenPopupSetIp extends FullScreenPopupView implements View.OnClickListener {
   private String ip;

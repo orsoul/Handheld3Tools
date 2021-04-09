@@ -18,12 +18,12 @@ import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundHelper;
-import org.orsoul.baselib.util.ThreadUtil;
 
 public class OldBagActivity extends InitModuleActivity {
 

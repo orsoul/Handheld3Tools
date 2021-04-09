@@ -1,6 +1,6 @@
 package com.fanfull.libhard.rfid;
 
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 public final class PSamCmd {
   public static final int COS_RES_CARD_LEN = 12;

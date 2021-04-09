@@ -1,8 +1,9 @@
 package com.fanfull.libhard.uhf;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.util.BytesUtil;
+
 import java.util.Arrays;
-import org.orsoul.baselib.util.BytesUtil;
 
 /**
  *

@@ -17,11 +17,11 @@ import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 import com.lxj.xpopup.XPopup;
 
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
-import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.io.IOException;

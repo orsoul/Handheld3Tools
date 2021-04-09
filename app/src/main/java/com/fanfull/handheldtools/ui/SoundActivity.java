@@ -11,10 +11,10 @@ import android.widget.SeekBar;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
+import com.fanfull.libjava.util.ThreadUtil;
 
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.SoundPoolUtil;
-import org.orsoul.baselib.util.ThreadUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 public class SoundActivity extends BaseActivity {

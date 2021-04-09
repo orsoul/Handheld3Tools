@@ -3,10 +3,10 @@ package com.fanfull.handheldtools;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
-import org.orsoul.baselib.util.BytesUtil;
 import org.orsoul.baselib.util.SoundHelper;
-import org.orsoul.baselib.util.ThreadUtil;
 
 public class LotScanTask extends ThreadUtil.TimeThreadRunnable {
   final int TIMES_READ_TID = 10;

@@ -1,8 +1,8 @@
 package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.DesUtil;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.DesUtil;
 
 public final class APDUParser {
 

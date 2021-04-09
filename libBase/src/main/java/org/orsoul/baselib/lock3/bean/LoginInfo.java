@@ -1,8 +1,7 @@
 package org.orsoul.baselib.lock3.bean;
 
 import com.apkfuns.logutils.LogUtils;
-
-import org.orsoul.baselib.util.DateFormatUtil;
+import com.fanfull.libjava.util.DateFormatUtil;
 
 import java.util.Calendar;
 

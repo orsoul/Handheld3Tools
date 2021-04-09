@@ -1,6 +1,6 @@
 package org.orsoul.baselib.lock3.bean;
 
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 public class Lock3InfoUnit {
   public int sa;

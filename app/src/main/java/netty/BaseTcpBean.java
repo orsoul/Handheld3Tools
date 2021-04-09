@@ -1,6 +1,6 @@
 package netty;
 
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 import java.nio.charset.StandardCharsets;
 

@@ -2,9 +2,8 @@ package com.fanfull.libhard.finger.impl;
 
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
-
-import org.orsoul.baselib.util.ClockUtil;
-import org.orsoul.baselib.util.ThreadUtil;
+import com.fanfull.libjava.util.ClockUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
 /**
  * 添加、搜索指纹 任务，使用前应先初始化 FingerprintController 和 FingerPrintSQLiteHelper.

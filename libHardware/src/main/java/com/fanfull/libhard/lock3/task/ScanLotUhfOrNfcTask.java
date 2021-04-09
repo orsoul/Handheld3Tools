@@ -4,9 +4,9 @@ import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.BytesUtil;
 
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
-import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTask.ScanLotBean> {
   protected boolean isReadNfc;

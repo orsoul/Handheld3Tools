@@ -1,8 +1,9 @@
 package com.fanfull.libhard.serialport;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.util.BytesUtil;
+
 import java.io.OutputStream;
-import org.orsoul.baselib.util.BytesUtil;
 
 public abstract class AbsSerialPort implements ISerialPort {
   protected String TAG = this.getClass().getSimpleName();

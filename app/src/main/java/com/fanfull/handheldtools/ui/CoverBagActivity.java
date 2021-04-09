@@ -11,13 +11,13 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.task.CoverBagTask;
+import com.fanfull.libjava.util.AESCoder;
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.ClockUtil;
 
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
-import org.orsoul.baselib.util.AESCoder;
-import org.orsoul.baselib.util.BytesUtil;
-import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.util.Arrays;

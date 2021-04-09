@@ -4,11 +4,11 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.ClockUtil;
 
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
-import org.orsoul.baselib.util.ClockUtil;
 
 import java.util.Arrays;
 import java.util.Random;

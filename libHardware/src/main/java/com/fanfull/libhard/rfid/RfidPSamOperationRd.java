@@ -1,8 +1,8 @@
 package com.fanfull.libhard.rfid;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.util.BytesUtil;
 import com.halio.Rfid;
-import org.orsoul.baselib.util.BytesUtil;
 
 /**
  * 高频卡 操作类，添加对PSam卡、CPU卡，基于 雨滴开发板.

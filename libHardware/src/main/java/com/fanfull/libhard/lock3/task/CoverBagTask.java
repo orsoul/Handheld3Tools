@@ -4,13 +4,13 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+import com.fanfull.libjava.util.AESCoder;
+import com.fanfull.libjava.util.BytesUtil;
 
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
-import org.orsoul.baselib.util.AESCoder;
-import org.orsoul.baselib.util.BytesUtil;
 
 import java.util.Arrays;
 import java.util.List;

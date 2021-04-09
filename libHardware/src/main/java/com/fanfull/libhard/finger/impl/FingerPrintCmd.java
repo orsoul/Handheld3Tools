@@ -1,7 +1,7 @@
 package com.fanfull.libhard.finger.impl;
 
 import com.apkfuns.logutils.LogUtils;
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 public abstract class FingerPrintCmd {
   /** 指纹指令头 长度. */

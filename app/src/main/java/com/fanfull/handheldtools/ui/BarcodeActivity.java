@@ -15,11 +15,11 @@ import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.barcode.BarcodeUtil;
 import com.fanfull.libhard.barcode.IBarcodeListener;
 import com.fanfull.libhard.barcode.impl.BarcodeController;
+import com.fanfull.libjava.util.ClockUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
-import org.orsoul.baselib.util.ClockUtil;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundHelper;
-import org.orsoul.baselib.util.ThreadUtil;
 
 public class BarcodeActivity extends InitModuleActivity {
 

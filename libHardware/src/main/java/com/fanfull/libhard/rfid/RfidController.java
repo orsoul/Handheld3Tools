@@ -2,11 +2,11 @@ package com.fanfull.libhard.rfid;
 
 import com.fanfull.libhard.EnumErrCode;
 import com.fanfull.libhard.barcode.BarcodeUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
-import org.orsoul.baselib.util.BytesUtil;
 
 import java.util.Arrays;
 import java.util.List;

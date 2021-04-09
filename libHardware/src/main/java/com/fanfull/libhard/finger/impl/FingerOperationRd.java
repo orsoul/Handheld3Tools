@@ -8,8 +8,7 @@ import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.gpio.impl.GpioController;
 import com.fanfull.libhard.serialport.ISerialPortListener;
 import com.fanfull.libhard.serialport.impl.SerialPortController;
-
-import org.orsoul.baselib.util.BytesUtil;
+import com.fanfull.libjava.util.BytesUtil;
 
 import java.io.IOException;
 

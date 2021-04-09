@@ -1,6 +1,6 @@
 package com.fanfull.libhard.lock3.task;
 
-import org.orsoul.baselib.util.ThreadUtil;
+import com.fanfull.libjava.util.ThreadUtil;
 
 public abstract class ScanLotTask<T> extends ThreadUtil.TimeThreadRunnable {
 
