@@ -34,11 +34,11 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
   }
 
   public void setAutoReconnect(boolean autoReconnect) {
-    this.ops.autoReconnect = autoReconnect;
+    this.ops.reconnectEnable = autoReconnect;
   }
 
   public boolean isAutoReconnect() {
-    return ops.autoReconnect;
+    return ops.reconnectEnable;
   }
 
   public boolean removeSocketClientListener(ISocketClientListener listener) {
@@ -79,7 +79,7 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
       socket.connect(address, ops.connectTimeout);
       this.inputStream = socket.getInputStream();
       this.outputStream = socket.getOutputStream();
-      canAutoReconnect = ops.autoReconnect;
+      canAutoReconnect = ops.reconnectEnable;
 
       setIoTransferListener(this);
       startReceive();

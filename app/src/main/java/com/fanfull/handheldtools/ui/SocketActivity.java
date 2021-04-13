@@ -64,7 +64,7 @@ public class SocketActivity extends InitModuleActivity {
     Options opt = new Options();
     opt.serverIp = serverIp;
     opt.serverPort = serverPort;
-    opt.autoReconnect = true;
+    opt.reconnectEnable = true;
     socketClient = new BaseSocketClient(opt);
     clientListener = new ISocketClientListener() {
       @Override public void onConnect(String serverIp, int serverPort) {
