@@ -357,26 +357,54 @@ public class BagCheckActivity extends InitModuleActivity {
     String coverCode;
     Lock3InfoUnit infoUnit = lock3Bean.getInfoUnit(Lock3Bean.SA_PIECE_TID);
     Lock3InfoUnit infoUnitCover = lock3Bean.getInfoUnit(Lock3Bean.SA_COVER_EVENT);
-    if (infoUnit != null && infoUnit.isDoSuccess()) {
-      byte[] key = Arrays.copyOf(infoUnit.buff, 6);
-      boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
-      coverCode = String.format("%s-解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff), b);
+
+    String compareMsg;
+    String pieceTid = lock3Bean.getPieceTid();
+    String businessTid = lock3Bean.getTidFromPiece();
+
+    byte[] key;
+    if (pieceTid == null) {
+      compareMsg = "未读锁片";
+      if (businessTid.startsWith("E280")) {
+        key = Arrays.copyOf(infoUnit.buff, 12);
+      } else {
+        key = Arrays.copyOf(infoUnit.buff, 6);
+      }
+    } else if (!pieceTid.equals(businessTid)) {
+      LogUtils.i("\n锁片Tid：%s\n业务Tid：%s", pieceTid, businessTid);
+      String businessTid6 = businessTid.substring(0, 12);
+      String pieceTid6 = pieceTid.substring(12);
+      LogUtils.i("\n锁片Tid6：%s\n业务Tid6：%s", pieceTid6, businessTid6);
+      compareMsg = String.format("%s，%s",
+          pieceTid6, Objects.equals(pieceTid6, businessTid6) ? "相等" : "不相等");
+      key = Arrays.copyOf(infoUnit.buff, 6);
+    } else {
+      compareMsg = "完全相等";
+      key = Arrays.copyOf(infoUnit.buff, 12);
+    }
+
+    boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
+    if (b) {
+      String tid1 = BytesUtil.bytes2HexString(infoUnitCover.buff);
+      infoUnitCover.buff[3] = (byte) (infoUnitCover.buff[3] & 0x0F);
+      String tid2 = BytesUtil.bytes2HexString(infoUnitCover.buff);
+      coverCode = String.format("验证通过？：%s\n%s", tid2.startsWith(lock3Bean.getBagId()), tid1);
       //LogUtils.d("解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff));
     } else {
       coverCode = String.format("%s-解密异常", BytesUtil.bytes2HexString(infoUnitCover.buff));
       //coverCode = "解密异常";
     }
 
-    String pieceTid = lock3Bean.getPieceTid();
-    String compareMsg;
-    if (pieceTid == null) {
-      compareMsg = "未读锁片";
-    } else {
-      String tid6 = lock3Bean.getTidFromPiece().substring(0, 12);
-      String tid12 = pieceTid.substring(12);
-      compareMsg = String.format("%s，%s",
-          tid12, Objects.equals(tid6, tid12) ? "相等" : "不相等");
-    }
+    //if (pieceTid == null) {
+    //  compareMsg = "未读锁片";
+    //} else if (pieceTid.equals(lock3Bean.getTidFromPiece())) {
+    //  compareMsg = "完全相等";
+    //} else {
+    //  String tid6 = lock3Bean.getTidFromPiece().substring(0, 12);
+    //  String tid12 = pieceTid.substring(12);
+    //  compareMsg = String.format("%s，%s",
+    //      tid12, Objects.equals(tid6, tid12) ? "相等" : "不相等");
+    //}
 
     String colorText = HtmlUtil.getColorText(
         "锁片epc：%s\n"
