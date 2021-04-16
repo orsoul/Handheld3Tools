@@ -15,9 +15,20 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
   static final int HEAD = 42;
   static final int END = 35;
 
+  public boolean notDecode;
+
   @Override protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
       throws Exception {
-    Logs.out("decode:%s", in);
+    Logs.out("notDecode:%s, decode:%s", notDecode, in);
+
+    if (notDecode) {
+      int len = in.readableBytes();
+      byte[] bytes = new byte[len];
+      in.readBytes(bytes);
+      out.add(bytes);
+      return;
+    }
+
     Object decoded = decode(in);
     if (decoded != null) {
       out.add(decoded);
@@ -61,8 +72,8 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
 
     if (headP < 0) {
       // 1、无协议头，丢弃所有数据
-      buf.clear();
-      buf.release();
+      //buf.clear();
+      //buf.release();
       return -1;
     } else if (endP < 1) {
       // 2、有协议头，无协议尾

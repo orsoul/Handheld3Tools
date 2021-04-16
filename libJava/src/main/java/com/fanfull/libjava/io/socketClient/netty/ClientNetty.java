@@ -1,9 +1,9 @@
 package com.fanfull.libjava.io.socketClient.netty;
 
-import com.fanfull.libjava.io.socketClient.GeneralException;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.util.Logs;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
@@ -33,32 +33,19 @@ public class ClientNetty {
   private NioEventLoopGroup group;
   private Bootstrap bootstrap;
   private Channel channel;
+  private HeadEndDecoder headEndDecoder = new HeadEndDecoder();
 
-  public synchronized void init() {
+  public ClientNetty(Options options) {
+    this.options = options;
+  }
+
+  public synchronized void init(ChannelInitializer<SocketChannel> channelInitializer) {
     try {
       group = new NioEventLoopGroup();
       bootstrap = new Bootstrap();
       bootstrap.group(group)// 指定EventLoopGroup
           .channel(NioSocketChannel.class) // 指定channel类型
-          .handler(new ChannelInitializer<SocketChannel>() { // 指定Handler
-            @Override protected void initChannel(SocketChannel socketChannel) {
-              ChannelPipeline pipeline = socketChannel.pipeline();
-              // 心跳
-              pipeline.addLast(new IdleStateHandler(options.heartBeatInterval + 5,
-                  options.heartBeatInterval,
-                  0));
-
-              // 粘包处理器
-              pipeline.addLast(new HeadEndDecoder());
-              // 粘包处理之后的字节数据 转换为 字符串
-              pipeline.addLast(new StringDecoder());
-
-              // 编码器，为发送字符串数据 加上头尾标识
-              pipeline.addLast(new HeadEndEncoder("$", "#"));
-              pipeline.addLast(new EchoClientHandler());
-              //pipeline.addLast(new HeartbeatServerHandler());
-            }
-          });
+          .handler(channelInitializer);
       // 连接到服务端
       //ChannelFuture channelFuture = bootstrap.connect(ip, port);
       // 添加连接状态监听
@@ -99,17 +86,6 @@ public class ClientNetty {
     Logs.out("connect end");
   }
 
-  public void send(ChannelHandlerContext ctx, String msg) {
-    final ChannelFuture f = channel.writeAndFlush(msg);
-    f.addListener((ChannelFutureListener) future -> {
-      if (f == future) {
-        ctx.close();
-      } else {
-        throw new GeneralException("f != future");
-      }
-    });
-  }
-
   public boolean send(String msg) {
     if (channel != null) {
       return channel.writeAndFlush(msg).isSuccess();
@@ -135,16 +111,67 @@ public class ClientNetty {
     }
   }
 
-  public static void main(String[] args) {
-    Options options = new Options();
-    options.serverIp = "192.168.11.246";
-    options.serverPort = 23579;
-    options.reconnectEnable = true;
-    options.heartBeatEnable = false;
+  static Options sOptions = new Options();
+  static ClientNetty clientNetty;
 
-    ClientNetty clientNetty = new ClientNetty();
-    clientNetty.options = options;
-    clientNetty.init();
+  public static void main(String[] args) {
+    sOptions.serverIp = "192.168.11.246";
+    sOptions.serverPort = 23579;
+    sOptions.reconnectEnable = true;
+    sOptions.heartBeatEnable = false;
+
+    clientNetty = new ClientNetty(sOptions);
+    clientNetty.init(new ChannelInitializer<SocketChannel>() { // 指定Handler
+      @Override protected void initChannel(SocketChannel socketChannel) {
+        ChannelPipeline pipeline = socketChannel.pipeline();
+        // 心跳
+        pipeline.addLast(new IdleStateHandler(sOptions.heartBeatInterval + 5,
+            sOptions.heartBeatInterval,
+            0));
+
+        // 粘包处理器
+        pipeline.addLast(clientNetty.headEndDecoder);
+        // 粘包处理之后的字节数据 转换为 字符串
+        //pipeline.addLast(new StringDecoder(Charset.forName("utf-8")));
+        pipeline.addLast(new StringDecoder(StandardCharsets.UTF_8));
+        pipeline.addLast(new EchoClientHandler());
+        pipeline.addLast(new SimpleChannelInboundHandler<byte[]>() {
+          @Override protected void channelRead0(ChannelHandlerContext ctx, byte[] bb)
+              throws Exception {
+            //int len = bb.readableBytes();
+            //Logs.out("readableBytes:" + len);
+            //if (0 < len) {
+            String info = new String(bb);
+            Logs.out("channelRead0 byte[]:" + info);
+            clientNetty.handle(info);
+            //}
+          }
+        });
+        pipeline.addLast(new ChannelInboundHandlerAdapter() {
+          @Override public void channelRead(ChannelHandlerContext ctx, Object msg)
+              throws Exception {
+            Logs.out("channelRead: %s\n", msg);
+            String info = null;
+            if (msg instanceof ByteBuf) {
+              ByteBuf bb = (ByteBuf) msg;
+              int len = bb.readableBytes();
+              Logs.out("readableBytes:" + len);
+              if (0 < len) {
+                info = new String(bb.array(), bb.readerIndex(), len);
+                Logs.out("info:" + info);
+              }
+            } else if (msg instanceof String) {
+              info = (String) msg;
+            }
+            clientNetty.handle(info);
+          }
+        });
+
+        // 编码器，为发送字符串数据 加上头尾标识
+        pipeline.addLast(new HeadEndEncoder("$", "#"));
+        //pipeline.addLast(new HeartbeatServerHandler());
+      }
+    });
 
     Logs.out("====== main end ======");
   }
@@ -167,6 +194,12 @@ public class ClientNetty {
       case "heartBeat off":
         options.heartBeatEnable = false;
         break;
+      case "decoder on":
+        headEndDecoder.notDecode = false;
+        break;
+      case "decoder off":
+        headEndDecoder.notDecode = true;
+        break;
       default:
         //ByteBuf reply = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(info, CharsetUtil.UTF_8));
         //ctx.channel().writeAndFlush(reply);
@@ -176,10 +209,10 @@ public class ClientNetty {
     }
   }
 
-  public class EchoClientHandler extends SimpleChannelInboundHandler<String> {
+  public static class EchoClientHandler extends SimpleChannelInboundHandler<String> {
     @Override public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
         throws Exception {
-      if (options.heartBeatEnable && evt instanceof IdleStateEvent) {
+      if (clientNetty.options.heartBeatEnable && evt instanceof IdleStateEvent) {
         IdleStateEvent event = (IdleStateEvent) evt;
         String type = "";
         switch (event.state()) {
@@ -193,7 +226,7 @@ public class ClientNetty {
           case WRITER_IDLE:
             Logs.out(ctx.channel().remoteAddress() + "超时 WRITER_IDLE");
             //ctx.writeAndFlush("heartBeat");
-            send("heartBeat");
+            clientNetty.send("heartBeat");
             break;
           case ALL_IDLE:
             Logs.out(ctx.channel().remoteAddress() + "超时 ALL_IDLE");
@@ -225,28 +258,36 @@ public class ClientNetty {
     @Override public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
       Logs.out("channelUnregistered");
 
-      if (isShutdown || !options.reconnectEnable) {
+      if (clientNetty.isShutdown || !clientNetty.options.reconnectEnable) {
         return;
       }
 
       ctx.channel().eventLoop().schedule(() -> {
-        Logs.out("Reconnecting to: " + options.serverIp + ':' + options.serverPort);
-        connect();
-      }, options.reconnectInterval, TimeUnit.MILLISECONDS);
+        Logs.out("Reconnecting to: "
+            + clientNetty.options.serverIp
+            + ':'
+            + clientNetty.options.serverPort);
+        clientNetty.connect();
+      }, clientNetty.options.reconnectInterval, TimeUnit.MILLISECONDS);
     }
 
     @Override protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
       Logs.out("rec:%s", msg);
-      handle(msg);
+      clientNetty.handle(msg);
+    }
+
+    public void fireChannelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
     }
 
     @Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
         throws Exception {
       Logs.out("exceptionCaught cause: " + cause.getMessage());
+      cause.printStackTrace();
+      ctx.close();
     }
   }
 
-  public class HeadEndEncoder extends MessageToByteEncoder<String> {
+  public static class HeadEndEncoder extends MessageToByteEncoder<String> {
 
     private String delimiterHead;
     private String delimiterEnd;
@@ -331,6 +372,8 @@ public class ClientNetty {
     @Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
         throws Exception {
       Logs.out("exceptionCaught cause: " + cause.getMessage());
+      cause.printStackTrace();
+      ctx.close();
     }
   }
 }
