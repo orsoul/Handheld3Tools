@@ -3,7 +3,9 @@ apply plugin: 'java-library'
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-  implementation 'io.netty:netty-all:4.1.10.Final'
+//  implementation 'io.netty:netty-all:4.1.10.Final'
+  implementation rootProject.ext.dependencies["netty"]
+  api rootProject.ext.dependencies["gson"]
 }
 
 tasks.withType(JavaCompile) {

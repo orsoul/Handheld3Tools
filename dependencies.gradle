@@ -72,6 +72,10 @@ project.ext {
       /* view */
       "xpopup": "com.lxj:xpopup:2.0.8",
 
+      /* network */
+      "netty": "io.netty:netty-all:4.1.10.Final",
+      "gson": "com.google.code.gson:gson:2.8.5",
+
       /* db */
       "debug-db": "com.amitshekhar.android:debug-db:1.0.6"
   ]

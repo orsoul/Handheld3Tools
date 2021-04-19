@@ -1,4 +1,4 @@
-package org.orsoul.baselib.data;
+package com.fanfull.libjava.data;
 
 import com.fanfull.libjava.util.ClassUtil;
 import com.google.gson.Gson;
@@ -9,9 +9,9 @@ import java.util.List;
 
 /** json实体类 基类. */
 public class BaseJsonBean<T> {
-  int code;
-  T data;
-  List<T> list;
+  protected int code;
+  protected T data;
+  protected List<T> list;
 
   public BaseJsonBean() {
   }
