@@ -1,5 +1,7 @@
-package com.fanfull.libjava.io.socketClient.netty;
+package com.fanfull.libjava.io.netty;
 
+import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
+import com.fanfull.libjava.io.netty.handler.HeadEndEncoder;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.util.Logs;
 
@@ -8,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -20,11 +21,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.CharsetUtil;
 
 public class ClientNetty {
   private boolean isShutdown;
@@ -34,6 +33,38 @@ public class ClientNetty {
   private Bootstrap bootstrap;
   private Channel channel;
   private HeadEndDecoder headEndDecoder = new HeadEndDecoder();
+
+  public boolean isShutdown() {
+    return isShutdown;
+  }
+
+  public void setShutdown(boolean shutdown) {
+    isShutdown = shutdown;
+  }
+
+  public Options getOptions() {
+    return options;
+  }
+
+  public void setOptions(Options options) {
+    this.options = options;
+  }
+
+  public boolean isHeartBeatEnable() {
+    return options.heartBeatEnable;
+  }
+
+  public void setHeartBeatEnable(boolean heartBeatEnable) {
+    this.options.heartBeatEnable = heartBeatEnable;
+  }
+
+  public boolean isReconnectEnable() {
+    return options.reconnectEnable;
+  }
+
+  public void setReconnectEnable(boolean reconnectEnable) {
+    this.options.reconnectEnable = reconnectEnable;
+  }
 
   public ClientNetty(Options options) {
     this.options = options;
@@ -69,14 +100,7 @@ public class ClientNetty {
       if (future1.cause() == null) {
         channel = f.channel();
         return;
-      } else {
       }
-
-      //future1.channel().eventLoop().schedule(() -> {
-      //  if (options.reconnectEnable) {
-      //    connect();
-      //  }
-      //}, options.reconnectInterval, TimeUnit.MILLISECONDS);
     });
 
     //try {
@@ -86,9 +110,23 @@ public class ClientNetty {
     Logs.out("connect end");
   }
 
+  public boolean send(Object msg) {
+    if (channel != null) {
+      return channel.writeAndFlush(msg).isSuccess();
+    }
+    return false;
+  }
+
   public boolean send(String msg) {
     if (channel != null) {
       return channel.writeAndFlush(msg).isSuccess();
+    }
+    return false;
+  }
+
+  public boolean send(byte[] data) {
+    if (channel != null) {
+      return channel.writeAndFlush(data).isSuccess();
     }
     return false;
   }
@@ -111,16 +149,14 @@ public class ClientNetty {
     }
   }
 
-  static Options sOptions = new Options();
-  static ClientNetty clientNetty;
-
   public static void main(String[] args) {
+    Options sOptions = new Options();
     sOptions.serverIp = "192.168.11.246";
     sOptions.serverPort = 23579;
     sOptions.reconnectEnable = true;
     sOptions.heartBeatEnable = false;
 
-    clientNetty = new ClientNetty(sOptions);
+    ClientNetty clientNetty = new ClientNetty(sOptions);
     clientNetty.init(new ChannelInitializer<SocketChannel>() { // 指定Handler
       @Override protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
@@ -134,7 +170,7 @@ public class ClientNetty {
         // 粘包处理之后的字节数据 转换为 字符串
         //pipeline.addLast(new StringDecoder(Charset.forName("utf-8")));
         pipeline.addLast(new StringDecoder(StandardCharsets.UTF_8));
-        pipeline.addLast(new EchoClientHandler());
+        pipeline.addLast(new EchoClientHandler(clientNetty));
         pipeline.addLast(new SimpleChannelInboundHandler<byte[]>() {
           @Override protected void channelRead0(ChannelHandlerContext ctx, byte[] bb)
               throws Exception {
@@ -143,7 +179,7 @@ public class ClientNetty {
             //if (0 < len) {
             String info = new String(bb);
             Logs.out("channelRead0 byte[]:" + info);
-            clientNetty.handle(info);
+            ClientDemo.handle(info, clientNetty);
             //}
           }
         });
@@ -163,7 +199,7 @@ public class ClientNetty {
             } else if (msg instanceof String) {
               info = (String) msg;
             }
-            clientNetty.handle(info);
+            ClientDemo.handle(info, clientNetty);
           }
         });
 
@@ -176,40 +212,13 @@ public class ClientNetty {
     Logs.out("====== main end ======");
   }
 
-  private void handle(String info) {
-    switch (info) {
-      case "886":
-      case "*886":
-        //options.reconnectEnable = false;
-        //channel.close();
-        //group.shutdownGracefully();
-        shutdown();
-        break;
-      case "88":
-        disconnect();
-        break;
-      case "heartBeat on":
-        options.heartBeatEnable = true;
-        break;
-      case "heartBeat off":
-        options.heartBeatEnable = false;
-        break;
-      case "decoder on":
-        headEndDecoder.notDecode = false;
-        break;
-      case "decoder off":
-        headEndDecoder.notDecode = true;
-        break;
-      default:
-        //ByteBuf reply = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(info, CharsetUtil.UTF_8));
-        //ctx.channel().writeAndFlush(reply);
-        //channel.writeAndFlush(info);
-        send(info);
-        break;
-    }
-  }
+  static class EchoClientHandler extends SimpleChannelInboundHandler<String> {
+    private ClientNetty clientNetty;
 
-  public static class EchoClientHandler extends SimpleChannelInboundHandler<String> {
+    public EchoClientHandler(ClientNetty clientNetty) {
+      this.clientNetty = clientNetty;
+    }
+
     @Override public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
         throws Exception {
       if (clientNetty.options.heartBeatEnable && evt instanceof IdleStateEvent) {
@@ -258,7 +267,7 @@ public class ClientNetty {
     @Override public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
       Logs.out("channelUnregistered");
 
-      if (clientNetty.isShutdown || !clientNetty.options.reconnectEnable) {
+      if (clientNetty.isShutdown || !clientNetty.isReconnectEnable()) {
         return;
       }
 
@@ -272,101 +281,10 @@ public class ClientNetty {
     }
 
     @Override protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-      Logs.out("rec:%s", msg);
-      clientNetty.handle(msg);
+      ClientDemo.handle(msg, clientNetty);
     }
 
     public void fireChannelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-    }
-
-    @Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-        throws Exception {
-      Logs.out("exceptionCaught cause: " + cause.getMessage());
-      cause.printStackTrace();
-      ctx.close();
-    }
-  }
-
-  public static class HeadEndEncoder extends MessageToByteEncoder<String> {
-
-    private String delimiterHead;
-    private String delimiterEnd;
-
-    public HeadEndEncoder(String delimiterHead, String delimiterEnd) {
-      this.delimiterHead = delimiterHead;
-      this.delimiterEnd = delimiterEnd;
-    }
-
-    @Override protected void encode(ChannelHandlerContext ctx, String msg, ByteBuf out) {
-      // 在响应的数据后面添加分隔符
-      ctx.writeAndFlush(Unpooled.wrappedBuffer((delimiterHead + msg + delimiterEnd).getBytes()));
-    }
-  }
-
-  public class HeartbeatServerHandler extends ChannelInboundHandlerAdapter {
-    private final ByteBuf HEARTBEAT_SEQUENCE =
-        Unpooled.unreleasableBuffer(Unpooled.copiedBuffer("Heartbeat", CharsetUtil.UTF_8));  // 1
-
-    @Override public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
-        throws Exception {
-
-      if (evt instanceof IdleStateEvent) {  // 2
-        IdleStateEvent event = (IdleStateEvent) evt;
-        String type = "";
-        switch (event.state()) {
-          case READER_IDLE:
-            //Logs.out(ctx.channel().remoteAddress() + "超时 READER_IDLE");
-            Logs.out(ctx.channel().remoteAddress() + "超时 READER_IDLE");
-            //ctx.writeAndFlush(HEARTBEAT_SEQUENCE.duplicate())
-            //    .addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-            break;
-          case WRITER_IDLE:
-            Logs.out(ctx.channel().remoteAddress() + "超时 WRITER_IDLE");
-            ctx.writeAndFlush(HEARTBEAT_SEQUENCE.duplicate())
-                .addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
-            break;
-          case ALL_IDLE:
-            Logs.out(ctx.channel().remoteAddress() + "超时 ALL_IDLE");
-            break;
-        }
-      } else {
-        super.userEventTriggered(ctx, evt);
-      }
-    }
-
-    @Override public void channelActive(ChannelHandlerContext ctx) throws Exception {
-      Logs.out("通道打开, %s --接入--> %s\n",
-          ctx.channel().remoteAddress(),
-          ctx.channel().localAddress());
-    }
-
-    @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-      Logs.out("通道关闭, %s --断开--> %s\n",
-          ctx.channel().remoteAddress(),
-          ctx.channel().localAddress());
-      if (options.reconnectEnable) {
-        Thread.sleep(options.reconnectInterval);
-        connect();
-      }
-    }
-
-    byte[] buff = new byte[1024];
-
-    @Override public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-      Logs.out("channelRead: %s\n", msg);
-      ByteBuf bb = (ByteBuf) msg;
-      int len = bb.readableBytes();
-      Logs.out("readableBytes:" + len);
-      //String info = null;
-      //if (0 < len) {
-      //  bb.readBytes(buff, 0, len);
-      //  info = new String(buff, 0, len);
-      //}
-      //handle(info);
-    }
-
-    @Override public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-      Logs.out("channelReadComplete");
     }
 
     @Override public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
