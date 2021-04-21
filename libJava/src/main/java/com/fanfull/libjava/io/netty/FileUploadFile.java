@@ -1,4 +1,4 @@
-package com.fanfull.libjava.io.socketClient.netty;
+package com.fanfull.libjava.io.netty;
 
 import java.io.File;
 import java.io.Serializable;

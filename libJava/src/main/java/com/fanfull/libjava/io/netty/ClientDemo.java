@@ -3,6 +3,7 @@ package com.fanfull.libjava.io.netty;
 import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.Options;
+import com.fanfull.libjava.io.socketClient.message1.BaseSocketMessage4qz;
 import com.fanfull.libjava.util.Logs;
 
 import java.io.File;
@@ -40,8 +41,29 @@ public class ClientDemo {
     clientNetty = new ClientNetty(sOptions);
     clientNetty.init(new MyChannelInitializer(clientNetty));
 
+    message4qz = new BaseSocketMessage4qz(13) {
+      @Override public String getMessage() {
+        return genProtocol(func, "base message", msgNum);
+      }
+
+      @Override public boolean send() {
+        return clientNetty.send(getMessage());
+      }
+    };
+    message4qz.setReplyListener(new BaseSocketMessage4qz.ReplyListener() {
+      @Override public void onReceive(BaseSocketMessage4qz recMsg) {
+        Logs.out("timeout");
+      }
+
+      @Override public void onTimeout(BaseSocketMessage4qz sendMsg) {
+        Logs.out("timeout");
+      }
+    });
+
     Logs.out("====== main end ======");
   }
+
+  static BaseSocketMessage4qz message4qz;
 
   public static void handle(String info, ClientNetty clientNetty) {
     Logs.out("handle msg: %s", info);
@@ -74,10 +96,13 @@ public class ClientDemo {
       case "302": // 302
         sendFile(s[1], clientNetty);
         break;
+      case "byte":
+        clientNetty.send("send bytes".getBytes());
+        break;
+      case "sync":
+        message4qz.sendSync();
+        break;
       default:
-        //ByteBuf reply = Unpooled.unreleasableBuffer(Unpooled.copiedBuffer(info, CharsetUtil.UTF_8));
-        //ctx.channel().writeAndFlush(reply);
-        //channel.writeAndFlush(info);
         clientNetty.send(info);
         break;
     }

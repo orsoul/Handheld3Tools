@@ -20,6 +20,14 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     this.clientNetty = clientNetty;
   }
 
+  public void onBeat(IdleStateEvent event) {
+
+  }
+
+  public void onBeatTimeout(IdleStateEvent event) {
+
+  }
+
   @Override public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
       throws Exception {
     //Logs.out("ReconnectHandler userEventTriggered: %s", evt);
@@ -57,7 +65,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     }
 
     ctx.channel().eventLoop().schedule(() -> {
-      Logs.out("Reconnecting to: ",
+      Logs.out("Reconnecting to %s:%s",
           clientNetty.getOptions().serverIp,
           clientNetty.getOptions().serverPort);
       clientNetty.connect();

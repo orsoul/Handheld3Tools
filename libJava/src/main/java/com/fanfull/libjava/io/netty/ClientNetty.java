@@ -24,6 +24,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 public class ClientNetty {
   private boolean isShutdown;
@@ -90,9 +92,9 @@ public class ClientNetty {
     }
   }
 
-  public void connect() {
+  public ChannelFuture connect() {
     if (channel != null && channel.isActive()) {
-      return;
+      return null;
     }
     ChannelFuture f = bootstrap.connect(options.serverIp, options.serverPort);
     f.addListener((ChannelFutureListener) future1 -> {
@@ -102,34 +104,35 @@ public class ClientNetty {
         return;
       }
     });
-
-    //try {
-    //future.sync();
-    //future.channel().closeFuture().addListener((ChannelFutureListener) future12 -> shutdown());
-    //}
     Logs.out("connect end");
+    return f;
   }
 
   public boolean send(Object msg) {
+    Logs.out("send:", msg);
     if (channel != null) {
-      return channel.writeAndFlush(msg).isSuccess();
+      return channel.writeAndFlush(msg).addListener(
+          new GenericFutureListener<Future<? super Void>>() {
+            @Override public void operationComplete(Future<? super Void> future) throws Exception {
+              Logs.out("operationComplete");
+            }
+          }).isSuccess();
     }
     return false;
   }
 
-  public boolean send(String msg) {
-    if (channel != null) {
-      return channel.writeAndFlush(msg).isSuccess();
-    }
-    return false;
-  }
-
-  public boolean send(byte[] data) {
-    if (channel != null) {
-      return channel.writeAndFlush(data).isSuccess();
-    }
-    return false;
-  }
+  //public boolean send(String msg) {
+  //  if (channel != null) {
+  //    return channel.writeAndFlush(msg).isSuccess();
+  //  }
+  //  return false;
+  //}
+  //public boolean send(byte[] data) {
+  //  if (channel != null) {
+  //    return channel.writeAndFlush(data).isSuccess();
+  //  }
+  //  return false;
+  //}
 
   public boolean isConnected() {
     return channel != null && channel.isActive();

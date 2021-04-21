@@ -5,7 +5,7 @@ dependencies {
 
 //  implementation 'io.netty:netty-all:4.1.10.Final'
   implementation rootProject.ext.dependencies["netty"]
-  api rootProject.ext.dependencies["gson"]
+  implementation rootProject.ext.dependencies["gson"]
 }
 
 tasks.withType(JavaCompile) {
