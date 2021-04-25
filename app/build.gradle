@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion rootProject.ext.android.compileSdkVersion
-  buildToolsVersion rootProject.ext.android.buildToolsVersion
+  compileSdkVersion 29
+//  compileSdkVersion rootProject.ext.android.compileSdkVersion
+//  buildToolsVersion rootProject.ext.android.buildToolsVersion
   defaultConfig {
     applicationId "com.fanfull.handheldtools"
     minSdkVersion rootProject.ext.android.minSdkVersion
     targetSdkVersion rootProject.ext.android.targetSdkVersion
 
     versionCode 213
-    versionName "v0.2.1-alpha3"
+    versionName "v0.2.1-alpha4"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {
@@ -143,7 +144,7 @@ dependencies {
   //  }
 
   /* view */
-  implementation 'com.lxj:xpopup:2.0.8'
+  implementation 'com.lxj:xpopup:2.2.23'
 //  implementation rootProject.ext.dependencies["xpopup"]
   implementation 'com.github.niniloveyou:StateButton:v1.0.0'
   implementation 'com.github.medyo:android-about-page:1.3'

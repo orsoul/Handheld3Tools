@@ -22,6 +22,8 @@ import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortView;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.interfaces.OnSelectListener;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
@@ -102,17 +104,27 @@ public class MainActivity extends BaseActivity {
         });
         break;
       case KeyEvent.KEYCODE_2:
-        SoundHelper.setAudioVolume(true);
         break;
       case KeyEvent.KEYCODE_3:
         DeviceInfoUtils.shutdown(true);
         break;
       case KeyEvent.KEYCODE_4:
+        new XPopup.Builder(this)
+            //.isDarkTheme(true)
+            .hasShadowBg(true)
+            //                            .hasBlurBg(true)
+            //                            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
+            .asBottomList("请选择一项", new String[] { "条目1", "条目2", "条目3", "条目4", "条目5" },
+                new OnSelectListener() {
+                  @Override
+                  public void onSelect(int position, String text) {
+                    ToastUtils.showShort("click " + text);
+                  }
+                }).show();
         //DeviceInfoUtils.reboot(this);
         //DeviceInfoUtils.reboot2(this);
         break;
       case KeyEvent.KEYCODE_5:
-        SoundHelper.setAudioVolume(8, true);
         break;
       case KeyEvent.KEYCODE_6:
         CrashLogUtil.logException(new RuntimeException("test log exception"));
@@ -120,16 +132,8 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_7:
         throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
-        SoundHelper.setAudioVolume(false);
-        //audio.adjustStreamVolume(
-        //    AudioManager.STREAM_MUSIC,
-        //    AudioManager.ADJUST_LOWER,
-        //    AudioManager.FLAG_PLAY_SOUND | AudioManager.FLAG_SHOW_UI);
         break;
       case KeyEvent.KEYCODE_9:
-        new Thread(() -> {
-          int t = 12 / (1 - 1);
-        }).start();
         break;
       case KeyEvent.KEYCODE_SHIFT_LEFT:
       case KeyEvent.KEYCODE_F2:

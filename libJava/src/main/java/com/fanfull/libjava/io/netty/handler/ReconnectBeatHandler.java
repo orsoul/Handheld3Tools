@@ -21,7 +21,6 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
   }
 
   public void onBeat(IdleStateEvent event) {
-
   }
 
   public void onBeatTimeout(IdleStateEvent event) {

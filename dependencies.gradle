@@ -11,7 +11,7 @@ def fastJsonVersion = "1.1.60.android"
 
 project.ext {
   android = [
-      compileSdkVersion: 28,
+      compileSdkVersion: 29,
       buildToolsVersion: "28.0.3",
       minSdkVersion: 21,
       targetSdkVersion: 28,
@@ -70,7 +70,7 @@ project.ext {
       "SmartRefreshHeader": "com.scwang.smartrefresh:SmartRefreshHeader:1.0.3",
 
       /* view */
-      "xpopup": "com.lxj:xpopup:2.0.8",
+      "xpopup": "com.lxj:xpopup:2.2.23",
 
       /* network */
       "netty": "io.netty:netty-all:4.1.10.Final",
