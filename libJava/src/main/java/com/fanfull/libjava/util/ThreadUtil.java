@@ -18,7 +18,7 @@ public final class ThreadUtil {
     if (normalThreadPool == null) {
       synchronized (ThreadUtil.class) {
         if (normalThreadPool == null) {
-          normalThreadPool = new ThreadPoolExecutor(3, 32,
+          normalThreadPool = new ThreadPoolExecutor(8, 32,
               3000L, TimeUnit.MILLISECONDS,
               new LinkedBlockingQueue<>(), getNameFormatThreadFactory("FixedThread"));
         }

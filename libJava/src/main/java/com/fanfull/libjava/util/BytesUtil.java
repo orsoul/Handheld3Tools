@@ -1,6 +1,8 @@
 package com.fanfull.libjava.util;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Random;
 
 public final class BytesUtil {
 
@@ -232,6 +234,101 @@ public final class BytesUtil {
     return n;
   }
 
+  public static void swap(byte[] data, int i, int j) {
+    byte temp = data[i];
+    data[i] = data[j];
+    data[j] = temp;
+  }
+
+  /** 随机化 数组. */
+  public static void shuffle(byte[] data) {
+    if (data == null || data.length < 2) {
+      return;
+    }
+    Random rnd = new Random();
+    for (int i = data.length; 1 < i; i--) {
+      swap(data, i - 1, rnd.nextInt(i));
+    }
+  }
+
+  public static int indexOf(byte[] source, int sourceOffset, int sourceCount,
+      byte[] target, int targetOffset, int targetCount,
+      int fromIndex) {
+    if (fromIndex >= sourceCount) {
+      return (targetCount == 0 ? sourceCount : -1);
+    }
+    if (fromIndex < 0) {
+      fromIndex = 0;
+    }
+    if (targetCount == 0) {
+      return fromIndex;
+    }
+
+    byte first = target[targetOffset];
+    int max = sourceOffset + (sourceCount - targetCount);
+
+    for (int i = sourceOffset + fromIndex; i <= max; i++) {
+      /* Look for first character. */
+      if (source[i] != first) {
+        while (++i <= max && source[i] != first) ;
+      }
+
+      /* Found first character, now look at the rest of v2 */
+      if (i <= max) {
+        int j = i + 1;
+        int end = j + targetCount - 1;
+        for (int k = targetOffset + 1; j < end && source[j]
+            == target[k]; j++, k++)
+          ;
+
+        if (j == end) {
+          /* Found whole string. */
+          return i - sourceOffset;
+        }
+      }
+    }
+    return -1;
+  }
+
+  /** 子数组出现的位置，不存在子数组返回-1. */
+  public static int indexOf(byte[] source, byte[] target) {
+    if (source == null || target == null) {
+      return -1;
+    }
+    return indexOf(source, 0, source.length, target, 0, target.length, 0);
+  }
+
+  /** 源数组是否包含子数组，包含子数组返回true. */
+  public static boolean contains(byte[] source, byte[] target) {
+    return 0 <= indexOf(source, target);
+  }
+
+  static void testShuffle() {
+    byte[] arr = new byte[256];
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = (byte) i;
+    }
+    Logs.out("source:%s", Arrays.toString(arr));
+    shuffle(arr);
+    Logs.out("shuffle:%s", Arrays.toString(arr));
+  }
+
+  static void testIndexOf() {
+    byte[] arr = new byte[127];
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = (byte) i;
+    }
+
+    int n = (int) (Math.random() * 10 + 3);
+    int start = (int) (Math.random() * arr.length);
+    byte[] target = new byte[n];
+    for (int i = 0; i < target.length; i++) {
+      target[i] = (byte) (start + i);
+    }
+    Logs.out("target:%s", Arrays.toString(target));
+    Logs.out("indexOf:%s", indexOf(arr, target));
+  }
+
   static void test() {
     int r = 256;
     int q = 94;
@@ -262,6 +359,8 @@ public final class BytesUtil {
   }
 
   public static void main(String[] args) {
-    test();
+    //test();
+    //testShuffle();
+    testIndexOf();
   }
 }

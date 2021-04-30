@@ -141,6 +141,7 @@ public class SoundHelper extends SoundPoolUtil {
     }
 
     @Override protected boolean handleOnce() {
+      int id = getId();
       if (id <= 0) {
         return true;
       }
@@ -234,5 +235,9 @@ public class SoundHelper extends SoundPoolUtil {
   public static void playNum(String num) {
     int n = Integer.parseInt(num);
     playNum(n, 1.0F);
+  }
+
+  public static int playSound(int id) {
+    return SingletonHolder.instance.play(id);
   }
 }
