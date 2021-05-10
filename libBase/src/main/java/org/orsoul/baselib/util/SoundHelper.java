@@ -146,12 +146,28 @@ public class SoundHelper extends SoundPoolUtil {
         return true;
       }
 
+      if (0 < pauseTime) {
+        ThreadUtil.sleep(pauseTime);
+        pauseTime = 0;
+      }
+
       SoundHelper.getInstance().play(id, volume, 1, rate);
       int total = getTotal();
       if (runCount < total || total <= 0) {
         ThreadUtil.sleep(period);
       }
       return false;
+    }
+
+    long pauseTime = 0;
+
+    public synchronized void pause(long pauseTime) {
+      this.pauseTime = pauseTime;
+    }
+
+    public synchronized void pauseEnd() {
+      pauseTime = 0;
+      interrupt();
     }
   }
 

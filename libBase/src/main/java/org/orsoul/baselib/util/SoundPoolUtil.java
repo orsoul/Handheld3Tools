@@ -464,6 +464,10 @@ public class SoundPoolUtil {
   /**
    * 卸载指定音频
    */
+  public void unLoad(int soundId) {
+    mSoundPool.unload(soundId);
+  }
+
   public void unLoad(String name) {
     if (checkSoundPool()) {
       if (idCache.containsKey(name)) {
