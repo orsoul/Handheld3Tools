@@ -130,5 +130,15 @@
       app:layout_constraintEnd_toEndOf="@id/btn_sound"
       app:layout_constraintStart_toStartOf="@id/btn_sound"
       app:layout_constraintTop_toBottomOf="@id/btn_sound" />
+
+    <Button
+      android:id="@+id/btn_main_bag_search"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/main_bag_search"
+      app:layout_constraintEnd_toEndOf="@id/btn_main_cover_bag"
+      app:layout_constraintStart_toStartOf="@id/btn_main_cover_bag"
+      app:layout_constraintTop_toBottomOf="@id/btn_main_cover_bag" />
   </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

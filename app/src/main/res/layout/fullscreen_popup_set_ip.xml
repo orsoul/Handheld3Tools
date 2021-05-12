@@ -59,27 +59,36 @@
       app:layout_constraintStart_toStartOf="@id/auto_ip"
       app:layout_constraintTop_toBottomOf="@id/auto_ip" />
 
-    <com.deadline.statebutton.StateButton
+
+    <Button
       android:id="@+id/btn_ip_save"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginStart="8dp"
+      android:layout_marginStart="16dp"
       android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
       android:paddingStart="16dp"
-      android:paddingTop="8dp"
+      android:paddingTop="5dp"
       android:paddingEnd="16dp"
-      android:text="保存"
-      app:animationDuration="200"
+      android:paddingBottom="5dp"
+      android:text="保 存"
+      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="@id/auto_port"
-      app:layout_constraintTop_toBottomOf="@id/auto_port"
-      app:normalBackgroundColor="@color/about_facebook_color"
-      app:normalTextColor="@android:color/white"
-      app:pressedBackgroundColor="@color/about_twitter_color"
-      app:pressedTextColor="@android:color/white"
-      app:radius="3dp"
-      app:round="true"
-      app:unableBackgroundColor="@color/about_separator_color"
-      app:unableTextColor="@android:color/white" />
+      app:layout_constraintTop_toBottomOf="@id/auto_port" />
+
+    <Button
+      android:id="@+id/btn_ip_cancel"
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:layout_marginEnd="16dp"
+      android:paddingStart="16dp"
+      android:paddingTop="5dp"
+      android:paddingEnd="16dp"
+      android:paddingBottom="5dp"
+      android:text="取 消"
+      app:layout_constraintBottom_toBottomOf="@+id/btn_ip_save"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/btn_ip_save" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

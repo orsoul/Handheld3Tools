@@ -9,6 +9,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BagCheckActivity;
+import com.fanfull.handheldtools.ui.BagSearchActivity;
 import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.CoverBagActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
@@ -44,6 +45,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_old_bag).setOnClickListener(this);
     findViewById(R.id.btn_sound).setOnClickListener(this);
     findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
+    findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -97,7 +99,7 @@ public class MainActivity extends BaseActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        SetIpPortView.showIpPortSetting(this, (ip, port) -> {
+        SetIpPortView.showIpPortSetting(this, (ip, port, s) -> {
           LogUtils.d("ip:%s:%s", ip, port);
           ToastUtils.showShort("ip:%s:%s", ip, port);
           return false;
@@ -191,6 +193,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_main_cover_bag:
         startActivity(new Intent(this, CoverBagActivity.class));
+        break;
+      case R.id.btn_main_bag_search:
+        startActivity(new Intent(this, BagSearchActivity.class));
         break;
     }
   }

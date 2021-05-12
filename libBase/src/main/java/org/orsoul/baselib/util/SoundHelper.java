@@ -81,12 +81,19 @@ public class SoundHelper extends SoundPoolUtil {
 
   public static class PlaySoundTask extends ThreadUtil.TimeThreadRunnable {
     private int id;
+    private int onceId;
+    private int oncePeriod = 200;
     private float volume = 1F;
     private float rate = 1F;
     private long period = 500;
 
     public int getId() {
       return id;
+    }
+
+    public void setId(int id, int onceId) {
+      this.onceId = onceId;
+      this.id = id;
     }
 
     public void setId(int id) {
@@ -151,7 +158,13 @@ public class SoundHelper extends SoundPoolUtil {
         pauseTime = 0;
       }
 
-      SoundHelper.getInstance().play(id, volume, 1, rate);
+      if (0 < onceId) {
+        SoundHelper.getInstance().play(onceId, volume, 1, rate);
+        onceId = -1;
+        ThreadUtil.sleep(oncePeriod);
+      } else {
+        SoundHelper.getInstance().play(id, volume, 1, rate);
+      }
       int total = getTotal();
       if (runCount < total || total <= 0) {
         ThreadUtil.sleep(period);

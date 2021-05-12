@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/color_bg_gray"
+  android:focusable="true"
+  android:focusableInTouchMode="true"
+  tools:context=".ui.BagCheckActivity">
+
+  <TextView
+    android:id="@+id/tv_bag_search_show"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="5dp"
+    android:background="@android:color/white"
+    android:padding="5dp"
+    android:text="正在初始化...\n"
+    app:layout_constraintBottom_toTopOf="@+id/btn_bag_search_scan"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <EditText
+    android:id="@+id/et_bag_search_show"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="5dp"
+    android:background="@android:color/white"
+    android:gravity="start|top"
+    android:hint="输入袋id，多个袋id用[.,换行]分隔\n双击清空数据"
+    android:padding="5dp"
+    android:visibility="gone"
+    app:layout_constraintBottom_toTopOf="@id/btn_bag_search_scan"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+  <Button
+    android:id="@+id/btn_bag_search_scan"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    android:enabled="true"
+    android:padding="5dp"
+    android:text="扫描"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent" />
+
+  <Button
+    android:id="@+id/btn_bag_search_input"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:padding="5dp"
+    android:text="输入"
+    app:layout_constraintBottom_toBottomOf="@id/btn_bag_search_scan"
+    app:layout_constraintEnd_toStartOf="@id/btn_bag_search_scan"
+    app:layout_constraintTop_toTopOf="@id/btn_bag_search_scan" />
+
+  <Switch
+    android:id="@+id/switch_bag_search_nfc_mode"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:checked="false"
+    android:text="高频"
+    app:layout_constraintBottom_toBottomOf="@+id/btn_bag_search_input"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="@+id/btn_bag_search_input" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.fanfull.handheldtools.ui.view;
 
 import android.content.Context;
+
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.LoadingPopupView;
 
@@ -11,6 +12,14 @@ public class DialogUtil {
 
   public DialogUtil(Context context) {
     this.context = context;
+  }
+
+  public void setLoadingPopupView(LoadingPopupView loadingView) {
+    if (loadingPopupView != null) {
+      loadingPopupView.dismiss();
+      loadingPopupView.destroy();
+    }
+    loadingPopupView = loadingView;
   }
 
   public void showLoadingView(String msg) {
@@ -27,7 +36,9 @@ public class DialogUtil {
   }
 
   public void dismissLoadingView() {
-    loadingPopupView.dismiss();
+    if (loadingPopupView != null && loadingPopupView.isShow()) {
+      loadingPopupView.dismiss();
+    }
   }
 
   public void destroy() {

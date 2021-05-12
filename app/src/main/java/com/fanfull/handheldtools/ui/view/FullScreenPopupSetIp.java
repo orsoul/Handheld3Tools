@@ -11,9 +11,11 @@ import android.widget.AutoCompleteTextView;
 import androidx.annotation.NonNull;
 
 import com.apkfuns.logutils.LogUtils;
-import com.fanfull.handheldtools.R;
 import com.fanfull.libjava.util.RegularUtil;
+import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.FullScreenPopupView;
+
+import org.orsoul.baselib.R;
 
 import java.util.List;
 
@@ -43,6 +45,11 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
     this.onSetIpListener = onSetIpListener;
   }
 
+  public FullScreenPopupSetIp(@NonNull Context context, String ip, int port,
+      OnSetIpListener onSetIpListener) {
+    this(context, ip, port, null, null, onSetIpListener);
+  }
+
   @Override protected int getImplLayoutId() {
     return R.layout.fullscreen_popup_set_ip;
   }
@@ -70,6 +77,11 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
     btnSave = findViewById(R.id.btn_ip_save);
     btnSave.setOnClickListener(this);
     btnSave.setEnabled(ipOk && portOk);
+
+    findViewById(R.id.btn_ip_cancel).setOnClickListener(this);
+
+    autoIp.setOnClickListener(this);
+    autoPort.setOnClickListener(this);
 
     autoIp.addTextChangedListener(new TextWatcher() {
       @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -105,7 +117,7 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
         } else {
           portOk = false;
         }
-        LogUtils.d("ipOk-portOk: %s, %s %s", s, ipOk, portOk);
+        LogUtils.d("ip-port: %s, %s %s", s, ipOk, portOk);
         btnSave.setEnabled(ipOk && portOk);
       }
     });
@@ -134,28 +146,53 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
   }
 
   @Override public void onClick(View v) {
-    switch (v.getId()) {
-      case R.id.btn_ip_save:
-        if (onSetIpListener != null) {
-          String ip = autoIp.getText().toString();
-          int port;
-          String s = autoPort.getText().toString();
-          if (TextUtils.isEmpty(s)) {
-            port = -1;
-          } else {
-            port = Integer.parseInt(s);
-          }
-          boolean b = onSetIpListener.onSetIp(ip, port);
-          if (b) {
-            smartDismiss();
-          }
+    int id = v.getId();
+    if (id == R.id.auto_ip) {
+      autoIp.showDropDown();
+    } else if (id == R.id.auto_port) {
+      autoPort.showDropDown();
+    } else if (id == R.id.btn_ip_cancel) {
+      smartDismiss();
+    } else if (id == R.id.btn_ip_save) {
+      if (onSetIpListener != null) {
+        String ip = autoIp.getText().toString();
+        int port;
+        String s = autoPort.getText().toString();
+        if (TextUtils.isEmpty(s)) {
+          port = -1;
         } else {
+          port = Integer.parseInt(s);
+        }
+        boolean b = onSetIpListener.onSetIp(ip, port,
+            ip.equals(this.ip) && port == this.port);
+        if (b) {
           smartDismiss();
         }
+      } else {
+        smartDismiss();
+      }
     }
   }
 
+  public static void showIpPortSetting(Context context, String ip, int port, List<String> hisIp,
+      List<Integer> hisPort, FullScreenPopupSetIp.OnSetIpListener onSetIpListener) {
+    FullScreenPopupSetIp fullScreenPopupSetIp =
+        new FullScreenPopupSetIp(context, ip, port, hisIp,
+            hisPort, onSetIpListener);
+
+    new XPopup.Builder(context)
+        .hasStatusBarShadow(true)
+        .autoOpenSoftInput(false)
+        .asCustom(fullScreenPopupSetIp)
+        .show();
+  }
+
+  public static void showIpPortSetting(Context context, String ip, int port,
+      FullScreenPopupSetIp.OnSetIpListener onSetIpListener) {
+    showIpPortSetting(context, ip, port, null, null, onSetIpListener);
+  }
+
   public interface OnSetIpListener {
-    boolean onSetIp(String ip, int port);
+    boolean onSetIp(String ip, int port, boolean settingNoChange);
   }
 }

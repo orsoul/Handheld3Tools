@@ -17,7 +17,6 @@ import com.lxj.xpopup.impl.FullScreenPopupView;
 
 import org.orsoul.baselib.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FullScreenPopupSetIp extends FullScreenPopupView implements View.OnClickListener {
@@ -178,8 +177,8 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
   public static void showIpPortSetting(Context context, String ip, int port, List<String> hisIp,
       List<Integer> hisPort, FullScreenPopupSetIp.OnSetIpListener onSetIpListener) {
     FullScreenPopupSetIp fullScreenPopupSetIp =
-        new FullScreenPopupSetIp(context, ip, port, new ArrayList<>(hisIp),
-            new ArrayList<>(hisPort), onSetIpListener);
+        new FullScreenPopupSetIp(context, ip, port, hisIp,
+            hisPort, onSetIpListener);
 
     new XPopup.Builder(context)
         .hasStatusBarShadow(true)

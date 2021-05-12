@@ -73,6 +73,11 @@ public class ClientNetty {
   }
 
   public synchronized void init(ChannelInitializer<SocketChannel> channelInitializer) {
+    init(channelInitializer, true);
+  }
+
+  public synchronized void init(ChannelInitializer<SocketChannel> channelInitializer,
+      boolean connect) {
     try {
       group = new NioEventLoopGroup();
       bootstrap = new Bootstrap();
@@ -85,7 +90,9 @@ public class ClientNetty {
       //channelFuture.addListener(new ConnectListener(this));
       //获取连接通道
       //channel = channelFuture.sync().channel();
-      connect();
+      if (connect) {
+        connect();
+      }
     } catch (Exception e) {
       Logs.out("Exception \n", e.getMessage());
       e.printStackTrace();
