@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libjava.util.RegularUtil;
 import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.BasePopupView;
 import com.lxj.xpopup.impl.FullScreenPopupView;
 
 import org.orsoul.baselib.R;
@@ -172,6 +173,32 @@ public class FullScreenPopupSetIp extends FullScreenPopupView implements View.On
         smartDismiss();
       }
     }
+  }
+
+  private BasePopupView popupView;
+
+  public void dismissIpPortSetting() {
+    if (popupView != null) {
+      popupView.dismiss();
+    }
+  }
+
+  @Override public void destroy() {
+    if (popupView != null) {
+      popupView.dismiss();
+      popupView.destroy();
+    }
+    super.destroy();
+  }
+
+  public void showIpPortSetting() {
+    if (popupView == null) {
+      popupView = new XPopup.Builder(getContext())
+          .hasStatusBarShadow(true)
+          .autoOpenSoftInput(false)
+          .asCustom(this);
+    }
+    popupView.show();
   }
 
   public static void showIpPortSetting(Context context, String ip, int port, List<String> hisIp,

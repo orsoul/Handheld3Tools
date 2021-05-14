@@ -15,8 +15,8 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
+import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
-import com.fanfull.handheldtools.ui.view.FullScreenPopupSetIp;
 import com.fanfull.libhard.lock3.task.ScanLotUhfOrNfcTask;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.RfidController;
@@ -34,6 +34,7 @@ import com.lxj.xpopup.interfaces.XPopupCallback;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ViewUtil;
+import org.orsoul.baselib.view.FullScreenPopupSetIp;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,12 +47,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 
+//import com.fanfull.handheldtools.ui.view.FullScreenPopupSetIp;
+
 public class BagSearchActivity extends InitModuleActivity {
 
   private EditText etBagId;
   private TextView tvShow;
   private Button btnScan;
-  private Button btnShow;
+  private Button btnInput;
   private Switch switchUhf;
 
   private SearchBagTask allLockTask;
@@ -111,8 +114,10 @@ public class BagSearchActivity extends InitModuleActivity {
     }
 
     options = new Options();
-    options.serverIp = "192.168.11.246";
-    options.serverPort = 23579;
+    //options.serverIp = "192.168.11.246";
+    //options.serverPort = 23579;
+    options.serverIp = MyPreference.SERVER_IP1.getValue("192.168.11.246");
+    options.serverPort = MyPreference.SERVER_PORT1.getValue(23579);
     options.reconnectEnable = true;
     options.heartBeatEnable = false;
     clientNetty = new ClientNetty(options);
@@ -154,8 +159,13 @@ public class BagSearchActivity extends InitModuleActivity {
     btnScan = findViewById(R.id.btn_bag_search_scan);
     btnScan.setOnClickListener(this);
 
-    btnShow = findViewById(R.id.btn_bag_search_input);
-    btnShow.setOnClickListener(this);
+    btnInput = findViewById(R.id.btn_bag_search_input);
+    btnInput.setOnClickListener(this);
+    btnInput.setOnLongClickListener(view -> {
+      formatDataView(null);
+      ToastUtils.showShort("已更新扫描列表");
+      return true;
+    });
 
     switchUhf = findViewById(R.id.switch_bag_search_nfc_mode);
     switchUhf.setOnCheckedChangeListener(
@@ -176,10 +186,12 @@ public class BagSearchActivity extends InitModuleActivity {
         runOnUiThread(() -> {
           if (!openSuccess) {
             dismissLoadingView();
-            ViewUtil.appendShow("超高频初始失败!!!", tvShow);
+            //ViewUtil.appendShow("超高频初始失败!!!", tvShow);
+            tvShow.setText("超高频初始失败!!!");
             return;
           }
-          ViewUtil.appendShow("超高频初始成功", tvShow);
+          //ViewUtil.appendShow("超高频初始成功", tvShow);
+          //tvShow.setText("超高频初始成功\n");
           rfidController.open();
         });
       }
@@ -193,12 +205,15 @@ public class BagSearchActivity extends InitModuleActivity {
         runOnUiThread(() -> {
           dismissLoadingView();
           if (!openSuccess) {
-            ViewUtil.appendShow("高频模块初始失败!!!", tvShow);
+            //ViewUtil.appendShow("高频模块初始失败!!!", tvShow);
+            tvShow.setText("高频模块初始失败!!!");
             return;
           }
-          ViewUtil.appendShow("高频模块初始成功\n"
-              + "按键1->连接Tcp\n"
-              + "按键7->设置功率", tvShow);
+          //tvShow.setText("初始成功\n");
+          ViewUtil.appendShow(
+              "按键1 -> 连接Tcp\n"
+                  + "按键7 -> 设置功率\n"
+                  + "长按【输入】按钮，格式并更新袋列表", tvShow);
           allLockTask = new SearchBagTask(uhfController, rfidController);
           allLockTask.setReadNfc(switchUhf.isChecked());
           //initBagTask = new InitBag3Activity.MyInitBagTask();
@@ -268,12 +283,12 @@ public class BagSearchActivity extends InitModuleActivity {
     if (isInput) {
       etBagId.setVisibility(View.VISIBLE);
       tvShow.setVisibility(View.GONE);
-      btnShow.setText("结果");
+      btnInput.setText("结果");
       ViewUtil.requestFocus(etBagId);
     } else {
       tvShow.setVisibility(View.VISIBLE);
       etBagId.setVisibility(View.GONE);
-      btnShow.setText("输入");
+      btnInput.setText("输入");
     }
   }
 
@@ -306,9 +321,14 @@ public class BagSearchActivity extends InitModuleActivity {
       initTcp();
       FullScreenPopupSetIp.showIpPortSetting(this, options.serverIp, options.serverPort,
           (ip, port, settingNoChange) -> {
-            if (settingNoChange && clientNetty.isConnected()) {
-              ToastUtils.showShort("已连接");
-              return true;
+            if (settingNoChange) {
+              if (clientNetty.isConnected()) {
+                ToastUtils.showShort("已连接");
+                return true;
+              }
+            } else {
+              MyPreference.SERVER_IP1.put(ip);
+              MyPreference.SERVER_PORT1.put(port);
             }
 
             options.serverIp = ip;

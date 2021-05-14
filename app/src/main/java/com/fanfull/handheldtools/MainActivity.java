@@ -20,7 +20,7 @@ import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.SoundActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
-import com.fanfull.handheldtools.ui.view.SetIpPortView;
+import com.fanfull.handheldtools.ui.view.SetIpPortHelper;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        SetIpPortView.showIpPortSetting(this, (ip, port, s) -> {
+        SetIpPortHelper.showIpPortSetting(this, (ip, port, s) -> {
           LogUtils.d("ip:%s:%s", ip, port);
           ToastUtils.showShort("ip:%s:%s", ip, port);
           return false;

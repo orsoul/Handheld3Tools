@@ -6,12 +6,12 @@ import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.handheldtools.preference.MyPreference;
 import com.lxj.xpopup.XPopup;
 
+import org.orsoul.baselib.view.FullScreenPopupSetIp;
+
 import java.util.ArrayList;
 import java.util.Set;
 
-public class SetIpPortView {
-  private Context context;
-  private FullScreenPopupSetIp fullScreenPopupSetIp;
+public class SetIpPortHelper {
 
   public static void showIpPortSetting(Context context,
       FullScreenPopupSetIp.OnSetIpListener onSetIpListener) {
