@@ -7,6 +7,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -27,9 +28,9 @@ public class DesUtil {
   public static final String ALGORITHM_MODE_CBC = "CBC";
 
   /** 明文填充模式 PKCS5Padding. */
-  public static final String PADDING_MODE_PKCS5Padding = "PKCS5Padding";
+  public static final String ALGORITHM_PADDING_PKCS5Padding = "PKCS5Padding";
   /** 明文填充模式 NOPadding. */
-  public static final String PADDING_MODE_NOPadding = "NOPadding";
+  public static final String ALGORITHM_PADDING_NOPadding = "NOPadding";
 
   private static final String defaultCharset = "UTF-8";
 
@@ -38,10 +39,20 @@ public class DesUtil {
       String.format("%s/%s/%s",
           ALGORITHM_NAME_DES,
           ALGORITHM_MODE_ECB,
-          PADDING_MODE_PKCS5Padding);
+          ALGORITHM_PADDING_PKCS5Padding);
 
+  /** 加密完整参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
   public static void setAlgorithmArgs(String algorithmArgs) {
     defaultAlgorithmArgs = algorithmArgs;
+  }
+
+  /** 加密参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
+  public static void setAlgorithmArgs(String name, String mode, String padding) {
+    defaultAlgorithmArgs = String.format("%s/%s/%s",
+        name,
+        mode,
+        padding);
+    ;
   }
 
   /**
@@ -74,9 +85,10 @@ public class DesUtil {
    * @param pwd 密码
    * @param isEncrypt true 执行加密，否则解密
    * @param algorithmArgs 算法参数，AES/ECB/PKCS5Padding，支持DES、3DES、AES.
+   * @param initVector 向量数组，使用CBC加密模式时 需要传入非null值.
    */
   public static byte[] cipherDoFinal(byte[] data, byte[] pwd, boolean isEncrypt,
-      String algorithmArgs) throws Exception {
+      String algorithmArgs, byte[] initVector) throws Exception {
     if (algorithmArgs == null) {
       return null;
     }
@@ -96,13 +108,32 @@ public class DesUtil {
     }
 
     Cipher cipher = Cipher.getInstance(algorithmArgs);
-    if (isEncrypt) {
-      cipher.init(Cipher.ENCRYPT_MODE, key);
+    int encryptMode = isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE;
+    if (args[1].equals(ALGORITHM_MODE_CBC) && initVector != null) {
+      // CBC加密模式，需要向量数组
+      cipher.init(encryptMode, key, new IvParameterSpec(initVector));
     } else {
-      cipher.init(Cipher.DECRYPT_MODE, key);
+      // ECB加密模式
+      cipher.init(encryptMode, key);
     }
 
     return cipher.doFinal(data);
+  }
+
+  /**
+   * 对于DES, 秘钥长度应为8byte, Java仅支持56位秘钥. 如果传入的秘钥长度超过8byte,截断; 若传入的秘钥长度 小于8byte, 补0.
+   * 对于3DES(DESede), 秘钥长度应为24byte， 传入的秘钥长度超过24byte,截断; 若传入的秘钥长度小于24byte,
+   * 补0.如果密码位数少于等于64位，加密结果与DES相同.
+   * 对于AES, Java支持128位秘钥. 传入的秘钥长度超过16byte,截断; 若传入的秘钥长度小于16byte, 补0.
+   *
+   * @param data 明文/密文数据
+   * @param pwd 密码
+   * @param isEncrypt true 执行加密，否则解密
+   * @param algorithmArgs 算法参数，AES/ECB/PKCS5Padding，支持DES、3DES、AES.
+   */
+  public static byte[] cipherDoFinal(byte[] data, byte[] pwd, boolean isEncrypt,
+      String algorithmArgs) throws Exception {
+    return cipherDoFinal(data, pwd, isEncrypt, algorithmArgs, null);
   }
 
   /**
@@ -168,13 +199,48 @@ public class DesUtil {
   /** 算法参数，支持DES、3DES、AES，支持ECB. 例：DES/ECB/PKCS5Padding */
   private String algorithmArgs;
 
+  private byte[] initVector;
+
+  //private String name;
+  //private String mode;
+  //private String padding;
+
+  /** 完整加密参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
   public DesUtil(String algorithmArgs) {
+    this.algorithmArgs = algorithmArgs;
+  }
+
+  /**
+   * 完整加密参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding.
+   *
+   * @param initVector 向量数组，使用CBC加密模式时 需要传入非null值.
+   */
+  public DesUtil(String algorithmArgs, byte[] initVector) {
+    this.algorithmArgs = algorithmArgs;
+    this.initVector = initVector;
+  }
+
+  /**
+   * 4项加密参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding.
+   *
+   * @param initVector 向量数组，使用CBC加密模式时 需要传入非null值.
+   */
+  public void setArgs(String name, String mode, String padding, byte[] initVector) {
+    this.algorithmArgs = String.format("%s/%s/%s",
+        name,
+        mode,
+        padding);
+    this.initVector = initVector;
+  }
+
+  /** 完整加密参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
+  public void setArgs(String algorithmArgs) {
     this.algorithmArgs = algorithmArgs;
   }
 
   public byte[] encrypt(byte[] data, byte[] pwd) {
     try {
-      return cipherDoFinal(data, pwd, true, algorithmArgs);
+      return cipherDoFinal(data, pwd, true, algorithmArgs, initVector);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -183,7 +249,7 @@ public class DesUtil {
 
   public byte[] encrypt(String data, byte[] pwd) {
     try {
-      return cipherDoFinal(data, pwd, true, algorithmArgs);
+      return encrypt(data.getBytes(defaultCharset), pwd);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -192,7 +258,7 @@ public class DesUtil {
 
   public byte[] encrypt(byte[] data, String pwd) {
     try {
-      return cipherDoFinal(data, pwd, true, algorithmArgs);
+      return encrypt(data, pwd.getBytes(defaultCharset));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -201,7 +267,7 @@ public class DesUtil {
 
   public byte[] encrypt(String data, String pwd) {
     try {
-      return cipherDoFinal(data, pwd, true, algorithmArgs);
+      return encrypt(data.getBytes(defaultCharset), pwd.getBytes(defaultCharset));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -210,7 +276,7 @@ public class DesUtil {
 
   public byte[] decrypt(byte[] data, byte[] pwd) {
     try {
-      return cipherDoFinal(data, pwd, false, algorithmArgs);
+      return cipherDoFinal(data, pwd, false, algorithmArgs, initVector);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -219,7 +285,7 @@ public class DesUtil {
 
   public byte[] decrypt(String data, byte[] pwd) {
     try {
-      return cipherDoFinal(data, pwd, false, algorithmArgs);
+      return decrypt(data.getBytes(defaultCharset), pwd);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -228,7 +294,7 @@ public class DesUtil {
 
   public byte[] decrypt(byte[] data, String pwd) {
     try {
-      return cipherDoFinal(data, pwd, false, algorithmArgs);
+      return decrypt(data, pwd.getBytes(defaultCharset));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -237,14 +303,14 @@ public class DesUtil {
 
   public byte[] decrypt(String data, String pwd) {
     try {
-      return cipherDoFinal(data, pwd, false, algorithmArgs);
+      return decrypt(data.getBytes(defaultCharset), pwd.getBytes(defaultCharset));
     } catch (Exception e) {
       e.printStackTrace();
     }
     return null;
   }
 
-  private static void testKey(byte[] keyBytes, String algorithm) {
+  static void testKey(byte[] keyBytes, String algorithm) {
     try {
       //第一种，Factory
       DESKeySpec keySpec = new DESKeySpec(keyBytes);
@@ -270,13 +336,8 @@ public class DesUtil {
   }
 
   public static void main(String[] args) throws Exception {
-
     testKey(new byte[8], ALGORITHM_NAME_3DES);
     //testDes();
-    //int i = 2;
-    //System.out.println(String.format("%d,%d,%d,%d,", i++, ++i, i, i++));
-    //String s = "char *s=%c%s%c;%cprintf(s,34,s,34,10);";
-    //System.out.printf(s, 34, s, 34, 10);
   }
 
   static void testDes() throws Exception {

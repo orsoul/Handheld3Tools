@@ -34,6 +34,8 @@ public abstract class CoverBagTask extends ReadLockTask {
   public static final int CHECK_RES_EVENT_CODE_WRONG = -16;
   /** nfc与uhf tid不匹配. */
   public static final int CHECK_RES_NFC_UHF_TID_NOT_EQUALS = -17;
+  /** 06版袋Id校验值错误. */
+  public static final int CHECK_RES_BAG_ID_CHECK_FAILED = -18;
 
   public static final int WRITE_RES_ARGS_WRONG = -101;
   public static final int WRITE_RES_WRITE_EPC_FAILED = -102;
@@ -90,32 +92,47 @@ public abstract class CoverBagTask extends ReadLockTask {
     String bagId = lock3Bean.getBagId();
     LogUtils.d("uid:%s\nepc:%s\nnfc:%s", uid, epc, bagId);
 
-    boolean check;
-    if (!bagId.startsWith("05")) {
-      check = onCheckFailed(CHECK_RES_FORMAT_WRONG, lock3Bean);
-      if (check) {
+    boolean willStop = false;
+    if (!bagId.startsWith("05") && !bagId.startsWith("06")) {
+      willStop = onCheckFailed(CHECK_RES_FORMAT_WRONG, lock3Bean);
+      if (willStop) {
         return;
       }
     }
 
     if (!bagId.contains(uid)) {
-      check = onCheckFailed(CHECK_RES_BAG_ID_NOT_CONTAIN_UID, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_BAG_ID_NOT_CONTAIN_UID, lock3Bean);
+      if (willStop) {
         return;
       }
     }
 
     if (taskType == TASK_TYPE_COVER && bagId.equals(epc)) {
       // 封袋业务，epc等于袋id
-      check = onCheckFailed(CHECK_RES_EPC_EQUALS, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_EPC_EQUALS, lock3Bean);
+      if (willStop) {
         return;
       }
-    }
-    if (taskType != TASK_TYPE_COVER && !bagId.equals(epc)) {
-      // 非封袋业务，epc不等于袋id
-      check = onCheckFailed(CHECK_RES_EPC_NOT_EQUALS, lock3Bean);
-      if (check) {
+    } else if (taskType == TASK_TYPE_REG && !bagId.equals(epc)) {
+      // 空包登记，epc不等于袋id
+      willStop = onCheckFailed(CHECK_RES_EPC_NOT_EQUALS, lock3Bean);
+      if (willStop) {
+        return;
+      }
+    } else if (!bagId.equals(epc)) {
+      // 出入库等其他业务，epc不等于袋id
+      if (bagId.startsWith("05")) {
+        willStop = onCheckFailed(CHECK_RES_EPC_NOT_EQUALS, lock3Bean);
+      } else if (bagId.startsWith("06")) {
+        final byte[] epcBuff = BytesUtil.hexString2Bytes(epc);
+        final byte[] tidBuff = BytesUtil.hexString2Bytes(lock3Bean.getPieceTid());
+        epcBuff[0] = 0x05;
+        if (!AESCoder.checkBagId6(epcBuff, tidBuff)) {
+          willStop = onCheckFailed(CHECK_RES_BAG_ID_CHECK_FAILED, lock3Bean);
+        }
+      } else {
+      }
+      if (willStop) {
         return;
       }
     }
@@ -127,8 +144,8 @@ public abstract class CoverBagTask extends ReadLockTask {
       //String lockTid = lock3Bean.getTidFromLock();
       String pieceTid = lock3Bean.getPieceTid();
       if (!pieceTid.equals(lockTid)) {
-        check = onCheckFailed(CHECK_RES_NFC_UHF_TID_NOT_EQUALS, lock3Bean);
-        if (check) {
+        willStop = onCheckFailed(CHECK_RES_NFC_UHF_TID_NOT_EQUALS, lock3Bean);
+        if (willStop) {
           return;
         }
         LogUtils.i("uhf与nfc tid不一致\nuhfTid：%s\nlockTid：%s", pieceTid, lockTid);
@@ -138,23 +155,23 @@ public abstract class CoverBagTask extends ReadLockTask {
     int status = lock3Bean.getStatus();
     if (taskType == TASK_TYPE_REG && status != 1) {
       // 空包登记，标志位不等于 1
-      check = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_1, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_1, lock3Bean);
+      if (willStop) {
         return;
       }
     }
     if (taskType == TASK_TYPE_COVER && status != 2) {
       // 封袋业务，标志位不等于 2
-      check = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_2, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_2, lock3Bean);
+      if (willStop) {
         return;
       }
     }
     if ((taskType == TASK_TYPE_OTHER || taskType == TASK_TYPE_OPEN)
         && status != 3) {
       // 其他业务，标志位不等于 3
-      check = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_3, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_STATUS_NOT_EQUALS_3, lock3Bean);
+      if (willStop) {
         return;
       }
     }
@@ -163,8 +180,8 @@ public abstract class CoverBagTask extends ReadLockTask {
     if (unitStatusCheck != null
         && lock3Bean.getStatusCheck() != Lock3Util.FLAG_CHECK_STATUS_REG) {
       // 空袋检测位
-      check = onCheckFailed(CHECK_RES_STATUS_NOT_CHECK_EMPTY, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_STATUS_NOT_CHECK_EMPTY, lock3Bean);
+      if (willStop) {
         return;
       }
     }
@@ -173,8 +190,8 @@ public abstract class CoverBagTask extends ReadLockTask {
     if (lock3Bean.getInfoUnit(Lock3Bean.SA_VOLTAGE) != null) {
       float voltage = lock3Bean.getVoltage();
       if (!Lock3Util.checkV(voltage)) {
-        check = onCheckFailed(CHECK_RES_V_LOW, lock3Bean);
-        if (check) {
+        willStop = onCheckFailed(CHECK_RES_V_LOW, lock3Bean);
+        if (willStop) {
           return;
         }
       }
@@ -183,8 +200,8 @@ public abstract class CoverBagTask extends ReadLockTask {
     Lock3InfoUnit unitEnable = lock3Bean.getInfoUnit(Lock3Bean.SA_ENABLE);
     if (unitEnable != null
         && !Lock3Util.checkEnableCode(unitEnable.buff)) {
-      check = onCheckFailed(CHECK_RES_ENABLE_CODE_WRONG, lock3Bean);
-      if (check) {
+      willStop = onCheckFailed(CHECK_RES_ENABLE_CODE_WRONG, lock3Bean);
+      if (willStop) {
         return;
       }
     }
@@ -206,8 +223,8 @@ public abstract class CoverBagTask extends ReadLockTask {
         String pieceTid6 = pieceTid.substring(12);
         if (!pieceTid6.equals(businessTid6)) {
           LogUtils.i("\n锁片Tid6：%s\n业务Tid6：%s", pieceTid6, businessTid6);
-          check = onCheckFailed(CHECK_RES_TID_NOT_EQUALS, lock3Bean);
-          if (check) {
+          willStop = onCheckFailed(CHECK_RES_TID_NOT_EQUALS, lock3Bean);
+          if (willStop) {
             return;
           }
         }
@@ -231,8 +248,8 @@ public abstract class CoverBagTask extends ReadLockTask {
       LogUtils.d("%s-解密:%s", eventCode, b);
       if (!b || eventCode == null || !eventCode.startsWith(bagId)) {
         LogUtils.i("\nevent:%s\nbagId:%s", eventCode, bagId);
-        check = onCheckFailed(CHECK_RES_EVENT_CODE_WRONG, lock3Bean);
-        if (check) {
+        willStop = onCheckFailed(CHECK_RES_EVENT_CODE_WRONG, lock3Bean);
+        if (willStop) {
           return;
         }
       }
@@ -284,7 +301,18 @@ public abstract class CoverBagTask extends ReadLockTask {
 
     if (taskType == CoverBagTask.TASK_TYPE_COVER) {
       //  ====== 封袋业务 ====== 1. 写epc
-      lock3BeanWrite.pieceEpcBuff = lock3Bean.bagIdBuff;
+      try {
+        // TODO: 2021/5/24 06版 bagId epc
+        final byte checkByte = AESCoder.genBagIdCheck(lock3Bean.bagIdBuff, lock3Bean.pieceTidBuff);
+        final byte[] bagId06 = Arrays.copyOf(lock3Bean.bagIdBuff, lock3Bean.bagIdBuff.length);
+        bagId06[0] = 0x06;
+        bagId06[bagId06.length - 1] = checkByte;
+        lock3BeanWrite.pieceEpcBuff = bagId06;
+      } catch (Exception e) {
+        LogUtils.w("Exception:%s", e);
+        e.printStackTrace();
+        lock3BeanWrite.pieceEpcBuff = lock3Bean.bagIdBuff;
+      }
       lock3BeanWrite.pieceTidBuff = lock3Bean.pieceTidBuff;
 
       // 2. 写封签事件码
@@ -431,6 +459,9 @@ public abstract class CoverBagTask extends ReadLockTask {
         break;
       case CHECK_RES_EVENT_CODE_WRONG:
         msg = "封签事件码解密失败";
+        break;
+      case CHECK_RES_BAG_ID_CHECK_FAILED:
+        msg = "锁片epc校验值错误";
         break;
       default:
         msg = "未定义错误";
