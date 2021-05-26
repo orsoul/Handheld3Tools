@@ -168,8 +168,14 @@ public class BagIdParser {
         '}';
   }
 
+  /** 检查是否为袋id. */
   public static boolean isBagId(String bagId) {
-    return (bagId != null) && (bagId.length() == BAG_ID_LEN);
+    if (bagId == null) {
+      return false;
+    }
+
+    return (bagId.startsWith("05") && bagId.length() == BAG_ID_LEN)
+        || (bagId.startsWith("06") && 22 <= bagId.length());
   }
 
   public static String getBagType(String bagId) {
@@ -234,5 +240,4 @@ public class BagIdParser {
     );
     return format;
   }
-
 }

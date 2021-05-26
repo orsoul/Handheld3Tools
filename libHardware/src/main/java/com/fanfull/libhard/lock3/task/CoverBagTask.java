@@ -59,6 +59,16 @@ public abstract class CoverBagTask extends ReadLockTask {
   /** 更新启用码，用于所有业务，当为true时，更新袋锁时 将写入 启用标志. */
   protected boolean isUpdateEnableCode;
 
+  protected boolean isBagIdVersion6;
+
+  public boolean isBagIdVersion6() {
+    return isBagIdVersion6;
+  }
+
+  public void setBagIdVersion6(boolean bagIdVersion6) {
+    isBagIdVersion6 = bagIdVersion6;
+  }
+
   public int getTaskType() {
     return taskType;
   }
@@ -129,7 +139,10 @@ public abstract class CoverBagTask extends ReadLockTask {
         epcBuff[0] = 0x05;
         if (!AESCoder.checkBagId6(epcBuff, tidBuff)) {
           willStop = onCheckFailed(CHECK_RES_BAG_ID_CHECK_FAILED, lock3Bean);
+        } else {
         }
+        //lock3Bean.pieceEpcBuff[0] = 0x05;
+        //lock3Bean.setBagId(BytesUtil.bytes2HexString(epcBuff));
       } else {
       }
       if (willStop) {
@@ -300,17 +313,15 @@ public abstract class CoverBagTask extends ReadLockTask {
     }
 
     if (taskType == CoverBagTask.TASK_TYPE_COVER) {
-      //  ====== 封袋业务 ====== 1. 写epc
-      try {
+      //  ====== 封袋业务 ====== 写epc
+      if (isBagIdVersion6()) {
         // TODO: 2021/5/24 06版 bagId epc
         final byte checkByte = AESCoder.genBagIdCheck(lock3Bean.bagIdBuff, lock3Bean.pieceTidBuff);
         final byte[] bagId06 = Arrays.copyOf(lock3Bean.bagIdBuff, lock3Bean.bagIdBuff.length);
         bagId06[0] = 0x06;
         bagId06[bagId06.length - 1] = checkByte;
         lock3BeanWrite.pieceEpcBuff = bagId06;
-      } catch (Exception e) {
-        LogUtils.w("Exception:%s", e);
-        e.printStackTrace();
+      } else {
         lock3BeanWrite.pieceEpcBuff = lock3Bean.bagIdBuff;
       }
       lock3BeanWrite.pieceTidBuff = lock3Bean.pieceTidBuff;

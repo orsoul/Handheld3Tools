@@ -1,55 +1,51 @@
 package com.fanfull.libjava.util;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageDigestUtil {
+  /** md5 算法，等于SHA-1. */
+  public static final String ALGORITHM_MD5 = "md5";
+  /** SHA 算法，等于SHA-1. */
+  public static final String ALGORITHM_SHA = "sha";
+
+  public static Charset charset = StandardCharsets.UTF_8;
+
+  static void testMd5() {
+    Map<String, String> map = new HashMap<>();
+    map.put("123456", "e10adc3949ba59abbe56e057f20f883e");
+    map.put("本站针对md5、sha1等全球通用公开的加密算法进行反向查询", "631a4e544578cbb6bddea063124642ca");
+
+    for (Map.Entry<String, String> entry : map.entrySet()) {
+      final byte[] plain = entry.getKey().getBytes(StandardCharsets.UTF_8);
+      final byte[] res = md5(plain);
+      final String s = BytesUtil.bytes2HexString(res);
+      Logs.out("%s-%s", s.equalsIgnoreCase(entry.getValue()), s);
+    }
+  }
+
   public static void main(String[] args) {
-    byte[] epc = BytesUtil.hexString2Bytes("05532103047B47D23E618041");
-    byte[] tid = BytesUtil.hexString2Bytes("E28011402000218228661800");
-
-    checkBagId(epc, tid, false);
-
-    System.out.println(BytesUtil.bytes2HexString(epc));
-
-    System.out.println(checkBagId(epc, tid, true));
+    testMd5();
   }
 
-  static boolean checkBagId(byte[] epc12, byte[] tid12, boolean isCheck) {
-    if (epc12 == null || epc12.length != 12 || tid12 == null) {
-      return false;
-    }
-
-    // epc前11byte 与 tid 拼接
-    int bagDataLen = epc12.length - 1;
-    byte[] data = new byte[bagDataLen + tid12.length];
-    System.arraycopy(epc12, 0, data, 0, bagDataLen);
-    System.arraycopy(tid12, 0, data, bagDataLen, tid12.length);
-
-    // 对拼接后的数据 进行md5摘要
-    byte[] md5 = md5(data);
-    if (md5 == null) {
-      return false;
-    }
-
-    if (isCheck) {
-      return epc12[bagDataLen] == md5[0];
-    }
-
-    // md5数据的第一个字节作为 校验位
-    epc12[bagDataLen] = md5[0];
-    return true;
-  }
-
-  public static byte[] md5(byte[] input) {
+  public static byte[] md(byte[] input, String algorithm) {
     try {
-      MessageDigest md5;
-      md5 = MessageDigest.getInstance("MD5");
-      md5.update(input);
-      return md5.digest();
-    } catch (NoSuchAlgorithmException e) {
+      MessageDigest md = MessageDigest.getInstance(algorithm);
+      return md.digest(input);
+    } catch (Exception e) {
       e.printStackTrace();
       return null;
     }
+  }
+
+  public static byte[] md5(byte[] input) {
+    return md(input, ALGORITHM_MD5);
+  }
+
+  public static byte[] sha(byte[] input) {
+    return md(input, ALGORITHM_SHA);
   }
 }

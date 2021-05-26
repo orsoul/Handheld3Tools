@@ -11,7 +11,11 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * DES、3DES、AES 加密/解密，只支持ECB加密模式.
+ * 加密/解密工具，基于java原生API封装. <br/>
+ * <br/>
+ * 支持3种加密算法：DES、3DES、AES，<br/>
+ * 支持加密模式：ECB、CBC.<br/>
+ * 支持填充方式：PKCS5Padding、NOPadding<br/>
  */
 public class DesUtil {
 
@@ -27,7 +31,7 @@ public class DesUtil {
   /** 加密模式 CBC. */
   public static final String ALGORITHM_MODE_CBC = "CBC";
 
-  /** 明文填充模式 PKCS5Padding. */
+  /** 明文填充模式:java只支持无填充 和 PKCS5Padding. */
   public static final String ALGORITHM_PADDING_PKCS5Padding = "PKCS5Padding";
   /** 明文填充模式 NOPadding. */
   public static final String ALGORITHM_PADDING_NOPadding = "NOPadding";
@@ -97,14 +101,16 @@ public class DesUtil {
       return null;
     }
 
-    String algorithmName = args[0];
+    String algorithmName = args[0].toUpperCase();
     SecretKey key;
     if (ALGORITHM_NAME_DES.equals(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 8), algorithmName);
     } else if (ALGORITHM_NAME_AES.equals(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 16), algorithmName);
-    } else {
+    } else if (ALGORITHM_NAME_3DES.equals(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 24), algorithmName);
+    } else {
+      return null;
     }
 
     Cipher cipher = Cipher.getInstance(algorithmArgs);
@@ -196,7 +202,12 @@ public class DesUtil {
         algorithmArgs);
   }
 
-  /** 算法参数，支持DES、3DES、AES，支持ECB. 例：DES/ECB/PKCS5Padding */
+  /**
+   * 算法参数.例：DES/ECB/PKCS5Padding
+   * 支持3种加密算法：DES、3DES、AES，
+   * 支持加密模式：ECB、CBC.
+   * 支持：PKCS5Padding、NOPadding
+   */
   private String algorithmArgs;
 
   private byte[] initVector;

@@ -1,6 +1,5 @@
 package com.fanfull.libjava.util;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,9 +110,10 @@ public final class AESCoder {
       n ^= tid12[i];
     }
 
+    n = n & 0xFF;
     n %= encrypt.length;
 
-    Logs.out("n:%s, res:%X", n, encrypt[n] & 0xFF);
+    Logs.out("index:%s, res:0x%X", n, encrypt[n] & 0xFF);
 
     return encrypt[n];
   }
@@ -129,10 +129,27 @@ public final class AESCoder {
     return reVal;
   }
 
+  /**
+   * 验证 袋id的校验值.验证通过返回true
+   *
+   * @param bagId12 12字节锁片epc
+   * @param tid12 12字节锁片tid
+   */
+  public static boolean checkBagId6(String bagId12, String tid12) {
+    return checkBagId6(BytesUtil.hexString2Bytes(bagId12), BytesUtil.hexString2Bytes(tid12));
+  }
+
   static void testString() throws Exception {
     final HashMap<String, String> map = new HashMap<>();
-    map.put("000000000000000000000000", "FFFFFFFFFFFFFFFF");
-    map.put("FFFFFFFFFFFFFFFFFFFFFFFF", "0000000000000000");
+    //map.put("000000000000000000000000", "FFFFFFFFFFFFFFFF");
+    //map.put("FFFFFFFFFFFFFFFFFFFFFFFF", "0000000000000000");
+
+    //map.put("000000000000", "0000000000000000");
+    //map.put("0000000000000000000000000000000000000000000000", "0000000000000000");
+    //map.put("你好吗", "0000000000000000");
+    //map.put("在线DES加密解密", "在线DES加密解密");
+    map.put("3532333435363738393131313233343536373839313233", "3536373839313233");
+    map.put("3132333435363738393131313233343536373839313233", "3536373839313233");
 
     final DesUtil desUtil = new DesUtil("DES/ECB/PKCS5Padding");
 
@@ -142,22 +159,32 @@ public final class AESCoder {
       final byte[] epc = BytesUtil.hexString2Bytes(s.getKey());
       final byte[] tid = BytesUtil.hexString2Bytes(s.getValue());
       final byte[] encrypt = desUtil.encrypt(epc, tid);
+      //final byte[] encrypt = desUtil.encrypt(s.getKey(), s.getValue());
       Logs.out("encrypt:%s", BytesUtil.bytes2HexString(encrypt));
     }
   }
 
-  static void testBagIdCheck() throws Exception {
-    final ArrayList<String> list = new ArrayList<>();
-    list.add("000000000000000000000000");
-    list.add("FFFFFFFFFFFFFFFFFFFFFFFF");
-    list.add("050278012105140926440004");
-    list.add("050278012105140926460012");
-    list.add("050278012105140926450007");
+  static void testBagIdCheck() {
 
-    for (String s : list) {
-      Logs.out("==== bagId:%s ====", s);
-      final byte[] bytes = BytesUtil.hexString2Bytes(s);
-      genBagIdCheck(bytes, bytes);
+    final HashMap<String, String> map = new HashMap<>();
+    //map.put("000000000000000000000000", "FFFFFFFFFFFFFFFFFFFFFFFF");
+    //map.put("FFFFFFFFFFFFFFFFFFFFFFFF", "000000000000000000000000");
+    //map.put("05532103044A45D23E618072", "E28011402000247928471800");
+    //map.put("0553210304594AD23E61806E", "E28011402000200B28771800");
+    //map.put("05027101043B1222745A80D6", "E20034140123030179A13BB3");
+    //map.put("E20034140123030179A13BB3", "05027101043B1222745A80D6");
+    //map.put("050278012105140926440004", "050278012105140926440004");
+
+    map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
+    map.put("05532103044A45D23E61809D", "E28011402000247928471800");
+
+    final Set<Map.Entry<String, String>> entries = map.entrySet();
+    for (Map.Entry<String, String> s : entries) {
+      Logs.out("------ plain:%s ------", s);
+      final byte[] epc = BytesUtil.hexString2Bytes(s.getKey());
+      final byte[] tid = BytesUtil.hexString2Bytes(s.getValue());
+      final byte checkByte = genBagIdCheck(epc, tid);
+      System.out.println();
     }
   }
 

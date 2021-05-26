@@ -1,0 +1,11 @@
+{
+  "configVersion": 1,
+  "bagVersion": 5,
+  "primary": 0,
+  "isTestMode": 0,
+  "isUseOldBag": 0,
+  "isUseCheckByte": 0,
+  "autoLogin": 0,
+  "autoShutdown": 0,
+  "autoShutdownTime": 30
+}
