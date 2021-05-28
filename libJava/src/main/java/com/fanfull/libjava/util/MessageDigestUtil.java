@@ -20,7 +20,7 @@ public class MessageDigestUtil {
     map.put("本站针对md5、sha1等全球通用公开的加密算法进行反向查询", "631a4e544578cbb6bddea063124642ca");
 
     for (Map.Entry<String, String> entry : map.entrySet()) {
-      final byte[] plain = entry.getKey().getBytes(StandardCharsets.UTF_8);
+      final byte[] plain = entry.getKey().getBytes(charset);
       final byte[] res = md5(plain);
       final String s = BytesUtil.bytes2HexString(res);
       Logs.out("%s-%s", s.equalsIgnoreCase(entry.getValue()), s);

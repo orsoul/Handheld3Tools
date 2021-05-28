@@ -80,6 +80,9 @@ public final class AESCoder {
    * @param tid12 12字节锁片tid
    */
   public static byte genBagIdCheck(byte[] bagId12, byte[] tid12) {
+    if (bagId12 == null || bagId12.length != 12 || tid12 == null || tid12.length != 12) {
+      return -1;
+    }
     byte[] plain = BytesUtil.concatArray(Arrays.copyOfRange(bagId12, 0, bagId12.length - 1), tid12);
     byte[] key = Arrays.copyOfRange(tid12, 4, tid12.length);
 
@@ -175,8 +178,11 @@ public final class AESCoder {
     //map.put("E20034140123030179A13BB3", "05027101043B1222745A80D6");
     //map.put("050278012105140926440004", "050278012105140926440004");
 
-    map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
-    map.put("05532103044A45D23E61809D", "E28011402000247928471800");
+    //map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
+    //map.put("05532103044A45D23E61809D", "E28011402000247928471800");
+    map.put("05FF0FF01122334455667737", "000000000FFFFFFFFFFF0000");
+    map.put("05554600FF77FF66223215B1", "E20034140123030179A13B65");
+    map.put("05027101043B1222745A80CA", "E20834140123030179A13B65");
 
     final Set<Map.Entry<String, String>> entries = map.entrySet();
     for (Map.Entry<String, String> s : entries) {

@@ -63,7 +63,7 @@ public interface IUhfOperation extends IOperation {
   boolean readUse(int sa, byte[] buff);
 
   /**
-   * 写 超高频.
+   * 写 超高频. 每次最多能写32字节？
    *
    * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
    * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）

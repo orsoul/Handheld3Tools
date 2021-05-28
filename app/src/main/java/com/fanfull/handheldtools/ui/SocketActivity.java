@@ -32,6 +32,7 @@ import com.lxj.xpopup.interfaces.OnInputConfirmListener;
 import org.orsoul.baselib.util.ViewUtil;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SocketActivity extends InitModuleActivity {
@@ -60,6 +61,7 @@ public class SocketActivity extends InitModuleActivity {
     ViewUtil.appendShow("r nfc 4 12：读nfc,起始地址4(字长4字节)，读12字节", tvShow);
     ViewUtil.appendShow("r epc 2 12：读epc 起始地址2(字长2字节)，读12字节", tvShow);
     ViewUtil.appendShow("w epc 2 ACED tid 3 F378：写epc ACED，tid过滤F378", tvShow);
+    ViewUtil.appendShow("w use 0 AC-32：写use 32个字节的0xAC", tvShow);
 
     Options opt = new Options();
     opt.serverIp = serverIp;
@@ -357,7 +359,15 @@ public class SocketActivity extends InitModuleActivity {
         res = RfidController.getInstance().readNfc(sa, data, true);
       }
     } else { // ============ write ============
-      data = BytesUtil.hexString2Bytes(s[3]);
+      if (s[3].contains("-")) {
+        String[] split = s[3].split("-");
+        final int d = Integer.parseInt(split[0], 16);
+        final int len = Integer.parseInt(split[1]);
+        data = new byte[len];
+        Arrays.fill(data, (byte) d);
+      } else {
+        data = BytesUtil.hexString2Bytes(s[3]);
+      }
       if (isUhf) {
         res = UhfController.getInstance().write(mb, sa, data, 300, mmb, msa, dataFilter);
       } else {

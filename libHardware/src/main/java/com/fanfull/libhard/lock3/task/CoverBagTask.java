@@ -129,7 +129,7 @@ public abstract class CoverBagTask extends ReadLockTask {
       if (willStop) {
         return;
       }
-    } else if (!bagId.equals(epc)) {
+    } else if (taskType != TASK_TYPE_COVER && !bagId.equals(epc)) {
       // 出入库等其他业务，epc不等于袋id
       if (bagId.startsWith("05")) {
         willStop = onCheckFailed(CHECK_RES_EPC_NOT_EQUALS, lock3Bean);

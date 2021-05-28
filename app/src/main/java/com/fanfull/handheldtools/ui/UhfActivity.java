@@ -19,7 +19,6 @@ import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.ClockUtil;
-import com.fanfull.libjava.util.ThreadUtil;
 import com.lxj.xpopup.XPopup;
 
 import org.orsoul.baselib.util.ViewUtil;
@@ -91,7 +90,9 @@ public class UhfActivity extends InitModuleActivity {
           }
           tvShow.setText("打开成功.\n"
               + "3连接击->清空\n"
-              + "Enter->开始/停止 连续扫描\n"
+              //+ "Enter->开始/停止 连续扫描\n"
+              + "Enter->读EPC\n"
+              + "按键0->USE区 置0\n"
               + "按键1->快读TID 12byte\n"
               + "按键3->同读epc、tid\n"
               + "按键4->随机写EPC 12byte\n"
@@ -163,15 +164,15 @@ public class UhfActivity extends InitModuleActivity {
             }
             break;
           case UhfCmd.RECEIVE_TYPE_READ:
-            info =
-                String.format("read:%s", BytesUtil.bytes2HexString(parseData));
+            //info =
+            //    String.format("read:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_WRITE:
-            if (parseData.length == 0) {
-              info = "写成功";
-            } else {
-              info = String.format("写失败,cause:%X", parseData[0]);
-            }
+            //if (parseData.length == 0) {
+            //  info = "写成功";
+            //} else {
+            //  info = String.format("写失败,cause:%X", parseData[0]);
+            //}
             break;
           default:
             LogUtils.v("parseData:%s", BytesUtil.bytes2HexString(parseData));
@@ -276,28 +277,9 @@ public class UhfActivity extends InitModuleActivity {
         event.isShiftPressed(),
         event.getMetaState()
     );
-    boolean res;
-    byte[] data = new byte[12];
+    //boolean res;
+    //byte[] data = new byte[12];
     switch (keyCode) {
-      case KeyEvent.KEYCODE_0:
-        if (isRead) {
-          isRead = false;
-          break;
-        } else {
-          isRead = true;
-          int[] count = new int[1];
-          ThreadUtil.execute(() -> {
-            while (isRead) {
-              //runOnUiThread(() -> btnReadEpc.performClick());
-              byte[] epc = new byte[12];
-              uhfController.readEpc(epc);
-              String s = BytesUtil.bytes2HexString(epc);
-              runOnUiThread(() -> tvShow.setText((++count[0]) + ":" + s + "\n"));
-              SystemClock.sleep(50);
-            }
-          });
-        }
-        break;
       case KeyEvent.KEYCODE_1:
         ClockUtil.runTime(true);
         boolean fastTid = uhfController.fastTid(0, buff12);
@@ -314,16 +296,6 @@ public class UhfActivity extends InitModuleActivity {
       case KeyEvent.KEYCODE_2:
         break;
       case KeyEvent.KEYCODE_3:
-        //if (lotScanTask == null) {
-        //  break;
-        //}
-        //if (lotScanTask.startThread()) {
-        //  ToastUtils.showShort("已开始批量扫描");
-        //} else {
-        //  lotScanTask.stopThread();
-        //  ToastUtils.showShort("已停止批量扫描");
-        //}
-
         ClockUtil.runTime(true);
         byte[] bytes = uhfController.readEpcWithTid(200);
         t = ClockUtil.runTime();
@@ -392,6 +364,35 @@ public class UhfActivity extends InitModuleActivity {
         fastIdOn = false;
         uhfController.send(UhfCmd.getSetFastIdCmd(fastIdOn));
         break;
+      case KeyEvent.KEYCODE_0:
+        ClockUtil.runTime(true);
+        final byte[] data0 = new byte[192];
+        writeUse = uhfController.writeUse(0, data0);
+        t = ClockUtil.runTime();
+        if (!writeUse) {
+          info = String.format("写use失败,用时：%s", t);
+        } else {
+          info = String.format("写use len：%s,用时：%s", data0.length, t);
+        }
+        LogUtils.d(info);
+        ViewUtil.appendShow(info, tvShow);
+        break;
+      //if (isRead) {
+      //  isRead = false;
+      //  break;
+      //} else {
+      //  isRead = true;
+      //  int[] count = new int[1];
+      //  ThreadUtil.execute(() -> {
+      //    while (isRead) {
+      //      byte[] epc = new byte[12];
+      //      uhfController.readEpc(epc);
+      //      String s = BytesUtil.bytes2HexString(epc);
+      //      runOnUiThread(() -> tvShow.setText((++count[0]) + ":" + s + "\n"));
+      //      SystemClock.sleep(50);
+      //    }
+      //  });
+      //}
       default:
         break;
     }

@@ -3,6 +3,8 @@ package com.fanfull.libjava.io.netty;
 import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.HeadEndEncoder;
 import com.fanfull.libjava.io.socketClient.Options;
+import com.fanfull.libjava.io.socketClient.interf.ISocketClient;
+import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
 import com.fanfull.libjava.util.Logs;
 
 import java.nio.charset.StandardCharsets;
@@ -27,7 +29,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
-public class ClientNetty {
+public class ClientNetty implements ISocketClient {
   private boolean isShutdown;
   private Options options;
 
@@ -99,7 +101,19 @@ public class ClientNetty {
     }
   }
 
-  public ChannelFuture connect() {
+  @Override public boolean removeSocketClientListener(ISocketClientListener listener) {
+    return false;
+  }
+
+  @Override public boolean addSocketClientListener(ISocketClientListener listener) {
+    return false;
+  }
+
+  @Override public boolean connect() {
+    return false;
+  }
+
+  public ChannelFuture connectChannelFuture() {
     if (channel != null && channel.isActive()) {
       return null;
     }

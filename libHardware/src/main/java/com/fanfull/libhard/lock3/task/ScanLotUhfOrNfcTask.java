@@ -89,6 +89,15 @@ public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTas
     String tid;
     String uid;
 
+    @Override public String toString() {
+      return "ScanLotBean{" +
+          "isNfcMode=" + isNfcMode +
+          ", bagId='" + bagId + '\'' +
+          ", tid='" + tid + '\'' +
+          ", uid='" + uid + '\'' +
+          '}';
+    }
+
     public ScanLotBean(String bagId, boolean isNfcMode) {
       this.bagId = bagId;
       this.isNfcMode = isNfcMode;

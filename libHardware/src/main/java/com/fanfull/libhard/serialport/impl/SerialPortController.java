@@ -106,10 +106,10 @@ public class SerialPortController implements ISerialPort {
   public int sendAndWaitReceive(byte[] data, long timeout, byte[] recBuff) {
     final int[] reVal = { -2 };
     onceListener = new ISerialPortListener() {
-      @Override public void onReceiveData(byte[] data, int len) {
+      @Override public void onReceiveData(byte[] recData, int len) {
         if (recBuff != null) {
           reVal[0] = Math.min(recBuff.length, len);
-          System.arraycopy(data, 0, recBuff, 0, reVal[0]);
+          System.arraycopy(recData, 0, recBuff, 0, reVal[0]);
         }
       }
     };
@@ -233,10 +233,11 @@ public class SerialPortController implements ISerialPort {
           }
           LogUtils.tag(TAG).d("onceListener:%s", onceListener);
           if (onceListener != null) {
-            //onceListener.onReceiveData(Arrays.copyOf(buff, len));
             onceListener.onReceiveData(buff, len);
-            synchronized (onceListener) {
-              onceListener.notifyAll();
+            if (onceListener != null) {
+              synchronized (onceListener) {
+                onceListener.notifyAll();
+              }
             }
             //onceListener = null;
           }

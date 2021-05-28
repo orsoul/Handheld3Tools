@@ -98,8 +98,9 @@ public class UhfController implements IUhfOperation {
     return writeEpcFilterTid(0x02, epcDate, 0x00, tidDataFilter);
   }
 
-  @Override
-  public boolean writeUse(int sa, byte[] data) {
+  @Override public boolean writeUse(int sa, byte[] data) {
+    //if (data != null && 32 < data.length) {
+    //}
     return uhfOperation.writeUse(sa, data);
   }
 
