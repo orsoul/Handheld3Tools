@@ -73,7 +73,7 @@ public abstract class ReceiveListenerAbs implements ReceiveListener {
   protected void onRecWrong(String info) {
   }
 
-  @Override public void onReceive(byte[] data, int len) {
+  @Override public void onReceive(byte[] data) {
   }
 
   @Override public void onConnect(String serverIp, int serverPort) {

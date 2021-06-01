@@ -31,4 +31,6 @@ public abstract class ConfigGlobal {
   public static int timesFindNfc = 8;
 
   public static int bagIdVersion = 5;
+  /** 自动登录. */
+  public static boolean autoLogin;
 }

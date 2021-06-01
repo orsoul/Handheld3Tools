@@ -85,14 +85,14 @@ public class SocketActivity extends InitModuleActivity {
         });
       }
 
-      @Override public void onDisconnect(String serverIp, int serverPort) {
+      @Override public void onDisconnect(String serverIp, int serverPort, boolean isActive) {
         runOnUiThread(() -> {
           ViewUtil.appendShow(String.format("断开连接：%s:%s", serverIp, serverPort), tvShow);
           btnConnect.setEnabled(true);
         });
       }
 
-      @Override public boolean onReceive(byte[] data) {
+      @Override public void onReceive(byte[] data) {
         String s = new String(data);
         String s1 = BytesUtil.bytes2HexString(data);
         LogUtils.d("str:%s\nhex:%s", s, s1);
@@ -112,7 +112,6 @@ public class SocketActivity extends InitModuleActivity {
         runOnUiThread(() -> {
           ViewUtil.appendShow(format, tvShow);
         });
-        return true;
       }
 
       @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {

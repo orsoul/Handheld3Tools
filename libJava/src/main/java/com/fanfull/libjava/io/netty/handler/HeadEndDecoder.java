@@ -15,7 +15,15 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
   static final int HEAD = 42;
   static final int END = 35;
 
+  public boolean isContainHead;
   public boolean notDecode;
+
+  public HeadEndDecoder(boolean isContainHead) {
+    this.isContainHead = isContainHead;
+  }
+
+  public HeadEndDecoder() {
+  }
 
   @Override protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
       throws Exception {
@@ -38,14 +46,19 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
   protected Object decode(ByteBuf in) {
     int slice = slice(in);
     if (0 < slice) {
-      //Logs.out("slice0:%s - %s", in, slice);
-      in.skipBytes(1);
-      //Logs.out("slice1:%s", in);
-      ByteBuf frame = in.readBytes(slice - 2);
-      //Logs.out("slice2:%s", in);
-      //Logs.out("frame:%s - %s", frame, new String(frame.array()));
-      in.skipBytes(1);
-      //Logs.out("slice3:%s", in);
+      ByteBuf frame;
+      if (isContainHead) {
+        frame = in.readBytes(slice);
+      } else {
+        //Logs.out("slice0:%s - %s", in, slice);
+        in.skipBytes(1);
+        //Logs.out("slice1:%s", in);
+        frame = in.readBytes(slice - 2);
+        //Logs.out("slice2:%s", in);
+        //Logs.out("frame:%s - %s", frame, new String(frame.array()));
+        in.skipBytes(1);
+        //Logs.out("slice3:%s", in);
+      }
       return frame;
     }
 

@@ -1,5 +1,7 @@
 package com.fanfull.libjava.io.socketClient.interf;
 
+import java.util.Arrays;
+
 /**
  * Tcp Client 回调应用层的接口
  * 应用层必须实现此接口，从而可以接收事件通知。
@@ -23,12 +25,19 @@ public interface ISocketClientListener {
    * Socket组件通知应用层，Socket 连接已经断开 应用层主动调用disconnect方法断开连接，或者服务器断开连接，或者网络原因导致连接断开，
    * 都会导致onDisconnect 被回调。但反复尝试重连时，此方法不会被重复调用。
    */
-  void onDisconnect(String serverIp, int serverPort);
+  void onDisconnect(String serverIp, int serverPort, boolean isActive);
 
   /** Socket组件回调此方法，通知应用层收到了数据. */
-  boolean onReceive(byte[] data);
+  default void onReceive(byte[] data, int len) {
+    onReceive(Arrays.copyOf(data, len));
+  }
+
+  void onReceive(byte[] data);
 
   /** 发送数据结果 回调. */
   default void onSend(boolean isSuccess, byte[] data, int offset, int len) {
+  }
+
+  default void onSend(boolean isSuccess, Object msg) {
   }
 }

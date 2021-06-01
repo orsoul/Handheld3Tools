@@ -1,16 +1,23 @@
 package com.fanfull.libjava.io.socketClient;
 
-public interface ReceiveListener {
+import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
+
+public interface ReceiveListener extends ISocketClientListener {
   void onConnect(String serverIp, int serverPort);
 
-  default void onConnectFailed(String serverIp, int serverPort) {
-  }
-
-  void onReceive(byte[] data, int len);
-
   void onReceive(String recString);
+
+  default void onDisconnect(String serverIp, int serverPort, boolean isActive) {
+    onDisconnect();
+  }
 
   void onDisconnect();
 
   void onTimeout();
+
+  default void onConnectFailed(Throwable e) {
+  }
+
+  default void onConnectFailed(String serverIp, int serverPort) {
+  }
 }

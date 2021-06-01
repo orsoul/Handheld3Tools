@@ -1,8 +1,13 @@
 package com.fanfull.libjava.io.netty;
 
+import com.fanfull.libjava.io.netty.future.MsgFuture;
+import com.fanfull.libjava.io.netty.future.SyncWriteMap;
 import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.HeadEndEncoder;
+import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
+import com.fanfull.libjava.io.socketClient.GeneralException;
 import com.fanfull.libjava.io.socketClient.Options;
+import com.fanfull.libjava.io.socketClient.ReceiveListener;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClient;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
 import com.fanfull.libjava.util.Logs;
@@ -18,14 +23,15 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -36,6 +42,7 @@ public class ClientNetty implements ISocketClient {
   private NioEventLoopGroup group;
   private Bootstrap bootstrap;
   private Channel channel;
+  private ChannelFuture f;
   private HeadEndDecoder headEndDecoder = new HeadEndDecoder();
 
   public boolean isShutdown() {
@@ -52,6 +59,23 @@ public class ClientNetty implements ISocketClient {
 
   public void setOptions(Options options) {
     this.options = options;
+  }
+
+  public void setIpPort(String ip, int port) {
+    options.serverIp = ip;
+    options.serverPort = port;
+  }
+
+  public void setIp(String ip) {
+    options.serverIp = ip;
+  }
+
+  public void setPort(int port) {
+    options.serverPort = port;
+  }
+
+  public String getIp() {
+    return options.serverIp;
   }
 
   public boolean isHeartBeatEnable() {
@@ -85,6 +109,7 @@ public class ClientNetty implements ISocketClient {
       bootstrap = new Bootstrap();
       bootstrap.group(group)// 指定EventLoopGroup
           .channel(NioSocketChannel.class) // 指定channel类型
+          .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, options.connectTimeout)
           .handler(channelInitializer);
       // 连接到服务端
       //ChannelFuture channelFuture = bootstrap.connect(ip, port);
@@ -93,7 +118,7 @@ public class ClientNetty implements ISocketClient {
       //获取连接通道
       //channel = channelFuture.sync().channel();
       if (connect) {
-        connect();
+        connectChannelFuture();
       }
     } catch (Exception e) {
       Logs.out("Exception \n", e.getMessage());
@@ -110,36 +135,93 @@ public class ClientNetty implements ISocketClient {
   }
 
   @Override public boolean connect() {
+    try {
+      return connectChannelFuture().sync().isSuccess();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
     return false;
   }
 
-  public ChannelFuture connectChannelFuture() {
+  public ChannelFuture connectChannelFuture(ISocketClientListener listener) {
     if (channel != null && channel.isActive()) {
-      return null;
+      return f;
     }
-    ChannelFuture f = bootstrap.connect(options.serverIp, options.serverPort);
+    f = bootstrap.connect(options.serverIp, options.serverPort);
     f.addListener((ChannelFutureListener) future1 -> {
       Logs.out("connect cause: %s", future1.cause());
       if (future1.cause() == null) {
         channel = f.channel();
-        return;
+        if (listener != null) {
+          listener.onConnect(options.serverIp, options.serverPort);
+        }
+      } else {
+        if (listener != null) {
+          listener.onConnectFailed(new GeneralException(future1.cause()));
+        }
       }
     });
     Logs.out("connect end");
     return f;
   }
 
-  public boolean send(Object msg) {
-    Logs.out("send:", msg);
-    if (channel != null) {
-      return channel.writeAndFlush(msg).addListener(
-          new GenericFutureListener<Future<? super Void>>() {
-            @Override public void operationComplete(Future<? super Void> future) throws Exception {
-              Logs.out("operationComplete");
-            }
-          }).isSuccess();
+  public ChannelFuture connectChannelFuture() {
+    return connectChannelFuture(null);
+  }
+
+  private <E> E sendAndWait(Object msg, final MsgFuture<E> writeFuture, final long timeout)
+      throws Exception {
+    if (channel == null) {
+      throw new Exception("未连接");
     }
-    return false;
+
+    channel.writeAndFlush(msg).addListener(new ChannelFutureListener() {
+      public void operationComplete(ChannelFuture future) throws Exception {
+        writeFuture.setSendSuccess(future.isSuccess());
+        writeFuture.setCause(future.cause());
+        //失败移除
+        if (!writeFuture.isSendSuccess()) {
+          SyncWriteMap.syncKey.remove(writeFuture.requestId());
+        }
+      }
+    });
+
+    E response = writeFuture.get(timeout, TimeUnit.MILLISECONDS);
+    if (response == null) {
+      if (writeFuture.isTimeout()) {
+        return null;
+      } else {
+        // write exception
+        throw new Exception(writeFuture.cause());
+      }
+    }
+    return response;
+  }
+
+  public void send(Object msg, ReceiveListener receiveListener) {
+    if (channel != null) {
+      channel.writeAndFlush(msg).addListener(
+          new GenericFutureListener<Future<? super Void>>() {
+            @Override public void operationComplete(Future<? super Void> future) {
+              if (receiveListener != null) {
+                receiveListener.onSend(future.isSuccess(), msg);
+              }
+            }
+          });
+    }
+  }
+
+  public boolean send(Object msg) {
+    boolean reVal = false;
+    if (channel != null) {
+      try {
+        reVal = channel.writeAndFlush(msg).sync().isSuccess();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+    Logs.out("send %s:%s", reVal, msg);
+    return reVal;
   }
 
   //public boolean send(String msg) {
@@ -155,17 +237,19 @@ public class ClientNetty implements ISocketClient {
   //  return false;
   //}
 
-  public boolean isConnected() {
+  @Override public boolean isConnected() {
     return channel != null && channel.isActive();
   }
 
-  public void disconnect() {
+  @Override public void disconnect() {
     if (channel != null) {
+      f = null;
       channel.close();
     }
   }
 
   public void shutdown() {
+    disconnect();
     if (group != null) {
       isShutdown = true;
       group.shutdownGracefully();
@@ -176,7 +260,7 @@ public class ClientNetty implements ISocketClient {
   public static void main(String[] args) {
     Options sOptions = new Options();
     sOptions.serverIp = "192.168.11.246";
-    sOptions.serverPort = 23579;
+    sOptions.serverPort = 23456;
     sOptions.reconnectEnable = true;
     sOptions.heartBeatEnable = false;
 
@@ -185,12 +269,17 @@ public class ClientNetty implements ISocketClient {
       @Override protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // 心跳
-        pipeline.addLast(new IdleStateHandler(sOptions.heartBeatInterval + 5,
-            sOptions.heartBeatInterval,
-            0));
+        pipeline.addLast(new ReconnectBeatHandler(clientNetty) {
+          @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            Logs.out("ReconnectHandler channelInactive");
+          }
+        });
+        //pipeline.addLast(new IdleStateHandler(sOptions.heartBeatInterval + 5,
+        //    sOptions.heartBeatInterval,
+        //    0));
 
         // 粘包处理器
-        pipeline.addLast(clientNetty.headEndDecoder);
+        //pipeline.addLast(clientNetty.headEndDecoder);
         // 粘包处理之后的字节数据 转换为 字符串
         //pipeline.addLast(new StringDecoder(Charset.forName("utf-8")));
         pipeline.addLast(new StringDecoder(StandardCharsets.UTF_8));
@@ -229,7 +318,7 @@ public class ClientNetty implements ISocketClient {
 
         // 编码器，为发送字符串数据 加上头尾标识
         pipeline.addLast(new HeadEndEncoder("$", "#"));
-        //pipeline.addLast(new HeartbeatServerHandler());
+        pipeline.addLast(new ByteArrayEncoder());
       }
     });
 

@@ -150,7 +150,7 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
   @Override public boolean onReceive(byte[] data) {
     //LogUtils.d("rec:%s", new String(data));
     for (ISocketClientListener listener : listenerSet) {
-      listener.onReceive(data);
+      listener.onReceive(data, data.length);
     }
     return true;
   }
@@ -163,7 +163,7 @@ public class BaseSocketClient extends BaseIoTransfer implements ISocketClient, I
     //LogUtils.d("onStopReceive");
     closeSocket();
     for (ISocketClientListener listener : listenerSet) {
-      listener.onDisconnect(ops.serverIp, ops.serverPort);
+      listener.onDisconnect(ops.serverIp, ops.serverPort, false);
     }
     while (canAutoReconnect && !isConnected()) {
       //LogUtils.i("canAutoReconnect: %s:%s", ops.serverIp, ops.serverPort);

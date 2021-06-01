@@ -36,12 +36,11 @@ public class SocketDemo {
           int total = 0;
 
           @Override
-          public void onDisconnect(String serverIp, int serverPort) {
+          public void onDisconnect(String serverIp, int serverPort, boolean isActive) {
             System.out.println("onDisconnect");
           }
 
-          @Override public boolean onReceive(byte[] data) {
-            return false;
+          @Override public void onReceive(byte[] data) {
           }
 
           @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {

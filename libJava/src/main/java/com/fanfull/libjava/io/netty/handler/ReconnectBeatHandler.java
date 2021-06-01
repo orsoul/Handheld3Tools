@@ -56,6 +56,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     }
   }
 
+  /** 建立连接失败、断开连接 回调. */
   @Override public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
     Logs.out("ReconnectHandler channelUnregistered");
 
@@ -69,5 +70,10 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
           clientNetty.getOptions().serverPort);
       clientNetty.connect();
     }, clientNetty.getOptions().reconnectInterval, TimeUnit.MILLISECONDS);
+  }
+
+  /** 连接断开 回调. */
+  @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    Logs.out("ReconnectHandler channelInactive");
   }
 }
