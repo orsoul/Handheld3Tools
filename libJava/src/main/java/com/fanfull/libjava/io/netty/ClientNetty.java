@@ -32,6 +32,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
@@ -213,7 +214,7 @@ public class ClientNetty implements ISocketClient {
 
   public boolean send(Object msg) {
     boolean reVal = false;
-    if (channel != null) {
+    if (isConnected() && msg != null) {
       try {
         reVal = channel.writeAndFlush(msg).sync().isSuccess();
       } catch (InterruptedException e) {
@@ -262,21 +263,41 @@ public class ClientNetty implements ISocketClient {
     sOptions.serverIp = "192.168.11.246";
     sOptions.serverPort = 23456;
     sOptions.reconnectEnable = true;
-    sOptions.heartBeatEnable = false;
+    sOptions.heartBeatEnable = true;
 
     ClientNetty clientNetty = new ClientNetty(sOptions);
     clientNetty.init(new ChannelInitializer<SocketChannel>() { // 指定Handler
       @Override protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         // 心跳
+        pipeline.addLast(new IdleStateHandler(0,
+            sOptions.heartBeatInterval,
+            0));
+
+        //pipeline.addLast(new ReconnectBeatHandler(clientNetty) {
+        //  @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //    Logs.out("ReconnectHandler channelInactive");
+        //  }
+        //});
         pipeline.addLast(new ReconnectBeatHandler(clientNetty) {
+          private int connectFailedCount;
+
+          @Override public void channelActive(ChannelHandlerContext ctx) throws Exception {
+            Logs.out("建立连接成功");
+          }
+
+          @Override public void channelUnregistered(ChannelHandlerContext ctx)
+              throws Exception {
+            Logs.out("connectFailedCount:%s", connectFailedCount);
+            ++connectFailedCount;
+            Logs.out("网络连接失败 connectFailedCount:%s", connectFailedCount);
+            super.channelUnregistered(ctx);
+          }
+
           @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            Logs.out("ReconnectHandler channelInactive");
+            super.channelInactive(ctx);
           }
         });
-        //pipeline.addLast(new IdleStateHandler(sOptions.heartBeatInterval + 5,
-        //    sOptions.heartBeatInterval,
-        //    0));
 
         // 粘包处理器
         //pipeline.addLast(clientNetty.headEndDecoder);

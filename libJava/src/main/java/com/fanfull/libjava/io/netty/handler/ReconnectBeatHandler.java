@@ -20,35 +20,53 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     this.clientNetty = clientNetty;
   }
 
-  public void onBeat(IdleStateEvent event) {
+  public Object getHeartBeatMsg() {
+    return "heartBeat";
   }
 
-  public void onBeatTimeout(IdleStateEvent event) {
+  public void sendHeartBeat() {
+    final Object beatMsg = getHeartBeatMsg();
+    if (beatMsg != null) {
+      clientNetty.send(beatMsg);
+    }
+  }
 
+  public void onHeartBeatOut() {
+    clientNetty.disconnect();
+  }
+
+  public void onHeartBeatTriggered(IdleStateEvent event) {
+    beatTimeoutCount++;
+    if (clientNetty.getOptions().disconnectCount <= beatTimeoutCount) {
+      onHeartBeatOut();
+      return;
+    }
+    sendHeartBeat();
   }
 
   @Override public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
       throws Exception {
-    //Logs.out("ReconnectHandler userEventTriggered: %s", evt);
-    if (clientNetty.isHeartBeatEnable() && evt instanceof IdleStateEvent) {
-      IdleStateEvent event = (IdleStateEvent) evt;
+    if (!(evt instanceof IdleStateEvent)) {
+      Logs.out("ReconnectHandler userEventTriggered: %s", evt);
+      return;
+    }
+
+    IdleStateEvent event = (IdleStateEvent) evt;
+    Logs.out("ctx.channel().remoteAddress(): %s", event.state());
+
+    if (clientNetty.isHeartBeatEnable()) {
       String type = "";
       switch (event.state()) {
         case READER_IDLE:
-          beatTimeoutCount++;
-          Logs.out(ctx.channel().remoteAddress() + "READER_IDLE 超时次数：" + beatTimeoutCount);
-          if (3 <= beatTimeoutCount) {
-            clientNetty.disconnect();
-            return;
-          }
-          clientNetty.send("heartBeat");
+          //Logs.out(ctx.channel().remoteAddress() + "READER_IDLE 超时次数：");
           break;
         case WRITER_IDLE:
-          Logs.out(ctx.channel().remoteAddress() + "超时 WRITER_IDLE");
+          //Logs.out(ctx.channel().remoteAddress() + "超时 WRITER_IDLE");
+          onHeartBeatTriggered(event);
           //ctx.writeAndFlush("heartBeat");
           break;
         case ALL_IDLE:
-          Logs.out(ctx.channel().remoteAddress() + "超时 ALL_IDLE");
+          //Logs.out(ctx.channel().remoteAddress() + "超时 ALL_IDLE");
           break;
       }
     } else {
@@ -58,7 +76,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
 
   /** 建立连接失败、断开连接 回调. */
   @Override public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
-    Logs.out("ReconnectHandler channelUnregistered");
+    Logs.out("ReconnectHandler channelUnregistered " + this);
 
     if (clientNetty.isShutdown() || !clientNetty.isReconnectEnable()) {
       return;
@@ -75,5 +93,12 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
   /** 连接断开 回调. */
   @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     Logs.out("ReconnectHandler channelInactive");
+    super.channelInactive(ctx);
+  }
+
+  @Override public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    beatTimeoutCount = 0;
+    Logs.out("ReconnectHandler channelRead");
+    super.channelRead(ctx, msg);
   }
 }

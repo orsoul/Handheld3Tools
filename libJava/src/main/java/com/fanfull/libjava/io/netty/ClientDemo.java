@@ -102,6 +102,8 @@ public class ClientDemo {
       case "sync":
         message4qz.sendSync();
         break;
+      case "nothing":
+        break;
       default:
         clientNetty.send(info);
         break;
