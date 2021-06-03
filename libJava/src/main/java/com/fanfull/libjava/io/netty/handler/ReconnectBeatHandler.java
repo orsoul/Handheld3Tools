@@ -39,6 +39,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     beatTimeoutCount++;
     if (clientNetty.getOptions().disconnectCount <= beatTimeoutCount) {
       onHeartBeatOut();
+      beatTimeoutCount = 0;
       return;
     }
     sendHeartBeat();
@@ -93,6 +94,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
   /** 连接断开 回调. */
   @Override public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     Logs.out("ReconnectHandler channelInactive");
+    beatTimeoutCount = 0;
     super.channelInactive(ctx);
   }
 

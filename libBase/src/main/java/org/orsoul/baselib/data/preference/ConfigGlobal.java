@@ -1,7 +1,7 @@
 package org.orsoul.baselib.data.preference;
 
 /** 全局配置变量. */
-public abstract class ConfigGlobal {
+public final class ConfigGlobal {
   // TODO: 2020/10/29 全局配置
   /** 测试模式. */
   public static boolean isTestMode;
@@ -33,4 +33,17 @@ public abstract class ConfigGlobal {
   public static int bagIdVersion = 5;
   /** 自动登录. */
   public static boolean autoLogin;
+
+  /** 心跳. */
+  public static boolean heartBeatEnable;
+  /** 断线重连. */
+  public static boolean reconnectEnable;
+
+  /** 心跳 时间隔，单位秒. */
+  public int heartBeatInterval = 10;
+  /** 心跳 失败次数，失败达到该次数后 认为连接已断开. */
+  public int disconnectCount = 3;
+
+  /** 连接超时，单位毫秒. */
+  public int connectTimeout = 5000;
 }

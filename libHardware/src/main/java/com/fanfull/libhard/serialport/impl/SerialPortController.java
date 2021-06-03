@@ -234,8 +234,8 @@ public class SerialPortController implements ISerialPort {
           LogUtils.tag(TAG).d("onceListener:%s", onceListener);
           if (onceListener != null) {
             onceListener.onReceiveData(buff, len);
-            if (onceListener != null) {
-              synchronized (onceListener) {
+            synchronized (onceListener) {
+              if (onceListener != null) {
                 onceListener.notifyAll();
               }
             }
