@@ -91,7 +91,7 @@ public class SerialPortController implements ISerialPort {
   @Override
   public boolean send(byte[] data, int off, int len) {
     boolean send = serialPort.send(data, off, len);
-    LogUtils.tag(TAG).i("send %s:%s", send, BytesUtil.bytes2HexString(data, 0, len));
+    LogUtils.tag(TAG).d("send %s:%s", send, BytesUtil.bytes2HexString(data, 0, len));
     return send;
   }
 
@@ -225,13 +225,13 @@ public class SerialPortController implements ISerialPort {
       while (!isStop()) {
         try {
           len = in.read(buff);
-          LogUtils.tag(TAG)
-              .i("rec:%s, %s", BytesUtil.bytes2HexString(buff, 0, len), getSerialPortInfo());
+          LogUtils.tag(TAG).d("rec:%s, %s",
+              BytesUtil.bytes2HexString(buff, 0, len), getSerialPortInfo());
           if (len < 1) {
             LogUtils.tag(TAG).w("rec:%s", len);
             break;
           }
-          LogUtils.tag(TAG).d("onceListener:%s", onceListener);
+          LogUtils.tag(TAG).v("onceListener:%s", onceListener);
           if (onceListener != null) {
             onceListener.onReceiveData(buff, len);
             synchronized (onceListener) {

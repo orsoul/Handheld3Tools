@@ -1,5 +1,6 @@
 package com.fanfull.libhard.finger.impl;
 
+import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.finger.bean.FingerBean;
 import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libjava.util.ClockUtil;
@@ -17,6 +18,8 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
   private long runTime = 5000L;
   /** 添加或搜索成功时 是否终止线程，默认true. */
   private boolean successStop = true;
+  /** 添加或搜索失败时，即onFailed()时， 是否终止线程，默认true. */
+  private boolean failedStop = true;
   /**
    * 工作模式：false为匹配指纹，true为添加指纹.<br/>
    * 工作模式设为添加指纹时 默认会获取特征码<br/>
@@ -38,7 +41,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
   }
 
   public FingerPrintTask(FingerSearchListener listener) {
-    super();
+    this();
     fingerSearchListener = listener;
   }
 
@@ -76,6 +79,10 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
     this.successStop = successStop;
   }
 
+  public void setFailedStop(boolean failedStop) {
+    this.failedStop = failedStop;
+  }
+
   public void setRunTime(long runTime) {
     this.runTime = runTime;
   }
@@ -96,7 +103,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
     if (fingerSearchListener != null) {
       fingerSearchListener.todoBeforeRun();
     }
-    int[] fingerIdBuff = new int[2];
+    int[] indexScoreBuff = new int[2];
     ClockUtil.runTime(true);
     while (!stopped) {
       if (runTime <= ClockUtil.runTime()) {
@@ -109,15 +116,15 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
       int res;
       if (isAddMode) {
         if (isGetFeature) {
-          res = fingerprintController.addFinger(fingerIdBuff, fingerFeature);
+          res = fingerprintController.addFinger(indexScoreBuff, fingerFeature);
         } else {
-          res = fingerprintController.addFinger(fingerIdBuff);
+          res = fingerprintController.addFinger(indexScoreBuff);
         }
       } else {
         if (isGetFeature) {
-          res = fingerprintController.searchFinger(fingerIdBuff, fingerFeature);
+          res = fingerprintController.searchFinger(indexScoreBuff, fingerFeature);
         } else {
-          res = fingerprintController.searchFinger(fingerIdBuff);
+          res = fingerprintController.searchFinger(indexScoreBuff);
         }
       }
 
@@ -131,9 +138,9 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
         }
       } else if (res == FingerPrintCmd.RES_CODE_SUCCESS) { // 匹配到指纹、添加指纹成功
         if (isGetFeature) {
-          onSuccess(isAddMode, fingerIdBuff[0], fingerIdBuff[1], fingerFeature);
+          onSuccess(isAddMode, indexScoreBuff[0], indexScoreBuff[1], fingerFeature);
         } else {
-          onSuccess(isAddMode, fingerIdBuff[0], fingerIdBuff[1], null);
+          onSuccess(isAddMode, indexScoreBuff[0], indexScoreBuff[1], null);
         }
         if (successStop) {
           break;
@@ -142,7 +149,9 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
         if (fingerSearchListener != null) {
           fingerSearchListener.onFailed(isAddMode, res);
         }
-        break;
+        if (failedStop) {
+          break;
+        }
       }
     } // end while
     //LogUtils.i("run end");
@@ -157,6 +166,9 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
    * @param fingerFeature 所添加/匹配指纹的特征码；如果设置了不获取特征码，此参数为null
    */
   protected void onSuccess(boolean isAddMode, int fingerIndex, int score, byte[] fingerFeature) {
+    if (fingerPrintSQLiteHelper == null) {
+      LogUtils.wtf("fingerPrintSQLiteHelper == null");
+    }
     if (isAddMode) {
       FingerBean fingerBean = new FingerBean(fingerIndex, fingerFeature);
       fingerBean.setFingerName(String.format("未命名%s", fingerIndex));
@@ -164,6 +176,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
       if (fingerPrintSQLiteHelper != null) {
         isSaveInDB = 0 < fingerPrintSQLiteHelper.saveOrUpdate(fingerBean);
       }
+      LogUtils.wtf("添加指纹 db保存成功？:%s，%s", isSaveInDB, fingerBean);
       if (fingerSearchListener != null) {
         fingerSearchListener.onAddSuccess(fingerBean, isSaveInDB);
       }
@@ -177,6 +190,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
         fingerBean = new FingerBean(fingerIndex, fingerFeature);
         isSaveInDB = false;
       }
+      LogUtils.wtf("匹配指纹 db中已保存？:%s，%s", isSaveInDB, fingerBean);
       if (fingerSearchListener != null) {
         fingerSearchListener.onSearchSuccess(fingerBean, isSaveInDB);
       }

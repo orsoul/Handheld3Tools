@@ -15,7 +15,7 @@ public abstract class AbsSerialPort implements ISerialPort {
       OutputStream out = getOutputStream();
       out.write(data, off, len);
       out.flush();
-      LogUtils.tag(TAG).i("send:%s", BytesUtil.bytes2HexString(data, off, off + len));
+      LogUtils.tag(TAG).d("send:%s", BytesUtil.bytes2HexString(data, off, off + len));
       return true;
     } catch (Exception e) {
       LogUtils.tag(TAG).w("%s", e.getMessage());

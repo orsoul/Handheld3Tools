@@ -4,7 +4,7 @@ import com.fanfull.libhard.finger.db.FingerPrintSQLiteHelper;
 import com.fanfull.libhard.finger.impl.FingerprintController;
 import com.fanfull.libjava.util.BytesUtil;
 
-import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 指纹实体类.
@@ -21,6 +21,8 @@ public class FingerBean {
   private String fingerId;
   /** 指纹对应的用户id . */
   private String userId;
+  /** 指纹对应的身份卡 . */
+  private String userIc;
   /** 指纹版本，用于比较本地指纹与服务器的是否一致. */
   private int fingerVersion;
   /** 指纹编号，用于区分同一用户的不同指纹. */
@@ -85,13 +87,27 @@ public class FingerBean {
         "fingerIndex=" + fingerIndex +
         ", fingerId='" + fingerId + '\'' +
         ", userId='" + userId + '\'' +
+        ", userIc='" + userIc + '\'' +
         ", fingerVersion=" + fingerVersion +
-        ", fingerNum='" + fingerNum + '\'' +
+        //", fingerNum='" + fingerNum + '\'' +
         ", fingerStatus='" + fingerStatus + '\'' +
         ", fingerName='" + fingerName + '\'' +
         ", userName='" + userName + '\'' +
         ", feature='" + getFeature() + '\'' +
         '}';
+  }
+
+  public String toInfo() {
+    String info = "fingerIndex=" + fingerIndex + "\n" +
+        "fingerVersion=" + fingerVersion + "\n" +
+        "fingerStatus=" + fingerStatus + "\n" +
+        (fingerId != null ? "fingerId=" + fingerId + "\n" : "") +
+        (userId != null ? "userId=" + userId + "\n" : "") +
+        (userIc != null ? "userIc=" + userIc + "\n" : "") +
+        (fingerName != null ? "fingerName=" + fingerName + "\n" : "") +
+        (userName != null ? "userName=" + userName : "");
+
+    return info;
   }
 
   @Override public boolean equals(Object o) {
@@ -101,12 +117,13 @@ public class FingerBean {
     FingerBean that = (FingerBean) o;
 
     if (fingerIndex != that.fingerIndex) return false;
-    return Arrays.equals(fingerFeature, that.fingerFeature);
+    //return Arrays.equals(fingerFeature, that.fingerFeature);
+    return Objects.equals(getFeature(), that.getFeature());
   }
 
   @Override public int hashCode() {
     int result = fingerIndex;
-    result = 31 * result + Arrays.hashCode(fingerFeature);
+    result = 31 * result + Objects.hashCode(getFeature());
     return result;
   }
 
@@ -148,6 +165,14 @@ public class FingerBean {
 
   public void setUserId(String userId) {
     this.userId = userId;
+  }
+
+  public String getUserIc() {
+    return userIc;
+  }
+
+  public void setUserIc(String userIc) {
+    this.userIc = userIc;
   }
 
   public int getFingerNum() {
