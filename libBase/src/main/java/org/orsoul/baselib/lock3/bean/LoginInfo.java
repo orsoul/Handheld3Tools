@@ -16,14 +16,14 @@ public final class LoginInfo {
   private static String userId;
   /** 复核员登录id. */
   private static String checkerId;
-  /** 操作员登录编号. */
+  /** 操作员登录编号. 机构Id + 用户编号？ 002701001 + 004 */
   private static String userNum;
   /** 服务端的 机构号-机构名称 列表版本号. */
   private static String orgListVersion;
 
   /** 权限. */
   private static String permission;
-  /** 机构号. */
+  /** 机构号. 002701001 */
   private static String orgId;
   ///** 银行列表版本号. */
   //private static int bankListVersion;
@@ -67,6 +67,17 @@ public final class LoginInfo {
 
   /** 认证状态. */
   private static int identStatus = -1;
+
+  private static String fingerUserId;
+  public static boolean isFingerLogin;
+
+  public static String getFingerUserId() {
+    return fingerUserId;
+  }
+
+  public static void setFingerUserId(String fingerUserId) {
+    LoginInfo.fingerUserId = fingerUserId;
+  }
 
   public static int getIdentStatus() {
     return identStatus;
@@ -202,14 +213,18 @@ public final class LoginInfo {
    *
    * @return 返回0：解析成功，1：参数错误，2：密码错误
    */
-  public static int parseLoginInfo(String[] split) {
+  public static int parseLoginInfo(String[] split, String cardId) {
     if (split == null || split.length < 4) {
       return 1;
     }
 
     if ("*01".equals(split[0]) && "01".equals(split[1])) {
       // 刷卡登录，do nothing
+      isFingerLogin = false;
     } else if ("*14".equals(split[0]) && "03".equals(split[1]) && "00".equals(split[2])) {
+      isFingerLogin = true;
+      cardId = split[12];
+      setFingerUserId(split[5]);
       // 指纹登录
       for (int i = 3; i < split.length; i++) {
         split[i - 1] = split[i];
@@ -247,7 +262,12 @@ public final class LoginInfo {
     if (12 <= split.length) {
       userName = split[10];
     }
+    LoginInfo.setUserId(cardId);
     return 0;
+  }
+
+  public static int parseLoginInfo(String[] split) {
+    return parseLoginInfo(split, null);
   }
 
   /**
@@ -293,6 +313,10 @@ public final class LoginInfo {
     return true;
   }
 
+  /**
+   * $14 06 002701001004 010#
+   * *14 06 00 1111111111 73201001010102 上库 31853 XINCHENGDU 1000000001 010#
+   */
   public static int parseCheckLogin(String[] split, String checkerId) {
     if (split == null || split.length < 3) {
       return 1;
@@ -303,11 +327,11 @@ public final class LoginInfo {
     } else if (("*14".equals(split[0]) || "14".equals(split[0]))
         && "06".equals(split[1])
         && "00".equals(split[2])) {
+      checkerId = split[8]; // 指纹登录 无卡号
       // 指纹复核
       for (int i = 3; i < split.length; i++) {
         split[i - 1] = split[i];
       }
-      checkerId = split[5]; // 指纹登录 无卡号
     } else {
       return 2;
     }
@@ -327,6 +351,7 @@ public final class LoginInfo {
 
     // 复核id 转 10进制
     //StaticString.userIdcheck = Long.toString(Long.parseLong(checkerId, 16));
+
     LoginInfo.setCheckerId(checkerId);
     return 0;
   }
@@ -334,6 +359,7 @@ public final class LoginInfo {
   public static void reset() {
     userId = null;
     checkerId = null;
+    userNum = null;
 
     permission = null;
     orgId = null;

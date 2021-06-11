@@ -81,15 +81,16 @@ public class SoundPoolUtil {
    * 设置 系统多媒体音量.同时显示音量控制UI和播放声音
    *
    * @param raise true增加音量
+   * @param isGet true 获取增加音量后的音量
    */
-  public static void setAudioVolume(boolean raise) {
+  public static int setAudioVolume(boolean raise, boolean isGet) {
     Application app = Utils.getApp();
     if (app == null) {
-      return;
+      return -2;
     }
     AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
     if (audio == null) {
-      return;
+      return -2;
     }
     int dire = raise ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER;
     audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, dire,
@@ -97,6 +98,15 @@ public class SoundPoolUtil {
     //int volume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
     //int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
     //LogUtils.d("%s / %s", volume, volumeMax);
+    if (isGet) {
+      return audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    } else {
+      return -1;
+    }
+  }
+
+  public static void setAudioVolume(boolean raise) {
+    setAudioVolume(raise);
   }
 
   /**
@@ -109,14 +119,14 @@ public class SoundPoolUtil {
     setAudioVolume(volume, showUi, false);
   }
 
-  public static void setAudioVolume(int volume, boolean showUi, boolean playSound) {
+  public static int setAudioVolume(int volume, boolean showUi, boolean playSound, boolean isGet) {
     Application app = Utils.getApp();
     if (app == null) {
-      return;
+      return -2;
     }
     AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
     if (audio == null) {
-      return;
+      return -2;
     }
     if (volume < 0) {
       int volumeMax = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
@@ -130,6 +140,15 @@ public class SoundPoolUtil {
       flag |= AudioManager.FLAG_PLAY_SOUND;
     }
     audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, flag);
+    if (isGet) {
+      return audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+    } else {
+      return -1;
+    }
+  }
+
+  public static int setAudioVolume(int volume, boolean showUi, boolean playSound) {
+    return setAudioVolume(volume, showUi, playSound, false);
   }
 
   /**

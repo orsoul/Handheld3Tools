@@ -19,6 +19,8 @@ public final class ConfigGlobal {
 
   /** 是否启用指纹登录. */
   public static boolean fingerEnable = false;
+  /** 服务器指纹库 版本. */
+  public static int fingerLibVersion;
 
   /** 是否使用串口与前置通讯. */
   public static boolean useSerialPort = false;
