@@ -2,6 +2,7 @@ package com.fanfull.libjava.io.socketClient.message1;
 
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.MsgFuture4qz;
+import com.fanfull.libjava.io.socketClient.ReceiveListenerAbs;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
 
@@ -210,17 +211,12 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
    * @return 第一段和最后一段必须是数字串，分段成功返回长度至少为3的字符串数组，否则返回null.
    */
   public static String[] splitRecInfo(String recString) {
-    //if (recString == null
-    //    || !recString.matches("^\\*?\\d+ .+ \\d+#?$")) {
-    //  return null;
-    //}
-    //String[] split = recString.split(BaseSocketMessage4qz.CH_SPLIT);
-    //if (split.length < 3) {
-    //  return null;
-    //}
-    //return split;
     String[] split = splitRecInfoWithoutHead(recString);
-    return split != null ? split : splitRecInfoWithHead(recString);
+    split = split != null ? split : splitRecInfoWithHead(recString);
+    if (split != null) {
+      split = ReceiveListenerAbs.replaceSpChar(split);
+    }
+    return split;
   }
 
   /**

@@ -31,6 +31,7 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
     }
   }
 
+  /** 心跳超时. */
   public void onHeartBeatOut() {
     clientNetty.disconnect();
   }
@@ -79,7 +80,9 @@ public class ReconnectBeatHandler extends ChannelInboundHandlerAdapter {
   @Override public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
     Logs.out("ReconnectHandler channelUnregistered " + this);
 
-    if (clientNetty.isShutdown() || !clientNetty.isReconnectEnable()) {
+    if (clientNetty.isShutdown()
+        || !clientNetty.isReconnectEnable()
+        || clientNetty.isActiveDisconnect()) {
       return;
     }
 

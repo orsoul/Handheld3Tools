@@ -2,7 +2,6 @@ package com.fanfull.libjava.io.netty;
 
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.SyncWriteMap;
-import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.HeadEndEncoder;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.GeneralException;
@@ -38,13 +37,15 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 public class ClientNetty implements ISocketClient {
   private boolean isShutdown;
-  private Options options;
+  private final Options options;
+  private ISocketClientListener clientListener;
+  /** 是否 主动断开连接，如果是主动断开连接，不再执行重连. */
+  private boolean isActiveDisconnect;
 
   private NioEventLoopGroup group;
   private Bootstrap bootstrap;
   private Channel channel;
   private ChannelFuture f;
-  private HeadEndDecoder headEndDecoder = new HeadEndDecoder();
 
   public boolean isShutdown() {
     return isShutdown;
@@ -58,10 +59,6 @@ public class ClientNetty implements ISocketClient {
     return options;
   }
 
-  public void setOptions(Options options) {
-    this.options = options;
-  }
-
   public void setIpPort(String ip, int port) {
     options.serverIp = ip;
     options.serverPort = port;
@@ -71,12 +68,16 @@ public class ClientNetty implements ISocketClient {
     options.serverIp = ip;
   }
 
-  public void setPort(int port) {
-    options.serverPort = port;
-  }
-
   public String getIp() {
     return options.serverIp;
+  }
+
+  public int getPort() {
+    return options.serverPort;
+  }
+
+  public void setPort(int port) {
+    options.serverPort = port;
   }
 
   public boolean isHeartBeatEnable() {
@@ -93,6 +94,14 @@ public class ClientNetty implements ISocketClient {
 
   public void setReconnectEnable(boolean reconnectEnable) {
     this.options.reconnectEnable = reconnectEnable;
+  }
+
+  public boolean isActiveDisconnect() {
+    return isActiveDisconnect;
+  }
+
+  public void setActiveDisconnect(boolean activeDisconnect) {
+    isActiveDisconnect = activeDisconnect;
   }
 
   public ClientNetty(Options options) {
@@ -146,6 +155,7 @@ public class ClientNetty implements ISocketClient {
 
   public ChannelFuture connectChannelFuture(ISocketClientListener listener) {
     if (channel != null && channel.isActive()) {
+      //channel.disconnect();
       return f;
     }
     f = bootstrap.connect(options.serverIp, options.serverPort);
@@ -156,9 +166,15 @@ public class ClientNetty implements ISocketClient {
         if (listener != null) {
           listener.onConnect(options.serverIp, options.serverPort);
         }
+        if (clientListener != null) {
+          clientListener.onConnect(options.serverIp, options.serverPort);
+        }
       } else {
         if (listener != null) {
           listener.onConnectFailed(new GeneralException(future1.cause()));
+        }
+        if (clientListener != null) {
+          clientListener.onConnectFailed(new GeneralException(future1.cause()));
         }
       }
     });
@@ -246,6 +262,7 @@ public class ClientNetty implements ISocketClient {
     if (channel != null) {
       f = null;
       channel.close();
+      channel = null;
     }
   }
 

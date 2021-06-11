@@ -18,4 +18,17 @@ public class Options {
 
   /** 连接超时，单位毫秒. */
   public int connectTimeout = 5000;
+
+  @Override public String toString() {
+    return "Options{" +
+        "serverIp='" + serverIp + '\'' +
+        ", serverPort=" + serverPort +
+        ", reconnectEnable=" + reconnectEnable +
+        ", reconnectInterval=" + reconnectInterval +
+        ", heartBeatEnable=" + heartBeatEnable +
+        ", heartBeatInterval=" + heartBeatInterval +
+        ", disconnectCount=" + disconnectCount +
+        ", connectTimeout=" + connectTimeout +
+        '}';
+  }
 }
