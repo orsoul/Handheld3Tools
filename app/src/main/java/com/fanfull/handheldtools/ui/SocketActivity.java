@@ -12,6 +12,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ShellUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.context.Contexts;
@@ -62,6 +63,7 @@ public class SocketActivity extends InitModuleActivity {
     ViewUtil.appendShow("r epc 2 12：读epc 起始地址2(字长2字节)，读12字节", tvShow);
     ViewUtil.appendShow("w epc 2 ACED tid 3 F378：写epc ACED，tid过滤F378", tvShow);
     ViewUtil.appendShow("w use 0 AC-32：写use 32个字节的0xAC", tvShow);
+    ViewUtil.appendShow("cmd pm install -t /mnt/sdcard/Download/FF_Settings.apk：执行命令", tvShow);
 
     Options opt = new Options();
     opt.serverIp = serverIp;
@@ -282,6 +284,11 @@ public class SocketActivity extends InitModuleActivity {
     if (cmd == null) {
       return null;
     }
+    if (cmd.contains("cmd ")) {
+      cmd = cmd.substring(4);
+      return execCmd(cmd);
+    }
+
     String[] s = cmd.split(" ");
     if (s.length < 4) {
       return "命令长度错误";
@@ -385,5 +392,14 @@ public class SocketActivity extends InitModuleActivity {
       reVal = "命令执行失败";
     }
     return reVal;
+  }
+
+  private static String execCmd(String cmd) {
+    final ShellUtils.CommandResult commandResult =
+        ShellUtils.execCmd(cmd, true);
+    if (commandResult.result == 0) {
+      return "执行成功";
+    }
+    return "执行失败 " + commandResult.errorMsg;
   }
 }

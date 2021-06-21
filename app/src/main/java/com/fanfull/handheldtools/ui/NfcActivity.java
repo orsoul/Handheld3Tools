@@ -140,15 +140,13 @@ public class NfcActivity extends InitModuleActivity {
             byte[] uidbuf = lock3Bean.uidBuff;
 
             float vReal = Lock3Util.parseV(mVbuf[3]);
-            int status = Lock3Util.getStatus(readbuf[0], t_14[0] & 0x0F, uidbuf, true);
+            int status = Lock3Util.getStatus(readbuf[0], t_14[0] & 0x0F, uidbuf, false);
 
             Spanned colorSpanned = HtmlUtil.getColorSpanned(
-                0x000099, "\n标志位:%s\n电压值:%s\n袋ID:%s\n工作模式:%s\n启用码:%s\n",
+                0x000099, "\n标志位:%s\n电压值:%s\n袋ID:%s\n",
                 Lock3Util.getStatusDesc(status),
                 String.format("%.3f", vReal),
-                BytesUtil.bytes2HexString(bagIdBuff),
-                readbuf[8] == (byte) 0xFF ? "测试模式" : "产品模式",
-                BytesUtil.bytes2HexString(readbuf, 4, 8));
+                BytesUtil.bytes2HexString(bagIdBuff));
             info = colorSpanned;
             SoundHelper.playToneSuccess();
           } else {

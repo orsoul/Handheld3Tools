@@ -333,7 +333,7 @@ public class BagSearchActivity extends InitModuleActivity {
 
             options.serverIp = ip;
             options.serverPort = port;
-            clientNetty.setOptions(options);
+            //clientNetty.setOptions(options);
             clientNetty.disconnect();
             clientNetty.connect();
             return true;

@@ -252,7 +252,7 @@ public final class Lock3Util {
       case 5:
         return "F5(报警)";
       default:
-        return String.valueOf(status);
+        return String.format("%s未定义", status);
     }
   }
 

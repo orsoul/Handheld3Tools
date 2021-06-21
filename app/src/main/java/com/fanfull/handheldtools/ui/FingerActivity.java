@@ -68,6 +68,11 @@ public class FingerActivity extends InitModuleActivity {
         fingerPrintTask.setAddMode(isChecked);
         fingerPrintTask.setGetFeature(isChecked);
       }
+      if (isChecked) {
+        btnSearch.setText(R.string.v_add_finger);
+      } else {
+        btnSearch.setText(R.string.v_match_finger);
+      }
     });
   }
 
@@ -183,6 +188,11 @@ public class FingerActivity extends InitModuleActivity {
                 + "按键1 -> 生成特征码\n"
                 + "按键2 -> 搜索指纹2\n"
                 + "按键3 -> 添加指纹到指定位置\n"
+                + "按键4 -> 删除指纹\n"
+                + "按键5 -> 查看数据库指纹\n"
+                + "按键6 -> 读Epc\n"
+                + "按键7 -> 数据库指纹---导入--->指纹库\n"
+                + "按键8 -> 清空指纹数据库\n"
                 + "按键9 -> 清空指纹库\n");
             btnSearch.setEnabled(true);
             btnNum.setEnabled(true);
@@ -218,8 +228,8 @@ public class FingerActivity extends InitModuleActivity {
       @Override public void onAddSuccess(FingerBean fingerBean, boolean isSaveInDB) {
         count = 0;
         runOnUiThread(() -> {
-          ViewUtil.appendShow(String.format("添加成功，FingerIndex：%s, 保存在数据库？：%s",
-              fingerBean.getFingerIndex(), isSaveInDB), tvShow);
+          ViewUtil.appendShow(String.format("添加成功，FingerIndex：%s, %s",
+              fingerBean.getFingerIndex(), isSaveInDB ? "在数据库中" : "不在数据库中"), tvShow);
           btnSearch.setEnabled(true);
           btnNum.setEnabled(true);
           dismissLoadingView();
@@ -229,8 +239,8 @@ public class FingerActivity extends InitModuleActivity {
       @Override public void onSearchSuccess(FingerBean fingerBean, boolean isSaveInDB) {
         count = 0;
         runOnUiThread(() -> {
-          ViewUtil.appendShow(String.format("搜索成功，FingerIndex：%s, 保存在数据库？：%s",
-              fingerBean.getFingerIndex(), isSaveInDB), tvShow);
+          ViewUtil.appendShow(String.format("搜索成功，FingerIndex：%s, %s",
+              fingerBean.getFingerIndex(), isSaveInDB ? "在数据库中" : "不在数据库中"), tvShow);
           if (isSaveInDB) {
             ViewUtil.appendShow(String.format("FingerId：%s, FingerVersion：%s",
                 fingerBean.getFingerId(), fingerBean.getFingerVersion()), tvShow);
@@ -348,6 +358,19 @@ public class FingerActivity extends InitModuleActivity {
         btnNum.setEnabled(true);
         break;
       case KeyEvent.KEYCODE_5:
+        List<FingerBean> fingerBeanList = fingerPrintDbHelper.queryAllFinger();
+        int[] resBuff = new int[1];
+        res = fingerprintController.getFingerNum(resBuff);
+        if (res == 0) {
+          ViewUtil.appendShow(String.format("数据库指纹数量：%s，指纹库：%s",
+              fingerBeanList.size(), resBuff[0]), tvShow);
+        } else {
+          ViewUtil.appendShow(String.format("数据库指纹数量：%s，获取指纹库数量失败", fingerBeanList.size()), tvShow);
+        }
+        for (int i = 0; i < fingerBeanList.size(); i++) {
+          ViewUtil.appendShow(String.format("====== %s ======\n%s",
+              i, fingerBeanList.get(i).toInfo()), tvShow);
+        }
         break;
       case KeyEvent.KEYCODE_6:
         byte[] fastEpc = uhfController.readEpcWithTid(800);
@@ -386,8 +409,10 @@ public class FingerActivity extends InitModuleActivity {
         btnSearch.setEnabled(true);
         btnNum.setEnabled(true);
         break;
+      default:
+        return super.onKeyDown(keyCode, event);
     }
-    return super.onKeyDown(keyCode, event);
+    return true;
   }
 
   @Override

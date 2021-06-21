@@ -14,4 +14,7 @@
   <string name="main_bag_search">查找袋Id</string>
 
   <string name="text_click_again_quit">再次点击退出</string>
+
+  <string name="v_match_finger">匹配指纹</string>
+  <string name="v_add_finger">添加指纹</string>
 </resources>
