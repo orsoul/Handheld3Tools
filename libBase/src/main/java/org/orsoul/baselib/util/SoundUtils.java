@@ -183,7 +183,6 @@ public class SoundUtils {
       return;
     }
     mSoundPool.play(id, volume, volume, PRIORITY, LOOP, RATE);
-    // LogsUtil.s("sound play : " + id);
   }
 
   /**
@@ -216,7 +215,6 @@ public class SoundUtils {
     if (n < 0 || 999 < n) {
       return;
     }
-    // LogsUtil.s("play:" + n);
 
     // 报 一位数
     if (n <= 10) {
