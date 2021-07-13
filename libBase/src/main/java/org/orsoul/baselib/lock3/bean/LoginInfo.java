@@ -4,6 +4,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libjava.util.DateFormatUtil;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * 记录登录信息.
@@ -391,6 +392,16 @@ public final class LoginInfo {
         ", userName2='" + checkerName + '\'' +
         ", permission='" + permission + '\'' +
         '}';
+  }
+
+  private static List<StoreIdBean> storeIdBeanList;
+
+  public static List<StoreIdBean> getStoreIdBeanList() {
+    return storeIdBeanList;
+  }
+
+  public static void setStoreIdBeanList(List<StoreIdBean> storeIdBeanList) {
+    LoginInfo.storeIdBeanList = storeIdBeanList;
   }
 
   public static void main(String[] args) {

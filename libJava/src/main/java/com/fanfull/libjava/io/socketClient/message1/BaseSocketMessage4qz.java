@@ -2,6 +2,7 @@ package com.fanfull.libjava.io.socketClient.message1;
 
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.MsgFuture4qz;
+import com.fanfull.libjava.io.socketClient.OnceReceiveListener;
 import com.fanfull.libjava.io.socketClient.ReceiveListenerAbs;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
@@ -50,6 +51,8 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   }
 
   /** 复核登录. */
+  public static final int FUNC_ACCESS = 99;
+  /** 复核登录. */
   public static final int FUNC_LOGIN_2 = 0;
   /** 登录. */
   public static final int FUNC_LOGIN = 1;
@@ -75,6 +78,17 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_FINGER = 14;
   /** 透传. */
   public static final int FUNC_TC = 1000;
+
+  protected OnceReceiveListener<BaseSocketMessage4qz> onceReceiveListener;
+
+  public OnceReceiveListener<BaseSocketMessage4qz> getOnceReceiveListener() {
+    return onceReceiveListener;
+  }
+
+  public void setOnceReceiveListener(
+      OnceReceiveListener<BaseSocketMessage4qz> onceReceiveListener) {
+    this.onceReceiveListener = onceReceiveListener;
+  }
 
   protected String message;
 
@@ -116,6 +130,10 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
 
   public T getJsonBean() {
     return jsonBean;
+  }
+
+  public void setJsonBean(T jsonBean) {
+    this.jsonBean = jsonBean;
   }
 
   public BaseSocketMessage4qz() {
@@ -220,7 +238,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   }
 
   /**
-   * 生成通讯指令.
+   * 生成通讯指令.无需包含 $、# 头尾标识
    *
    * @param args 至少有3个参数，为null的参数会被忽略
    */
@@ -248,18 +266,28 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     if (split == null) {
       return null;
     }
-    int func = Integer.parseInt(split[0]);
-    int num = Integer.parseInt(split[split.length - 1]);
-    return new BaseSocketMessage4qz(func, split, num) {
-      @Override public String getMessage() {
-        message = recString;
-        return recString;
-      }
-    };
+    try {
+
+      int func = Integer.parseInt(split[0]);
+      int num = Integer.parseInt(split[split.length - 1]);
+      return new BaseSocketMessage4qz(func, split, num) {
+        @Override public String getMessage() {
+          message = recString;
+          return recString;
+        }
+      };
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   /** 向前置发送数据. */
   public boolean send() {
+    return false;
+  }
+
+  /** 向前置发送数据. */
+  public boolean send(OnceReceiveListener<BaseSocketMessage4qz> onceRec) {
     return false;
   }
 

@@ -2,10 +2,13 @@ package org.orsoul.baselib.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
 
 import com.blankj.utilcode.util.Utils;
 
-public class SettingUtil {
+public final class SettingUtil {
+  private static final String PACKAGENAME = "com.android.settings";
+
   /** 打开系统WiFi设置. */
   public static void openWiFiSetting(Context context) {
     Intent intent = null;
@@ -30,5 +33,22 @@ public class SettingUtil {
   /** 打开系统WiFi设置. */
   public static void openWiFiSetting() {
     openWiFiSetting(Utils.getApp());
+  }
+
+  public static void openDisplaySettings(Context context) {
+    Intent intent = new Intent(Intent.ACTION_MAIN);
+    intent.setClassName(PACKAGENAME, PACKAGENAME + ".DisplaySettings");
+    context.startActivity(intent);
+  }
+
+  public static void turnScreenOn(Context context) {
+    if (context == null) {
+      return;
+    }
+    PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    PowerManager.WakeLock mWakelock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |
+        PowerManager.SCREEN_DIM_WAKE_LOCK, "tag");
+    mWakelock.acquire();
+    mWakelock.release();
   }
 }

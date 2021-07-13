@@ -9,7 +9,7 @@ import java.util.List;
 
 /** json实体类 基类. */
 public class BaseJsonBean<T> {
-  protected int code;
+  protected Integer code;
   protected T data;
   protected List<T> list;
 
@@ -26,7 +26,7 @@ public class BaseJsonBean<T> {
     this.list = list;
   }
 
-  public int getCode() {
+  public Integer getCode() {
     return code;
   }
 

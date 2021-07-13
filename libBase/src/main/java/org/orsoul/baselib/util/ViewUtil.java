@@ -1,5 +1,8 @@
 package org.orsoul.baselib.util;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.StateListDrawable;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
@@ -53,5 +56,15 @@ public class ViewUtil {
 
   public static void appendShow(Object text, TextView tvShow) {
     appendShow(text, tvShow, true);
+  }
+
+  public static StateListDrawable getStateListDrawable(Context context, int idNormal, int idPress) {
+
+    StateListDrawable listDrawable = new StateListDrawable();
+    Drawable normal = context.getResources().getDrawable(idNormal);
+    Drawable press = context.getResources().getDrawable(idPress);
+    listDrawable.addState(new int[]{android.R.attr.state_pressed}, press);
+    listDrawable.addState(new int[]{-android.R.attr.state_pressed}, normal);
+    return listDrawable;
   }
 }

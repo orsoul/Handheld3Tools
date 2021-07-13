@@ -12,6 +12,8 @@ public final class ConfigGlobal {
   /** 与前置通讯是否启用校验位. */
   public static boolean isUseCheckByte = false;
 
+  /** 是否 接入二代系统. */
+  public static boolean isEd = false;
   /** 是否有PSam卡. */
   public static boolean havePSam = false;
   /** 是否为人行. */
@@ -48,4 +50,9 @@ public final class ConfigGlobal {
 
   /** 连接超时，单位毫秒. */
   public int connectTimeout = 5000;
+
+  /** 无指纹，单位毫秒. */
+  public static int noFingerTime = 10_000;
+  /** 验证方式，0指纹验证，其他扫卡验证. */
+  public static int checkMode = 0;
 }
