@@ -36,6 +36,8 @@ public abstract class CoverBagTask extends ReadLockTask {
   public static final int CHECK_RES_NFC_UHF_TID_NOT_EQUALS = -17;
   /** 06版袋Id校验值错误. */
   public static final int CHECK_RES_BAG_ID_CHECK_FAILED = -18;
+  /** 高频uid不一致. */
+  public static final int CHECK_RES_UID_NOT_EQUALS = -19;
 
   public static final int WRITE_RES_ARGS_WRONG = -101;
   public static final int WRITE_RES_WRITE_EPC_FAILED = -102;
@@ -473,6 +475,9 @@ public abstract class CoverBagTask extends ReadLockTask {
         break;
       case CHECK_RES_BAG_ID_CHECK_FAILED:
         msg = "锁片epc校验值错误";
+        break;
+      case CHECK_RES_UID_NOT_EQUALS:
+        msg = "高频卡不一致";
         break;
       default:
         msg = "未定义错误";

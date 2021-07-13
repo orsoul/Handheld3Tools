@@ -26,8 +26,7 @@ public abstract class ReadLoginCardTask extends ThreadUtil.TimeThreadRunnable {
   @Override protected boolean handleOnce() {
     byte[] cardBuff = readLoginCard();
     if (cardBuff != null) {
-      onReadSuccess(cardBuff);
-      return true;
+      return onReadSuccess(cardBuff);
     }
     return false;
   }
@@ -66,18 +65,17 @@ public abstract class ReadLoginCardTask extends ThreadUtil.TimeThreadRunnable {
   }
 
   /** 读卡成功. */
-  protected void onReadSuccess(byte[] cardId) {
+  protected boolean onReadSuccess(byte[] cardId) {
     switch (cardType) {
       case CARD_M1:
-        onReadSuccess(BytesUtil.bytes2HexString(cardId));
-        return;
+        return onReadSuccess(BytesUtil.bytes2HexString(cardId));
       case CARD_CUP:
         String s = new String(cardId, 0, cardId.length - 2);
-        onReadSuccess(s);
-        break;
+        return onReadSuccess(s);
     }
+    return true;
   }
 
   /** 读卡成功. */
-  protected abstract void onReadSuccess(String cardId);
+  protected abstract boolean onReadSuccess(String cardId);
 }

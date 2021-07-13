@@ -19,7 +19,7 @@ public final class ThreadUtil {
       synchronized (ThreadUtil.class) {
         if (normalThreadPool == null) {
           normalThreadPool = new ThreadPoolExecutor(8, 32,
-              3000L, TimeUnit.MILLISECONDS,
+              5000L, TimeUnit.MILLISECONDS,
               new LinkedBlockingQueue<>(), getNameFormatThreadFactory("FixedThread"));
         }
       }
@@ -173,6 +173,8 @@ public final class ThreadUtil {
 
     private boolean isRestart;
 
+    protected Runnable onTaskFinishRunnable;
+
     /**
      * 停止当前任务，重新执行任务.
      *
@@ -228,6 +230,16 @@ public final class ThreadUtil {
       }
     }
 
+    /**
+     * 停止线程运行，线程停止后执行 onTaskFinishRunnable.run().
+     *
+     * @param onTaskFinishRunnable 线程停止后执行的动作.
+     */
+    public void stopThread(Runnable onTaskFinishRunnable) {
+      this.onTaskFinishRunnable = onTaskFinishRunnable;
+      stopThread(false);
+    }
+
     /** 获取 当前线程停止标志. */
     public synchronized boolean isStopped() {
       return stopped;
@@ -266,9 +278,16 @@ public final class ThreadUtil {
 
     /** run()结束后执行. */
     protected void onTaskFinish() {
+      if (onTaskFinishRunnable != null) {
+        onTaskFinishRunnable.run();
+        onTaskFinishRunnable = null;
+      }
     }
   }
 
+  /**
+   * 携带停止标志的 任务，可查询执行任务的线程是否正在运行，可设置任务运行时间和执行次数.
+   */
   public static abstract class TimeThreadRunnable extends ThreadRunnable {
     /** 开始运行的时间，单位毫秒. */
     private long startTime;

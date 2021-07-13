@@ -171,6 +171,10 @@ public class RfidController implements IRfidPSamOperation {
     return operation.resetPSam(responseBuff);
   }
 
+  public boolean resetPSam() {
+    return 1 < resetPSam(new byte[32]);
+  }
+
   @Override public int send2PSam(byte[] cmd, byte[] responseBuff, boolean withReset) {
     return operation.send2PSam(cmd, responseBuff, withReset);
   }

@@ -19,7 +19,7 @@ public class FingerBean {
 
   /** 指纹id，业务暂未需要. */
   private String fingerId;
-  /** 指纹对应的用户id . */
+  /** 指纹对应的用户id,orgId + userNum . */
   private String userId;
   /** 指纹对应的身份卡 . */
   private String userIc;
