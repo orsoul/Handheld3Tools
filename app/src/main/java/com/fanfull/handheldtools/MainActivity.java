@@ -24,12 +24,13 @@ import com.fanfull.handheldtools.ui.view.SetIpPortHelper;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.impl.InputConfirmPopupView;
 import com.lxj.xpopup.interfaces.OnSelectListener;
 
 import org.orsoul.baselib.util.AppUtil;
-import org.orsoul.baselib.util.CrashLogUtil;
 import org.orsoul.baselib.util.DeviceInfoUtils;
 import org.orsoul.baselib.util.SoundHelper;
+import org.orsoul.baselib.view.MyInputPopupView;
 
 public class MainActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +117,7 @@ public class MainActivity extends BaseActivity {
             .hasShadowBg(true)
             //                            .hasBlurBg(true)
             //                            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
-            .asBottomList("请选择一项", new String[] { "条目1", "条目2", "条目3", "条目4", "条目5" },
+            .asBottomList("请选择一项", new String[]{"条目1", "条目2", "条目3", "条目4", "条目5"},
                 new OnSelectListener() {
                   @Override
                   public void onSelect(int position, String text) {
@@ -129,10 +130,21 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_5:
         break;
       case KeyEvent.KEYCODE_6:
-        CrashLogUtil.logException(new RuntimeException("test log exception"));
+        //CrashLogUtil.logException(new RuntimeException("test log exception"));
+
+        InputConfirmPopupView popupView = new MyInputPopupView(this, 0);
+        popupView.setTitleContent("title", "content", "hint");
+        popupView.inputContent = "inputContent";
+        //popupView.setListener(null, null);
+        new XPopup.Builder(this)
+            //.isDarkTheme(true)
+            .hasShadowBg(true)
+            .autoOpenSoftInput(false)
+            .asCustom(popupView)
+            .show();
         break;
       case KeyEvent.KEYCODE_7:
-        throw new RuntimeException("test crash");
+        //throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
         break;
       case KeyEvent.KEYCODE_9:

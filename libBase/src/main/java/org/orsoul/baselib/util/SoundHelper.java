@@ -1,5 +1,6 @@
 package org.orsoul.baselib.util;
 
+import android.app.Activity;
 import android.content.Context;
 
 import com.fanfull.libjava.util.MoneyConvert;
@@ -222,6 +223,15 @@ public class SoundHelper extends SoundPoolUtil {
     }
   }
 
+  /** 在主线程播放成功声. */
+  public static void playToneSuccess(Activity activity) {
+    if (activity != null) {
+      activity.runOnUiThread(() -> playToneSuccess());
+    } else {
+      playToneSuccess();
+    }
+  }
+
   /** 播放成功声. */
   public static int playToneSuccess() {
     return SingletonHolder.instance.play(TONE_SUCCESS);
@@ -230,6 +240,15 @@ public class SoundHelper extends SoundPoolUtil {
   /** 播放 正常按键声音 */
   public static int playToneDrop() {
     return SingletonHolder.instance.play(TONE_DROP);
+  }
+
+  /** 在主线程播放 错误声音. */
+  public static void playToneFailed(Activity activity) {
+    if (activity != null) {
+      activity.runOnUiThread(() -> playToneFailed());
+    } else {
+      playToneFailed();
+    }
   }
 
   /** 播放 错误声音. */

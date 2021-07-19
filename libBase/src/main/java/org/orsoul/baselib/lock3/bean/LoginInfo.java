@@ -219,10 +219,12 @@ public final class LoginInfo {
       return 1;
     }
 
-    if ("*01".equals(split[0]) && "01".equals(split[1])) {
+    if (("*01".equals(split[0]) || "00".equals(split[0])) && "01".equals(split[1])) {
       // 刷卡登录，do nothing
       isFingerLogin = false;
-    } else if ("*14".equals(split[0]) && "03".equals(split[1]) && "00".equals(split[2])) {
+    } else if (("*14".equals(split[0]) || "14".equals(split[0])) &&
+        "03".equals(split[1]) &&
+        "00".equals(split[2])) {
       isFingerLogin = true;
       cardId = split[12];
       setFingerUserId(split[5]);
@@ -276,6 +278,8 @@ public final class LoginInfo {
    *
    * ` 0  1      2           3               4      5   6
    * *00 01 1111111114 74212001010101 中心支库-b库间 3 复核员 001#
+   *
+   * @return 返回0：解析成功，1：参数错误，2：密码错误
    */
   public static boolean parseCheckLogin(String checkerId, String info) {
     if (info == null) {
@@ -317,6 +321,8 @@ public final class LoginInfo {
   /**
    * $14 06 002701001004 010#
    * *14 06 00 1111111111 73201001010102 上库 31853 XINCHENGDU 1000000001 010#
+   *
+   * @return 返回0：解析成功，1：参数错误，2：密码错误
    */
   public static int parseCheckLogin(String[] split, String checkerId) {
     if (split == null || split.length < 3) {
@@ -402,6 +408,21 @@ public final class LoginInfo {
 
   public static void setStoreIdBeanList(List<StoreIdBean> storeIdBeanList) {
     LoginInfo.storeIdBeanList = storeIdBeanList;
+  }
+
+  public static StoreIdBean getStoreIdBean(String storeLabelId) {
+    if (storeIdBeanList != null && storeLabelId != null) {
+      for (StoreIdBean storeIdBean : storeIdBeanList) {
+        if (storeLabelId.equals(storeIdBean.getCardId())) {
+          return storeIdBean;
+        }
+      }
+    }
+    return null;
+  }
+
+  public static boolean isStoreLabelId(String storeLabelId) {
+    return getStoreIdBean(storeLabelId) != null;
   }
 
   public static void main(String[] args) {
