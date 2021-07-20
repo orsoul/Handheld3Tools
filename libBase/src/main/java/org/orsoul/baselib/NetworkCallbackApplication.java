@@ -28,8 +28,7 @@ import java.util.Set;
 public abstract class NetworkCallbackApplication extends Application {
   private static Set<NetworkCallback> networkCallbackSet;
 
-  @Override
-  public void onCreate() {
+  @Override public void onCreate() {
     super.onCreate();
     initNetworkCallback();
   }
@@ -51,9 +50,11 @@ public abstract class NetworkCallbackApplication extends Application {
 
       @Override public void onLost(Network network) {
         LogUtils.v("isConnected:%s network:%s", isConnected, network);
-        isConnected = false;
-        for (NetworkCallback networkCallback : networkCallbackSet) {
-          networkCallback.onNetworkChange(false);
+        if (isConnected) {
+          isConnected = false;
+          for (NetworkCallback networkCallback : networkCallbackSet) {
+            networkCallback.onNetworkChange(false);
+          }
         }
       }
     });
@@ -124,6 +125,14 @@ public abstract class NetworkCallbackApplication extends Application {
       return;
     }
     cm.requestNetwork(new NetworkRequest.Builder().build(), callback);
+
+    //NetworkRequest request = new NetworkRequest.Builder()
+    //    .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    //    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    //    .build();
+    //cm.registerNetworkCallback(request, callback);
+
+    //cm.registerDefaultNetworkCallback(callback);
   }
 
   public interface NetworkCallback {

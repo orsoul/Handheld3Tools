@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.orsoul.baselib">
+  package="org.orsoul.baselib">
 
-    <application>
-        <service
-            android:name=".service.RestartAppService"
-            android:process=":restartApp"
-            android:enabled="true"
-            android:exported="false"></service>
-    </application>
+  <application>
+    <service
+      android:name=".service.RestartAppService"
+      android:enabled="true"
+      android:exported="false"
+      android:process=":restartApp"></service>
+  </application>
 
 </manifest>
