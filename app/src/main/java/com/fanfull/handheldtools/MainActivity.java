@@ -1,6 +1,9 @@
 package com.fanfull.handheldtools;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +32,7 @@ import com.lxj.xpopup.interfaces.OnSelectListener;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.DeviceInfoUtils;
+import org.orsoul.baselib.util.NetworkChangeReceiver;
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.view.MyInputPopupView;
 
@@ -53,31 +57,21 @@ public class MainActivity extends BaseActivity {
     //SoundHelper.getInstance().loadTone(getApplicationContext());
     //SoundHelper.getInstance().loadNum(getApplicationContext());
 
-    //AutoCompleteTextView autoView = findViewById(R.id.auto);
-    //String[] ips = new String[]{
-    //        "192.168.11.177",
-    //        "192.168.11.197",
-    //        "192.168.11.107",
-    //};
-    //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ips);
-    //autoView.setAdapter(adapter);
-    //DeviceInfo.showDeviceInfo();
+    ConnectivityManager connMgr =
+        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo wifiNetInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+    NetworkInfo.State state = wifiNetInfo.getState();
+    LogUtils.d("NetworkInfo.State:%s", state);
 
-    //new Thread() {
-    //  @Override public void run() {
-    //    try {
-    //      SerialPort serial = SerialPort
-    //          .newBuilder("/dev/ttyMT0", 115200)
-    //          .flags(0)
-    //          .parity('n')
-    //          .build();
-    //    } catch (IOException e) {
-    //      e.printStackTrace();
-    //    }
-    //  }
-    //}.start();
-    //setCallback();
-    //audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    NetworkChangeReceiver.register(this, new NetworkChangeReceiver.NetChangeObserver() {
+      @Override public void onNetChange(ConnectivityManager connMgr) {
+        NetworkChangeReceiver.NetChangeObserver.super.onNetChange(connMgr);
+      }
+
+      @Override public void onDisconnect() {
+
+      }
+    });
   }
 
   @Override public void onNetworkChange(boolean isConnected) {
@@ -169,6 +163,7 @@ public class MainActivity extends BaseActivity {
     }
     LogUtils.getLog2FileConfig().flushAsync();
 
+    NetworkChangeReceiver.unregister(this);
     super.onDestroy();
 
     AppUtil.killProcess();
