@@ -23,8 +23,8 @@ public class SoundHelper extends SoundPoolUtil {
   }
 
   private static final char[] MONEY_STR =
-      { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '9' + 1 };
-  private static final char[] MONEY_UNIT_BASE = { '9' + 1, '9' + 2, '9' + 3 };
+      {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '9' + 1};
+  private static final char[] MONEY_UNIT_BASE = {'9' + 1, '9' + 2, '9' + 3};
 
   public static int[] numSoundIdArr;
   public static int TONE_DROP;
@@ -42,19 +42,12 @@ public class SoundHelper extends SoundPoolUtil {
   }
 
   public void loadNum(Context context) {
-    numSoundIdArr = new int[12];
-    numSoundIdArr[0] = mSoundPool.load(context, R.raw.c0, DEFAULT_PRIORITY);
-    numSoundIdArr[1] = mSoundPool.load(context, R.raw.c1, DEFAULT_PRIORITY);
-    numSoundIdArr[2] = mSoundPool.load(context, R.raw.c2, DEFAULT_PRIORITY);
-    numSoundIdArr[3] = mSoundPool.load(context, R.raw.c3, DEFAULT_PRIORITY);
-    numSoundIdArr[4] = mSoundPool.load(context, R.raw.c4, DEFAULT_PRIORITY);
-    numSoundIdArr[5] = mSoundPool.load(context, R.raw.c5, DEFAULT_PRIORITY);
-    numSoundIdArr[6] = mSoundPool.load(context, R.raw.c6, DEFAULT_PRIORITY);
-    numSoundIdArr[7] = mSoundPool.load(context, R.raw.c7, DEFAULT_PRIORITY);
-    numSoundIdArr[8] = mSoundPool.load(context, R.raw.c8, DEFAULT_PRIORITY);
-    numSoundIdArr[9] = mSoundPool.load(context, R.raw.c9, DEFAULT_PRIORITY);
-    numSoundIdArr[10] = mSoundPool.load(context, R.raw.cshi, DEFAULT_PRIORITY);
-    numSoundIdArr[11] = mSoundPool.load(context, R.raw.cbai, DEFAULT_PRIORITY);
+    int[] resArr = new int[]{R.raw.c0, R.raw.c1, R.raw.c2, R.raw.c3, R.raw.c4, R.raw.c5,
+        R.raw.c6, R.raw.c7, R.raw.c8, R.raw.c9, R.raw.cshi, R.raw.cbai,};
+    numSoundIdArr = new int[resArr.length];
+    for (int i = 0; i < numSoundIdArr.length; i++) {
+      numSoundIdArr[i] = mSoundPool.load(context, resArr[i], DEFAULT_PRIORITY);
+    }
   }
 
   public static void loadSounds(Context context) {
@@ -266,14 +259,22 @@ public class SoundHelper extends SoundPoolUtil {
     return SingletonHolder.instance.play(TONE_DIDA);
   }
 
-  public static void playNum(int num, float rate) {
+  public static void playNum(int num, float rate, int interval) {
+    if (999 < num) {
+      // TODO: 2021/7/26 暂无‘千'的音效
+      return;
+    }
     String s = MoneyConvert.convertThousand(num, MONEY_STR, MONEY_UNIT_BASE);
     char[] chars = s.toCharArray();
     int[] ids = new int[chars.length];
     for (int i = 0; i < ids.length; i++) {
       ids[i] = numSoundIdArr[chars[i] - '0'];
     }
-    SingletonHolder.instance.playArr(rate, 400, ids);
+    SingletonHolder.instance.playArr(rate, interval, ids);
+  }
+
+  public static void playNum(int num, float rate) {
+    playNum(num, rate, 300);
   }
 
   public static void playNum(int num) {

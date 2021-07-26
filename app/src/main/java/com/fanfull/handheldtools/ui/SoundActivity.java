@@ -25,10 +25,14 @@ public class SoundActivity extends BaseActivity {
   private EditText etPeriod;
   private Button btnPlay;
 
-  private Button btnReadEpc;
-  private Button btnReadTid;
-  private Button btnReadUse;
-  private Button btnGetPower;
+  private EditText etNum;
+  private EditText etRate;
+  private Button btnPlayMoney;
+
+  private Button btnPlayNums;
+  private Button btnPlaySuccess;
+  private Button btnPlayFailed;
+  private Button btnPlayDrop;
 
   private int soundIdPlaying;
   private long period;
@@ -49,21 +53,24 @@ public class SoundActivity extends BaseActivity {
 
     sbSound = findViewById(R.id.sb_sound);
 
+    etNum = findViewById(R.id.et_sound_num);
+    etRate = findViewById(R.id.et_sound_rate);
+    btnPlayMoney = findViewById(R.id.btn_sound_play_money);
+    btnPlayMoney.setOnClickListener(this);
+
     etTimes = findViewById(R.id.et_sound_times);
     etPeriod = findViewById(R.id.et_sound_period);
     btnPlay = findViewById(R.id.btn_sound_play);
-
-    btnReadEpc = findViewById(R.id.btn_sound_play_num);
-    btnReadTid = findViewById(R.id.btn_sound_play_success);
-    btnReadUse = findViewById(R.id.btn_sound_play_failed);
-    btnGetPower = findViewById(R.id.btn_sound_play_drop);
-
     btnPlay.setOnClickListener(this);
 
-    btnReadEpc.setOnClickListener(this);
-    btnReadTid.setOnClickListener(this);
-    btnReadUse.setOnClickListener(this);
-    btnGetPower.setOnClickListener(this);
+    btnPlayNums = findViewById(R.id.btn_sound_play_num);
+    btnPlaySuccess = findViewById(R.id.btn_sound_play_success);
+    btnPlayFailed = findViewById(R.id.btn_sound_play_failed);
+    btnPlayDrop = findViewById(R.id.btn_sound_play_drop);
+    btnPlayNums.setOnClickListener(this);
+    btnPlaySuccess.setOnClickListener(this);
+    btnPlayFailed.setOnClickListener(this);
+    btnPlayDrop.setOnClickListener(this);
 
     ViewUtil.requestFocus(btnPlay);
   }
@@ -91,6 +98,12 @@ public class SoundActivity extends BaseActivity {
   @Override public void onClick(View v) {
     v.setEnabled(false);
     switch (v.getId()) {
+      case R.id.btn_sound_play_money:
+        int num = Integer.parseInt(etNum.getText().toString());
+        int rate = Integer.parseInt(etRate.getText().toString());
+        //SoundHelper.playNum(num, rate);
+        SoundHelper.getInstance().playNum(num, 1, rate);
+        break;
       case R.id.btn_sound_play:
         clickPlay();
         break;

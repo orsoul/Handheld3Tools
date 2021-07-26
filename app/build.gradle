@@ -10,7 +10,7 @@ android {
     targetSdkVersion rootProject.ext.android.targetSdkVersion
 
     versionCode 225
-    versionName "v0.2.5-alpha"
+    versionName "v0.2.6-alpha"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {

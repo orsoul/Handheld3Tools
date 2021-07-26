@@ -50,6 +50,7 @@ public class SoundPoolUtil {
       AudioAttributes aab = new AudioAttributes.Builder()
           .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
           .setUsage(AudioAttributes.USAGE_MEDIA)
+          //.setLegacyStreamType(AudioManager.STREAM_MUSIC)
           .build();
       mSoundPool = new SoundPool.Builder()
           .setMaxStreams(MAX_STREAMS)
@@ -360,7 +361,7 @@ public class SoundPoolUtil {
       play(ids[i], 1, rate);
       // 时间 隔
       if (i < ids.length - 1) {
-        SystemClock.sleep(Math.round(interval * rate));
+        SystemClock.sleep(Math.round(interval / rate));
       }
     }
   }

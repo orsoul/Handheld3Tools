@@ -17,6 +17,45 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent" />
 
+  <EditText
+    android:id="@+id/et_sound_num"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:gravity="center"
+    android:hint="整数"
+    android:inputType="number"
+    android:text="832"
+    android:maxLength="3"
+    app:layout_constraintBottom_toTopOf="@id/et_sound_times"
+    app:layout_constraintEnd_toStartOf="@id/et_sound_period"
+    app:layout_constraintStart_toStartOf="parent" />
+
+  <EditText
+    android:id="@+id/et_sound_rate"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:hint="播放间隔"
+    android:inputType="number"
+    android:text="300"
+    app:layout_constraintBottom_toBottomOf="@id/et_sound_num"
+    app:layout_constraintHorizontal_weight="1"
+    app:layout_constraintLeft_toRightOf="@id/et_sound_num"
+    app:layout_constraintRight_toLeftOf="@id/btn_sound_play"
+    app:layout_constraintTop_toTopOf="@id/et_sound_num" />
+
+  <Button
+    android:id="@+id/btn_sound_play_money"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="播放金额"
+    app:layout_constraintBottom_toBottomOf="@id/et_sound_num"
+    app:layout_constraintHorizontal_weight="0.8"
+    app:layout_constraintLeft_toRightOf="@id/et_sound_rate"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="@id/et_sound_num" />
+
 
   <EditText
     android:id="@+id/et_sound_times"
