@@ -1,5 +1,8 @@
 package org.orsoul.baselib.lock3;
 
+import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.util.DateFormatUtil;
+
 import java.util.Arrays;
 
 /**
@@ -9,7 +12,7 @@ public final class Lock3Util {
   /**
    * 十套代表F1-->F4的标志 和单片机A版本对接的，请勿修改
    */
-  public static final byte[] FLAG_DATA = new byte[] {
+  public static final byte[] FLAG_DATA = new byte[]{
       (byte) 0x23,
       (byte) 0x5f, (byte) 0x8e, (byte) 0x41, (byte) 0x4d, (byte) 0x8c,
       (byte) 0x3d, (byte) 0x6a, (byte) 0x23, (byte) 0x9c, (byte) 0x95,
@@ -25,11 +28,11 @@ public final class Lock3Util {
   /** 启用码 4byte：未启用 00000000. */
   public static final byte[] ENABLE_CODE_DISABLE = new byte[4];
   /** 启用码 4byte：已启用 FFDDFFEE. */
-  public static final byte[] ENABLE_CODE_ENABLE = new byte[] {
+  public static final byte[] ENABLE_CODE_ENABLE = new byte[]{
       (byte) 0xFF, (byte) 0xDD, (byte) 0xFF, (byte) 0xEE,
   };
   /** 启用码 4byte：已注销 EEEEEEEE注销. */
-  public static final byte[] ENABLE_CODE_UN_REG = new byte[] {
+  public static final byte[] ENABLE_CODE_UN_REG = new byte[]{
       (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE,
   };
 
@@ -254,6 +257,18 @@ public final class Lock3Util {
       default:
         return String.format("%s未定义", status);
     }
+  }
+
+  /**
+   * 生成封签事件码 60个字符:
+   * 袋Id（24） + Tid（12） + 用户ID（12：071505001000:） + 时间（12：yyMMddHHmmss:）
+   * 05532101049F48D23E6180A82578287E1800071505001000210625174505
+   */
+  public static String getCoverCode(String bagId, String tid, String orgId) {
+    String coverCode = String.format("%s%s%s%s",
+        bagId, tid, orgId, DateFormatUtil.getStringTime("yyMMddHHmmss"));
+    LogUtils.wtf("coverCode:%s", coverCode);
+    return coverCode;
   }
 
   public static void main(String[] args) {

@@ -237,6 +237,14 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     return split;
   }
 
+  public static boolean checkSplit(String[] split) {
+    if (split == null || split.length < 3) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   /**
    * 生成通讯指令.无需包含 $、# 头尾标识
    *

@@ -98,7 +98,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
 
   @Override
   public void run() {
-    //LogUtils.i("run start");
+    LogUtils.e("run start");
 
     if (fingerSearchListener != null) {
       fingerSearchListener.todoBeforeRun();
@@ -154,7 +154,7 @@ public class FingerPrintTask extends ThreadUtil.ThreadRunnable {
         }
       }
     } // end while
-    //LogUtils.i("run end");
+    LogUtils.e("run end");
   }
 
   /**

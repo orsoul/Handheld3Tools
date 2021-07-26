@@ -67,7 +67,7 @@ public class SerialPortController implements ISerialPort {
     if (serialPortListener == null) {
       return false;
     }
-    if (listenerSet != null) {
+    if (listenerSet == null) {
       return false;
     }
     return listenerSet.remove(serialPortListener);
@@ -104,8 +104,8 @@ public class SerialPortController implements ISerialPort {
    * @return 发送失败返回-1，回复超时返回-2
    */
   public int sendAndWaitReceive(byte[] data, long timeout, byte[] recBuff) {
-    final int[] reVal = { -2 };
-    onceListener = new ISerialPortListener() {
+    final int[] reVal = {-2};
+    ISerialPortListener listener = new ISerialPortListener() {
       @Override public void onReceiveData(byte[] recData, int len) {
         if (recBuff != null) {
           reVal[0] = Math.min(recBuff.length, len);
@@ -118,9 +118,10 @@ public class SerialPortController implements ISerialPort {
       return -1;
     }
 
-    synchronized (onceListener) {
+    synchronized (listener) {
       try {
         ClockUtil.clock();
+        onceListener = listener;
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
@@ -133,9 +134,9 @@ public class SerialPortController implements ISerialPort {
   }
 
   public byte[] sendAndWaitReceive(byte[] data, long timeout) {
-    final byte[][] reVal = { null };
+    final byte[][] reVal = {null};
     //onceListener = (buff, len) -> onceRecBuff = Arrays.copyOf(buff, len);
-    onceListener = new ISerialPortListener() {
+    ISerialPortListener listener = new ISerialPortListener() {
       @Override public void onReceiveData(byte[] data, int len) {
         reVal[0] = Arrays.copyOf(data, len);
       }
@@ -145,13 +146,19 @@ public class SerialPortController implements ISerialPort {
       return null;
     }
 
-    synchronized (onceListener) {
+    synchronized (listener) {
       try {
         ClockUtil.clock();
+        //LogUtils.w("listener wait:%s ======", listener.hashCode());
+        onceListener = listener;
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
       }
+    }
+    //LogUtils.w("listener endw:%s", Objects.hashCode(onceListener));
+    if (reVal[0] == null) {
+      LogUtils.tag(TAG).w("timeout----");
     }
     onceListener = null;
     LogUtils.tag(TAG).d("wait time: %s / %s", ClockUtil.clock(), timeout);
@@ -233,11 +240,11 @@ public class SerialPortController implements ISerialPort {
           }
           LogUtils.tag(TAG).v("onceListener:%s", onceListener);
           if (onceListener != null) {
-            onceListener.onReceiveData(buff, len);
-            synchronized (onceListener) {
-              if (onceListener != null) {
-                onceListener.notifyAll();
-              }
+            ISerialPortListener listener = onceListener;
+            listener.onReceiveData(buff, len);
+            synchronized (listener) {
+              //LogUtils.w("listener notify:%s", Objects.hashCode(listener));
+              listener.notifyAll();
             }
             //onceListener = null;
           }

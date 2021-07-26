@@ -7,6 +7,10 @@ public class StoreIdBean {
   String cardId;
   String storeId;
   String storeName;
+  /** 是否为库外卡 */
+  boolean outdoor = true;
+  /** 开库门 需要验证的人数 */
+  int needNumber = 3;
 
   public StoreIdBean(String cardId, String storeId, String storeName) {
     this.cardId = cardId;
@@ -36,5 +40,21 @@ public class StoreIdBean {
 
   public String getStoreName() {
     return storeName;
+  }
+
+  public boolean isOutDoor() {
+    return outdoor;
+  }
+
+  public int getNeedNumber() {
+    return needNumber;
+  }
+
+  public void setOutdoor(boolean outdoor) {
+    this.outdoor = outdoor;
+  }
+
+  public void setNeedNumber(int needNumber) {
+    this.needNumber = needNumber;
   }
 }

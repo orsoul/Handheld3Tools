@@ -325,8 +325,10 @@ public abstract class CoverBagTask extends ReadLockTask {
         lock3BeanWrite.pieceEpcBuff = bagId06;
       } else {
         lock3BeanWrite.pieceEpcBuff = lock3Bean.bagIdBuff;
+            //Arrays.copyOf(lock3Bean.bagIdBuff, lock3Bean.bagIdBuff.length);
       }
       lock3BeanWrite.pieceTidBuff = lock3Bean.pieceTidBuff;
+      //Arrays.copyOf(lock3Bean.pieceTidBuff, lock3Bean.pieceTidBuff.length);
 
       // 2. 写封签事件码
       //Lock3InfoUnit unitEvent = Lock3InfoUnit.newInstance(Lock3Bean.SA_COVER_EVENT);
@@ -381,7 +383,7 @@ public abstract class CoverBagTask extends ReadLockTask {
     return lock3BeanWrite;
   }
 
-  protected void writeLock(Lock3Bean lock3BeanWrite) {
+  public void writeLock(Lock3Bean lock3BeanWrite) {
     if (lock3BeanWrite == null) {
       LogUtils.w("lock3BeanWrite == null");
       onWriteFailed(WRITE_RES_ARGS_WRONG, null);
@@ -417,6 +419,9 @@ public abstract class CoverBagTask extends ReadLockTask {
       }
       res = UhfController.getInstance().writeEpcFilterTid(
           lock3BeanWrite.pieceEpcBuff, lock3BeanWrite.pieceTidBuff);
+      LogUtils.wtf("epc:%s, tid:%s, %s",
+          BytesUtil.bytes2HexString(lock3BeanWrite.pieceEpcBuff),
+          BytesUtil.bytes2HexString(lock3BeanWrite.pieceTidBuff), res);
       if (!res) {
         onWriteFailed(WRITE_RES_WRITE_EPC_FAILED, lock3BeanWrite);
         return;

@@ -1,6 +1,7 @@
 package com.fanfull.libjava.util;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -109,27 +110,46 @@ public final class ThreadUtil {
     }
   }
 
-  public static void waitObject(Object obj, long millis) {
+  /** @return 被中断返回false */
+  public static boolean waitObject(Object obj, long millis) {
     try {
       obj.wait(millis);
+      return true;
     } catch (InterruptedException e) {
+      return false;
     }
   }
 
-  public static void syncWait(Object obj) {
+  /** 与syncAwaken()配对使用，@return 被中断返回false */
+  public static boolean syncWait(Object obj) {
     synchronized (obj) {
       try {
         obj.wait();
+        return true;
       } catch (InterruptedException e) {
+        return false;
       }
     }
   }
 
-  public static void syncWait(Object obj, long millis) {
+  /** 与syncAwaken()配对使用，@return 被中断返回false */
+  public static boolean syncWait(Object obj, long millis) {
     synchronized (obj) {
       try {
         obj.wait(millis);
+        return true;
       } catch (InterruptedException e) {
+        return false;
+      }
+    }
+  }
+
+  /** 唤醒线程，syncWait()配对使用 */
+  public static void syncAwaken(Object obj) {
+    synchronized (obj) {
+      try {
+        obj.notifyAll();
+      } catch (Exception e) {
       }
     }
   }
@@ -264,8 +284,47 @@ public final class ThreadUtil {
       return runningThread;
     }
 
-    private synchronized void setRunningThread(Thread runningThread) {
-      this.runningThread = runningThread;
+    private CountDownLatch countDownLatch;
+
+    /**
+     * 当前线程正在运行，进入等待.
+     *
+     * @param millis 大于0等待时间，否则 无限等待.
+     * @return 0:被唤醒，1：未进入等待，2：等待超时，3：等待被中断
+     */
+    public synchronized int await(long millis) {
+      if (runningThread == null || !runningThread.getState().equals(Thread.State.RUNNABLE)) {
+        // 当前线程 不处于 运行中，不进行等待
+        return 1;
+      }
+
+      if (countDownLatch == null || countDownLatch.getCount() == 0) {
+        countDownLatch = new CountDownLatch(1);
+      }
+
+      try {
+        if (millis <= 0) {
+          countDownLatch.await();
+          return 0;
+        } else if (countDownLatch.await(millis, TimeUnit.MILLISECONDS)) {
+          return 0;
+        } else {
+          return 2;
+        }
+      } catch (InterruptedException e) {
+        countDownLatch = null;
+        return 3;
+      }
+    }
+
+    /**
+     * 唤醒等待的线程.
+     */
+    public synchronized void awaken() {
+      if (countDownLatch != null) {
+        countDownLatch.countDown();
+        countDownLatch = null;
+      }
     }
 
     /** run()开始前执行， */
@@ -298,6 +357,8 @@ public final class ThreadUtil {
 
     /** handleOnce() 已执行次数. */
     protected int runCount;
+    protected boolean isPause;
+    protected long pauseTime;
 
     public long getRunTime() {
       return runTime;
@@ -315,10 +376,35 @@ public final class ThreadUtil {
       this.total = total;
     }
 
+    public synchronized boolean isPause() {
+      return isPause;
+    }
+
+    /**
+     * 线程 进入wait
+     *
+     * @param pauseTime 小于等于0 进入无限等待
+     */
+    public synchronized void pause(long pauseTime) {
+      this.isPause = true;
+      this.pauseTime = pauseTime;
+    }
+
+    public synchronized void resume() {
+      this.isPause = false;
+      ThreadUtil.syncAwaken(this);
+    }
+
     /** 设置任务开始运行的时间为当前时间. */
     public void resetStartTime() {
       startTime = System.currentTimeMillis();
     }
+
+    /** 线程离开 wait 后回调 */
+    public void onResume() {}
+
+    /** 线程进入 wait 前回调 */
+    public void onPause() {}
 
     @Override public void run() {
       resetStartTime();
@@ -327,6 +413,21 @@ public final class ThreadUtil {
         if (isStopped()) {
           onStop();
           return;
+        }
+
+        if (isPause()) {
+          onPause();
+          boolean isNotify;
+          if (0 < pauseTime) {
+            isNotify = ThreadUtil.syncWait(this, pauseTime);
+          } else {
+            isNotify = ThreadUtil.syncWait(this);
+          }
+          onResume();
+          if (!isNotify) {
+            // 被中断
+            continue;
+          }
         }
 
         boolean finish = handleOnce();
