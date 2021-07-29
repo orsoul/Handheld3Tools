@@ -24,6 +24,15 @@ public final class ConfigGlobal {
   /** 服务器指纹库 版本. */
   public static int fingerLibVersion;
 
+  public static void setFingerEnable(boolean fingerEnable) {
+    ConfigGlobal.fingerEnable = fingerEnable;
+    //if (fingerEnable) {
+    //  ConfigGlobal.checkMode = BaseScanIdCardActivity.CHECK_MODE_FINGER;
+    //} else {
+    //  ConfigGlobal.checkMode = BaseScanIdCardActivity.CHECK_MODE_USER_CARD;
+    //}
+  }
+
   /** 是否使用串口与前置通讯. */
   public static boolean useSerialPort = false;
 

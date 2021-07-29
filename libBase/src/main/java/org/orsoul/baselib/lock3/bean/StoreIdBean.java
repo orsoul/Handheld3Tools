@@ -1,5 +1,7 @@
 package org.orsoul.baselib.lock3.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * 库门标识卡、库房编号.
  */
@@ -8,7 +10,8 @@ public class StoreIdBean {
   String storeId;
   String storeName;
   /** 是否为库外卡 */
-  boolean outdoor = true;
+  @SerializedName(value = "isOutDoor", alternate = {"outdoor"})
+  boolean isOutDoor = true;
   /** 开库门 需要验证的人数 */
   int needNumber = 3;
 
@@ -23,6 +26,8 @@ public class StoreIdBean {
         "cardId='" + cardId + '\'' +
         ", storeId='" + storeId + '\'' +
         ", storeName='" + storeName + '\'' +
+        ", isOutDoor=" + isOutDoor +
+        ", needNumber=" + needNumber +
         '}';
   }
 
@@ -43,15 +48,15 @@ public class StoreIdBean {
   }
 
   public boolean isOutDoor() {
-    return outdoor;
+    return isOutDoor;
   }
 
   public int getNeedNumber() {
     return needNumber;
   }
 
-  public void setOutdoor(boolean outdoor) {
-    this.outdoor = outdoor;
+  public void setOutDoor(boolean outDoor) {
+    this.isOutDoor = outDoor;
   }
 
   public void setNeedNumber(int needNumber) {

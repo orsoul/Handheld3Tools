@@ -67,4 +67,21 @@ public class ViewUtil {
     listDrawable.addState(new int[]{-android.R.attr.state_pressed}, normal);
     return listDrawable;
   }
+
+  /**
+   * @param pos 1:left, 2:top, 3:right, other:bottom
+   */
+  public static void setCompoundDrawables(TextView tv, int drawableRes, int pos) {
+    Drawable dra = tv.getResources().getDrawable(drawableRes);
+    dra.setBounds(0, 0, dra.getMinimumWidth(), dra.getMinimumHeight());
+    if (pos == 1) {
+      tv.setCompoundDrawables(dra, null, null, null);
+    } else if (pos == 2) {
+      tv.setCompoundDrawables(null, dra, null, null);
+    } else if (pos == 3) {
+      tv.setCompoundDrawables(null, null, dra, null);
+    } else {
+      tv.setCompoundDrawables(null, null, null, dra);
+    }
+  }
 }

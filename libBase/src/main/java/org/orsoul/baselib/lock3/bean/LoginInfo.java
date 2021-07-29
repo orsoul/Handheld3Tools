@@ -3,6 +3,9 @@ package org.orsoul.baselib.lock3.bean;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libjava.util.DateFormatUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,7 +37,8 @@ public final class LoginInfo {
   /** 复核员姓名. */
   private static String checkerName;
   /** 机构名. */
-  private static String orgName;
+  public static String orgName;
+  public static boolean needUpdatePwd;
 
   /** 登陆时 服务端时间 yyMMddHHmmss. */
   private static String loginTimeStr;
@@ -209,8 +213,9 @@ public final class LoginInfo {
   /**
    * 解析登录回复信息. 20200928例：<br/>
    *
-   * ` 0  1      2           3          4      5   6        7             8         9     10
-   * *01 01 1111111113 200928105902 071501001 000 16 74212001010101 中心支库-b库间 70080 登录员 001#
+   * ` 0  1      2           3          4      5   6        7             8         9     10  11
+   * *01 01 1111111113 200928105902 071501001 000 16 74212001010101 中心支库-b库间 70080 登录员 {} 001#
+   * *14 03 00 1111111113 200928105902 071501001 000 16 74212001010101 中心支库-b库间 70080 登录员 cardId 001#
    *
    * @return 返回0：解析成功，1：参数错误，2：密码错误
    */
@@ -219,7 +224,7 @@ public final class LoginInfo {
       return 1;
     }
 
-    if (("*01".equals(split[0]) || "00".equals(split[0])) && "01".equals(split[1])) {
+    if (("*01".equals(split[0]) || "01".equals(split[0])) && "01".equals(split[1])) {
       // 刷卡登录，do nothing
       isFingerLogin = false;
     } else if (("*14".equals(split[0]) || "14".equals(split[0])) &&
@@ -265,6 +270,18 @@ public final class LoginInfo {
     if (12 <= split.length) {
       userName = split[10];
     }
+
+    // 11 用户名+密码登录，检查是否需改密码
+    if (13 <= split.length && !isFingerLogin) {
+      String json = split[11];
+      try {
+        JSONObject jsonObject = new JSONObject(json);
+        needUpdatePwd = jsonObject.getBoolean("needUpdatePwd");
+      } catch (JSONException e) {
+        LogUtils.wtf("%s", e);
+      }
+    }
+
     LoginInfo.setUserId(cardId);
     return 0;
   }
