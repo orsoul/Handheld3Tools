@@ -3,7 +3,6 @@ package com.fanfull.libjava.io.socketClient.message1;
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.MsgFuture4qz;
 import com.fanfull.libjava.io.socketClient.OnceReceiveListener;
-import com.fanfull.libjava.io.socketClient.ReceiveListenerAbs;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
 
@@ -50,7 +49,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     return sendCount.addAndGet(1);
   }
 
-  /** 复核登录. */
+  /** 接入前置. */
   public static final int FUNC_ACCESS = 99;
   /** 复核登录. */
   public static final int FUNC_LOGIN_2 = 0;
@@ -58,6 +57,8 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_LOGIN = 1;
   /** 失败. */
   public static final int FUNC_FAILED = 2;
+  /** 修改密码. */
+  public static final int FUNC_CHANGE_PWD = 4;
   /** 选择任务. */
   public static final int FUNC_SELECT_TASK = 7;
   /** 选择任务-回复. */
@@ -107,6 +108,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   protected int msgNum;
 
   protected T jsonBean;
+  protected int resCode;
 
   public int getFunc() {
     return func;
@@ -150,7 +152,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   }
 
   public boolean initInfo(String recString) {
-    String[] split = splitRecInfoWithHead(recString);
+    String[] split = MessageParser4qz.splitRecInfoWithHead(recString);
     if (split == null) {
       return false;
     }
@@ -182,95 +184,20 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
         '}';
   }
 
-  //protected abstract T parseInfo(String[] split);
-
-  /**
-   * 检查并分段接收到的字符串，必须包含头尾标识符.会截去头尾标识符。
-   *
-   * @return 第一段和最后一段必须是数字串，分段成功返回长度至少为3的字符串数组，否则返回null.
-   */
-  public static String[] splitRecInfoWithHead(String recString) {
-    if (recString == null
-        //|| recString.startsWith(BaseSocketMessage.CH_RECEIVE_HEAD)
-        //|| recString.endsWith(BaseSocketMessage.CH_END)
-        || !recString.matches("^\\*\\d+ .+ \\d+#$")) {
-      //LogUtils.w("split failed:%s", recString);
-      return null;
-    }
-    String[] split =
-        recString.substring(1, recString.length() - 1).split(BaseSocketMessage4qz.CH_SPLIT);
-    if (split.length < 3) {
-      return null;
-    }
-    return split;
-  }
-
-  /**
-   * 检查并分段接收到的字符串，必须不包含头尾标识符.
-   *
-   * @return 第一段和最后一段必须是数字串，分段成功返回长度至少为3的字符串数组，否则返回null.
-   */
-  public static String[] splitRecInfoWithoutHead(String recString) {
-    if (recString == null
-        || !recString.matches("^\\d+ .+ \\d+$")) {
-      //LogUtils.w("split failed:%s", recString);
-      return null;
-    }
-    String[] split = recString.split(BaseSocketMessage4qz.CH_SPLIT);
-    if (split.length < 3) {
-      return null;
-    }
-    return split;
-  }
-
-  /**
-   * 检查并分段接收的字符串，有无 头尾标识符 皆可.
-   *
-   * @return 第一段和最后一段必须是数字串，分段成功返回长度至少为3的字符串数组，否则返回null.
-   */
-  public static String[] splitRecInfo(String recString) {
-    String[] split = splitRecInfoWithoutHead(recString);
-    split = split != null ? split : splitRecInfoWithHead(recString);
-    if (split != null) {
-      split = ReceiveListenerAbs.replaceSpChar(split);
-    }
-    return split;
-  }
-
-  public static boolean checkSplit(String[] split) {
-    if (split == null || split.length < 3) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   /**
    * 生成通讯指令.无需包含 $、# 头尾标识
    *
    * @param args 至少有3个参数，为null的参数会被忽略
    */
   public static String genProtocol(Object... args) {
-    if (args == null || args.length < 3) {
-      return null;
-    }
-    StringBuilder sb = new StringBuilder();
-    sb.append(CH_HEAD_SEND); // #
-    for (int i = 0; i < args.length; i++) {
-      if (args[i] != null) {
-        sb.append(args[i]).append(CH_SPLIT);
-      }
-    }
-    sb.setLength(sb.length() - 1);
-    sb.append(CH_END);
-    return sb.toString();
+    return MessageParser4qz.genProtocol(args);
   }
 
   /**
    * 根据接收到消息new一个基本消息对象.
    */
   public static BaseSocketMessage4qz<?> newInstance(String recString) {
-    String[] split = BaseSocketMessage4qz.splitRecInfo(recString);
+    String[] split = MessageParser4qz.splitRecInfo(recString);
     if (split == null) {
       return null;
     }

@@ -4,6 +4,7 @@ import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.io.socketClient.message1.BaseSocketMessage4qz;
+import com.fanfull.libjava.io.socketClient.message1.MessageParser4qz;
 import com.fanfull.libjava.util.Logs;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class ClientDemo {
 
     message4qz = new BaseSocketMessage4qz(13) {
       @Override public String getMessage() {
-        return genProtocol(func, "base message", msgNum);
+        return MessageParser4qz.genProtocol(func, "base message", msgNum);
       }
 
       @Override public boolean send() {

@@ -77,7 +77,7 @@ public class BaseMsgFuture<T> implements MsgFuture<T> {
       return response;
     }
 
-    isTimeout = System.currentTimeMillis() - begin > timeout;
+    isTimeout = System.currentTimeMillis() - begin >= timeout;
     return null;
   }
 

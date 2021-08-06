@@ -27,7 +27,7 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
 
   @Override protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
       throws Exception {
-    Logs.out("notDecode:%s, decode:%s", notDecode, in);
+    //Logs.out("notDecode:%s, decode:%s", notDecode, in);
 
     if (notDecode) {
       int len = in.readableBytes();
@@ -81,7 +81,9 @@ public class HeadEndDecoder extends ByteToMessageDecoder {
       }
     }
 
+
     Logs.out("headP:%s, endP:%s", headP, endP);
+    //Logs.out("str:%s", new String(buf.array()));
 
     if (headP < 0) {
       // 1、无协议头，丢弃所有数据
