@@ -4,7 +4,6 @@ import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.SyncWriteMap;
 import com.fanfull.libjava.io.netty.handler.HeadEndEncoder;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
-import com.fanfull.libjava.io.socketClient.GeneralException;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.io.socketClient.ReceiveListener;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClient;
@@ -159,9 +158,10 @@ public class ClientNetty implements ISocketClient {
       return f;
     }
     f = bootstrap.connect(options.serverIp, options.serverPort);
-    f.addListener((ChannelFutureListener) future1 -> {
-      Logs.out("connect cause: %s", future1.cause());
-      if (future1.cause() == null) {
+    f.addListener(future -> {
+      Logs.out("connect cause: %s", future.cause());
+      if (future.cause() == null) {
+        setActiveDisconnect(false);
         channel = f.channel();
         if (listener != null) {
           listener.onConnect(options.serverIp, options.serverPort);
@@ -171,10 +171,10 @@ public class ClientNetty implements ISocketClient {
         }
       } else {
         if (listener != null) {
-          listener.onConnectFailed(new GeneralException(future1.cause()));
+          listener.onConnectFailed(future.cause());
         }
         if (clientListener != null) {
-          clientListener.onConnectFailed(new GeneralException(future1.cause()));
+          clientListener.onConnectFailed(future.cause());
         }
       }
     });
@@ -259,6 +259,7 @@ public class ClientNetty implements ISocketClient {
   }
 
   @Override public void disconnect() {
+    setActiveDisconnect(true);
     if (channel != null) {
       f = null;
       channel.close();

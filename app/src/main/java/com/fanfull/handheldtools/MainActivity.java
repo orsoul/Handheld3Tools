@@ -17,6 +17,7 @@ import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.CoverBagActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
+import com.fanfull.handheldtools.ui.NettyActivity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_sound).setOnClickListener(this);
     findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
     findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
+    findViewById(R.id.btn_main_apdu).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -103,7 +105,7 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_2:
         break;
       case KeyEvent.KEYCODE_3:
-        DeviceInfoUtils.shutdown(true);
+        startActivity(new Intent(this, NettyActivity.class));
         break;
       case KeyEvent.KEYCODE_4:
         new XPopup.Builder(this)
@@ -138,6 +140,8 @@ public class MainActivity extends BaseActivity {
             .show();
         break;
       case KeyEvent.KEYCODE_7:
+        DeviceInfoUtils.shutdown(true);
+        //DeviceInfoUtils.reboot(this);
         //throw new RuntimeException("test crash");
       case KeyEvent.KEYCODE_8:
         break;
@@ -203,6 +207,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_main_bag_search:
         startActivity(new Intent(this, BagSearchActivity.class));
+        break;
+      case R.id.btn_main_apdu:
+        startActivity(new Intent(this, NettyActivity.class));
         break;
     }
   }

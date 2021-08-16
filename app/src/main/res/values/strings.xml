@@ -12,6 +12,7 @@
   <string name="main_sound">声音、音效</string>
   <string name="main_cover_bag">模拟封袋</string>
   <string name="main_bag_search">查找袋Id</string>
+  <string name="main_apdu">APDU</string>
 
   <string name="text_click_again_quit">再次点击退出</string>
 

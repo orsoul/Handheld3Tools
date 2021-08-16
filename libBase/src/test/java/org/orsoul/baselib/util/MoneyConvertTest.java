@@ -1,5 +1,7 @@
 package org.orsoul.baselib.util;
 
+import com.fanfull.libjava.util.MoneyConvert;
+
 import org.junit.Assert;
 import org.junit.Test;
 

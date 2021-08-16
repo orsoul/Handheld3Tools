@@ -39,7 +39,8 @@ public class RfidPSamOperationRd extends RfidOperationRd implements IRfidPSamOpe
       LogUtils.tag(TAG).d("samCos failed");
       return -2;
     }
-    LogUtils.tag(TAG).d("samCos res:%s cmd:%s",
+    LogUtils.tag(TAG).d("samCos len-data:%s-%s\napdu:%s",
+        responseLenBuff[0],
         BytesUtil.bytes2HexString(responseBuff, responseLenBuff[0]),
         BytesUtil.bytes2HexString(cmd));
     return responseLenBuff[0];

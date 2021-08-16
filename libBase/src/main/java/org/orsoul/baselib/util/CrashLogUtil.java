@@ -86,7 +86,7 @@ public final class CrashLogUtil {
     }
   }
 
-  private static String getStackTrace(Throwable e) {
+  public static String getStackTrace(Throwable e) {
     final Writer result = new StringWriter();
     final PrintWriter printWriter = new PrintWriter(result);
 

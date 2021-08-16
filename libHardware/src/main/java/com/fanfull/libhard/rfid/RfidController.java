@@ -183,6 +183,15 @@ public class RfidController implements IRfidPSamOperation {
     return operation.send2PSam(cmd, responseBuff);
   }
 
+  public byte[] send2PSam(byte[] cosCmd) {
+    byte[] responseBuff = new byte[256];
+    int responseLen = send2PSam(cosCmd, responseBuff);
+    if (0 < responseLen) {
+      return Arrays.copyOf(responseBuff, responseLen);
+    }
+    return null;
+  }
+
   @Override public int resetCpu(byte[] responseBuff) {
     return operation.resetCpu(responseBuff);
   }
@@ -193,15 +202,6 @@ public class RfidController implements IRfidPSamOperation {
 
   @Override public int send2Cpu(byte[] cmd, byte[] responseBuff) {
     return operation.send2Cpu(cmd, responseBuff);
-  }
-
-  public byte[] send2PSam(byte[] cosCmd) {
-    byte[] responseBuff = new byte[255];
-    int responseLen = send2PSam(cosCmd, responseBuff);
-    if (0 < responseLen) {
-      return Arrays.copyOf(responseBuff, responseLen);
-    }
-    return null;
   }
 
   public byte[] send2Cpu(byte[] cosCmd) {

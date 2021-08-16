@@ -103,7 +103,7 @@ public class FingerActivity extends InitModuleActivity {
         break;
       case R.id.tv_finger_show:
         if (3 == ClockUtil.fastClickTimes()) {
-          ViewUtil.appendShow(null, tvShow);
+          ViewUtil.appendShow(tvShow, "");
         }
         break;
     }

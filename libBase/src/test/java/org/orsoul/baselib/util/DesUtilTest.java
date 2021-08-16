@@ -1,5 +1,8 @@
 package org.orsoul.baselib.util;
 
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.DesUtil;
+
 import org.junit.Assert;
 import org.junit.Test;
 

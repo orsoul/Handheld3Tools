@@ -81,8 +81,9 @@ public class DesUtil {
 
   /**
    * 对于DES, 秘钥长度应为8byte, Java仅支持56位秘钥. 如果传入的秘钥长度超过8byte,截断; 若传入的秘钥长度 小于8byte, 补0.
-   * 对于3DES(DESede), 秘钥长度应为24byte， 传入的秘钥长度超过24byte,截断; 若传入的秘钥长度小于24byte,
-   * 补0.如果密码位数少于等于64位，加密结果与DES相同.
+   * 对于3DES(DESede), 秘钥长度应为2长度（16byte）或3长度（24byte），传入的秘钥长度超过24byte,截断;
+   * 若传入的秘钥长度等于16，按k1+k2+k3的次序拼接为3长度密钥；
+   * 若传入的秘钥长度小于24byte,补0.如果密码位数少于等于64位，加密结果与DES相同.
    * 对于AES, Java支持128位秘钥. 传入的秘钥长度超过16byte,截断; 若传入的秘钥长度小于16byte, 补0.
    *
    * @param data 明文/密文数据
@@ -103,12 +104,20 @@ public class DesUtil {
 
     String algorithmName = args[0].toUpperCase();
     SecretKey key;
-    if (ALGORITHM_NAME_DES.equals(algorithmName)) {
+    if (ALGORITHM_NAME_DES.equalsIgnoreCase(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 8), algorithmName);
-    } else if (ALGORITHM_NAME_AES.equals(algorithmName)) {
+    } else if (ALGORITHM_NAME_AES.equalsIgnoreCase(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 16), algorithmName);
-    } else if (ALGORITHM_NAME_3DES.equals(algorithmName)) {
-      key = new SecretKeySpec(pwd2Key(pwd, 24), algorithmName);
+    } else if (ALGORITHM_NAME_3DES.equalsIgnoreCase(algorithmName)) {
+      if (pwd.length == 16) {
+        // 双长度密钥k1+k2，生成3长度密钥：k1 + k2 + k1
+        byte[] key24 = new byte[24];
+        System.arraycopy(pwd, 0, key24, 0, 16);
+        System.arraycopy(pwd, 0, key24, 16, 8);
+        key = new SecretKeySpec(key24, algorithmName);
+      } else {
+        key = new SecretKeySpec(pwd2Key(pwd, 24), algorithmName);
+      }
     } else {
       return null;
     }
@@ -349,6 +358,25 @@ public class DesUtil {
   public static void main(String[] args) throws Exception {
     testKey(new byte[8], ALGORITHM_NAME_3DES);
     //testDes();
+  }
+
+  static void test3Des() throws Exception {
+    String text = "12345678";
+    String pwd = "12345678";
+    byte[] dataEncrypt;
+    byte[] dataDecrypt;
+
+    pwd = "01234567";
+    dataEncrypt = cipherDoFinal(text, pwd, true, "DESede/ECB/NOPadding");
+    Logs.out(BytesUtil.bytes2HexString(dataEncrypt));
+
+    pwd = "0123456789abcdef";
+    dataEncrypt = cipherDoFinal(text, pwd, true, "DESede/ECB/NOPadding");
+    Logs.out(BytesUtil.bytes2HexString(dataEncrypt));
+
+    pwd = "0123456789abcdef";
+    dataEncrypt = cipherDoFinal(text, pwd, true, "DESede/ECB/NOPadding");
+    Logs.out(BytesUtil.bytes2HexString(dataEncrypt));
   }
 
   static void testDes() throws Exception {

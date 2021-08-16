@@ -70,7 +70,9 @@ public abstract class InitModuleActivity extends BaseActivity implements View.On
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     if (keyCode == KeyEvent.KEYCODE_7) {
-      showSetUhfPower(this);
+      if (uhfController != null) {
+        showSetUhfPower(this);
+      }
     }
     return super.onKeyDown(keyCode, event);
   }

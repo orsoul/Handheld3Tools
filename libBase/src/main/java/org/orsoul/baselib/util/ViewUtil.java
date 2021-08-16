@@ -58,6 +58,10 @@ public class ViewUtil {
     appendShow(text, tvShow, true);
   }
 
+  public static void appendShow(TextView tvShow, Object text) {
+    appendShow(text, tvShow, true);
+  }
+
   public static StateListDrawable getStateListDrawable(Context context, int idNormal, int idPress) {
 
     StateListDrawable listDrawable = new StateListDrawable();

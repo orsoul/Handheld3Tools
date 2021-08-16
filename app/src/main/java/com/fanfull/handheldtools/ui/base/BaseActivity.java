@@ -143,7 +143,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
   protected void onDestroy() {
     LogUtils.i("onDestroy: %s ", this.getClass().getSimpleName());
     dialogUtil.destroy();
-    dialogUtil = null;
+    //dialogUtil = null;
     MyApplication.removeNetworkCallback(this);
     super.onDestroy();
   }

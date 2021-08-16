@@ -2,7 +2,7 @@ package com.fanfull.libjava.util;
 
 public final class Logs {
   public static void out(Object obj) {
-    System.out.printf("%s (%s):%s\n", DateFormatUtil.getStringTime(),
+    System.out.printf("%s (myLog-%s):%s\n", DateFormatUtil.getStringTime(),
         Thread.currentThread().getName(), obj);
   }
 

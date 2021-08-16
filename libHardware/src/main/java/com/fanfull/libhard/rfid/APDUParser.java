@@ -17,7 +17,7 @@ public final class APDUParser {
    * @param ins 指令码，必须
    * @param p1 参数，必须
    * @param p2 参数，必须
-   * @param data 发送数据，可选
+   * @param data 发送数据，可选, lc = data.length
    * @param le 响应的数据字节数，可选；0表示最大可能长度，负数表示无此字段
    */
   public static byte[] genCmd(int cla, int ins, int p1, int p2, byte[] data, int le) {
@@ -54,6 +54,10 @@ public final class APDUParser {
     //LogUtils.d("genCmd:%s", ArrayUtils.bytes2HexString(cmd));
     return cmd;
   }
+
+  //public static byte[] genCmd(int cla, int ins, int p1, int p2, int lc, byte[] data, int le) {
+  //  return genCmd(cla, ins, p1, p2, data, le);
+  //}
 
   /**
    * 根据输入参数生成 APDU 命令.无data字段，命令可分为四种情况: <br/>
@@ -107,26 +111,33 @@ public final class APDUParser {
 
   public static String cmd2String(byte[] apduCmd) {
     if (apduCmd == null || apduCmd.length < 4) {
-      return null;
+      return "apdu指令长度小于4：" + BytesUtil.bytes2HexString(apduCmd);
     }
     StringBuilder sb = new StringBuilder();
     // 命令头 cla ins p1 p2
-    sb.append(BytesUtil.bytes2HexString(apduCmd, 4));
+    //sb.append(BytesUtil.bytes2HexString(apduCmd, 4));
+    sb.append(
+        String.format("cla=%02X, ins=%02X, p1=%02X, p2=%02X", apduCmd[0], apduCmd[1], apduCmd[2],
+            apduCmd[3]));
     if (5 == apduCmd.length) {
       // 有le段，无data
-      sb.append(String.format("_%02X", apduCmd[apduCmd.length - 1]));
+      sb.append(String.format(",le=%02X", apduCmd[apduCmd.length - 1]));
     } else if (5 < apduCmd.length) {
-      int dataLen = apduCmd[4];
-      if (dataLen + 5 <= apduCmd.length) {
+      // 有lc和data段
+      int lc = (apduCmd[4] & 0xFF);
+      int d = apduCmd.length - lc;
+      if (5 == d || 6 == d) {
         // 数据段 lc-data
-        sb.append('_')
-            .append(dataLen)
+        sb.append(",lc=").append(lc)
             .append('-')
-            .append(BytesUtil.bytes2HexString(apduCmd, 5, 5 + dataLen));
-        if (dataLen + 5 < apduCmd.length) {
+            .append(BytesUtil.bytes2HexString(apduCmd, 5, 5 + lc));
+        if (6 == d) {
           // le段
-          sb.append(String.format("_%02X", apduCmd[apduCmd.length - 1]));
+          sb.append(String.format(",le=%02X", apduCmd[apduCmd.length - 1]));
         }
+      } else {
+        return String.format("apdu指令lc长度错误, lc=%s(0x02X), allLen=%s, allLen - lc = %s",
+            lc, lc, apduCmd.length, d);
       }
     }
 

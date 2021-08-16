@@ -26,18 +26,7 @@ public final class RegularUtil {
     public static final String REGEX_CN_WORD = "[\u4e00-\u9fa5]";
   }
 
-  public static void main(String[] args) {
-    //System.out.println(isMatch("(.{2})*", "12a67"));
-    //System.out.println(isMatch("(.{2})*", "12a672"));
-    //System.out.println(isMatch("(.{2})*", "12"));
-    System.out.println(matchDecimalString("+123"));
-    //System.out.println(matchDecimalString("-123"));
-    //System.out.println(matchDecimalString("0123"));
-    System.out.println(isMatch(RegexConstants.REGEX_INTEGER_16, "0x0X12aF7"));
-    System.out.println(isMatch(RegexConstants.REGEX_INTEGER_16, "0x12aF7"));
-    System.out.println(isMatch(RegexConstants.REGEX_INTEGER_16, "0X12aF7"));
-    System.out.println(isMatch(RegexConstants.REGEX_INTEGER_16, "12aF7g"));
-    //    System.out.println(isMatch(RegexConstants.REGEX_INTEGER_16, null));
+  void testIp() {
     String ip = "192.168.18.10";
     System.out.printf("ip:%s - %s\n", ip, matchIP(ip));
     String res = "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)";
@@ -48,6 +37,35 @@ public final class RegularUtil {
     System.out.println(isMatch(res, "01"));
     String reg_ip = String.format("^(%s)[.](%s)[.](%s)[.](%s)$", res, res, res, res);
     System.out.println(isMatch(reg_ip, ip));
+  }
+
+  public static void main(String[] args) {
+    isRepeat();
+  }
+
+  public static boolean isRepeat() {
+    String regs = "\\d*(\\d)\\1{2}\\d*";
+    String str;
+
+    str = "123";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    str = "111";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    str = "2222";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    str = "32222";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    str = "116633";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    str = "1166633";
+    Logs.out("%s:%s", str.matches(regs), str);
+
+    return false;
   }
 
   public static boolean isMatch(final String regex, final CharSequence input) {

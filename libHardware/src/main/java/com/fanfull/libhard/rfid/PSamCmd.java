@@ -50,7 +50,7 @@ public final class PSamCmd {
     return APDUParser.genCmd(0x80, 0x20, 0, 0, data);
   }
 
-  /** 用户验证. */
+  /** 用户验证.用户ID未做明确定义，8字节0也可以，用户PIN码目前是固定值：4d494d49535f5053414d5f55534552 */
   public static byte[] getCmdVerifyUser() {
     byte[] userId = new byte[8];
     userId[7] = 1;

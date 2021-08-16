@@ -64,7 +64,7 @@ public abstract class ReadLoginCardTask extends ThreadUtil.TimeThreadRunnable {
     return null;
   }
 
-  /** 读卡成功. */
+  /** 读卡成功.执行完成 返回true，继续执行返回false. */
   protected boolean onReadSuccess(byte[] cardId) {
     switch (cardType) {
       case CARD_M1:

@@ -15,9 +15,6 @@ import com.wanjian.cockroach.Cockroach;
 
 import org.orsoul.baselib.util.CrashLogUtil;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -75,13 +72,14 @@ public abstract class NetworkCallbackApplication extends Application {
       LogUtils.wtf(format);
 
       //throwable.printStackTrace();
-      final Writer result = new StringWriter();
-      final PrintWriter printWriter = new PrintWriter(result);
-      throwable.printStackTrace(printWriter);
-      String log = result.toString();
-      LogUtils.w("%s", log);
-      //                        LogHelper.saveCrashLog(throwable);
-      CrashLogUtil.saveCrashReport(log);
+      //final Writer result = new StringWriter();
+      //final PrintWriter printWriter = new PrintWriter(result);
+      //throwable.printStackTrace(printWriter);
+      //String log = result.toString();
+      String stackTrace = CrashLogUtil.getStackTrace(throwable);
+      LogUtils.wtf("%s", stackTrace);
+      LogUtils.getLog2FileConfig().flushAsync();
+      CrashLogUtil.saveCrashReport(stackTrace);
     });
   }
 

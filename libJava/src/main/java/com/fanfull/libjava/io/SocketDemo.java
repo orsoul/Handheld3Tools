@@ -28,8 +28,8 @@ public class SocketDemo {
 
     Options ops = new Options();
     //    ops.serverIp = "localhost";
-    ops.serverIp = "192.168.11.197";
-    ops.serverPort = 12345;
+    ops.serverIp = "192.168.11.246";
+    ops.serverPort = 23456;
     BaseSocketClient client = new BaseSocketClient(ops);
     client.addSocketClientListener(
         new ISocketClientListener() {
