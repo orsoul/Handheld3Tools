@@ -2,6 +2,10 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
+      <module name="HandheldTools.app" target="11" />
+      <module name="HandheldTools.app-watch" target="11" />
+      <module name="HandheldTools.libBase" target="11" />
+      <module name="HandheldTools.libHardware" target="11" />
       <module name="libJava" target="1.8" />
     </bytecodeTargetLevel>
   </component>

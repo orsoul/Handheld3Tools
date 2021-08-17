@@ -123,4 +123,31 @@ public class CrcUtil {
     crcUtil.table = table;
     return crcUtil;
   }
+
+  public static class Builder {
+    private final long poly;
+    private final int width;
+
+    private long init;
+    private long xorOut;
+
+    public Builder(int poly, int width) {
+      this.poly = poly;
+      this.width = width;
+    }
+
+    public Builder init(long init) {
+      this.init = init;
+      return this;
+    }
+
+    public Builder xorOut(long xorOut) {
+      this.xorOut = xorOut;
+      return this;
+    }
+
+    //public CrcUtil build() {
+    //  return new CrcUtil();
+    //}
+  }
 }
