@@ -8,21 +8,25 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.apkfuns.logutils.LogUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
-import com.fanfull.handheldtools.context.Contexts;
+import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
+import com.fanfull.libhard.lock3.PsamHelper;
+import com.fanfull.libhard.lock3.task.UhfReadTask;
 import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.PSamCmd;
+import com.fanfull.libhard.uhf.UhfCmd;
+import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.io.netty.ClientNetty;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.lock_zc.SecurityUtil;
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.ClockUtil;
-import com.fanfull.libjava.util.CrcUtil;
+import com.fanfull.libjava.util.Crc8Util;
 
+import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ViewUtil;
 import org.orsoul.baselib.view.FullScreenPopupSetIp;
 
@@ -48,6 +52,8 @@ public class NettyActivity extends InitModuleActivity {
   private String serverIp = "192.168.11.246";
   private int serverPort = 23456;
 
+  private MyReadWriteTask readWriteTask;
+
   @Override protected void initView() {
     setContentView(R.layout.activity_netty);
     tvShow = findViewById(R.id.tv_netty_show);
@@ -64,20 +70,33 @@ public class NettyActivity extends InitModuleActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    initModule(false, true);
+    initModule(true, true);
 
     ViewUtil.appendShow(tvShow,
-        "0 -> 重置Psam\n"
-            + "1 -> 获取psam卡信息\n"
-            + "2 -> 身份验证\n"
-            + "3 -> 生成激活交互指令\n"
+        "0 -> 身份验证\n"
+            + "1 -> 激活\n"
+            + "2 -> 关锁\n"
+            + "3 -> 开锁\n"
+            + "4 -> 关锁-物流\n"
+            + "5 -> 开锁-物流\n"
+            + "6 -> 追溯\n"
+            + "7 -> 恢复\n"
+            + "8 -> 日志清除\n"
+            + "9 -> 重置Psam\n"
     );
 
-    serverIp = SPUtils.getInstance().getString(Contexts.Key.KEY_SERVICE_IP, serverIp);
-    serverPort = SPUtils.getInstance().getInt(Contexts.Key.KEY_SERVICE_PORT, serverPort);
+    serverIp = MyPreference.SERVER_IP1.getValue(serverIp);
+
+    serverPort = MyPreference.SERVER_PORT1.getValue(serverPort);
     initTcp();
 
+    handlerApdu("reset");
     onKeyDown(KeyEvent.KEYCODE_0, null);
+
+    readWriteTask = new MyReadWriteTask(uhfController);
+    readWriteTask.setReadUse(true);
+    readWriteTask.setUseSa(0x48);
+    readWriteTask.setUseLen(72);
   }
 
   @Override public void onClick(View v) {
@@ -110,6 +129,7 @@ public class NettyActivity extends InitModuleActivity {
           }
           serverIp = ip;
           serverPort = port;
+          clientNetty.setIpPort(ip, port);
           if (clientNetty.isConnected()) {
             clientNetty.disconnect();
           } else {
@@ -125,27 +145,46 @@ public class NettyActivity extends InitModuleActivity {
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
     byte[] apduCmd = null;
     switch (keyCode) {
+      case KeyEvent.KEYCODE_ENTER:
+        readWriteTask.setOnlyRead(true);
+        break;
       case KeyEvent.KEYCODE_0:
-        //boolean resetPSam = rfidController.resetPSam();
-        //if (resetPSam) {
-        //  ViewUtil.appendShow("重置Psam成功", tvShow);
-        //} else {
-        //  ViewUtil.appendShow("重置Psam失败！！！", tvShow);
-        //}
-        handlerApdu("reset");
-        break;
-      case KeyEvent.KEYCODE_1:
-        apduCmd = PSamCmd.genCmdGetInfo(1, 0);
-        break;
-      case KeyEvent.KEYCODE_2:
         apduCmd = PSamCmd.getCmdVerifyUser();
         break;
+      case KeyEvent.KEYCODE_1:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_ACTIVE);
+        break;
+      case KeyEvent.KEYCODE_2:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_CLOSE);
+        break;
       case KeyEvent.KEYCODE_3:
-        byte[] epc = new byte[]{0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-            (byte) 0x88, (byte) 0x99, (byte) 0xAA, (byte) 0xBB, (byte) 0xCC};
-        byte[] data = new byte[14];
-        data[0] = 0x03;
-        apduCmd = PSamCmd.getCmdGenElsCmd(1, epc, data);
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_OPEN);
+        break;
+      case KeyEvent.KEYCODE_4:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_CLOSE_WRITE);
+        break;
+      case KeyEvent.KEYCODE_5:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_OPEN_WRITE);
+        break;
+      case KeyEvent.KEYCODE_6:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_READ_LOG);
+        break;
+      case KeyEvent.KEYCODE_7:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_RECOVERY);
+        break;
+      case KeyEvent.KEYCODE_8:
+        readWriteTask.setOnlyRead(false);
+        readWriteTask.setType(PSamCmd.CMD_ELS_TYPE_CLEAR);
+        break;
+      case KeyEvent.KEYCODE_9:
+        handlerApdu("reset");
         break;
       default:
         return super.onKeyDown(keyCode, event);
@@ -154,6 +193,16 @@ public class NettyActivity extends InitModuleActivity {
       LogUtils.d("sendCmd:%s", BytesUtil.bytes2HexString(apduCmd));
       byte[] recCmd = rfidController.send2PSam(apduCmd);
       LogUtils.d("recCmd:%s", BytesUtil.bytes2HexString(recCmd));
+      if (APDUParser.checkReply(recCmd)) {
+        ViewUtil.appendShow("用户验证成功", tvShow);
+      } else {
+        ViewUtil.appendShow("用户验证失败", tvShow);
+      }
+    } else {
+      boolean b = readWriteTask.startThread();
+      if (!b) {
+        readWriteTask.stopThread();
+      }
     }
     return true;
   }
@@ -163,7 +212,7 @@ public class NettyActivity extends InitModuleActivity {
     //sOptions.serverIp = "192.168.11.246";
     options.serverIp = serverIp;
     options.serverPort = serverPort;
-    options.reconnectEnable = true;
+    options.reconnectEnable = false;
     options.heartBeatEnable = false;
     options.connectTimeout = 5000;
 
@@ -207,11 +256,15 @@ public class NettyActivity extends InitModuleActivity {
 
     byte[] data = null;
     byte[] apduCmd = null;
+    int cla;
+    int ins;
+    int p1 = 0;
+    int p2;
     try {
-      int cla = Integer.parseInt(split[0], 16);
-      int ins = Integer.parseInt(split[1], 16);
-      int p1 = Integer.parseInt(split[2], 16);
-      int p2 = Integer.parseInt(split[3], 16);
+      cla = Integer.parseInt(split[0], 16);
+      ins = Integer.parseInt(split[1], 16);
+      p1 = Integer.parseInt(split[2], 16);
+      p2 = Integer.parseInt(split[3], 16);
       switch (split.length) {
         case 7:
           // lc = split[4]
@@ -239,7 +292,7 @@ public class NettyActivity extends InitModuleActivity {
     }
 
     if (apduCmd != null) {
-      byte[] buff = new byte[512];
+      byte[] buff = new byte[256];
       LogUtils.v("sendCmd:%s", BytesUtil.bytes2HexString(apduCmd));
       LogUtils.d("sendCmd:%s", APDUParser.cmd2String(apduCmd));
       int len = rfidController.send2PSam(apduCmd, buff, false);
@@ -249,16 +302,24 @@ public class NettyActivity extends InitModuleActivity {
       clientNetty.send(sendInfo[0]);
 
       if (split[1].equals("30") && APDUParser.checkReply(buff, len)) {
-        byte[] key8 = BytesUtil.hexString2Bytes("91C537C8AA0B2018");
-        byte[] factor8 = Arrays.copyOfRange(data, 1, 9);
+        byte[] key8;
+        if (p1 == 1) {
+          key8 = BytesUtil.hexString2Bytes("91C537C8AA0B2018");
+        } else {
+          key8 = BytesUtil.hexString2Bytes("B4F208F6752F89DA");
+        }
+        //byte[] factor8 = Arrays.copyOfRange(data, 1, 9);
+        byte[] factor8 = SecurityUtil.genRandom(Arrays.copyOfRange(data, 1, 13));
         byte[] recCmd = Arrays.copyOf(buff, len - 2);
-        byte[] tk1 = SecurityUtil.tk1(key8, factor8, recCmd);
-        String format = String.format("传输密钥:%s\n随机因子:%s\n交互密文:%s\n交互明文:%s,%02X = crc",
+        byte[] tk1 = null;
+        tk1 = SecurityUtil.tk1(key8, factor8, recCmd, false);
+        String format = String.format("交互指令解密" +
+                "\n密钥:%s\n随机因子:%s\n交互密文:%s\n交互明文:%s,%02X = crc",
             BytesUtil.bytes2HexString(key8),
             BytesUtil.bytes2HexString(factor8),
             BytesUtil.bytes2HexString(recCmd),
             BytesUtil.bytes2HexString(tk1),
-            CrcUtil.crc8(0x8D, 0, 0, tk1, 0, tk1.length - 1));
+            Crc8Util.crc8(0x8D, 0, 0, tk1, 0, tk1.length - 1));
         LogUtils.wtf(format);
         sendInfo[0] = format;
         clientNetty.send(sendInfo[0]);
@@ -369,6 +430,172 @@ public class NettyActivity extends InitModuleActivity {
       ToastUtils.showShort(format);
       runOnUiThread(() -> {
         ViewUtil.appendShow(format, tvShow);
+        dismissLoadingView();
+      });
+    }
+  }
+
+  class MyReadWriteTask extends UhfReadTask {
+    int type;
+    boolean onlyRead;
+
+    public MyReadWriteTask(UhfController uhfController) {
+      super(uhfController);
+    }
+
+    public void setType(int type) {
+      this.type = type;
+    }
+
+    public void setOnlyRead(boolean onlyRead) {
+      this.onlyRead = onlyRead;
+    }
+
+    private void handler(byte[] epcBuff, byte[] tidBuff) {
+      byte[] recData = null;
+      byte[] els;
+      //els = BytesUtil.hexString2Bytes("4E201000000120000002001122443000300000000000");
+      try {
+        switch (type) {
+          case PSamCmd.CMD_ELS_TYPE_ACTIVE:
+            //生成激活交互指令： 80 30 xx 00 lc lv-epc-lv-data le
+            //80 30 01 00 1C 0C000F4631100000000000800F0E0100000000000000000000000000 00
+            els = new byte[14];
+            els[0] = 0x01; // 券别
+            recData = PsamHelper.sendGenElsCmd(PSamCmd.CMD_ELS_TYPE_ACTIVE, epcBuff, els);
+            break;
+          case PSamCmd.CMD_ELS_TYPE_CLOSE:
+          case PSamCmd.CMD_ELS_TYPE_OPEN:
+          case PSamCmd.CMD_ELS_TYPE_CLOSE_WRITE:
+          case PSamCmd.CMD_ELS_TYPE_OPEN_WRITE:
+            els = BytesUtil.hexString2Bytes("4E201000000120000002001122443000300000000000");
+            recData = PsamHelper.sendGenElsCmd(type, epcBuff, els);
+            break;
+          case PSamCmd.CMD_ELS_TYPE_READ_LOG:
+            //日志序号 2 byte
+            //日志项数 1 byte
+            //结束标识 1 byte 0- 结束 非 0 为继续
+            recData = PsamHelper.sendReadLog(epcBuff, 1, 2, true);
+            break;
+          case PSamCmd.CMD_ELS_TYPE_RECOVERY:
+          case PSamCmd.CMD_ELS_TYPE_CLEAR:
+            break;
+        }
+      } catch (Exception e) {
+        LogUtils.wtf("%s", e.getMessage());
+        e.printStackTrace();
+      }
+
+      byte[] pwd = null;
+      if (recData == null) {
+        //runOnUiThread(() -> {
+        //  dismissLoadingView();
+        //  showDialog("获取交互指令失败");
+        //});
+        //return true;
+        ToastUtils.showShort("获取交互指令失败，使用测试数据");
+        recData = BytesUtil.hexString2Bytes("9E182D1F663763D254FB868608FD72DF");
+      } else {
+        pwd = PsamHelper.sendGetPwd(epcBuff);
+        LogUtils.d("pwd:%s", BytesUtil.bytes2HexString(pwd));
+      }
+
+      byte[] toWrite = new byte[]{0x66, (byte) recData.length};
+      toWrite = BytesUtil.concatArray(toWrite, recData);
+      LogUtils.d("write:%s", BytesUtil.bytes2HexString(toWrite));
+
+      boolean write =
+          uhfController.write(UhfCmd.MB_USE, 0x4C, toWrite, 0, UhfCmd.MB_TID, 0x00, tidBuff, pwd);
+
+      runOnUiThread(() -> {
+        String info;
+        if (write) {
+          info = "写入交互指令成功";
+          SoundHelper.playToneSuccess();
+          ToastUtils.showShort(info);
+        } else {
+          info = "写入交互指令失败！";
+          SoundHelper.playToneFailed();
+          showDialog(info);
+        }
+      });
+    }
+
+    @Override protected boolean onScanSuccess(UhfReadBean bean) {
+      LogUtils.wtf("scanUhf:%s", bean);
+      byte[] epcBuff = bean.getEpcBuff();
+      byte[] tidBuff = bean.getTidBuff();
+      byte[] useBuff = bean.getUseBuff();
+
+      int epcLabel = epcBuff[11] & 0xFF;
+      int useLabel = useBuff[8] & 0xFF;
+      int useElsLen = useBuff[9] & 0xFF;
+      String info = String.format("EPC：%s\nUSE状态：%02X\nUSE-len：%s",
+          BytesUtil.bytes2HexString(epcBuff), useLabel, useElsLen);
+
+      String finalInfo = info;
+      runOnUiThread(new Runnable() {
+                      @Override public void run() {
+                        ViewUtil.appendShow(tvShow, finalInfo);
+                      }
+                    }
+      );
+
+      if (!onlyRead) {
+        handler(epcBuff, tidBuff);
+      } else if (type == PSamCmd.CMD_ELS_TYPE_READ_LOG) {
+        byte[] elsEncrypt = Arrays.copyOfRange(useBuff, 10, useElsLen);
+        byte[] res = PsamHelper.sendDecryptEls(epcBuff, elsEncrypt);
+        LogUtils.d("%s", BytesUtil.bytes2HexString(res));
+        if (APDUParser.checkReply(res)) {
+
+        }
+      }
+      return true;
+    }
+
+    @Override protected boolean onScanFailed(int errorCode) {
+      //runOnUiThread(() -> {
+      //  dismissLoadingView();
+      //  showDialog("读超高频失败");
+      //});
+      long goingTime = getGoingTime();
+      long runTime = getRunTime();
+      runOnUiThread(() -> {
+        switch (errorCode) {
+          case 1:
+            showLoadingView("未读到 tid, " + goingTime / 1000);
+            break;
+          case 2:
+            showLoadingView("未读到 epc " + goingTime / 1000);
+            break;
+          case 3:
+            showLoadingView("未读到 use " + goingTime / 1000);
+            break;
+        }
+      });
+      return false;
+    }
+
+    @Override protected void onTimeout(long runTime, int total) {
+      super.onTimeout(runTime, total);
+      ToastUtils.showLong("长时间未读到超高频");
+      //runOnUiThread(() -> {
+      //  dismissLoadingView();
+      //  showDialog("长时间未读到超高频");
+      //});
+    }
+
+    @Override protected void onTaskBefore() {
+      super.onTaskBefore();
+      runOnUiThread(() -> {
+        showLoadingView("正在处理业务...");
+      });
+    }
+
+    @Override protected void onTaskFinish() {
+      super.onTaskFinish();
+      runOnUiThread(() -> {
         dismissLoadingView();
       });
     }

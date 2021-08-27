@@ -2,6 +2,8 @@ package com.fanfull.handheldtools.ui.view;
 
 import android.content.Context;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.LoadingPopupView;
 
@@ -41,8 +43,27 @@ public class DialogUtil {
     }
   }
 
+  AlertDialog alertDialog;
+
+  public void showDialog(String info) {
+    if (alertDialog == null) {
+      alertDialog = new AlertDialog.Builder(context)
+          .setMessage(info)
+          .setPositiveButton("确定", null)
+          .create();
+    }
+    if (!alertDialog.isShowing()) {
+      alertDialog.setMessage(info);
+      alertDialog.show();
+    }
+  }
+
   public void destroy() {
     if (loadingPopupView != null) {
+      loadingPopupView.destroy();
+    }
+    if (alertDialog != null) {
+      alertDialog.dismiss();
     }
     context = null;
   }

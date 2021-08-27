@@ -14,47 +14,22 @@ public class CrcUtil {
     //int t = b;
     //Logs.out("byte:%s int:%s", b, t);
 
-    testCrc8();
-  }
-
-  static void testCrc8() {
-    int poly = 0x07;
-    byte[] data = BytesUtil.hexString2Bytes("F10123B9A19B9D26397D64EE1D1500D7");
-    Logs.out("==== input:F10123B9A19B9D26397D64EE1D1500D7,poly:%02X ====", poly);
-    byte b = crc8((byte) poly, data);
-    Logs.out("crc:%02X == A0", b);
-    b = crc8((byte) poly, (byte) 0, (byte) 0x55, data);
-    Logs.out("crc-ITU:%02X == F5", b);
-
-    poly = 0x8D;
-    data = BytesUtil.hexString2Bytes("F101154A33B49D26397D64EE1D150031");
-    Logs.out("==== input:F101154A33B49D26397D64EE1D150031,poly:%02X ====", poly);
-    b = crc8((byte) poly, data);
-    Logs.out("crc:%02X == 00", b);
-    b = crc8(poly, 0x55, 0x00, data);
-    Logs.out("crc 55 00:%02X == 57", b);
-
-    poly = 0x8D;
-    data =
-        BytesUtil.hexString2Bytes("0C31460f00010000000000800f1089376D4D6C80FAEAEA4A2B048DB13A60");
-    Logs.out(
-        "==== input:0C31460f00010000000000800f1089376D4D6C80FAEAEA4A2B048DB13A60,poly:%02X ====",
-        poly);
-    b = crc8((byte) poly, data);
-    Logs.out("crc:%02X == 6F", b);
-    b = crc8(poly, 0x55, 0x77, data);
-    Logs.out("crc 55 77:%02X == 3F", b);
+    CrcUtil crcUtil = CrcUtil.newBuilder(98, 2)
+        .refIn(false)
+        .refOut(false)
+        .build();
   }
 
   /**
-   * 计算 1个字节的 crc.
+   * 计算 1个宽度的 crc.
    *
-   * @param poly 多项式
    * @param input 数据
+   * @param poly 多项式
+   * @param width 位宽，有效值 8、16、32、64
    * @return crc。
    */
-  private static byte crc8(int poly, byte input) {
-    byte crc = input;
+  private static long crc(long input, long poly, int width, boolean refIn, boolean refOut) {
+    long crc = input;
 
     //Logs.out("input:%s", Integer.toBinaryString(crc & 0xFF));
     for (int i = 0; i < 8; i++) {
@@ -70,58 +45,53 @@ public class CrcUtil {
     return crc;
   }
 
-  public static byte crc8(int poly, byte[] input) {
-    return crc8(poly, 0, 0, input);
+  private static void reverseBits(long bits, int width) {
+
   }
 
-  public static byte crc8(int poly, int init, int xorOut, byte[] input) {
-    byte crc = (byte) init;
-    for (int i = 0; i < input.length; i++) {
-      crc ^= input[i];
-      crc = crc8(poly, crc);
-    }
-    return (byte) (crc ^ xorOut);
-  }
-
-  public static byte crc8(int poly, int init, int xorOut, byte[] input, int from, int to) {
-    byte crc = (byte) init;
-    for (int i = from; i < to; i++) {
-      crc ^= input[i];
-      crc = crc8(poly, crc);
-    }
-    return (byte) (crc ^ xorOut);
-  }
-
-  private final int poly;
-  private final int init;
-  private final int xorOut;
+  private final long poly;
   private final int width;
-  private byte[] table;
 
-  private CrcUtil(int poly, int init, int xorOut, int width) {
+  private long init;
+  private long xorOut;
+
+  private boolean refIn;
+  private boolean refOut;
+
+  private long[] table;
+
+  public CrcUtil(long poly, int width, long init, long xorOut, boolean refIn, boolean refOut) {
     this.poly = poly;
+    this.width = width;
+
     this.init = init;
     this.xorOut = xorOut;
+
+    this.refIn = refIn;
+    this.refOut = refOut;
+  }
+
+  public CrcUtil(long poly, int width) {
+    this.poly = poly;
     this.width = width;
   }
 
-  public int crc(byte[] input, int from, int to) {
-    byte crc = (byte) init;
+  public void initTable() {
+
+  }
+
+  public long crc(byte[] input, int from, int to) {
+    long crc = init;
     for (int i = from; i < to; i++) {
       crc ^= input[i];
-      crc = table[crc & 0xFF];
+      //crc = table[crc & 0xFF];
     }
     return (byte) (crc ^ xorOut);
   }
 
-  public static CrcUtil newInstance(int poly, int init, int xorOut, int width) {
-    CrcUtil crcUtil = new CrcUtil(poly, init, xorOut, width);
-    byte[] table = new byte[1 << width];
-    for (int i = 0; i < table.length; i++) {
-      table[i] = crc8(poly, (byte) i);
-    }
-    crcUtil.table = table;
-    return crcUtil;
+  public static Builder newBuilder(long poly, int width) {
+    Builder builder = new Builder(poly, width);
+    return builder;
   }
 
   public static class Builder {
@@ -131,7 +101,10 @@ public class CrcUtil {
     private long init;
     private long xorOut;
 
-    public Builder(int poly, int width) {
+    private boolean refIn;
+    private boolean refOut;
+
+    public Builder(long poly, int width) {
       this.poly = poly;
       this.width = width;
     }
@@ -146,8 +119,19 @@ public class CrcUtil {
       return this;
     }
 
-    //public CrcUtil build() {
-    //  return new CrcUtil();
-    //}
+    public Builder refIn(boolean refIn) {
+      this.refIn = refIn;
+      return this;
+    }
+
+    public Builder refOut(boolean refOut) {
+      this.refOut = refOut;
+      return this;
+    }
+
+    public CrcUtil build() {
+      CrcUtil crcUtil = new CrcUtil(poly, width, init, xorOut, refIn, refOut);
+      return crcUtil;
+    }
   }
 }

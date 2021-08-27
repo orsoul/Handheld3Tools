@@ -172,6 +172,13 @@ public final class APDUParser {
     return checkReply(recData, recDataLen, 0x9000);
   }
 
+  public static boolean checkReply(byte[] recData) {
+    if (recData == null) {
+      return false;
+    }
+    return checkReply(recData, recData.length);
+  }
+
   public static boolean checkRecData(byte[] successBuff, byte[] recData, int recLen) {
     if (recData == null
         || successBuff == null

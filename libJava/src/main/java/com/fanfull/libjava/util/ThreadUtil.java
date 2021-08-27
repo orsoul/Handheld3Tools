@@ -395,6 +395,11 @@ public final class ThreadUtil {
       ThreadUtil.syncAwaken(this);
     }
 
+    /** 获取 任务 已运行的时间，毫秒. */
+    public long getGoingTime() {
+      return System.currentTimeMillis() - startTime;
+    }
+
     /** 设置任务开始运行的时间为当前时间. */
     public void resetStartTime() {
       startTime = System.currentTimeMillis();
@@ -432,7 +437,7 @@ public final class ThreadUtil {
 
         boolean finish = handleOnce();
         runCount++;
-        long going = System.currentTimeMillis() - startTime;
+        long going = getGoingTime();
         onHandleOnce(going, runCount);
 
         if (finish) {

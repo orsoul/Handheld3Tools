@@ -72,7 +72,21 @@ public interface IUhfOperation extends IOperation {
    * @param mmb 过滤的区
    * @param msa 过滤的起始地址, 单位 字
    */
-  boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter);
+  //boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter);
+
+  /**
+   * 写 超高频. 每次最多能写32字节？
+   *
+   * @param mb 读取数据 的 区, 1 表示 EPC， 2 表示 TID， 3 表示user
+   * @param sa 读取 数据的 起始地址, 单位 字（字长: 2byte）
+   * @param data 待写入数据, 长度应为 偶数
+   * @param mmb 过滤的区
+   * @param msa 过滤的起始地址, 单位 字
+   * @param filter 过滤数据
+   * @param pwd 访问密码
+   */
+  boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter,
+      byte[] pwd);
 
   void writeAsync(int mb, int sa, byte[] data, byte[] filter, int mmb, int msa);
 

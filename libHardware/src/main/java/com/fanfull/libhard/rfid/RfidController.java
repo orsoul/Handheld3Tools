@@ -184,7 +184,7 @@ public class RfidController implements IRfidPSamOperation {
   }
 
   public byte[] send2PSam(byte[] cosCmd) {
-    byte[] responseBuff = new byte[256];
+    byte[] responseBuff = new byte[256 + 2];
     int responseLen = send2PSam(cosCmd, responseBuff);
     if (0 < responseLen) {
       return Arrays.copyOf(responseBuff, responseLen);

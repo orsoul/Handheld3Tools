@@ -234,12 +234,18 @@ public class UhfOperationSerial extends AbsUhfOperation {
     return -5;
   }
 
+  //@Override
+  //public boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter) {
+  //  return write(mb, sa, data, timeout, mmb, msa, filter, null);
+  //}
+
   @Override
-  public boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter) {
+  public boolean write(int mb, int sa, byte[] data, int timeout, int mmb, int msa, byte[] filter,
+      byte[] pwd) {
     if (data == null || data.length == 0) {
       return false;
     }
-    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, mmb, msa, filter);
+    byte[] cmd = UhfCmd.getWriteCmd(mb, sa, data, mmb, msa, filter, pwd);
     //byte[] bytes = sendAndWaitReceive(cmd, timeout, uhfBuff);
     int len = sendAndWaitReceive(cmd, timeout, uhfBuff);
     if (!UhfCmd.isUhfCmd(uhfBuff, len)) {

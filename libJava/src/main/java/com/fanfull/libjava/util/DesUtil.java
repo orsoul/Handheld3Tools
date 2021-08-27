@@ -13,9 +13,9 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * 加密/解密工具，基于java原生API封装. <br/>
  * <br/>
- * 支持3种加密算法：DES、3DES、AES，<br/>
+ * 支持3种加密算法：DES、3DES、AES <br/>
  * 支持加密模式：ECB、CBC.<br/>
- * 支持填充方式：PKCS5Padding、NOPadding<br/>
+ * 支持填充方式：PKCS5Padding、NOPadding <br/>
  */
 public class DesUtil {
 
@@ -38,12 +38,12 @@ public class DesUtil {
 
   private static final String defaultCharset = "UTF-8";
 
-  /** 加密完整参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
+  /** 加密完整参数: 算法名/加密模式/填充模式, DES/ECB/NOPadding. */
   private static String defaultAlgorithmArgs =
       String.format("%s/%s/%s",
           ALGORITHM_NAME_DES,
           ALGORITHM_MODE_ECB,
-          ALGORITHM_PADDING_PKCS5Padding);
+          ALGORITHM_PADDING_NOPadding);
 
   /** 加密完整参数: 算法名/加密模式/填充模式, DES/ECB/PKCS5Padding. */
   public static void setAlgorithmArgs(String algorithmArgs) {
@@ -209,6 +209,18 @@ public class DesUtil {
         pwd,
         isEncrypt,
         algorithmArgs);
+  }
+
+  /**
+   * 使用默认 参数 进行 加解密.默认参数初始值为：DES/ECB/NOPadding，可通过setAlgorithmArgs()方法设置。
+   */
+  public static byte[] cipherDoFinal(byte[] data, byte[] pwd, boolean isEncrypt) {
+    try {
+      return cipherDoFinal(data, pwd, isEncrypt, defaultAlgorithmArgs);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   /**

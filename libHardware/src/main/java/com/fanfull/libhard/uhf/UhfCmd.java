@@ -39,54 +39,54 @@ public abstract class UhfCmd {
   public static final int RECEIVE_TYPE_READ_LOT = 0x83;
 
   /** 获取当前设备版本. */
-  public static final byte[] CMD_GET_DEVICE_VERSION = new byte[] {
+  public static final byte[] CMD_GET_DEVICE_VERSION = new byte[]{
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x08, (byte) 0x00, (byte) 0x08, (byte) 0x0D,
       (byte) 0x0A,
   };
   /** 获取当前设备ID. */
-  public static final byte[] CMD_GET_DEVICE_ID = new byte[] {
+  public static final byte[] CMD_GET_DEVICE_ID = new byte[]{
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x08, (byte) 0x04, (byte) 0x0C, (byte) 0x0D,
       (byte) 0x0A,
   };
   /** 获取当前设备发射功率. */
-  public static final byte[] CMD_GET_POWER = new byte[] {
+  public static final byte[] CMD_GET_POWER = new byte[]{
       (byte) 0xA5,
       (byte) 0x5A, 0x00, 0x08, (byte) 0x12, 0x1A, 0x0D, 0x0A
   };
   /** 设置发射功率 14byte. */
-  private static final byte[] CMD_SET_POWER = new byte[] {
+  private static final byte[] CMD_SET_POWER = new byte[]{
       (byte) 0xA5, 0x5A,
       0x00, 0x0E, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
       0x0A,
   };
   /** 单次寻标签 命令; [5] = 帧类型 = 0x80 [6,7] timeOut, 时间到或寻到标签 回传应答帧. */
-  private static final byte[] CMD_FAST_READ_EPC = new byte[] {
+  private static final byte[] CMD_FAST_READ_EPC = new byte[]{
       (byte) 0xA5,
       (byte) 0x5A, 0x00, 0x0A, (byte) 0x80, 0x00, 0x64, (byte) 0xEE,
       0x0D, 0x0A
   };
   /** 快速读取 TID. */
-  private static final byte[] CMD_FAST_READ_TID = new byte[] {
+  private static final byte[] CMD_FAST_READ_TID = new byte[]{
       (byte) 0xA5,
       (byte) 0x5A, 0x00, 0x0C, (byte) 0x8E, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x0D, 0x0A
   };
   /** 设置 快速读取 TID. */
-  private static final byte[] CMD_SET_FAST_ID = new byte[] {
+  private static final byte[] CMD_SET_FAST_ID = new byte[]{
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x0A, (byte) 0x5C, (byte) 0x01, (byte) 0x00,
       (byte) 0x57, (byte) 0x0D, (byte) 0x0A,
   };
   /** 获取FastId 是否开启. */
-  public static final byte[] CMD_GET_FAST_ID = new byte[] {
+  public static final byte[] CMD_GET_FAST_ID = new byte[]{
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x0A, (byte) 0x5E, (byte) 0x00, (byte) 0x00,
       (byte) 0x54, (byte) 0x0D, (byte) 0x0A,
   };
-  private static final byte[] CMD_READ_LOT = new byte[] {
+  private static final byte[] CMD_READ_LOT = new byte[]{
       (byte) 0xA5, (byte) 0x5A, 0x00,
       0x0A, (byte) 0x82, 0x00, 0x00, (byte) 0x00, 0x0D, 0x0A
   };
 
-  public static final byte[] CMD_STOP_READ_LOT = new byte[] {
+  public static final byte[] CMD_STOP_READ_LOT = new byte[]{
       (byte) 0xA5, (byte) 0x5A,
       0x00, 0x08, (byte) 0x8C, (byte) 0x84, 0x0D, 0x0A
   };
@@ -96,15 +96,15 @@ public abstract class UhfCmd {
   /** 超高频 最小 读写功率 5. */
   public static final int MIN_POWER = 5;
 
-  private byte[] read_more = new byte[] {
+  private byte[] read_more = new byte[]{
       (byte) 0xA5, (byte) 0x5A, 0x00,
       0x0A, (byte) 0x82, 0x00, 0x00, (byte) 0x00, 0x0D, 0x0A
   };
-  private byte[] stop_read_more = new byte[] {
+  private byte[] stop_read_more = new byte[]{
       (byte) 0xA5, (byte) 0x5A,
       0x00, 0x08, (byte) 0x8C, (byte) 0x84, 0x0D, 0x0A
   };
-  private byte[] read_more_time = new byte[] {
+  private byte[] read_more_time = new byte[]{
       (byte) 0xA5, (byte) 0x5A,
       0x00, 0x0D, (byte) 0x3C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0D,
       0x0A
@@ -483,6 +483,11 @@ public abstract class UhfCmd {
    * @param msa 过滤的起始地址, 单位 字
    */
   public static byte[] getWriteCmd(int mb, int sa, byte[] data, int mmb, int msa, byte[] filter) {
+    return getWriteCmd(mb, sa, data, mmb, msa, filter, null);
+  }
+
+  public static byte[] getWriteCmd(int mb, int sa, byte[] data, int mmb, int msa, byte[] filter,
+      byte[] ap) {
     LogUtils.tag(TAG).i("write mb-sa-len:%s-0x%02X-%s",
         mb, sa, BytesUtil.bytes2HexString(data));
 
@@ -518,10 +523,17 @@ public abstract class UhfCmd {
     // 帧类型
     cmd_write[4] = (byte) 0x86;
     // 密码ap
-    cmd_write[5] = (byte) 0x00;
-    cmd_write[6] = (byte) 0x00;
-    cmd_write[7] = (byte) 0x00;
-    cmd_write[8] = (byte) 0x00;
+    if (ap != null && 4 <= ap.length) {
+      cmd_write[5] = ap[0];
+      cmd_write[6] = ap[1];
+      cmd_write[7] = ap[2];
+      cmd_write[8] = ap[3];
+    } else {
+      cmd_write[5] = (byte) 0x00;
+      cmd_write[6] = (byte) 0x00;
+      cmd_write[7] = (byte) 0x00;
+      cmd_write[8] = (byte) 0x00;
+    }
     // MMB 为启动过滤操作的 bank 号， 0x01 表示 EPC， 0x02 表示 TID， 0x03 表示USR，其他值为非法值
     cmd_write[9] = (byte) mmb;
 
@@ -798,10 +810,10 @@ public abstract class UhfCmd {
     int cmdType = cmd[4] & 0xFF;
     switch (cmdType) {
       case RECEIVE_TYPE_GET_DEVICE_VERSION:
-        reVal = new byte[] { cmd[5], cmd[6], cmd[7], };
+        reVal = new byte[]{cmd[5], cmd[6], cmd[7],};
         break;
       case RECEIVE_TYPE_GET_DEVICE_ID:
-        reVal = new byte[] { cmd[5], cmd[6], cmd[7], cmd[8], };
+        reVal = new byte[]{cmd[5], cmd[6], cmd[7], cmd[8],};
         int id = 0;
         for (int i = 5; i < 9; i++) {
           id <<= 8;
@@ -821,7 +833,7 @@ public abstract class UhfCmd {
           reVal = Arrays.copyOfRange(cmd, 7, 31);
         } else if (cmd[3] == 0x08) {
           // 连续寻卡 停止
-          reVal = new byte[] { 1 };
+          reVal = new byte[]{1};
         } else {
           reVal = Arrays.copyOfRange(cmd, 7, 19);
         }
@@ -857,19 +869,19 @@ public abstract class UhfCmd {
       case RECEIVE_TYPE_SET_POWER:
       case RECEIVE_TYPE_SET_FAST_ID:
         // 1:成功， 0：失败
-        reVal = new byte[] { cmd[5] };
+        reVal = new byte[]{cmd[5]};
         break;
       case RECEIVE_TYPE_GET_FAST_ID:
         if (cmd[5] == 1) {
           // 1:开启， 0：关闭
-          reVal = new byte[] { cmd[6] };
+          reVal = new byte[]{cmd[6]};
         }
         break;
       case RECEIVE_TYPE_WRITE:
         if (cmd[5] == 0x01 && cmd[6] == 0x00) {
-          reVal = new byte[] {};
+          reVal = new byte[]{};
         } else {
-          reVal = new byte[] { cmd[6] };
+          reVal = new byte[]{cmd[6]};
         }
         break;
     }

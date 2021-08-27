@@ -36,10 +36,10 @@ public abstract class AbsUhfOperation implements IUhfOperation {
   }
 
   @Override public boolean writeEpc(int sa, byte[] data) {
-    return write(UhfCmd.MB_EPC, sa, data, 500, 0, 0, null);
+    return write(UhfCmd.MB_EPC, sa, data, 500, 0, 0, null, null);
   }
 
   @Override public boolean writeUse(int sa, byte[] data) {
-    return write(UhfCmd.MB_USE, sa, data, 500, 0, 0, null);
+    return write(UhfCmd.MB_USE, sa, data, 500, 0, 0, null, null);
   }
 }
