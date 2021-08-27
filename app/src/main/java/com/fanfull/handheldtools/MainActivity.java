@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BagCheckActivity;
 import com.fanfull.handheldtools.ui.BagSearchActivity;
@@ -96,9 +97,15 @@ public class MainActivity extends BaseActivity {
     );
     switch (keyCode) {
       case KeyEvent.KEYCODE_1:
-        SetIpPortHelper.showIpPortSetting(this, (ip, port, s) -> {
+        SetIpPortHelper.showIpPortSetting(this, (ip, port, settingNoChange) -> {
           LogUtils.d("ip:%s:%s", ip, port);
-          ToastUtils.showShort("ip:%s:%s", ip, port);
+          if (!settingNoChange) {
+            ToastUtils.showShort("已保存设置，%s:%s", ip, port);
+            MyPreference.SERVER_IP1.put(ip);
+            MyPreference.SERVER_PORT1.put(port);
+          } else {
+            ToastUtils.showShort("设置未改变，%s:%s", ip, port);
+          }
           return false;
         });
         break;

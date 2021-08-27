@@ -100,6 +100,14 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     dialogUtil.dismissLoadingView();
   }
 
+  protected void showDialog(String info) {
+    dialogUtil.showDialog(info);
+  }
+
+  protected void showDialogOnUi(String info) {
+    runOnUiThread(() -> showDialog(info));
+  }
+
   protected void onEnterPress() {
   }
 

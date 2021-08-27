@@ -6,6 +6,7 @@ import android.view.KeyEvent;
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
 import com.fanfull.handheldtools.BuildConfig;
+import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 
 import org.orsoul.baselib.NetworkCallbackApplication;
@@ -22,9 +23,9 @@ public class AboutActivity extends BaseActivity {
 
     AboutPage aboutPage = new AboutPage(this)
         .isRTL(false)
-        .enableDarkMode(false)
+        //.enableDarkMode(false)
         //.setCustomFont(String) // or Typeface
-        //.setImage(R.drawable.ic_launcher_foreground)
+        .setImage(R.mipmap.ic_launcher)
         .setDescription("手持测试工具");
 
     Element element = new Element();
@@ -35,6 +36,8 @@ public class AboutActivity extends BaseActivity {
     element = new Element();
     element.setTitle(String.format("设备IP：%s", NetworkUtils.getIPAddress(true)));
     aboutPage.addItem(element);
+
+    aboutPage.addGroup("devices");
 
     element = new Element();
     element.setTitle(String.format("设备型号：%s\n设备号：\n%s",

@@ -107,7 +107,7 @@ public class SoundPoolUtil {
   }
 
   public static void setAudioVolume(boolean raise) {
-    setAudioVolume(raise);
+    setAudioVolume(raise, false);
   }
 
   /**
