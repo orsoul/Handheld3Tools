@@ -247,8 +247,8 @@ public final class LoginInfo {
     if (6 <= split.length) {
       // 新手持添加 字段
       loginTimeStr = split[3];
-      loginTime = DateFormatUtil.parseString2Long(loginTimeStr, "yyMMddHHmmss");
-      setLoginTime(loginTime);
+      long time = DateFormatUtil.parseString2Long(loginTimeStr, "yyMMddHHmmss");
+      setLoginTime(time);
       orgId = split[4];
       userNum = split[5];
       orgListVersion = split[6];

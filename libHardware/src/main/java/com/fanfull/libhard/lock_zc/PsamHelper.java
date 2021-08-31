@@ -1,4 +1,4 @@
-package com.fanfull.libhard.lock3;
+package com.fanfull.libhard.lock_zc;
 
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.rfid.APDUParser;

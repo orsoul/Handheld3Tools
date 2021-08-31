@@ -1,4 +1,4 @@
-package com.fanfull.libjava.lock_zc;
+package com.fanfull.libhard.lock_zc;
 
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.DesUtil;
@@ -41,12 +41,12 @@ public final class SecurityUtil {
 
   public static void main(String[] args) throws Exception {
     //testDiversify();
-    testTk1();
+    //testTk1();
     //verifyEpcData();
     //byte[] epc = BytesUtil.hexString2Bytes("000F4631110000A7f9f99F01");
     //genRandom(epc);
 
-    //testZip();
+    testZip();
   }
 
   /**
@@ -194,8 +194,8 @@ public final class SecurityUtil {
     new Random().nextBytes(key);
     Logs.out("key:%s", BytesUtil.bytes2HexString(key));
 
-    String path = "C:\\Users\\Administrator\\Desktop\\src.txt";
-    String des = "C:\\Users\\Administrator\\Desktop\\srcEncrypt.bin";
+    String path = "C:\\Users\\Administrator\\Desktop\\data";
+    String des = "C:\\Users\\Administrator\\Desktop\\dataEncrypt";
 
     BufferedInputStream in = new BufferedInputStream(new FileInputStream(path));
     BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(des));
@@ -205,6 +205,7 @@ public final class SecurityUtil {
       byte[] encrypt = desUtil.encrypt(buff, key);
       out.write(encrypt, 0, len);
     }
+    //new ZipInputStream()
 
     in.close();
     out.close();

@@ -12,8 +12,9 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
-import com.fanfull.libhard.lock3.PsamHelper;
 import com.fanfull.libhard.lock3.task.UhfReadTask;
+import com.fanfull.libhard.lock_zc.PsamHelper;
+import com.fanfull.libhard.lock_zc.SecurityUtil;
 import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.uhf.UhfCmd;
@@ -21,14 +22,16 @@ import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.io.netty.ClientNetty;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.Options;
-import com.fanfull.libjava.lock_zc.SecurityUtil;
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.ClockUtil;
 import com.fanfull.libjava.util.Crc8Util;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.impl.InputConfirmPopupView;
 
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ViewUtil;
 import org.orsoul.baselib.view.FullScreenPopupSetIp;
+import org.orsoul.baselib.view.MyInputPopupView;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -65,6 +68,8 @@ public class NettyActivity extends InitModuleActivity {
     tvShow.setOnClickListener(this);
     btnConnect.setOnClickListener(this);
     btnSetIp.setOnClickListener(this);
+
+    findViewById(R.id.btn_netty_setLog).setOnClickListener(this);
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +121,9 @@ public class NettyActivity extends InitModuleActivity {
         break;
       case R.id.btn_netty_setIp:
         showSetIp();
+        break;
+      case R.id.btn_netty_setLog:
+        showInputLog();
         break;
     }
   }
@@ -435,6 +443,23 @@ public class NettyActivity extends InitModuleActivity {
     }
   }
 
+  int log = 12;
+
+  private void showInputLog() {
+    InputConfirmPopupView popupView = new MyInputPopupView(this, 0);
+    popupView.setTitleContent("title", "content", "hint");
+    popupView.inputContent = "" + log;
+    popupView.setListener(text -> {
+      log = Integer.parseInt(text);
+    }, null);
+    new XPopup.Builder(this)
+        //.isDarkTheme(true)
+        .hasShadowBg(true)
+        .autoOpenSoftInput(false)
+        .asCustom(popupView)
+        .show();
+  }
+
   class MyReadWriteTask extends UhfReadTask {
     int type;
     boolean onlyRead;
@@ -468,17 +493,21 @@ public class NettyActivity extends InitModuleActivity {
           case PSamCmd.CMD_ELS_TYPE_OPEN:
           case PSamCmd.CMD_ELS_TYPE_CLOSE_WRITE:
           case PSamCmd.CMD_ELS_TYPE_OPEN_WRITE:
-            els = BytesUtil.hexString2Bytes("4E201000000120000002001122443000300000000000");
+          case PSamCmd.CMD_ELS_TYPE_RECOVERY:
+            //els = BytesUtil.hexString2Bytes("4E201000000120000002001122443000300000000000");
+            els = PSamCmd.getElsData(2_0000, 0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC);
             recData = PsamHelper.sendGenElsCmd(type, epcBuff, els);
             break;
           case PSamCmd.CMD_ELS_TYPE_READ_LOG:
             //日志序号 2 byte
             //日志项数 1 byte
             //结束标识 1 byte 0- 结束 非 0 为继续
-            recData = PsamHelper.sendReadLog(epcBuff, 1, 2, true);
+
+            recData = PsamHelper.sendReadLog(epcBuff, log / 10, log % 10, true);
             break;
-          case PSamCmd.CMD_ELS_TYPE_RECOVERY:
           case PSamCmd.CMD_ELS_TYPE_CLEAR:
+            els = PSamCmd.getElsData(0xAAAAAAAA, 0xBBBBBBBB, 0xCCCCCCCC);
+            recData = PsamHelper.sendGenElsCmd(type, epcBuff, els);
             break;
         }
       } catch (Exception e) {

@@ -121,6 +121,35 @@ public final class PSamCmd {
   }
 
   /**
+   * 生成 开关锁、开关锁写物流、恢复 交互 指令的 data区，张数小于1时，生成清除日志data。
+   *
+   * @param sheetNum 张数 2字节，张数小于1时，生成清除日志data。
+   * @param operator1 操作员1 4字节
+   * @param operator2 操作员2 4字节
+   * @param time 时间 4字节
+   */
+  public static byte[] getElsData(int sheetNum, int operator1, int operator2, int time) {
+    byte[] bOperator1 = BytesUtil.long2Bytes(operator1, 4);
+    byte[] bOperator2 = BytesUtil.long2Bytes(operator2, 4);
+    byte[] bTime = BytesUtil.long2Bytes(time, 4);
+
+    byte[] bSheet = null;
+    byte[] zero;
+    if (0 < sheetNum) {
+      bSheet = BytesUtil.long2Bytes(sheetNum, 2);
+      zero = new byte[8];
+    } else {
+      zero = new byte[7];
+    }
+    byte[] res = BytesUtil.concatArray(bSheet, bOperator1, bOperator2, bTime, zero);
+    return res;
+  }
+
+  public static byte[] getElsData(int operator1, int operator2, int time) {
+    return getElsData(0, operator1, operator2, time);
+  }
+
+  /**
    * 获取 标签 写密码.
    *
    * @param epc 12字节

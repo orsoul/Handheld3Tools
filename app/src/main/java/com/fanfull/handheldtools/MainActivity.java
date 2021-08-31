@@ -138,7 +138,10 @@ public class MainActivity extends BaseActivity {
         InputConfirmPopupView popupView = new MyInputPopupView(this, 0);
         popupView.setTitleContent("title", "content", "hint");
         popupView.inputContent = "inputContent";
-        //popupView.setListener(null, null);
+        popupView.setTitleContent("设置托盘容量", null, null);
+        //popupView.inputContent = "inputContent";
+        popupView.setListener(text -> {
+        }, null);
         new XPopup.Builder(this)
             //.isDarkTheme(true)
             .hasShadowBg(true)

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
-import com.fanfull.libhard.lock3.PsamHelper;
+import com.fanfull.libhard.lock_zc.PsamHelper;
 import com.fanfull.libhard.rfid.APDUParser;
 import com.fanfull.libhard.rfid.IRfidListener;
 import com.fanfull.libhard.rfid.PSamCmd;

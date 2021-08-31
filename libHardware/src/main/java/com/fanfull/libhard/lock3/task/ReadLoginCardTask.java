@@ -1,6 +1,6 @@
 package com.fanfull.libhard.lock3.task;
 
-import com.fanfull.libhard.lock3.PsamHelper;
+import com.fanfull.libhard.lock_zc.PsamHelper;
 import com.fanfull.libhard.rfid.PSamCmd;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libjava.util.BytesUtil;
