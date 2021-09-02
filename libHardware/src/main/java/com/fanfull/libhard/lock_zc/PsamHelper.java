@@ -67,6 +67,20 @@ public final class PsamHelper {
   }
 
   /**
+   * 向 Psam卡 发送:验证 EPC 校验码（VERIFY_EPC_DATA）.
+   *
+   * @param epc 12字节
+   * @param tid 12字节
+   */
+  public static boolean sendVerifyEpc(byte[] epc, byte[] tid) {
+    byte[] cmd = PSamCmd.getVerifyEpcCmd(epc, tid);
+    byte[] recBuff = new byte[4];
+    int len = RfidController.getInstance().send2PSam(cmd, recBuff);
+    boolean b = APDUParser.checkReply(recBuff, len);
+    return b;
+  }
+
+  /**
    * 向 Psam卡 发送  获取 标签密码.
    *
    * @param epc 12字节

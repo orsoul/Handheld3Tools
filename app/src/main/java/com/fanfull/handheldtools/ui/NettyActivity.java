@@ -13,6 +13,7 @@ import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.task.UhfReadTask;
+import com.fanfull.libhard.lock_zc.LockZcBean;
 import com.fanfull.libhard.lock_zc.PsamHelper;
 import com.fanfull.libhard.lock_zc.SecurityUtil;
 import com.fanfull.libhard.rfid.APDUParser;
@@ -35,6 +36,7 @@ import org.orsoul.baselib.view.MyInputPopupView;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
@@ -101,7 +103,7 @@ public class NettyActivity extends InitModuleActivity {
     readWriteTask = new MyReadWriteTask(uhfController);
     readWriteTask.setReadUse(true);
     readWriteTask.setUseSa(0x48);
-    readWriteTask.setUseLen(72);
+    readWriteTask.setUseLen(60);
   }
 
   @Override public void onClick(View v) {
@@ -447,7 +449,7 @@ public class NettyActivity extends InitModuleActivity {
 
   private void showInputLog() {
     InputConfirmPopupView popupView = new MyInputPopupView(this, 0);
-    popupView.setTitleContent("title", "content", "hint");
+    popupView.setTitleContent("追溯", "第一位为日志序号，第二位为项数", "hint");
     popupView.inputContent = "" + log;
     popupView.setListener(text -> {
       log = Integer.parseInt(text);
@@ -556,11 +558,25 @@ public class NettyActivity extends InitModuleActivity {
       byte[] tidBuff = bean.getTidBuff();
       byte[] useBuff = bean.getUseBuff();
 
-      int epcLabel = epcBuff[11] & 0xFF;
-      int useLabel = useBuff[8] & 0xFF;
-      int useElsLen = useBuff[9] & 0xFF;
-      String info = String.format("EPC：%s\nUSE状态：%02X\nUSE-len：%s",
-          BytesUtil.bytes2HexString(epcBuff), useLabel, useElsLen);
+      boolean verifyEpc = PsamHelper.sendVerifyEpc(epcBuff, tidBuff);
+
+      LockZcBean zcBean = LockZcBean.parse(epcBuff, useBuff);
+      LogUtils.wtf("%s", zcBean);
+
+      //int epcState = epcBuff[11] & 0xFF;
+      //int useLabel = useBuff[8] & 0xFF;
+      //int useElsLen = useBuff[9] & 0xFF;
+      //String info = String.format("EPC：%s\nEPC状态：%02X\nUSE标签：%s",
+      //    BytesUtil.bytes2HexString(epcBuff), epcState, useLabel);
+      String info;
+      if (zcBean == null) {
+        info = "解析袋锁数据失败";
+      } else {
+        info = String.format("EPC：%s\n%s,EPC状态：%02X，USE标签：%s\n%s",
+            BytesUtil.bytes2HexString(epcBuff), verifyEpc ? "通过" : "失败", zcBean.getStatusEpc(),
+            zcBean.getStatusUse(),
+            zcBean);
+      }
 
       String finalInfo = info;
       runOnUiThread(new Runnable() {
@@ -570,14 +586,19 @@ public class NettyActivity extends InitModuleActivity {
                     }
       );
 
+      if (zcBean == null) {
+        return true;
+      }
+
       if (!onlyRead) {
         handler(epcBuff, tidBuff);
       } else if (type == PSamCmd.CMD_ELS_TYPE_READ_LOG) {
-        byte[] elsEncrypt = Arrays.copyOfRange(useBuff, 10, useElsLen);
-        byte[] res = PsamHelper.sendDecryptEls(epcBuff, elsEncrypt);
+        //byte[] elsEncrypt = Arrays.copyOfRange(useBuff, 10, useElsLen);
+        byte[] res = PsamHelper.sendDecryptEls(epcBuff, zcBean.getCmd());
         LogUtils.d("%s", BytesUtil.bytes2HexString(res));
         if (APDUParser.checkReply(res)) {
-
+          List<LockZcBean.CmdBean> logList = LockZcBean.parse(res);
+          LogUtils.wtf("%s", logList);
         }
       }
       return true;

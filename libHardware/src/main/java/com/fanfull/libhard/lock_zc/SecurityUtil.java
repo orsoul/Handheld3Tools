@@ -4,13 +4,7 @@ import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.DesUtil;
 import com.fanfull.libjava.util.Logs;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * 中钞锁 相关算法.
@@ -45,8 +39,6 @@ public final class SecurityUtil {
     //verifyEpcData();
     //byte[] epc = BytesUtil.hexString2Bytes("000F4631110000A7f9f99F01");
     //genRandom(epc);
-
-    testZip();
   }
 
   /**
@@ -185,30 +177,5 @@ public final class SecurityUtil {
     epc[10] = des[7];
     Logs.out("epcNew:%s", BytesUtil.bytes2HexString(epc));
     return epc;
-  }
-
-  static void testZip() throws IOException {
-    Logs.out("==== 开始 ====");
-    DesUtil desUtil = new DesUtil("DES/ECB/NOPadding");
-    byte[] key = new byte[8];
-    new Random().nextBytes(key);
-    Logs.out("key:%s", BytesUtil.bytes2HexString(key));
-
-    String path = "C:\\Users\\Administrator\\Desktop\\data";
-    String des = "C:\\Users\\Administrator\\Desktop\\dataEncrypt";
-
-    BufferedInputStream in = new BufferedInputStream(new FileInputStream(path));
-    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(des));
-    byte[] buff = new byte[1024];
-    int len;
-    while (0 < (len = in.read(buff))) {
-      byte[] encrypt = desUtil.encrypt(buff, key);
-      out.write(encrypt, 0, len);
-    }
-    //new ZipInputStream()
-
-    in.close();
-    out.close();
-    Logs.out("==== 完成 ====");
   }
 }
