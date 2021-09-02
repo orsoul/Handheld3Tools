@@ -77,27 +77,23 @@ public class ZipUtil {
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(src));
         if (pathInZip == null) {
           pathInZip = src.getName();
-        } else {
-          pathInZip += "/" + src.getName();
         }
         boolean res = zipFile(in, out, pathInZip);
         in.close();
         return res;
       } else {
-        Logs.out("== %s/%s ==", pathInZip, src.getName());
+        Logs.out("== %s, %s ==", pathInZip, src.getName());
         File[] files = src.listFiles();
         for (File file : files) {
-          if (file.isFile()) {
-            zipFile(file, out, pathInZip);
+          String base;
+          if (pathInZip == null) {
+            base = file.getName();
           } else {
-            String base;
-            if (pathInZip == null) {
-              base = file.getName();
-            } else {
-              base = pathInZip + "/" + file.getName();
-            }
-            //Logs.out(name);
-            zipFile(file, out, base);
+            base = pathInZip + "/" + file.getName();
+          }
+          boolean success = zipFile(file, out, base);
+          if (!success) {
+            return false;
           }
         }
         return true;
@@ -120,7 +116,7 @@ public class ZipUtil {
       return false;
     }
     try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(des))) {
-      return zipFile(src, out, src.isDirectory() ? src.getName() : null);
+      return zipFile(src, out, src.getName());
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
@@ -150,8 +146,8 @@ public class ZipUtil {
 
     //zipFile(in, "C:\\Users\\Administrator\\Desktop\\dataZip.zip", "data.txt");
 
-    zipFile("C:\\Users\\Administrator\\Desktop\\dataBin",
-        "C:\\Users\\Administrator\\Desktop\\dataBin.zip");
+    zipFile("C:\\Users\\Administrator\\Desktop\\apks",
+        "C:\\Users\\Administrator\\Desktop\\apks.zip");
 
     in.close();
     Logs.out("==== 完成 ====");
