@@ -113,6 +113,7 @@ public class SerialPortController implements ISerialPort {
         }
       }
     };
+    onceListener = listener;
     boolean send = send(data);
     if (!send) {
       return -1;
@@ -122,6 +123,9 @@ public class SerialPortController implements ISerialPort {
       try {
         ClockUtil.clock();
         onceListener = listener;
+        if (0 < reVal[0]) {
+          return reVal[0];
+        }
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");
@@ -141,7 +145,9 @@ public class SerialPortController implements ISerialPort {
         reVal[0] = Arrays.copyOf(data, len);
       }
     };
+    onceListener = listener;
     boolean send = send(data);
+    //SystemClock.sleep(100);
     if (!send) {
       return null;
     }
@@ -151,6 +157,9 @@ public class SerialPortController implements ISerialPort {
         ClockUtil.clock();
         //LogUtils.w("listener wait:%s ======", listener.hashCode());
         onceListener = listener;
+        if (reVal[0] != null) {
+          return reVal[0];
+        }
         onceListener.wait(timeout);
       } catch (InterruptedException e) {
         LogUtils.tag(TAG).i("InterruptedException");

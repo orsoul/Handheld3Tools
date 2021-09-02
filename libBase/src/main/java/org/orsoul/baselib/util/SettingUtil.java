@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
 
+import androidx.annotation.NonNull;
+
 import com.blankj.utilcode.util.Utils;
 
 public final class SettingUtil {
@@ -41,10 +43,12 @@ public final class SettingUtil {
     context.startActivity(intent);
   }
 
-  public static void turnScreenOn(Context context) {
-    if (context == null) {
-      return;
-    }
+  public static boolean isScreenOn(@NonNull Context context) {
+    PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+    return pm != null && pm.isInteractive();
+  }
+
+  public static void turnScreenOn(@NonNull Context context) {
     PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
     PowerManager.WakeLock mWakelock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP |
         PowerManager.SCREEN_DIM_WAKE_LOCK, "tag");
