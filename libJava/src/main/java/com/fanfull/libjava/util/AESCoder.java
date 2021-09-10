@@ -180,17 +180,22 @@ public final class AESCoder {
 
     //map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
     //map.put("05532103044A45D23E61809D", "E28011402000247928471800");
-    map.put("05FF0FF01122334455667737", "000000000FFFFFFFFFFF0000");
-    map.put("05554600FF77FF66223215B1", "E20034140123030179A13B65");
-    map.put("05027101043B1222745A80CA", "E20834140123030179A13B65");
+    //map.put("05FF0FF01122334455667737", "000000000FFFFFFFFFFF0000");
+    //map.put("05554600FF77FF66223215B1", "E20034140123030179A13B65");
+    //map.put("05027101043B1222745A80CA", "E20834140123030179A13B65");
+    map.put("06532101049F48D23E6180CD", "E280114020002578287E1800");
+    map.put("0653210304594AD23E61806D", "E28011402000200B28771800");
+
+    map.put("05532101049F48D23E6180CD", "E280114020002578287E1800");
+    map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
 
     final Set<Map.Entry<String, String>> entries = map.entrySet();
     for (Map.Entry<String, String> s : entries) {
       Logs.out("------ plain:%s ------", s);
       final byte[] epc = BytesUtil.hexString2Bytes(s.getKey());
       final byte[] tid = BytesUtil.hexString2Bytes(s.getValue());
-      final byte checkByte = genBagIdCheck(epc, tid);
-      System.out.println();
+      //final byte checkByte = genBagIdCheck(epc, tid);
+      Logs.out("res:%s", checkBagId6(epc, tid));
     }
   }
 
@@ -214,10 +219,24 @@ public final class AESCoder {
     //Logs.out("myEncryptNew:%s - %s", BytesUtil.bytes2HexString(plainBuff), myEncrypt);
   }
 
+  public static class TestThread extends Thread {
+    @Override public void run() {
+      for (int i = 0; i < 100; i++) {
+        System.out.println("=================================子线程666：" + i);
+      }
+    }
+  }
+
   public static void main(String[] args) throws Exception {
+
+    TestThread testThread = new TestThread();
+    testThread.start();
+    for (int i = 0; i < 100; i++) {
+      System.out.println("主线程" + i + "：666");
+    }
     //testMyEncrypt();
 
     //testString();
-    testBagIdCheck();
+    //testBagIdCheck();
   }
 }

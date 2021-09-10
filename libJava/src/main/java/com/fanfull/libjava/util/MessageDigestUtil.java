@@ -6,11 +6,13 @@ import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MessageDigestUtil {
+public final class MessageDigestUtil {
   /** md5 算法，等于SHA-1. */
   public static final String ALGORITHM_MD5 = "md5";
   /** SHA 算法，等于SHA-1. */
   public static final String ALGORITHM_SHA = "sha";
+  /** SHA 算法，等于SHA-256. */
+  public static final String ALGORITHM_SHA256 = "sha-256";
 
   public static Charset charset = StandardCharsets.UTF_8;
 
@@ -41,11 +43,33 @@ public class MessageDigestUtil {
     }
   }
 
+  public static byte[] md(byte[] input, int offset, int len, String algorithm) {
+    try {
+      MessageDigest md = MessageDigest.getInstance(algorithm);
+      md.update(input, offset, len);
+      return md.digest();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   public static byte[] md5(byte[] input) {
     return md(input, ALGORITHM_MD5);
   }
 
+  public static byte[] sha(String input) {
+    if (input == null) {
+      return null;
+    }
+    return sha(input.getBytes());
+  }
+
   public static byte[] sha(byte[] input) {
     return md(input, ALGORITHM_SHA);
+  }
+
+  public static byte[] sha256(byte[] input) {
+    return md(input, ALGORITHM_SHA256);
   }
 }

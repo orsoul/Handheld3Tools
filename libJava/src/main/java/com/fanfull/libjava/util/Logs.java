@@ -1,10 +1,11 @@
 package com.fanfull.libjava.util;
 
 public final class Logs {
-  private static String timeFormat = "yyyy-MM-dd HH:mm:ss.SSS";
+  /** yyyy-MM-dd HH:mm:ss.SSS */
+  private static String timeFormat = "HH:mm:ss.SSS";
 
   public static void out(Object obj) {
-    System.out.printf("%s (myLog-%s):%s\n", DateFormatUtil.getStringTime(timeFormat),
+    System.out.printf("%s [myLog] (%s):%s\n", DateFormatUtil.getStringTime(timeFormat),
         Thread.currentThread().getName(), obj);
   }
 

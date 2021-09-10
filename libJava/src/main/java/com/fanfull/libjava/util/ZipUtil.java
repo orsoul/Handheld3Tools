@@ -9,12 +9,53 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtil {
   public static void main(String[] args) throws IOException {
-    testZip();
+    //testZip();
+    test3Des();
+  }
+
+  static void test3Des() {
+    byte[] sha = MessageDigestUtil.sha("82984888");
+    byte[] key = new byte[24];
+    Arrays.fill(key, (byte) 0x85);
+    System.arraycopy(sha, 0, key, 0, sha.length);
+    Logs.out("key:%s", BytesUtil.bytes2HexString(key));
+
+    //String pathIn = "C:\\Users\\Administrator\\Desktop\\BagCirc.dat";
+    //String filePath = "C:\\Users\\Administrator\\Desktop\\BagCirc.txt";
+
+    String pathIn = "C:\\Users\\Administrator\\Desktop\\3ds.txt";
+    String filePath = "C:\\Users\\Administrator\\Desktop\\3dsBin";
+
+    byte[] vector = new byte[8];
+
+    byte[] buff = new byte[1024];
+    DesUtil desUtil = new DesUtil("DESede/CBC/PKCS5Padding");
+    int len;
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(filePath));
+         InputStream in = new BufferedInputStream(new FileInputStream(pathIn))) {
+      while (0 < (len = in.read(buff))) {
+        //byte[] toWrite = desUtil.decrypt(buff, key);
+        byte[] toWrite = DesUtil.cipherDoFinal(buff, 0, len, key, true,
+            "DESede/CBC/PKCS5Padding", vector);
+        out.write(toWrite);
+        //out.write(toWrite, 0, len);
+        if (len != buff.length) {
+          Logs.out("len=%s", len);
+        }
+      }
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public static void hexStr2BinFile(InputStream in, String filePath) {
@@ -35,7 +76,7 @@ public class ZipUtil {
 
   public static void encryptFile(InputStream in, String filePath, byte[] key) {
     byte[] buff = new byte[1024];
-    DesUtil desUtil = new DesUtil("DES/ECB/NOPadding");
+    DesUtil desUtil = new DesUtil("DES/CBC/NOPadding");
     int len;
     try (OutputStream out = new BufferedOutputStream(new FileOutputStream(filePath))) {
       while (0 < (len = in.read(buff))) {
