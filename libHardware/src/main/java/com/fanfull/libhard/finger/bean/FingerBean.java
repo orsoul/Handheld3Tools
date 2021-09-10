@@ -89,11 +89,10 @@ public class FingerBean {
         ", userId='" + userId + '\'' +
         ", userIc='" + userIc + '\'' +
         ", fingerVersion=" + fingerVersion +
-        //", fingerNum='" + fingerNum + '\'' +
         ", fingerStatus='" + fingerStatus + '\'' +
         ", fingerName='" + fingerName + '\'' +
         ", userName='" + userName + '\'' +
-        ", feature='" + getFeature() + '\'' +
+        //", feature='" + getFeature() + '\'' +
         '}';
   }
 

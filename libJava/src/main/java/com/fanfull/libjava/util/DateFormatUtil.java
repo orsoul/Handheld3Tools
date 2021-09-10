@@ -1,5 +1,6 @@
 package com.fanfull.libjava.util;
 
+import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,7 +54,7 @@ public final class DateFormatUtil {
    * @return 指定时间的 字符串形式; 若 format 格式非法, 返回 null
    */
   public static String getStringTime(Date date, String format) {
-    SimpleDateFormat formatter = null;
+    DateFormat formatter = null;
     try {
       formatter = new SimpleDateFormat(format);
       // formatter = new SimpleDateFormat(format, Locale.CHINA);
@@ -185,5 +186,7 @@ public final class DateFormatUtil {
 
     String stringTime = getStringTime(date.getTime(), FORMAT_NORMAL);
     System.out.printf("%s\n", stringTime);
+
+    Logs.out("%s", getStringTime(System.currentTimeMillis() - 2 * 60 * 60 * 1000));
   }
 }

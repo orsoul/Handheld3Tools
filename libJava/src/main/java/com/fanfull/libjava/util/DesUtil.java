@@ -1,6 +1,11 @@
 package com.fanfull.libjava.util;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.Provider;
 import java.security.SecureRandom;
+import java.security.Security;
+import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -14,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
  * 加密/解密工具，基于java原生API封装. <br/>
  * <br/>
  * 支持3种加密算法：DES、3DES、AES <br/>
- * 支持加密模式：ECB、CBC.<br/>
+ * 支持加密模式：ECB、CBC、CFB、OFB.<br/>
  * 支持填充方式：PKCS5Padding、NOPadding <br/>
  */
 public class DesUtil {
@@ -25,16 +30,24 @@ public class DesUtil {
   public static final String ALGORITHM_NAME_DES = "DES";
   /** 算法名 3DES(DESede). */
   public static final String ALGORITHM_NAME_3DES = "DESede";
+  /** 算法名 DESede(3DES). */
+  public static final String ALGORITHM_NAME_DESEDE = "DESede";
 
   /** 加密模式 ECB. */
   public static final String ALGORITHM_MODE_ECB = "ECB";
   /** 加密模式 CBC. */
   public static final String ALGORITHM_MODE_CBC = "CBC";
+  /** 加密模式 CFB. */
+  public static final String ALGORITHM_MODE_CFB = "CFB";
+  /** 加密模式 OFB. */
+  public static final String ALGORITHM_MODE_OFB = "OFB";
 
   /** 明文填充模式:java只支持无填充 和 PKCS5Padding. */
   public static final String ALGORITHM_PADDING_PKCS5Padding = "PKCS5Padding";
   /** 明文填充模式 NOPadding. */
   public static final String ALGORITHM_PADDING_NOPadding = "NOPadding";
+  /** 明文填充模式:java原生不支持 PKCS7Padding. */
+  public static final String ALGORITHM_PADDING_PKCS7Padding = "PKCS7Padding";
 
   private static final String defaultCharset = "UTF-8";
 
@@ -82,7 +95,7 @@ public class DesUtil {
   /**
    * 对于DES, 秘钥长度应为8byte, Java仅支持56位秘钥. 如果传入的秘钥长度超过8byte,截断; 若传入的秘钥长度 小于8byte, 补0.
    * 对于3DES(DESede), 秘钥长度应为2长度（16byte）或3长度（24byte），传入的秘钥长度超过24byte,截断;
-   * 若传入的秘钥长度等于16，按k1+k2+k3的次序拼接为3长度密钥；
+   * 若传入的秘钥长度等于16，按k1+k2+k1的次序拼接为3长度密钥；
    * 若传入的秘钥长度小于24byte,补0.如果密码位数少于等于64位，加密结果与DES相同.
    * 对于AES, Java支持128位秘钥. 传入的秘钥长度超过16byte,截断; 若传入的秘钥长度小于16byte, 补0.
    *
@@ -92,7 +105,8 @@ public class DesUtil {
    * @param algorithmArgs 算法参数，AES/ECB/PKCS5Padding，支持DES、3DES、AES.
    * @param initVector 向量数组，使用CBC加密模式时 需要传入非null值.
    */
-  public static byte[] cipherDoFinal(byte[] data, byte[] pwd, boolean isEncrypt,
+  public static byte[] cipherDoFinal(byte[] data, int offset, int len, byte[] pwd,
+      boolean isEncrypt,
       String algorithmArgs, byte[] initVector) throws Exception {
     if (algorithmArgs == null) {
       return null;
@@ -108,7 +122,8 @@ public class DesUtil {
       key = new SecretKeySpec(pwd2Key(pwd, 8), algorithmName);
     } else if (ALGORITHM_NAME_AES.equalsIgnoreCase(algorithmName)) {
       key = new SecretKeySpec(pwd2Key(pwd, 16), algorithmName);
-    } else if (ALGORITHM_NAME_3DES.equalsIgnoreCase(algorithmName)) {
+    } else if (ALGORITHM_NAME_3DES.equalsIgnoreCase(algorithmName)
+        || ALGORITHM_NAME_DESEDE.equalsIgnoreCase(algorithmName)) {
       if (pwd.length == 16) {
         // 双长度密钥k1+k2，生成3长度密钥：k1 + k2 + k1
         byte[] key24 = new byte[24];
@@ -119,20 +134,25 @@ public class DesUtil {
         key = new SecretKeySpec(pwd2Key(pwd, 24), algorithmName);
       }
     } else {
-      return null;
+      throw new Exception("不支持的算法：" + algorithmName);
     }
 
     Cipher cipher = Cipher.getInstance(algorithmArgs);
     int encryptMode = isEncrypt ? Cipher.ENCRYPT_MODE : Cipher.DECRYPT_MODE;
-    if (args[1].equals(ALGORITHM_MODE_CBC) && initVector != null) {
-      // CBC加密模式，需要向量数组
-      cipher.init(encryptMode, key, new IvParameterSpec(initVector));
-    } else {
+    if (args[1].equals(ALGORITHM_MODE_ECB)) {
       // ECB加密模式
       cipher.init(encryptMode, key);
+    } else {
+      // 非ECB加密模式，需要向量数组
+      cipher.init(encryptMode, key, new IvParameterSpec(initVector));
     }
 
-    return cipher.doFinal(data);
+    return cipher.doFinal(data, offset, len);
+  }
+
+  public static byte[] cipherDoFinal(byte[] data, byte[] pwd, boolean isEncrypt,
+      String algorithmArgs, byte[] initVector) throws Exception {
+    return cipherDoFinal(data, 0, data.length, pwd, isEncrypt, algorithmArgs, initVector);
   }
 
   /**
@@ -226,7 +246,7 @@ public class DesUtil {
   /**
    * 算法参数.例：DES/ECB/PKCS5Padding
    * 支持3种加密算法：DES、3DES、AES，
-   * 支持加密模式：ECB、CBC.
+   * 支持加密模式：ECB、CBC.CFBblock
    * 支持：PKCS5Padding、NOPadding
    */
   private String algorithmArgs;
@@ -367,9 +387,20 @@ public class DesUtil {
     }
   }
 
+  static void testProviders() {
+    Provider[] providers = Security.getProviders();
+    for (Provider provider : providers) {
+      Logs.out("======================== provider:%s ========================", provider);
+      for (Map.Entry<Object, Object> entry : provider.entrySet()) {
+        Logs.out("%s", entry.getKey());
+      }
+    }
+  }
+
   public static void main(String[] args) throws Exception {
-    testKey(new byte[8], ALGORITHM_NAME_3DES);
-    //testDes();
+    //testKey(new byte[8], ALGORITHM_NAME_3DES);
+    testDes();
+    //testProviders();
   }
 
   static void test3Des() throws Exception {
@@ -392,23 +423,45 @@ public class DesUtil {
   }
 
   static void testDes() throws Exception {
-    String text = "哈喽12ab_#";
+    String text = "123456789";
     String pwd = "00000000";
     byte[] dataEncrypt;
     byte[] dataDecrypt;
+    byte[] in = new byte[8];
+    byte[] data = text.getBytes();
+    byte[] key = pwd.getBytes();
+    byte[] show;
 
-    text = "12345678";
+    Security.addProvider(new BouncyCastleProvider());
+    //text = "12345678";
     //text = "12345678123456_#";
-    dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/PKCS5Padding");
-    //dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/PKCS5Padding");
+    Logs.out("data:%s", BytesUtil.bytes2HexString(data));
+    Logs.out("key:%s", BytesUtil.bytes2HexString(key));
+    dataEncrypt = cipherDoFinal(data, key, true, "DES/CBC/PKCS5Padding", in);
     System.out.println(String.format("%s, PKCS5Padding", BytesUtil.bytes2HexString(dataEncrypt)));
+    show = cipherDoFinal(dataEncrypt, key, false, "DES/ECB/NoPadding");
+    System.out.println(String.format("%s, Decrypt", BytesUtil.bytes2HexString(show)));
+    show = cipherDoFinal(dataEncrypt, key, false, "DES/CBC/PKCS5Padding", in);
+    System.out.println(String.format("%s, Decrypt", new String(show)));
 
-    dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/NoPadding");
+    //dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/NoPadding");
+    //System.out.println(String.format("%s, NOPadding", BytesUtil.bytes2HexString(dataEncrypt)));
     //dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/NOPadding");
-    System.out.println(String.format("%s, NOPadding", BytesUtil.bytes2HexString(dataEncrypt)));
+    //System.out.println(String.format("%s, Decrypt", new String(dataDecrypt)));
 
-    dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/ZeroPadding");
-    dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/ZeroPadding");
-    System.out.println(String.format("%s, ZeroPadding", BytesUtil.bytes2HexString(dataEncrypt)));
+    //dataEncrypt = cipherDoFinal(data, key, true, "DES/CBC/NoPadding", in);
+    //System.out.println(String.format("%s, CBC-NOPadding", BytesUtil.bytes2HexString(dataEncrypt)));
+    //dataDecrypt = cipherDoFinal(dataEncrypt, key, false, "DES/CBC/NOPadding", in);
+    //System.out.println(String.format("%s, Decrypt", new String(dataDecrypt)));
+
+    dataEncrypt = cipherDoFinal(data, key, true, "DES/CBC/PKCS7Padding", in);
+    System.out.println(
+        String.format("%s, CBC-PKCS7Padding", BytesUtil.bytes2HexString(dataEncrypt)));
+    dataDecrypt = cipherDoFinal(dataEncrypt, key, false, "DES/CBC/PKCS5Padding", in);
+    System.out.println(String.format("%s, Decrypt", new String(dataDecrypt)));
+
+    //dataEncrypt = cipherDoFinal(text, pwd, true, "DES/ECB/ZeroPadding");
+    //dataDecrypt = cipherDoFinal(dataEncrypt, pwd, false, "DES/ECB/ZeroPadding");
+    //System.out.println(String.format("%s, ZeroPadding", BytesUtil.bytes2HexString(dataEncrypt)));
   }
 }

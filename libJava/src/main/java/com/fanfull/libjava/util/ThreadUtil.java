@@ -21,7 +21,7 @@ public final class ThreadUtil {
         if (normalThreadPool == null) {
           normalThreadPool = new ThreadPoolExecutor(8, 32,
               5000L, TimeUnit.MILLISECONDS,
-              new LinkedBlockingQueue<>(), getNameFormatThreadFactory("FixedThread"));
+              new LinkedBlockingQueue<>(16), getNameFormatThreadFactory("FixedThread"));
         }
       }
     }

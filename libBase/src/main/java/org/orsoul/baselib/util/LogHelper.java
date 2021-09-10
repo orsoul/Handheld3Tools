@@ -13,12 +13,14 @@ public class LogHelper {
   private static final String TAG_LOG = "myLog";
   public static final String PATH_DIR;
   public static final String PATH_LOG_DIR;
+  public static final String PATH_TASK_DIR;
 
   static {
     /* /!appName/logs/ */
     PATH_DIR = Environment.getExternalStorageDirectory().getAbsolutePath()
         + "/!" + AppUtils.getAppName();
     PATH_LOG_DIR = PATH_DIR + "/logs/";
+    PATH_TASK_DIR = PATH_DIR + "/task/";
   }
 
   public static void initLog(boolean allowLog) {
