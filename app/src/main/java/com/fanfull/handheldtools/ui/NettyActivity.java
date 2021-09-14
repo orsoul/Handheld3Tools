@@ -90,6 +90,7 @@ public class NettyActivity extends InitModuleActivity {
             + "7 -> 恢复\n"
             + "8 -> 日志清除\n"
             + "9 -> 重置Psam\n"
+            + ". -> 设置功率\n"
     );
 
     serverIp = MyPreference.SERVER_IP1.getValue(serverIp);
@@ -238,6 +239,29 @@ public class NettyActivity extends InitModuleActivity {
     super.onDestroy();
   }
 
+  private String handlerWrite(String cmd) {
+    String[] split = cmd.split(" ");
+    byte[] data = BytesUtil.hexString2Bytes(split[1]);
+    if (data == null) {
+      return "数据解析错误";
+    }
+    byte[] head = new byte[2];
+    head[0] = 0x77;
+    head[1] = (byte) data.length;
+    byte[] write = BytesUtil.concatArray(head, data);
+    boolean success = false;
+    for (int i = 0; i < 5; i++) {
+      success = uhfController.writeUse(0x4C, write);
+      if (success) {
+        break;
+      }
+    }
+    if (success) {
+      return "写入USE成功";
+    }
+    return "写入USE失败";
+  }
+
   private void handlerApdu(String cmd) {
     LogUtils.d("handlerApdu:%s", cmd);
     if (cmd == null) {
@@ -251,6 +275,10 @@ public class NettyActivity extends InitModuleActivity {
       } else {
         sendInfo[0] = "重置Psam失败！！！";
       }
+    } else if (cmd.startsWith("wu ")) {
+      sendInfo[0] = handlerWrite(cmd);
+    }
+    if (sendInfo[0] != null) {
       runOnUiThread(() -> {
         ViewUtil.appendShow(sendInfo[0], tvShow);
       });

@@ -105,7 +105,7 @@ public class SocketActivity extends InitModuleActivity {
         String info = handlerCmd(s);
         boolean send = false;
         try {
-          send = socketClient.send(info.getBytes("gbk"));
+          send = socketClient.send(info.getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
           e.printStackTrace();
         }
@@ -384,9 +384,9 @@ public class SocketActivity extends InitModuleActivity {
     String reVal = null;
     if (res) {
       if (isRead) {
-        reVal = String.format("success,read %s ：%s", s[1], BytesUtil.bytes2HexString(data));
+        reVal = String.format("success,read %s:%s", s[1], BytesUtil.bytes2HexString(data));
       } else {
-        reVal = String.format("success,write %s ：%s", s[1], s[3]);
+        reVal = String.format("success,write %s:%s", s[1], s[3]);
       }
     } else {
       reVal = "命令执行失败";
