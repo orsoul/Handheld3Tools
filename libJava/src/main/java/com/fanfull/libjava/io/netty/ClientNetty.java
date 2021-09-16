@@ -259,7 +259,7 @@ public class ClientNetty implements ISocketClient {
   }
 
   @Override public void disconnect() {
-    setActiveDisconnect(true);
+    //setActiveDisconnect(true);
     if (channel != null) {
       f = null;
       channel.close();
