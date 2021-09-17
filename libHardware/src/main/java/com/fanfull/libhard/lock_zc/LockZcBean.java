@@ -133,7 +133,9 @@ public class LockZcBean {
 
         if (10 <= useCmd.length && useCmd[9] + 10 <= useCmd.length) {
           lockZcBean.cmdLen = useCmd[9] & 0xFF;
-          lockZcBean.cmd = Arrays.copyOfRange(useCmd, 10, lockZcBean.cmdLen);
+          if (0 < lockZcBean.cmdLen) {
+            lockZcBean.cmd = Arrays.copyOfRange(useCmd, 10, 10 + lockZcBean.cmdLen);
+          }
         }
       }
     } catch (Exception e) {

@@ -104,7 +104,7 @@ public class NettyActivity extends InitModuleActivity {
     readWriteTask = new MyReadWriteTask(uhfController);
     readWriteTask.setReadUse(true);
     readWriteTask.setUseSa(0x48);
-    readWriteTask.setUseLen(60);
+    readWriteTask.setUseLen(112);
   }
 
   @Override public void onClick(View v) {
@@ -241,8 +241,12 @@ public class NettyActivity extends InitModuleActivity {
 
   private String handlerWrite(String cmd) {
     String[] split = cmd.split(" ");
-    byte[] data = BytesUtil.hexString2Bytes(split[1]);
-    if (data == null) {
+    if (split.length < 3) {
+      return "指令格式错误";
+    }
+    byte[] pwd = BytesUtil.hexString2Bytes(split[1]);
+    byte[] data = BytesUtil.hexString2Bytes(split[2]);
+    if (pwd == null || data == null) {
       return "数据解析错误";
     }
     byte[] head = new byte[2];
@@ -251,7 +255,9 @@ public class NettyActivity extends InitModuleActivity {
     byte[] write = BytesUtil.concatArray(head, data);
     boolean success = false;
     for (int i = 0; i < 5; i++) {
-      success = uhfController.writeUse(0x4C, write);
+      //success = uhfController.writeUse(0x4C, write);
+      success =
+          uhfController.write(UhfCmd.MB_USE, 0x4C, write, 500, UhfCmd.MB_USE, 0, null, pwd);
       if (success) {
         break;
       }
@@ -275,6 +281,11 @@ public class NettyActivity extends InitModuleActivity {
       } else {
         sendInfo[0] = "重置Psam失败！！！";
       }
+      runOnUiThread(() -> {
+        ViewUtil.appendShow(sendInfo[0], tvShow);
+      });
+      clientNetty.send(sendInfo[0]);
+      return;
     } else if (cmd.startsWith("wu ")) {
       sendInfo[0] = handlerWrite(cmd);
     }
@@ -552,8 +563,15 @@ public class NettyActivity extends InitModuleActivity {
         //  showDialog("获取交互指令失败");
         //});
         //return true;
-        ToastUtils.showShort("获取交互指令失败，使用测试数据");
-        recData = BytesUtil.hexString2Bytes("9E182D1F663763D254FB868608FD72DF");
+        //ToastUtils.showShort("获取交互指令失败，使用测试数据");
+        runOnUiThread(() -> {
+          String info;
+          info = "获取交互指令失败";
+          SoundHelper.playToneFailed();
+          showDialog(info);
+          ViewUtil.appendShow(tvShow, info);
+        });
+        //recData = BytesUtil.hexString2Bytes("9E182D1F663763D254FB868608FD72DF");
       } else {
         pwd = PsamHelper.sendGetPwd(epcBuff);
         LogUtils.d("pwd:%s", BytesUtil.bytes2HexString(pwd));
@@ -600,7 +618,7 @@ public class NettyActivity extends InitModuleActivity {
       if (zcBean == null) {
         info = "解析袋锁数据失败";
       } else {
-        info = String.format("EPC：%s\n%s,EPC状态：%02X，USE标签：%s\n%s",
+        info = String.format("EPC：%s\nEPC验证：%s,EPC状态：%02X，USE标签：%s\n%s",
             BytesUtil.bytes2HexString(epcBuff), verifyEpc ? "通过" : "失败", zcBean.getStatusEpc(),
             zcBean.getStatusUse(),
             zcBean);
@@ -624,10 +642,19 @@ public class NettyActivity extends InitModuleActivity {
         //byte[] elsEncrypt = Arrays.copyOfRange(useBuff, 10, useElsLen);
         byte[] res = PsamHelper.sendDecryptEls(epcBuff, zcBean.getCmd());
         LogUtils.d("%s", BytesUtil.bytes2HexString(res));
-        if (APDUParser.checkReply(res)) {
+        String msg;
+        if (res != null) {
           List<LockZcBean.CmdBean> logList = LockZcBean.parse(res);
-          LogUtils.wtf("%s", logList);
+          msg = String.format("日志解密成功%s:%s", logList.size(), logList);
+        } else {
+          msg = String.format("日志解密失败");
         }
+        LogUtils.wtf("%s", msg);
+        runOnUiThread(new Runnable() {
+          @Override public void run() {
+            ViewUtil.appendShow(tvShow, msg);
+          }
+        });
       }
       return true;
     }

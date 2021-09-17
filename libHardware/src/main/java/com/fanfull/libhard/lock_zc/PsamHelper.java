@@ -75,7 +75,7 @@ public final class PsamHelper {
   public static boolean sendVerifyEpc(byte[] epc, byte[] tid) {
     byte[] cmd = PSamCmd.getVerifyEpcCmd(epc, tid);
     byte[] recBuff = new byte[4];
-    int len = RfidController.getInstance().send2PSam(cmd, recBuff);
+    int len = RfidController.getInstance().send2PSam(cmd, recBuff, false);
     boolean b = APDUParser.checkReply(recBuff, len);
     return b;
   }
