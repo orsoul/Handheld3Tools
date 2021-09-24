@@ -72,6 +72,7 @@ public class NettyActivity extends InitModuleActivity {
     btnSetIp.setOnClickListener(this);
 
     findViewById(R.id.btn_netty_setLog).setOnClickListener(this);
+    findViewById(R.id.btn_netty_read_log).setOnClickListener(this);
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +128,24 @@ public class NettyActivity extends InitModuleActivity {
         break;
       case R.id.btn_netty_setLog:
         showInputLog();
+        break;
+      case R.id.btn_netty_read_log:
+        byte[] buff = new byte[128];
+        boolean b = uhfController.readUse(0, buff);
+        StringBuilder sb = new StringBuilder();
+        if (b) {
+          sb.append("读取物流区成功\n");
+          for (int i = 0; i < buff.length; i += 16) {
+            sb.append((i / 16 + 1) + ":")
+                .append(BytesUtil.bytes2HexString(buff, i, i + 16))
+                .append("\n");
+          }
+          SoundHelper.playToneSuccess();
+        } else {
+          sb.append("读取物流区 失败！！！");
+          SoundHelper.playToneFailed();
+        }
+        ViewUtil.appendShow(tvShow, sb.toString());
         break;
     }
   }

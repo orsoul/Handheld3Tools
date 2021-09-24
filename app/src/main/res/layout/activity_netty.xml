@@ -56,4 +56,15 @@
     app:layout_constraintBottom_toBottomOf="@id/btn_netty_connect"
     app:layout_constraintEnd_toStartOf="@id/btn_netty_setIp"
     app:layout_constraintTop_toTopOf="@id/btn_netty_connect" />
+
+  <Button
+    android:id="@+id/btn_netty_read_log"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:padding="0dp"
+    android:text="读物流"
+    app:layout_constraintBottom_toBottomOf="@id/btn_netty_connect"
+    app:layout_constraintEnd_toStartOf="@id/btn_netty_setLog"
+    app:layout_constraintTop_toTopOf="@id/btn_netty_connect" />
 </androidx.constraintlayout.widget.ConstraintLayout>
