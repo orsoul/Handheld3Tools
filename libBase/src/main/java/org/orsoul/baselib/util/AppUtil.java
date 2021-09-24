@@ -4,7 +4,9 @@ import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Build;
+import android.os.Looper;
 
+import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.Utils;
 
 import java.util.List;
@@ -28,13 +30,16 @@ public final class AppUtil {
             Context.ACTIVITY_SERVICE);
     List<ActivityManager.AppTask> appTaskList = activityManager.getAppTasks();
     for (ActivityManager.AppTask appTask : appTaskList) {
-      //LogUtils.d(":%s",appTask.si);
+      LogUtils.d(":%s", appTask.getTaskInfo());
       appTask.finishAndRemoveTask();
     }
     //        appTaskList.get(0).finishAndRemoveTask();
     if (killProcess) {
-      android.os.Process.killProcess(android.os.Process.myPid());
-      System.exit(0);
+      killProcess();
     }
+  }
+
+  public static boolean isMainThread() {
+    return Looper.getMainLooper().getThread() == Thread.currentThread();
   }
 }

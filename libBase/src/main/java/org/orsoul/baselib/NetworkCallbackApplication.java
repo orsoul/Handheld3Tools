@@ -13,6 +13,7 @@ import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.wanjian.cockroach.Cockroach;
 
+import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
 
 import java.lang.reflect.Method;
@@ -28,6 +29,10 @@ public abstract class NetworkCallbackApplication extends Application {
   @Override public void onCreate() {
     super.onCreate();
     initNetworkCallback();
+  }
+
+  /** 在主线程中 产生未捕捉的异常时 回调此方法，此时一般执行 重启 APP的操作. */
+  protected void onCrashOnMainThread(Application context) {
   }
 
   protected void initNetworkCallback() {
@@ -80,6 +85,10 @@ public abstract class NetworkCallbackApplication extends Application {
       LogUtils.wtf("%s", stackTrace);
       LogUtils.getLog2FileConfig().flushAsync();
       CrashLogUtil.saveCrashReport(stackTrace);
+
+      if (AppUtil.isMainThread()) {
+        onCrashOnMainThread(this);
+      }
     });
   }
 

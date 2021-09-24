@@ -15,6 +15,7 @@ import android.net.wifi.aware.WifiAwareManager;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 
@@ -545,5 +546,23 @@ public class WiFiUtil {
       }
     }
     return null;
+  }
+
+  /**
+   * 获取WiFi信号量，0~10.
+   *
+   * @return 获取失败 返回-1，否则返回 0~10。
+   */
+  public static int getSignalLevel(@NonNull Context context) {
+    WifiManager manager =
+        (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    WifiInfo wifiInfo = manager.getConnectionInfo();
+    if (wifiInfo == null) {
+      return -1;
+    }
+    int rssi = wifiInfo.getRssi();
+    int level = WifiManager.calculateSignalLevel(rssi, 11);
+    LogUtils.d("rssi:%s, level:%s", rssi, level);
+    return level;
   }
 }
