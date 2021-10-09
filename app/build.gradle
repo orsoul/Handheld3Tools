@@ -9,8 +9,8 @@ android {
     minSdkVersion rootProject.ext.android.minSdkVersion
     targetSdkVersion rootProject.ext.android.targetSdkVersion
 
-    versionCode 227
-    versionName "v0.2.7-alpha"
+    versionCode 229
+    versionName "v0.2.9-alpha"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {
@@ -80,6 +80,26 @@ android {
       fileName.replace('app-release', "${apkName}")
     }
   }
+  task copyDebug(type: Copy, group: 'myTask', description: 'assembleDebug构建项目，复制apk') {
+    dependsOn 'assembleDebug'
+    //      String destDir = "D:/!Desktop/${rootProject.name}-aar/"
+    String destDir = "C:/Users/Administrator/Desktop/"
+    //    String destDir = "${rootDir}/apk/"
+    File srcFile = new File("build/outputs/apk/debug/app-debug.apk")
+
+    from srcFile
+    into destDir
+
+    /* 重命名方式1： 使用一个闭合映射文件名 */
+    String projectName = "Tools"
+    String apkName = "${projectName}_" +
+        "${defaultConfig.versionName}_" +
+        "debug_" +
+        "${new Date().format("yyyy-MM-dd_HH_mm")}"
+    rename { String fileName ->
+      fileName.replace('app-debug', "${apkName}")
+    }
+  }
 
 //  applicationVariants.all { variant ->
 //    if (variant.buildType.name != "debug") {
@@ -136,6 +156,9 @@ dependencies {
   // crash
   implementation 'cat.ereza:customactivityoncrash:2.3.0'
   implementation 'com.wanjian:cockroach:0.0.5'
+  def spider_man = "v1.1.8"
+  debugImplementation "com.github.simplepeng.SpiderMan:spiderman:${spider_man}"
+  releaseImplementation "com.github.simplepeng.SpiderMan:spiderman-no-op:${spider_man}"
   //    debugImplementation 'com.hjq:logcat:6.8'
   //  debugImplementation("com.simple:spiderman:1.1.6") {
   //    exclude group: "androidx.appcompat"
@@ -154,9 +177,9 @@ dependencies {
   implementation 'com.victor:lib:1.0.4'
 
   /* network */
-  implementation 'io.netty:netty-all:4.1.10.Final'
+  implementation 'io.netty:netty-all:4.1.68.Final'
 //  implementation rootProject.ext.dependencies["netty"]
-  implementation 'com.google.code.gson:gson:2.8.5'
+  implementation 'com.google.code.gson:gson:2.8.8'
 //  implementation rootProject.ext.dependencies["gson"]
 
   /* db */

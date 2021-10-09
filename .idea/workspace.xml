@@ -25,7 +25,7 @@
   </component>
   <component name="AndroidLogFilters">
     <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="myLog" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="NONE" />
@@ -36,22 +36,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7cb9c4f5-364c-4f59-a567-fe6b457dc62d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/MyApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/MyApplication.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/AboutActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/AboutActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/NettyActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/NettyActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SocketActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/SocketActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/view/DialogUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/fanfull/handheldtools/ui/view/DialogUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_netty.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_netty.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/NetworkCallbackApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/NetworkCallbackApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/service/NetworkChangeReceiver.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/service/NetworkChangeUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/AppUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/AppUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/WiFiUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libBase/src/main/java/org/orsoul/baselib/util/WiFiUtil.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/libHardware/src/main/java/com/fanfull/libhard/finger/impl/FingerPrintTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libJava/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libjava/io/SocketServiceDemo.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libjava/io/SocketServiceDemo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libjava/util/ZipUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/libJava/src/main/java/com/fanfull/libjava/util/ZipUtil.java" afterDir="false" />
     </list>
@@ -65,7 +55,7 @@
       <option value="module" />
     </option>
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[SerialNumber@SN-OBR8RCMFJZQGB6L7]" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -144,7 +134,7 @@
     <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="android.sdk.path" value="$PROJECT_DIR$/../../../Java/sdk" />
     <property name="create.test.in.the.same.root" value="true" />
-    <property name="last_opened_file_path" value="D:/workspace/as_open" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FF_Lock3Init" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -294,87 +284,54 @@
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ArrayQuestion (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.fanfull.libjava.orsoul.algorithm.leetcode.ArrayQuestion" />
-      <module name="HandheldTools.libJava" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.fanfull.libjava.orsoul.algorithm.leetcode.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="FF_Handheld3Tools:app [copyDebug]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/app" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="copyDebug" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
     </configuration>
-    <configuration name="ArrayQuestion" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.fanfull.libjava.ArrayQuestion" />
-      <module name="HandheldTools.libJava" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.fanfull.libjava.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FomatUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.fanfull.libjava.util.FomatUtil" />
-      <module name="HandheldTools.libJava" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.fanfull.libjava.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="IOUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.fanfull.libjava.IOUtil" />
-      <module name="HandheldTools.libJava" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.fanfull.libjava.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="ZipUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.fanfull.libjava.util.ZipUtil" />
-      <module name="HandheldTools.libJava" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.fanfull.libjava.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="FF_Handheld3Tools:app [copyRelease]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/app" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="copyRelease" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Android App.app" />
       <item itemvalue="Android App.app-watch" />
-      <item itemvalue="Application.ArrayQuestion" />
-      <item itemvalue="Application.ArrayQuestion (1)" />
-      <item itemvalue="Application.IOUtil" />
-      <item itemvalue="Application.ZipUtil" />
-      <item itemvalue="Application.FomatUtil" />
+      <item itemvalue="Gradle.FF_Handheld3Tools:app [copyRelease]" />
+      <item itemvalue="Gradle.FF_Handheld3Tools:app [copyDebug]" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.FomatUtil" />
-        <item itemvalue="Application.IOUtil" />
-        <item itemvalue="Application.ZipUtil" />
-        <item itemvalue="Application.ArrayQuestion (1)" />
-        <item itemvalue="Application.ArrayQuestion" />
+        <item itemvalue="Gradle.FF_Handheld3Tools:app [copyDebug]" />
+        <item itemvalue="Gradle.FF_Handheld3Tools:app [copyRelease]" />
       </list>
     </recent_temporary>
   </component>
@@ -572,7 +529,28 @@
       <option name="project" value="LOCAL" />
       <updated>1631844210959</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="WiFi信号检测&#10;添加 主线程崩溃 判断">
+      <created>1632475498547</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1632475498547</updated>
+    </task>
+    <task id="LOCAL-00028" summary="gradle">
+      <created>1632475687279</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1632475687279</updated>
+    </task>
+    <task id="LOCAL-00029" summary="中钞锁 读物流区">
+      <created>1632475795657</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1632475795657</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -607,7 +585,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="- update as, gradle" />
     <MESSAGE value="tcp监听指定指令&#10;tcp解析相关调整" />
     <MESSAGE value="刷卡、刷指纹、线程工具等调整" />
     <MESSAGE value="自定义 input dialog view&#10;库门卡" />
@@ -630,7 +607,10 @@
     <MESSAGE value="中钞锁新增灌装指令" />
     <MESSAGE value="添加格式化工具&#10;tcp断开" />
     <MESSAGE value="添加IO工具&#10;中钞锁调整" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加IO工具&#10;中钞锁调整" />
+    <MESSAGE value="WiFi信号检测&#10;添加 主线程崩溃 判断" />
+    <MESSAGE value="gradle" />
+    <MESSAGE value="中钞锁 读物流区" />
+    <option name="LAST_COMMIT_MESSAGE" value="中钞锁 读物流区" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -639,26 +619,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="358" y="188" key="#PSD/0.0.1920.1040@0.0.1920.1040" timestamp="1630285036448" />
-    <state x="552" y="160" key="#Plugins" timestamp="1624324226208">
+    <state x="414" y="174" width="1092" height="792" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1633760352902">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="160" key="#Plugins/0.0.1920.1040@0.0.1920.1040" timestamp="1624324226208" />
-    <state x="440" y="93" key="#Project_Structure" timestamp="1624325141048">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="440" y="93" key="#Project_Structure/0.0.1920.1040@0.0.1920.1040" timestamp="1624325141048" />
-    <state x="753" y="383" key="#Updates" timestamp="1624324444306">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="753" y="383" key="#Updates/0.0.1920.1040@0.0.1920.1040" timestamp="1624324444306" />
-    <state x="414" y="174" width="1092" height="767" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1630480486505">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="414" y="174" width="1092" height="767" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1630480486505" />
-    <state x="709" y="388" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog" timestamp="1624330088229">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="709" y="388" key="#com.intellij.ide.actions.ChooseComponentsToExportDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1624330088229" />
+    <state x="414" y="174" width="1092" height="792" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1633760352902" />
     <state x="765" y="235" key="#com.intellij.ide.util.MemberChooser" timestamp="1632449310310">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -699,10 +663,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="92" y="92" width="1736" height="856" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1629170196814" />
-    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1632446283963">
+    <state x="740" y="274" key="FileChooserDialogImpl" timestamp="1633674584397">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1632446283963" />
+    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1633674584397" />
     <state x="452" y="202" key="Git.Interactive.Rebase.Dialog" timestamp="1630545438879">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -711,22 +675,22 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="640" y="273" key="Git.Interactive.Rebase.Editor.Like.Entries.Dialog/0.0.1920.1040@0.0.1920.1040" timestamp="1629114387707" />
-    <state width="1877" height="316" key="GridCell.Tab.0.bottom" timestamp="1632466186111">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1633689409874">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="316" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1632466186111" />
-    <state width="1877" height="316" key="GridCell.Tab.0.center" timestamp="1632466186111">
+    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1633689409874" />
+    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1633689409874">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="316" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1632466186111" />
-    <state width="1877" height="316" key="GridCell.Tab.0.left" timestamp="1632466186110">
+    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1633689409874" />
+    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1633689409874">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="316" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1632466186110" />
-    <state width="1877" height="316" key="GridCell.Tab.0.right" timestamp="1632466186111">
+    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1633689409874" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1633689409874">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1877" height="316" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1632466186111" />
+    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1633689409874" />
     <state width="1877" height="241" key="GridCell.Tab.1.bottom" timestamp="1631786650888">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -763,10 +727,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="655" y="128" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1632293535315" />
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1631762092203">
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1632475810649">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1631762092203" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1632475810649" />
     <state x="763" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1630295693503">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

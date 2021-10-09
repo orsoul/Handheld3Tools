@@ -58,6 +58,10 @@ public class SocketActivity extends InitModuleActivity {
     serverIp = SPUtils.getInstance().getString(Contexts.Key.KEY_SERVICE_IP, ip);
     serverPort = SPUtils.getInstance().getInt(Contexts.Key.KEY_SERVICE_PORT, serverPort);
     ViewUtil.appendShow(String.format("本机IP：%s\n目标地址：%s:%s", ip, serverIp, serverPort), tvShow);
+    ViewUtil.appendShow("1 --> 高频 初始化", tvShow);
+    ViewUtil.appendShow("3 --> 超高频 初始化", tvShow);
+    ViewUtil.appendShow(". --> 功率设置", tvShow);
+
     ViewUtil.appendShow("r|w mb sa len|hexStr [mmb msa hexStr]", tvShow);
     ViewUtil.appendShow("r nfc 4 12：读nfc,起始地址4(字长4字节)，读12字节", tvShow);
     ViewUtil.appendShow("r epc 2 12：读epc 起始地址2(字长2字节)，读12字节", tvShow);
@@ -98,22 +102,21 @@ public class SocketActivity extends InitModuleActivity {
         String s = new String(data);
         String s1 = BytesUtil.bytes2HexString(data);
         LogUtils.d("str:%s\nhex:%s", s, s1);
-        runOnUiThread(() -> {
-          ViewUtil.appendShow(
-              String.format("rec: %s", s), tvShow);
-        });
-        String info = handlerCmd(s);
-        boolean send = false;
-        try {
-          send = socketClient.send(info.getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
+        String[] split = s.split(",");
+        for (String cmd : split) {
+          String info = handlerCmd(cmd);
+          boolean send = false;
+          try {
+            send = socketClient.send(info.getBytes("utf-8"));
+          } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+          }
+          String format = String.format("send %s：%s", send, info);
+          LogUtils.d(format);
+          runOnUiThread(() -> {
+            ViewUtil.appendShow(format, tvShow);
+          });
         }
-        String format = String.format("send %s：%s", send, info);
-        LogUtils.d(format);
-        runOnUiThread(() -> {
-          ViewUtil.appendShow(format, tvShow);
-        });
       }
 
       @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {
@@ -244,6 +247,19 @@ public class SocketActivity extends InitModuleActivity {
   }
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_1) {
+      String initInfo = null;
+      rfidController = RfidController.getInstance();
+      boolean open = rfidController.open();
+      initInfo = open ? "高频 初始化成功" : "高频 初始化失败";
+      ViewUtil.appendShow(tvShow, initInfo);
+    } else if (keyCode == KeyEvent.KEYCODE_3) {
+      String initInfo = null;
+      uhfController = UhfController.getInstance();
+      boolean open = uhfController.open();
+      initInfo = open ? "超高频 初始化成功" : "超高频 初始化失败";
+      ViewUtil.appendShow(tvShow, initInfo);
+    }
     return super.onKeyDown(keyCode, event);
   }
 
@@ -263,6 +279,7 @@ public class SocketActivity extends InitModuleActivity {
       return -1;
     }
     switch (mb.toLowerCase()) {
+      case "uhf":
       case "epc":
       case "1":
         return UhfCmd.MB_EPC;
@@ -360,7 +377,7 @@ public class SocketActivity extends InitModuleActivity {
       int dl = Integer.parseInt(s[3]);
       data = new byte[dl];
       if (isUhf) {
-        res = UhfController.getInstance().read(mb, sa, data, 300, mmb, msa, dataFilter);
+        res = UhfController.getInstance().read(mb, sa, data, 500, mmb, msa, dataFilter);
       } else {
         res = RfidController.getInstance().readNfc(sa, data, true);
       }
