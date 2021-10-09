@@ -71,14 +71,9 @@ public class SocketServiceDemo {
 
       InputStream in;
       OutputStream out;
-      GZIPInputStream gIn = null;
-      GZIPOutputStream gOut = null;
       try {
         in = socket.getInputStream();
         out = socket.getOutputStream();
-        //gIn = new GZIPInputStream(in);
-        in = new GZIPInputStream(in);
-        gOut = new GZIPOutputStream(out);
       } catch (Exception e) {
         Logs.out("==== client %s run failed ====", name);
         e.printStackTrace();
@@ -103,8 +98,6 @@ public class SocketServiceDemo {
           boolean send = send(out, buff, 0, len);
           Logs.out("%s send %s %s:%s", name, send, len, hex);
 
-          send(gOut, buff, 0, len);
-          Logs.out("%s sendZip %s %s:%s", name, send, len, hex);
         } catch (IOException e) {
           e.printStackTrace();
         }

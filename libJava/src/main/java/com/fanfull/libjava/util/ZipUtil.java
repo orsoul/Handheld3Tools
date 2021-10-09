@@ -16,7 +16,8 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtil {
   public static void main(String[] args) throws IOException {
     //testZip();
-    test3Des();
+    //test3Des();
+    testHexStr();
   }
 
   static void test3Des() {
@@ -189,6 +190,34 @@ public class ZipUtil {
 
     zipFile("C:\\Users\\Administrator\\Desktop\\apks",
         "C:\\Users\\Administrator\\Desktop\\apks.zip");
+
+    in.close();
+    Logs.out("==== 完成 ====");
+  }
+
+  static void testHexStr() throws IOException {
+    Logs.out("==== 开始 ====");
+
+    //String src = "C:\\Users\\Administrator\\Desktop\\hex.txt";
+    //String des = "C:\\Users\\Administrator\\Desktop\\hex.txt.bin";
+    String src = "C:\\Users\\Administrator\\Desktop\\hex.dockerfile";
+    String des = "C:\\Users\\Administrator\\Desktop\\hex.dockerfile.bin";
+
+    BufferedInputStream in = new BufferedInputStream(new FileInputStream(src));
+
+    //hexStr2BinFile(in, des);
+
+    //byte[] key = new byte[8];
+    //new Random().nextBytes(key);
+    //Logs.out("key:%s", BytesUtil.bytes2HexString(key));
+    //encryptFile(in, desEncrypt2, key);
+
+    //zipFile(in, "C:\\Users\\Administrator\\Desktop\\dataZip.zip", "data.txt");
+
+    hexStr2BinFile(in, des);
+
+    String s = IOUtils.readFile2String(des);
+    Logs.out(s);
 
     in.close();
     Logs.out("==== 完成 ====");

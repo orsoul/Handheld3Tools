@@ -67,4 +67,12 @@ public class DialogUtil {
     }
     context = null;
   }
+
+  public static void showInfo(Context context, String info) {
+    new XPopup.Builder(context)
+        .autoDismiss(true)
+        .dismissOnBackPressed(true)
+        .isDestroyOnDismiss(true)
+        .asConfirm(info, null, null).show();
+  }
 }

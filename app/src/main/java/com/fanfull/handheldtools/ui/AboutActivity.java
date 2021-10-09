@@ -5,12 +5,16 @@ import android.view.KeyEvent;
 
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.BuildConfig;
 import com.fanfull.handheldtools.R;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
+import com.fanfull.libjava.util.ThreadUtil;
+import com.simple.spiderman.SpiderMan;
 
 import org.orsoul.baselib.NetworkCallbackApplication;
 import org.orsoul.baselib.util.DeviceInfoUtils;
+import org.orsoul.baselib.util.WiFiUtil;
 
 import mehdi.sakout.aboutpage.AboutPage;
 import mehdi.sakout.aboutpage.Element;
@@ -57,6 +61,28 @@ public class AboutActivity extends BaseActivity {
   }
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_1:
+        ThreadUtil.execute(() -> {
+          int i = 1 / 0;
+        });
+        return true;
+      case KeyEvent.KEYCODE_3:
+        try {
+          int i1 = 2 / 0;
+        } catch (Exception e) {
+          SpiderMan.show(e);
+        }
+        return true;
+      case KeyEvent.KEYCODE_4:
+        int i = 1 / 0;
+        return true;
+      case KeyEvent.KEYCODE_6:
+        int signalLevel = WiFiUtil.getSignalLevel(this);
+        ToastUtils.showShort("wifi信号:%s", signalLevel);
+        return true;
+      default:
+    }
     return super.onKeyDown(keyCode, event);
   }
 
