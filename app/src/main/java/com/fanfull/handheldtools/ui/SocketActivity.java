@@ -299,18 +299,27 @@ public class SocketActivity extends InitModuleActivity {
 
   public static String handlerCmd(String cmd) {
     if (cmd == null) {
-      return null;
-    }
-    if (cmd.contains("cmd ")) {
-      cmd = cmd.substring(4);
-      return execCmd(cmd);
+      return "指令为null";
     }
 
+    try {
+      if (cmd.contains("cmd ")) {
+        cmd = cmd.substring(4);
+        return execCmd(cmd);
+      }
+
+      return execReadWriteRfid(cmd);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return e.getMessage();
+    }
+  }
+
+  private static String execReadWriteRfid(String cmd) {
     String[] s = cmd.split(" ");
     if (s.length < 4) {
-      return "命令长度错误";
+      return "命令长度小于4";
     }
-
     boolean isRead = true;
     boolean isInit = false;
     switch (s[0]) {
@@ -366,11 +375,11 @@ public class SocketActivity extends InitModuleActivity {
     byte[] dataFilter = null;
     if (isUhf && s.length == 7) {
       mmb = parseMb(s[4]);
-      msa = Integer.parseInt(s[5]);
+      msa = Integer.parseInt(s[5], 16);
       dataFilter = BytesUtil.hexString2Bytes(s[6]);
     }
 
-    int sa = Integer.parseInt(s[2]);
+    int sa = Integer.parseInt(s[2], 16);
     byte[] data;
     boolean res = false;
     if (isRead) { // ============ read ============

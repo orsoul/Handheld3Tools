@@ -107,10 +107,10 @@ public class BagCheckActivity extends InitModuleActivity {
         Object info = null;
         switch (cmdType) {
           case UhfCmd.RECEIVE_TYPE_GET_DEVICE_VERSION:
-            info = String.format("设备版本：v%s.%s.%s", parseData[0], parseData[1], parseData[2]);
+            info = String.format("设备版本:v%s.%s.%s", parseData[0], parseData[1], parseData[2]);
             break;
           case UhfCmd.RECEIVE_TYPE_GET_DEVICE_ID:
-            info = String.format("设备Id：%s", BytesUtil.bytes2HexString(parseData));
+            info = String.format("设备Id:%s", BytesUtil.bytes2HexString(parseData));
             break;
           case UhfCmd.RECEIVE_TYPE_GET_FAST_ID:
             if (parseData[0] == 1) {
@@ -198,8 +198,8 @@ public class BagCheckActivity extends InitModuleActivity {
         showSetUhfPower(this);
         //String info;
         //if (readLockTask != null) {
-        //  info = String.format("天线柜未读到：%s", readLockTask.otherNoHaveList);
-        //  LogUtils.wtf("手持已扫：%s", readLockTask.scanList);
+        //  info = String.format("天线柜未读到:%s", readLockTask.otherNoHaveList);
+        //  LogUtils.wtf("手持已扫:%s", readLockTask.scanList);
         //} else {
         //  info = "未初始化模块";
         //}
@@ -371,10 +371,10 @@ public class BagCheckActivity extends InitModuleActivity {
         key = Arrays.copyOf(infoUnit.buff, 6);
       }
     } else if (!pieceTid.equals(businessTid)) {
-      LogUtils.i("\n锁片Tid：%s\n业务Tid：%s", pieceTid, businessTid);
+      LogUtils.i("\n锁片Tid:%s\n业务Tid:%s", pieceTid, businessTid);
       String businessTid6 = businessTid.substring(0, 12);
       String pieceTid6 = pieceTid.substring(12);
-      LogUtils.i("\n锁片Tid6：%s\n业务Tid6：%s", pieceTid6, businessTid6);
+      LogUtils.i("\n锁片Tid6:%s\n业务Tid6:%s", pieceTid6, businessTid6);
       compareMsg = String.format("%s，%s",
           pieceTid6, Objects.equals(pieceTid6, businessTid6) ? "相等" : "不相等");
       key = Arrays.copyOf(infoUnit.buff, 6);
@@ -388,7 +388,7 @@ public class BagCheckActivity extends InitModuleActivity {
       String tid1 = BytesUtil.bytes2HexString(infoUnitCover.buff);
       infoUnitCover.buff[3] = (byte) (infoUnitCover.buff[3] & 0x0F);
       String tid2 = BytesUtil.bytes2HexString(infoUnitCover.buff);
-      coverCode = String.format("验证通过？：%s\n%s", tid2.startsWith(lock3Bean.getBagId()), tid1);
+      coverCode = String.format("验证通过？:%s\n%s", tid2.startsWith(lock3Bean.getBagId()), tid1);
       //LogUtils.d("解密:%s", BytesUtil.bytes2HexString(infoUnitCover.buff));
     } else {
       coverCode = String.format("%s-解密异常", BytesUtil.bytes2HexString(infoUnitCover.buff));
@@ -407,22 +407,22 @@ public class BagCheckActivity extends InitModuleActivity {
     //}
 
     String colorText = HtmlUtil.getColorText(
-        "锁片epc：%s\n"
-            + "锁片tid：%s\n"
-            + "后六tid：%s\n" // 业务tid对比
-            + "业务tid：%s\n"
-            + "锁内tid：%s\n"
-            + "bagId：%s\n"
-            + "标志位：%s\n"
-            + "空袋检测位：%s\n"
-            + "电压：%s\n"
-            + "启用状态：%s\n"
-            + "测试模式：%s\n"
-            + "封签码：%s\n"
-            + "流水号：%s\n"
-            + "密钥编号：%s\n"
-            + "交接索引：%s\n"
-            + "========================\n袋流转索引：%s\n",
+        "锁片epc:%s\n"
+            + "锁片tid:%s\n"
+            + "后六tid:%s\n" // 业务tid对比
+            + "业务tid:%s\n"
+            + "锁内tid:%s\n"
+            + "bagId:%s\n"
+            + "标志位:%s\n"
+            + "空袋检测位:%s\n"
+            + "电压:%s,    uid:%s\n"
+            + "启用状态:%s\n"
+            + "测试模式:%s\n"
+            + "封签码:%s\n"
+            + "流水号:%s\n"
+            + "密钥编号:%s\n"
+            + "交接索引:%s\n"
+            + "========================\n袋流转索引:%s\n",
         lock3Bean.getPieceEpc(),
         lock3Bean.getPieceTid(),
         compareMsg,
@@ -432,6 +432,7 @@ public class BagCheckActivity extends InitModuleActivity {
         Lock3Util.getStatusDesc(lock3Bean.getStatus()),
         Lock3Util.getStatusCheckDesc(lock3Bean.getStatusCheck()),
         Lock3Util.parseV2String(lock3Bean.getVoltage()),
+        BytesUtil.bytes2HexString(lock3Bean.uidBuff),
         Lock3Util.getEnableDesc(lock3Bean.getEnable()),
         lock3Bean.isTestMode(),
         coverCode,
@@ -451,11 +452,11 @@ public class BagCheckActivity extends InitModuleActivity {
       if (orgName == null) {
         orgName = "无机构名";
       }
-      sb.append(HtmlUtil.getColorText("业务：%s(%s)\n"
-              + "机构：%s(%s)\n"
-              + "操作人：%s\n"
-              + "复核人：%s\n"
-              + "时间：%s\n",
+      sb.append(HtmlUtil.getColorText("业务:%s(%s)\n"
+              + "机构:%s(%s)\n"
+              + "操作人:%s\n"
+              + "复核人:%s\n"
+              + "时间:%s\n",
           handoverBean.getFunTypeName(),
           handoverBean.getFunction(),
           handoverBean.getOrgancode(),
@@ -482,10 +483,10 @@ public class BagCheckActivity extends InitModuleActivity {
         //ViewUtil.appendShow(parse, tvShow);
         tvShow.setText(parse);
         //tvShow.append("\n");
-        tvShow.append("\n用时：" + ClockUtil.runTime() + "\n");
+        tvShow.append("\n用时:" + ClockUtil.runTime() + "\n");
         tvShow.scrollTo(0, 0);
         LogUtils.d("\n%s", tvShow.getText());
-        //ViewUtil.appendShow("用时：" + ClockUtil.runTime(), tvShow);
+        //ViewUtil.appendShow("用时:" + ClockUtil.runTime(), tvShow);
         //tvShow.scrollTo(0, 0);
       });
     }
@@ -494,22 +495,22 @@ public class BagCheckActivity extends InitModuleActivity {
       String msg;
       switch (errorCode) {
         case -1:
-          msg = String.format("读袋锁失败，cause：%s 参数错误", errorCode);
+          msg = String.format("读袋锁失败，cause:%s 参数错误", errorCode);
           break;
         case -2:
-          msg = String.format("读袋锁失败，cause：%s nfc寻卡失败", errorCode);
+          msg = String.format("读袋锁失败，cause:%s nfc寻卡失败", errorCode);
           break;
         case -3:
-          msg = String.format("读袋锁失败，cause：%s 读tid失败", errorCode);
+          msg = String.format("读袋锁失败，cause:%s 读tid失败", errorCode);
           break;
         case -4:
-          msg = String.format("读袋锁失败，cause：%s 读epc失败", errorCode);
+          msg = String.format("读袋锁失败，cause:%s 读epc失败", errorCode);
           break;
         case -5:
-          msg = String.format("读袋锁失败，cause：%s 读nfc失败", errorCode);
+          msg = String.format("读袋锁失败，cause:%s 读nfc失败", errorCode);
           break;
         default:
-          msg = String.format("读袋锁失败，cause：%s 未定义失败", errorCode);
+          msg = String.format("读袋锁失败，cause:%s 未定义失败", errorCode);
       }
       LogUtils.d("%s", msg);
       runOnUiThread(() -> {
@@ -524,7 +525,7 @@ public class BagCheckActivity extends InitModuleActivity {
     long i = 2l + 12;
     new XPopup.Builder(this)
         .asConfirm(null, "您可以复用项目已有布局，来使用XPopup强大的交互能力和逻辑封装，弹窗的布局完全由你自己控制。\n" +
-                "需要注意的是：你自己的布局必须提供一些控件Id，否则XPopup找不到View。\n具体需要提供哪些Id，请查看WIKI[内置弹窗]一章。",
+                "需要注意的是:你自己的布局必须提供一些控件Id，否则XPopup找不到View。\n具体需要提供哪些Id，请查看WIKI[内置弹窗]一章。",
             "关闭", "XPopup牛逼",
             new OnConfirmListener() {
               @Override
