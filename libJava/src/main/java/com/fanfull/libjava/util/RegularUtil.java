@@ -40,11 +40,26 @@ public final class RegularUtil {
   }
 
   public static void main(String[] args) {
+    test();
     isRepeat();
   }
 
-  public static boolean isRepeat() {
-    String regs = "\\d*(\\d)\\1{2}\\d*";
+  static void test() {
+    String str = "123456789";
+    String reg = "\\d{9,}";
+
+    str = "1234567";
+    Logs.out("%s:%s", str, str.matches(reg));
+
+    str = "12345678";
+    Logs.out("%s:%s", str, str.matches(reg));
+
+    str = "123456789";
+    Logs.out("%s:%s", str, str.matches(reg));
+  }
+
+  static boolean isRepeat() {
+    String regs = "\\d*(\\d)\\1{2}\\d*"; // 连续3个同样的数字
     String str;
 
     str = "123";

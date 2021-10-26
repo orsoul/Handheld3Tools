@@ -1,13 +1,10 @@
 package org.orsoul.baselib.lock3.bean;
 
 import androidx.annotation.Nullable;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libjava.util.BytesUtil;
-
-import org.orsoul.baselib.lock3.EnumBagType;
-
 import java.util.Objects;
+import org.orsoul.baselib.lock3.EnumBagType;
 
 /** 锁3袋id解析工具. */
 public class BagIdParser {
@@ -48,6 +45,10 @@ public class BagIdParser {
 
   public String getBagId() {
     return bagId;
+  }
+
+  public void setBagId(String bagId) {
+    this.bagId = bagId;
   }
 
   public String getVersion() {
