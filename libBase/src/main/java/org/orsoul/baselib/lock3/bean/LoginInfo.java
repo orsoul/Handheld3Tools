@@ -29,8 +29,8 @@ public final class LoginInfo {
   private static String permission;
   /** 机构号. 002701001 */
   private static String orgId;
-  ///** 银行列表版本号. */
-  //private static int bankListVersion;
+  /** 是否为人行. */
+  public static boolean isRh;
 
   /** 操作员姓名. */
   private static String userName;
@@ -206,6 +206,20 @@ public final class LoginInfo {
     return needLogin;
   }
 
+  /** 当前机构是否为人行. */
+  public static boolean isRh(String orgId) {
+    // 002701001
+    if (orgId == null || orgId.length() != 9) {
+      return false;
+    }
+    String substring = orgId.substring(4, 6);
+    return "01".equals(substring);
+  }
+
+  public static boolean isRh() {
+    return isRh(orgId);
+  }
+
   public static boolean isNeedUpdateOrgList() {
     return needUpdateOrgList;
   }
@@ -252,6 +266,7 @@ public final class LoginInfo {
       orgId = split[4];
       userNum = split[5];
       orgListVersion = split[6];
+      isRh = orgId.endsWith("01");
       //String localVersion = SPUtils.getString(MyContexts.KEY_ORG_LIST_VERSION, "");
       //LogUtils.d("org local Version：%s，service：%s", localVersion, orgListVersion);
       //needUpdateOrgList = !localVersion.equals(orgListVersion);

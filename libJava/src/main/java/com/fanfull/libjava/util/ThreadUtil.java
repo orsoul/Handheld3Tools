@@ -320,7 +320,7 @@ public final class ThreadUtil {
     /**
      * 唤醒等待的线程.
      */
-    public synchronized void awaken() {
+    public void awaken() {
       if (countDownLatch != null) {
         countDownLatch.countDown();
         countDownLatch = null;
