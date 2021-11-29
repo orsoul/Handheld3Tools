@@ -1,7 +1,6 @@
 package com.fanfull.libjava.util;
 
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -103,28 +102,11 @@ public final class ThreadUtil {
     return timeout <= waitTime;
   }
 
-  public static void waitObject(Object obj) {
-    try {
-      obj.wait();
-    } catch (InterruptedException e) {
-    }
-  }
-
-  /** @return 被中断返回false */
-  public static boolean waitObject(Object obj, long millis) {
-    try {
-      obj.wait(millis);
-      return true;
-    } catch (InterruptedException e) {
-      return false;
-    }
-  }
-
   /** 与syncAwaken()配对使用，@return 被中断返回false */
-  public static boolean syncWait(Object obj) {
-    synchronized (obj) {
+  public static boolean syncWait(Object lock) {
+    synchronized (lock) {
       try {
-        obj.wait();
+        lock.wait();
         return true;
       } catch (InterruptedException e) {
         return false;
@@ -132,23 +114,35 @@ public final class ThreadUtil {
     }
   }
 
-  /** 与syncAwaken()配对使用，@return 被中断返回false */
-  public static boolean syncWait(Object obj, long millis) {
-    synchronized (obj) {
+  /**
+   * 当前线程正在运行，进入等待.
+   *
+   * @param millis 大于0等待时间，否则 无限等待.
+   * @return 0:被唤醒，1：等待超时，2：等待被中断
+   */
+  public static int syncWait(Object lock, long millis) {
+    synchronized (lock) {
       try {
-        obj.wait(millis);
-        return true;
+        if (millis <= 0) {
+          lock.wait();
+          return 0;
+        } else {
+          long clock = System.currentTimeMillis();
+          lock.wait(millis);
+          clock = System.currentTimeMillis() - clock;
+          return millis < clock ? 1 : 0;
+        }
       } catch (InterruptedException e) {
-        return false;
+        return 2;
       }
     }
   }
 
   /** 唤醒线程，syncWait()配对使用 */
-  public static void syncAwaken(Object obj) {
-    synchronized (obj) {
+  public static void syncAwaken(Object lock) {
+    synchronized (lock) {
       try {
-        obj.notifyAll();
+        lock.notifyAll();
       } catch (Exception e) {
       }
     }
@@ -238,12 +232,12 @@ public final class ThreadUtil {
     }
 
     /** 设置标志位停止并中断当前线程，线程是否已经停止运行应用isRunning()判断. */
-    public synchronized void stopThread() {
+    public void stopThread() {
       stopThread(true);
     }
 
     /** 设置标志位停止当前线程，线程是否已经停止运行应用isRunning()判断. */
-    public synchronized void stopThread(boolean interrupt) {
+    public void stopThread(boolean interrupt) {
       stopped = true;
       if (interrupt) {
         interrupt();
@@ -261,70 +255,50 @@ public final class ThreadUtil {
     }
 
     /** 获取 当前线程停止标志. */
-    public synchronized boolean isStopped() {
+    public boolean isStopped() {
       return stopped;
     }
 
     /** 当前线程正在运行 返回true. */
-    public synchronized boolean isRunning() {
+    public boolean isRunning() {
       return isRunning;
     }
 
-    private synchronized void setRunning(boolean running) {
+    private void setRunning(boolean running) {
       isRunning = running;
     }
 
-    public synchronized void interrupt() {
+    public void interrupt() {
       if (runningThread != null) {
         runningThread.interrupt();
       }
     }
 
-    public synchronized Thread getRunningThread() {
+    public Thread getRunningThread() {
       return runningThread;
     }
 
-    private CountDownLatch countDownLatch;
-
     /**
-     * 当前线程正在运行，进入等待.
+     * 进入等待,与awaken()配对使用
      *
-     * @param millis 大于0等待时间，否则 无限等待.
-     * @return 0:被唤醒，1：未进入等待，2：等待超时，3：等待被中断
+     * @return 被唤醒返回true, 否则返回false
      */
-    public synchronized int await(long millis) {
-      if (runningThread == null || !runningThread.getState().equals(Thread.State.RUNNABLE)) {
-        // 当前线程 不处于 运行中，不进行等待
-        return 1;
-      }
-
-      if (countDownLatch == null || countDownLatch.getCount() == 0) {
-        countDownLatch = new CountDownLatch(1);
-      }
-
-      try {
-        if (millis <= 0) {
-          countDownLatch.await();
-          return 0;
-        } else if (countDownLatch.await(millis, TimeUnit.MILLISECONDS)) {
-          return 0;
-        } else {
-          return 2;
-        }
-      } catch (InterruptedException e) {
-        countDownLatch = null;
-        return 3;
-      }
+    protected boolean await() {
+      return 0 == await(0);
     }
 
     /**
-     * 唤醒等待的线程.
+     * 进入等待,与awaken()配对使用
+     *
+     * @param millis 大于0等待时间，否则 无限等待.
+     * @return 0:被唤醒，1：等待超时，2：等待被中断
      */
+    protected int await(long millis) {
+      return syncWait(this, millis);
+    }
+
     public void awaken() {
-      if (countDownLatch != null) {
-        countDownLatch.countDown();
-        countDownLatch = null;
-      }
+      syncAwaken(this);
     }
 
     /** run()开始前执行， */
@@ -424,7 +398,7 @@ public final class ThreadUtil {
           onPause();
           boolean isNotify;
           if (0 < pauseTime) {
-            isNotify = ThreadUtil.syncWait(this, pauseTime);
+            isNotify = 0 == ThreadUtil.syncWait(this, pauseTime);
           } else {
             isNotify = ThreadUtil.syncWait(this);
           }
