@@ -1,4 +1,4 @@
-package com.fanfull.libjava;
+package org.javanote;
 
 import com.fanfull.libjava.util.DateFormatUtil;
 import com.fanfull.libjava.util.Logs;
@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -26,13 +25,16 @@ public class MyClass {
   }
 
   public static void main(String[] args) {
-    int dId = new Random().nextInt(0x01000000) | 0x8D000000;
-    Logs.out(dId);
-    final String format = String.format("%X", dId);
-    Logs.out("%X = %s", dId, format);
-    Logs.out(Integer.parseInt("7D000000", 16));
-    dId = (int) Long.parseLong(format, 16);
-    Logs.out(dId);
+    //int dId = new Random().nextInt(0x01000000) | 0x8D000000;
+    //Logs.out(dId);
+    //final String format = String.format("%X", dId);
+    //Logs.out("%X = %s", dId, format);
+    //Logs.out(Integer.parseInt("7D000000", 16));
+    //dId = (int) Long.parseLong(format, 16);
+    //Logs.out(dId);
+    testThread();
+
+    Logs.out("main end ======");
   }
 
   static int lineNum = 0;
@@ -118,5 +120,21 @@ public class MyClass {
         }
       }
     }.start();
+  }
+
+  static void testThread() {
+    ThreadUtil.ThreadRunnable thread = new ThreadUtil.ThreadRunnable() {
+      @Override public void run() {
+        Logs.out("=== start ===");
+        //int await = await(3000);
+        int await = await(0);
+        Logs.out("await:%s", await);
+        Logs.out("=== end ===");
+      }
+    };
+    thread.startThread();
+
+    ThreadUtil.sleepSeconds(5);
+    thread.awaken();
   }
 }

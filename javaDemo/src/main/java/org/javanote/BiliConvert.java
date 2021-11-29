@@ -1,9 +1,10 @@
-package com.fanfull.libjava;
+package org.javanote;
 
 import com.fanfull.libjava.util.CmdUtil;
 import com.fanfull.libjava.util.IOUtils;
 import com.fanfull.libjava.util.Logs;
 import com.google.gson.Gson;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,12 @@ public class BiliConvert {
   }
 
   static void search(File parent, File desFile) {
-    for (File file : parent.listFiles()) {
+    File[] files;
+    if (parent == null || null == (files = parent.listFiles())) {
+      Logs.out("空目录:%s", parent.getPath());
+      return;
+    }
+    for (File file : files) {
       if (file.isDirectory()) {
         search(file, desFile);
         continue;

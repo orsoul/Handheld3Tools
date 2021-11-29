@@ -1,9 +1,10 @@
-package com.fanfull.libjava;
+package org.javanote;
 
 import com.fanfull.libjava.util.CmdUtil;
 import com.fanfull.libjava.util.IOUtils;
 import com.fanfull.libjava.util.Logs;
 import com.google.gson.Gson;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;

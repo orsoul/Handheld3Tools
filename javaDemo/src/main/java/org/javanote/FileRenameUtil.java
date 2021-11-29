@@ -1,6 +1,7 @@
-package com.fanfull.libjava;
+package org.javanote;
 
 import com.fanfull.libjava.util.Logs;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
