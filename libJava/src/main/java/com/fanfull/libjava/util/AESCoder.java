@@ -2,6 +2,7 @@ package com.fanfull.libjava.util;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,8 +91,8 @@ public final class AESCoder {
     //  final int newLen = (plain.length / 8 + 1) * 8;
     //  plain = Arrays.copyOf(plain, newLen);
     //}
-    Logs.out("plain:%s", BytesUtil.bytes2HexString(plain));
-    Logs.out("key:%s", BytesUtil.bytes2HexString(key));
+    //Logs.out("plain:%s", BytesUtil.bytes2HexString(plain));
+    //Logs.out("key:%s", BytesUtil.bytes2HexString(key));
 
     //final DesUtil desUtil = new DesUtil("DES/ECB/PKCS5Padding");
     ////desUtil.setArgs(DesUtil.ALGORITHM_NAME_DES,
@@ -107,7 +108,7 @@ public final class AESCoder {
       return -1;
     }
 
-    Logs.out("encrypt:%s", BytesUtil.bytes2HexString(encrypt));
+    //Logs.out("encrypt:%s", BytesUtil.bytes2HexString(encrypt));
     int n = 0;
     for (int i = 0; i < tid12.length; i++) {
       n ^= tid12[i];
@@ -116,7 +117,10 @@ public final class AESCoder {
     n = n & 0xFF;
     n %= encrypt.length;
 
-    Logs.out("index:%s, res:0x%X", n, encrypt[n] & 0xFF);
+    //Logs.out("index:%s, res:0x%X", n, encrypt[n] & 0xFF);
+
+    Logs.out("%s  %s  %02X  %s", BytesUtil.bytes2HexString(encrypt),
+        n, encrypt[n] & 0xFF, BytesUtil.bytes2HexString(plain));
 
     return encrypt[n];
   }
@@ -169,7 +173,7 @@ public final class AESCoder {
 
   static void testBagIdCheck() {
 
-    final HashMap<String, String> map = new HashMap<>();
+    final LinkedHashMap<String, String> map = new LinkedHashMap<>();
     //map.put("000000000000000000000000", "FFFFFFFFFFFFFFFFFFFFFFFF");
     //map.put("FFFFFFFFFFFFFFFFFFFFFFFF", "000000000000000000000000");
     //map.put("05532103044A45D23E618072", "E28011402000247928471800");
@@ -183,19 +187,44 @@ public final class AESCoder {
     //map.put("05FF0FF01122334455667737", "000000000FFFFFFFFFFF0000");
     //map.put("05554600FF77FF66223215B1", "E20034140123030179A13B65");
     //map.put("05027101043B1222745A80CA", "E20834140123030179A13B65");
-    map.put("06532101049F48D23E6180CD", "E280114020002578287E1800");
-    map.put("0653210304594AD23E61806D", "E28011402000200B28771800");
+    //map.put("06532101049F48D23E6180CD", "E280114020002578287E1800");
+    //map.put("0653210304594AD23E61806D", "E28011402000200B28771800");
+    //map.put("05532101049F48D23E6180CD", "E280114020002578287E1800");
+    //map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
 
-    map.put("05532101049F48D23E6180CD", "E280114020002578287E1800");
+    map.put("05000000000000000000003F", "000000000000000000000000");
+    map.put("0510000000000000000000D2", "000000000000000000000000");
+    map.put("05010000000000000000007B", "000000000000000000000000");
+    map.put("050001000000000000000096", "000000000000000000000000");
+    map.put("05001000000000000000007D", "000000000000000000000000");
+    map.put("0500000000100000000000C4", "000000000000000000000000");
+    map.put("0500000000010000000000F1", "000000000000000000000000");
+    map.put("05000000000000000000013F", "000000000000000000000000");
+    map.put("05000000000000000000103F", "000000000000000000000000");
+    map.put("05FFFFFFFFFFFFFFFFFFFF5E", "FFFFFFFFFFFFFFFFFFFFFFFF");
+    map.put("05F1FFFFFFFFFFFFFFFFFF04", "FFFFFFFFFFFFFFFFF1FFFFFF");
+    map.put("05027101043B1222745A80EB", "E20034140123030179A13BB3");
+    map.put("05FFFFFFFFFFFFFFFFFFFF32", "000000000000000000000000");
+    map.put("05000000000000000000002C", "FFFFFFFFFFFFFFFFFFFFFFFF");
+    map.put("0553210304594AD23E618001", "E28011402000200B28771800");
+    map.put("05532103044A45D23E618002", "E28011402000247928471800");
+    map.put("050278012105140926440070", "050278012105140926440004");
     map.put("0553210304594AD23E61806D", "E28011402000200B28771800");
+    map.put("05027103047A47D23E61809D", "E28011402000247928471800");
+    map.put("0553210304C060D23E6180F1", "E28011402000200B28771801");
+    map.put("05532103044A45D23E61809D", "E28011402000247928471800");
+    map.put("0553210104B749D23E618055", "E28011402000200B28771802");
+    map.put("05532101049F48D23E61809D", "E28011402000247928471800");
+    map.put("0553210104575BD23E6180FC", "E28011402000200B28771803");
+    map.put("05532101043349D23E61809D", "E28011402000247928471800");
 
     final Set<Map.Entry<String, String>> entries = map.entrySet();
     for (Map.Entry<String, String> s : entries) {
-      Logs.out("------ plain:%s ------", s);
+      //Logs.out("------ plain:%s ------", s);
       final byte[] epc = BytesUtil.hexString2Bytes(s.getKey());
       final byte[] tid = BytesUtil.hexString2Bytes(s.getValue());
-      //final byte checkByte = genBagIdCheck(epc, tid);
-      Logs.out("res:%s", checkBagId6(epc, tid));
+      final byte checkByte = genBagIdCheck(epc, tid);
+      //Logs.out("res:%s", checkBagId6(epc, tid));
     }
   }
 
@@ -229,14 +258,14 @@ public final class AESCoder {
 
   public static void main(String[] args) throws Exception {
 
-    TestThread testThread = new TestThread();
-    testThread.start();
-    for (int i = 0; i < 100; i++) {
-      System.out.println("主线程" + i + "：666");
-    }
+    //TestThread testThread = new TestThread();
+    //testThread.start();
+    //for (int i = 0; i < 100; i++) {
+    //  System.out.println("主线程" + i + "：666");
+    //}
     //testMyEncrypt();
 
     //testString();
-    //testBagIdCheck();
+    testBagIdCheck();
   }
 }
