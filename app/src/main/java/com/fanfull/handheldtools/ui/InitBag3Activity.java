@@ -28,7 +28,6 @@ import com.fanfull.libjava.util.ThreadUtil;
 
 import org.orsoul.baselib.lock3.EnumBagType;
 import org.orsoul.baselib.lock3.EnumCity;
-import org.orsoul.baselib.lock3.EnumMoneyType;
 import org.orsoul.baselib.lock3.bean.BagIdParser;
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ViewUtil;
@@ -212,7 +211,7 @@ public class InitBag3Activity extends InitModuleActivity {
     spCityType.setAdapter(new ArrayAdapter<>(this,
         R.layout.support_simple_spinner_dropdown_item, EnumCity.getNames()));
     spMoneyType.setAdapter(new ArrayAdapter<>(this,
-        R.layout.support_simple_spinner_dropdown_item, EnumMoneyType.getNames()));
+        R.layout.support_simple_spinner_dropdown_item, EnumBagType.getNames()));
     spBagType.setAdapter(new ArrayAdapter<>(this,
         R.layout.support_simple_spinner_dropdown_item, EnumBagType.getNames()));
 
@@ -227,7 +226,7 @@ public class InitBag3Activity extends InitModuleActivity {
                 initBagTask.setCityCode(EnumCity.getCodeByName(name));
                 break;
               case R.id.spinner_init_bag_moneyType:
-                initBagTask.setMoneyType(EnumMoneyType.getTypeByName(name));
+                initBagTask.setMoneyType(EnumBagType.getTypeByName(name));
                 break;
               case R.id.spinner_init_bag_bagType:
                 initBagTask.setBagType(EnumBagType.getTypeByName(name));

@@ -7,10 +7,7 @@ import android.text.Spanned;
 import android.text.method.ScrollingMovementMethod;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -31,9 +28,6 @@ import com.fanfull.libjava.util.ClockUtil;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnConfirmListener;
 
-import org.orsoul.baselib.lock3.EnumBagType;
-import org.orsoul.baselib.lock3.EnumCity;
-import org.orsoul.baselib.lock3.EnumMoneyType;
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
@@ -293,52 +287,6 @@ public class BagCheckActivity extends InitModuleActivity {
 
     btnOk.setEnabled(false);
     //switchUhf.setEnabled(true);
-  }
-
-  private void initSpinner() {
-    Spinner spCityType = findViewById(R.id.spinner_init_bag_cityType);
-    Spinner spMoneyType = findViewById(R.id.spinner_init_bag_moneyType);
-    Spinner spBagType = findViewById(R.id.spinner_init_bag_bagType);
-
-    spCityType.setAdapter(new ArrayAdapter<>(this,
-        R.layout.support_simple_spinner_dropdown_item, EnumCity.getNames()));
-    spMoneyType.setAdapter(new ArrayAdapter<>(this,
-        R.layout.support_simple_spinner_dropdown_item, EnumMoneyType.getNames()));
-    spBagType.setAdapter(new ArrayAdapter<>(this,
-        R.layout.support_simple_spinner_dropdown_item, EnumBagType.getNames()));
-
-    AdapterView.OnItemSelectedListener itemSelectedListener =
-        new AdapterView.OnItemSelectedListener() {
-          @Override
-          public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            String name = parent.getSelectedItem().toString();
-            LogUtils.d("select: %s", name);
-            switch (parent.getId()) {
-              case R.id.spinner_init_bag_cityType:
-                //initBagTask.setCityCode(EnumCity.getCodeByName(name));
-                break;
-              case R.id.spinner_init_bag_moneyType:
-                //initBagTask.setMoneyType(EnumMoneyType.getTypeByName(name));
-                break;
-              case R.id.spinner_init_bag_bagType:
-                //initBagTask.setBagType(EnumBagType.getTypeByName(name));
-                break;
-            }
-            //LogUtils.d("%s", initBagTask.getBagIdParser());
-          }
-
-          @Override public void onNothingSelected(AdapterView<?> parent) {
-
-          }
-        };
-
-    spCityType.setOnItemSelectedListener(itemSelectedListener);
-    spMoneyType.setOnItemSelectedListener(itemSelectedListener);
-    spBagType.setOnItemSelectedListener(itemSelectedListener);
-
-    spCityType.setSelection(2);
-    spMoneyType.setSelection(0);
-    spBagType.setSelection(1);
   }
 
   @Override protected void onDestroy() {

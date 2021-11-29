@@ -9,8 +9,8 @@ android {
     minSdkVersion rootProject.ext.android.minSdkVersion
     targetSdkVersion rootProject.ext.android.targetSdkVersion
 
-    versionCode 229
-    versionName "v0.2.9-alpha"
+    versionCode 2210
+    versionName "v0.2.10-alpha"
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     ndk {

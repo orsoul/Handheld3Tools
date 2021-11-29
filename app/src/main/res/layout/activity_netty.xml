@@ -6,7 +6,7 @@
   android:layout_height="match_parent"
   android:focusable="true"
   android:focusableInTouchMode="true"
-  tools:context=".ui.NettyActivity">
+  tools:context=".ui.ZcLockActivity">
 
   <TextView
     android:id="@+id/tv_netty_show"

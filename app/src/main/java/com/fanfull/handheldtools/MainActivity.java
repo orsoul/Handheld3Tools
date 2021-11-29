@@ -18,12 +18,12 @@ import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.CoverBagActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
-import com.fanfull.handheldtools.ui.NettyActivity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.SoundActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
+import com.fanfull.handheldtools.ui.ZcLockActivity;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortHelper;
 import com.fanfull.libhard.rfid.RfidController;
@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_2:
         break;
       case KeyEvent.KEYCODE_3:
-        startActivity(new Intent(this, NettyActivity.class));
+        startActivity(new Intent(this, ZcLockActivity.class));
         break;
       case KeyEvent.KEYCODE_4:
         new XPopup.Builder(this)
@@ -219,7 +219,7 @@ public class MainActivity extends BaseActivity {
         startActivity(new Intent(this, BagSearchActivity.class));
         break;
       case R.id.btn_main_apdu:
-        startActivity(new Intent(this, NettyActivity.class));
+        startActivity(new Intent(this, ZcLockActivity.class));
         break;
     }
   }

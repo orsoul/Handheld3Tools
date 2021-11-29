@@ -47,7 +47,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
-public class NettyActivity extends InitModuleActivity {
+public class ZcLockActivity extends InitModuleActivity {
 
   private TextView tvShow;
   private Button btnConnect;
@@ -215,7 +215,7 @@ public class NettyActivity extends InitModuleActivity {
         break;
       case KeyEvent.KEYCODE_9:
         handlerApdu("reset");
-        break;
+        return true;
       default:
         return super.onKeyDown(keyCode, event);
     }
@@ -290,6 +290,15 @@ public class NettyActivity extends InitModuleActivity {
   private void handlerApdu(String cmd) {
     LogUtils.d("handlerApdu:%s", cmd);
     if (cmd == null) {
+      return;
+    }
+
+    if (cmd.startsWith("w ") || cmd.startsWith("r ")) {
+      String s = SocketActivity.handlerCmd(cmd);
+      runOnUiThread(() -> {
+        ViewUtil.appendShow(s, tvShow);
+      });
+      clientNetty.send(s);
       return;
     }
     String[] sendInfo = new String[1];
@@ -600,12 +609,19 @@ public class NettyActivity extends InitModuleActivity {
       toWrite = BytesUtil.concatArray(toWrite, recData);
       LogUtils.d("write:%s", BytesUtil.bytes2HexString(toWrite));
 
-      boolean write =
-          uhfController.write(UhfCmd.MB_USE, 0x4C, toWrite, 0, UhfCmd.MB_TID, 0x00, tidBuff, pwd);
+      boolean write = false;
+      for (int i = 0; i < TRY_TIMES; i++) {
+        write = uhfController.write(
+            UhfCmd.MB_USE, 0x4C, toWrite, 0, UhfCmd.MB_TID, 0x00, tidBuff, pwd);
+        if (write) {
+          break;
+        }
+      }
 
+      boolean finalWrite = write;
       runOnUiThread(() -> {
         String info;
-        if (write) {
+        if (finalWrite) {
           info = "写入交互指令成功";
           SoundHelper.playToneSuccess();
           ToastUtils.showShort(info);
@@ -642,7 +658,7 @@ public class NettyActivity extends InitModuleActivity {
             zcBean.getStatusUse(),
             zcBean);
       }
-
+      LogUtils.wtf("解析袋%s", info);
       String finalInfo = info;
       runOnUiThread(new Runnable() {
                       @Override public void run() {
@@ -678,11 +694,10 @@ public class NettyActivity extends InitModuleActivity {
       return true;
     }
 
+    private final int TRY_TIMES = 5;
+    private int failedTimes;
+
     @Override protected boolean onScanFailed(int errorCode) {
-      //runOnUiThread(() -> {
-      //  dismissLoadingView();
-      //  showDialog("读超高频失败");
-      //});
       long goingTime = getGoingTime();
       long runTime = getRunTime();
       runOnUiThread(() -> {
