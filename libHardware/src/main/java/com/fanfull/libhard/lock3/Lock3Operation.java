@@ -375,7 +375,7 @@ public class Lock3Operation {
    * @param status 1~5
    * @param uid 为null，执行寻卡操作，否则后续的读写均不再寻卡.
    */
-  public boolean setLockStatus(int status, byte[] uid) {
+  public boolean writeLockStatus(int status, byte[] uid) {
     if (5 < status || status < 1) {
       return false;
     }
@@ -402,8 +402,8 @@ public class Lock3Operation {
     return Lock3Operation.getInstance().writeLockNfc(lock3Bean, false);
   }
 
-  public boolean setLockStatus(int status) {
-    return setLockStatus(status, null);
+  public boolean writeLockStatus(int status) {
+    return writeLockStatus(status, null);
   }
 
   /**

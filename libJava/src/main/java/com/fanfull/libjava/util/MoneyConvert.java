@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MoneyConvert {
-  public static final char[] MONEY_STR = { '零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十' };
-  public static final char[] MONEY_UNIT_BASE = { '十', '百', '千' };
-  public static final char[] MONEY_UNIT_BIG = { '万', '亿', '兆', '京', };
+  public static final char[] MONEY_NUM =
+      {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',};
+  public static final char[] MONEY_NUM_CN =
+      {'零', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'};
+  public static final char[] MONEY_UNIT_BASE = {'十', '百', '千'};
+  public static final char[] MONEY_UNIT_BIG = {'万', '亿', '兆', '京',};
 
-  private static final char[] MONEY_STR_DEFAULT = MONEY_STR;
+  private static final char[] MONEY_NUM_DEFAULT = MONEY_NUM;
   private static final char[] MONEY_UNIT_BASE_DEFAULT = MONEY_UNIT_BASE;
   private static final char[] MONEY_UNIT_BIG_DEFAULT = MONEY_UNIT_BIG;
 
@@ -27,6 +30,9 @@ public class MoneyConvert {
 
     if (n <= 10) {
       return String.valueOf(numStr[n]);
+    } else if (n < 20) {
+      // 十几
+      return numUnit[0] + "" + (n % 10);
     }
 
     StringBuilder sb = new StringBuilder();
@@ -96,7 +102,22 @@ public class MoneyConvert {
   }
 
   public static String convertMoney(long n) {
-    return convertMoney(n, MONEY_STR_DEFAULT, MONEY_UNIT_BASE_DEFAULT, MONEY_UNIT_BIG_DEFAULT);
+    return convertMoney(n, MONEY_NUM_DEFAULT, MONEY_UNIT_BASE_DEFAULT, MONEY_UNIT_BIG_DEFAULT);
+  }
+
+  public static String convertMoney2Num(long n) {
+    if (n < 0) {
+      return null;
+    }
+    StringBuilder sb = new StringBuilder();
+
+    do {
+      sb.append(MONEY_NUM[(int) (n % 10)]);
+      n /= 10;
+    } while (0 < n);
+
+    sb.reverse();
+    return sb.toString();
   }
 
   public static void main(String[] args) {

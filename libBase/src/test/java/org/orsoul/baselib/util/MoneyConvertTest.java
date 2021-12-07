@@ -9,7 +9,7 @@ public class MoneyConvertTest {
 
     @Test
     public void convertMoney() {
-        char[] numStr = MoneyConvert.MONEY_STR;
+        char[] numStr = MoneyConvert.MONEY_NUM_CN;
         char[] moneyUnit = MoneyConvert.MONEY_UNIT_BASE;
         char[] moneyUnitBig = MoneyConvert.MONEY_UNIT_BIG;
 

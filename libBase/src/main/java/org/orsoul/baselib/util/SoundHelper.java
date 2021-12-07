@@ -22,7 +22,8 @@ public class SoundHelper extends SoundPoolUtil {
     return SoundHelper.SingletonHolder.instance;
   }
 
-  private static final char[] MONEY_STR =
+  private static final int MONEY_PLAY_GAP = 350;
+  private static final char[] MONEY_NUM =
       {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '9' + 1};
   private static final char[] MONEY_UNIT_BASE = {'9' + 1, '9' + 2, '9' + 3};
 
@@ -260,11 +261,21 @@ public class SoundHelper extends SoundPoolUtil {
   }
 
   public static void playNum(int num, float rate, int interval) {
-    if (999 < num) {
+    if (num < 0) {
       // TODO: 2021/7/26 暂无‘千'的音效
       return;
     }
-    String s = MoneyConvert.convertThousand(num, MONEY_STR, MONEY_UNIT_BASE);
+    String s;
+    if (num < 100) {
+      // 小于100 完整 报金额
+      s = MoneyConvert.convertThousand(num, MONEY_NUM, MONEY_UNIT_BASE);
+    } else if (num < 1000 && num % 100 == 0) {
+      // 整百 完整 报金额
+      s = MoneyConvert.convertThousand(num, MONEY_NUM, MONEY_UNIT_BASE);
+    } else {
+      // 大于等于 1000 只报 数字
+      s = MoneyConvert.convertMoney2Num(num);
+    }
     char[] chars = s.toCharArray();
     int[] ids = new int[chars.length];
     for (int i = 0; i < ids.length; i++) {
@@ -274,7 +285,7 @@ public class SoundHelper extends SoundPoolUtil {
   }
 
   public static void playNum(int num, float rate) {
-    playNum(num, rate, 300);
+    playNum(num, rate, MONEY_PLAY_GAP);
   }
 
   public static void playNum(int num) {

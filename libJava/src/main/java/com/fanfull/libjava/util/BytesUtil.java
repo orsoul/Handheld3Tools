@@ -124,6 +124,19 @@ public final class BytesUtil {
     }
   }
 
+  private static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
+    if (fromIndex > toIndex) {
+      throw new IllegalArgumentException(
+          "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+    }
+    if (fromIndex < 0) {
+      throw new ArrayIndexOutOfBoundsException(fromIndex);
+    }
+    if (toIndex > arrayLength) {
+      throw new ArrayIndexOutOfBoundsException(toIndex);
+    }
+  }
+
   private static boolean checkBounds(byte[] data, int beginIndex, int len) {
     if (data == null || data.length == 0) {
       return false;
@@ -240,6 +253,13 @@ public final class BytesUtil {
     data[j] = temp;
   }
 
+  /** 生成一个 指定长度的 随机值数组 */
+  public static byte[] genRandomBytes(int arrLen) {
+    byte[] bytes = new byte[arrLen];
+    new Random().nextBytes(bytes);
+    return bytes;
+  }
+
   /** 随机化 数组. */
   public static void shuffle(byte[] data) {
     if (data == null || data.length < 2) {
@@ -350,7 +370,7 @@ public final class BytesUtil {
     System.out.println("api:" + Integer.toString(i, radix));
     System.out.println("my:" + i1 + sb.reverse().toString());
 
-    byte[] data = { (byte) 0x7F, (byte) 0x7F };
+    byte[] data = {(byte) 0x7F, (byte) 0x7F};
     BigInteger bigInteger = new BigInteger(data);
     System.out.println(bigInteger);
     String s = bytes2String(data, radix);
