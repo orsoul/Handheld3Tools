@@ -30,7 +30,7 @@ public final class LoginInfo {
   /** 机构号. 002701001 */
   private static String orgId;
   /** 是否为人行. */
-  public static boolean isRh;
+  private static boolean isRh;
 
   /** 操作员姓名. */
   private static String userName;
@@ -217,7 +217,7 @@ public final class LoginInfo {
   }
 
   public static boolean isRh() {
-    return isRh(orgId);
+    return isRh;
   }
 
   public static boolean isNeedUpdateOrgList() {
@@ -266,7 +266,7 @@ public final class LoginInfo {
       orgId = split[4];
       userNum = split[5];
       orgListVersion = split[6];
-      isRh = orgId.endsWith("01");
+      isRh = isRh(orgId);
       //String localVersion = SPUtils.getString(MyContexts.KEY_ORG_LIST_VERSION, "");
       //LogUtils.d("org local Version：%s，service：%s", localVersion, orgListVersion);
       //needUpdateOrgList = !localVersion.equals(orgListVersion);

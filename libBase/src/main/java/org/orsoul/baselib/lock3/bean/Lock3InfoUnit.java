@@ -68,6 +68,7 @@ public class Lock3InfoUnit {
         return new Lock3InfoUnit(sa, 0);
       case Lock3Bean.SA_STATUS:
       case Lock3Bean.SA_STATUS_CHECK:
+      case Lock3Bean.SA_STATUS_PAPER_VOUCHER:
       case Lock3Bean.SA_KEY_NUM:
       case Lock3Bean.SA_VOLTAGE:
       case Lock3Bean.SA_CIRCULATION_INDEX:

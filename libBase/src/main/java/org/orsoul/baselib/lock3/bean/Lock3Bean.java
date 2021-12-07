@@ -18,6 +18,8 @@ public class Lock3Bean {
   public static final int SA_LOCK_TID = 0x0A;
   /** 空袋检测 标志位 0x0D. */
   public static final int SA_STATUS_CHECK = 0x0D;
+  /** 清分、版别信息 0x0E. */
+  public static final int SA_STATUS_PAPER_VOUCHER = 0x0E;
   /** 标志位 0x10. */
   public static final int SA_STATUS = 0x10;
   /** 启用码 0x11. 启用码  FFDDFFEE已启用，EEEEEEEE注销 000000尚未启用 */
@@ -65,6 +67,8 @@ public class Lock3Bean {
 
   /** 空袋检测 标志位:0xDA,0xDC. */
   private int statusCheck;
+  /** 清分、版别信息. */
+  private byte[] statusPaperVoucherBuff;
   /** 标志位. */
   private int status;
   /** 标志位加解密选用的算法. */
@@ -291,6 +295,7 @@ public class Lock3Bean {
         SA_PIECE_TID,
         SA_LOCK_TID,
         SA_STATUS_CHECK,
+        SA_STATUS_PAPER_VOUCHER,
         SA_STATUS,
         SA_ENABLE,
         SA_WORK_MODE,
@@ -363,6 +368,10 @@ public class Lock3Bean {
         case Lock3Bean.SA_STATUS_CHECK:
           this.statusCheck = unit.buff[0] & 0xFF;
           LogUtils.d("statusCheck:%s", statusCheck);
+          break;
+        case Lock3Bean.SA_STATUS_PAPER_VOUCHER:
+          this.statusPaperVoucherBuff = unit.buff;
+          LogUtils.d("statusPaperVoucher:0x%08X", statusCheck);
           break;
         case Lock3Bean.SA_ENABLE:
           this.enable = Lock3Util.getEnableStatus(unit.buff);
