@@ -2,6 +2,7 @@ package com.fanfull.handheldtools.ui.base;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -18,6 +19,8 @@ import com.fanfull.handheldtools.MyApplication;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.view.DialogUtil;
 
+import org.orsoul.baselib.service.RestartAppService;
+import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.SoundHelper;
 
 public abstract class BaseActivity extends AppCompatActivity implements View.OnClickListener,
@@ -145,6 +148,20 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     return super.onKeyDown(keyCode, event);
+  }
+
+  protected void showRelaunchAppDialog(boolean mustRelaunch, String info) {
+    dialogUtil.createAndShowDialog(mustRelaunch, "提示", info,
+        "重启APP", mustRelaunch ? null : "退出", null, new DialogUtil.MyDialogOnClickListener() {
+          @Override public void onClickPositive(DialogInterface dialog) {
+            //AppUtil.exitAPP(false);
+            RestartAppService.restartApp(BaseActivity.this, 0);
+          }
+
+          @Override public void onClickNegative(DialogInterface dialog) {
+            AppUtil.exitAPP(true);
+          }
+        });
   }
 
   @Override

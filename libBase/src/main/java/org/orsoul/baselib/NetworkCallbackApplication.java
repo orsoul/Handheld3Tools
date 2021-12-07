@@ -66,28 +66,24 @@ public abstract class NetworkCallbackApplication extends Application {
     // handlerException内部建议手动try{  你的异常处理逻辑  }catch(Throwable e){ } ，以防handlerException内部再次抛出异常，导致循环调用handlerException
     Cockroach.install((thread, throwable) -> {
       //开发时使用Cockroach可能不容易发现bug，所以建议开发阶段在handlerException中用Toast谈个提示框，
-      //由于handlerException可能运行在非ui线程中，Toast又需要在主线程，所以new了一个new Handler(Looper.getMainLooper())，
-      //所以千万不要在下面的run方法中执行耗时操作，因为run已经运行在了ui线程中。
-      //new Handler(Looper.getMainLooper())只是为了能弹出个toast，并无其他用途
-      //new Handler(Looper.getMainLooper()).post(() -> {
-      //});
+      //handlerException可能运行在非ui线程中
 
-      String format = String.format("crash catch, case:%s", throwable.getMessage());
-      ToastUtils.showLong(format);
-      LogUtils.wtf(format);
+      try {
+        String format = String.format("crash catch, case:%s", throwable.getMessage());
+        ToastUtils.showLong(format);
+        //LogUtils.wtf(format);
 
-      //throwable.printStackTrace();
-      //final Writer result = new StringWriter();
-      //final PrintWriter printWriter = new PrintWriter(result);
-      //throwable.printStackTrace(printWriter);
-      //String log = result.toString();
-      String stackTrace = CrashLogUtil.getStackTrace(throwable);
-      LogUtils.wtf("%s", stackTrace);
-      LogUtils.getLog2FileConfig().flushAsync();
-      CrashLogUtil.saveCrashReport(stackTrace);
+        String stackTrace = CrashLogUtil.getStackTrace(throwable);
+        LogUtils.wtf("%s", stackTrace);
+        LogUtils.getLog2FileConfig().flushAsync();
+        CrashLogUtil.saveCrashReport(stackTrace);
 
-      if (AppUtil.isMainThread()) {
-        onCrashOnMainThread(this);
+        if (AppUtil.isMainThread()) {
+          onCrashOnMainThread(this);
+        }
+      } catch (Exception e) {
+        LogUtils.wtf("异常处理中出异常：%s", e.getMessage());
+        e.printStackTrace();
       }
     });
   }

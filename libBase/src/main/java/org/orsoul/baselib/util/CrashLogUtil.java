@@ -92,7 +92,7 @@ public final class CrashLogUtil {
 
     e.printStackTrace(printWriter);
     String crashLog = String.format(
-        "================ %s ================\n%s",
+        "============ %s ============\n%s",
         getCrashLogTime("yyyyMMdd HH:mm:ss.SSS"), result.toString());
     printWriter.close();
     return crashLog;
