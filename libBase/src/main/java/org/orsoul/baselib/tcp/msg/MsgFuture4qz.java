@@ -1,6 +1,6 @@
-package com.fanfull.libjava.io.netty.future;
+package org.orsoul.baselib.tcp.msg;
 
-import com.fanfull.libjava.io.socketClient.message1.BaseSocketMessage4qz;
+import com.fanfull.libjava.io.netty.future.MsgFuture;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

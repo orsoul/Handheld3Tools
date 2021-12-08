@@ -1,7 +1,6 @@
-package com.fanfull.libjava.io.socketClient.message1;
+package org.orsoul.baselib.tcp.msg;
 
 import com.fanfull.libjava.io.netty.future.MsgFuture;
-import com.fanfull.libjava.io.netty.future.MsgFuture4qz;
 import com.fanfull.libjava.io.socketClient.OnceReceiveListener;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
@@ -79,6 +78,8 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_FINGER = 14;
   /** 透传. */
   public static final int FUNC_TC = 1000;
+
+  protected String macAddress;
 
   protected OnceReceiveListener<BaseSocketMessage4qz> onceReceiveListener;
 
@@ -216,14 +217,20 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     }
   }
 
+  protected Message4qzSender sender;
+
+  public void setSender(Message4qzSender sender) {
+    this.sender = sender;
+  }
+
   /** 向前置发送数据. */
   public boolean send() {
-    return false;
+    return send(onceReceiveListener);
   }
 
   /** 向前置发送数据. */
   public boolean send(OnceReceiveListener<BaseSocketMessage4qz> onceRec) {
-    return false;
+    return sender != null && sender.send(this, onceRec);
   }
 
   /** 向前置发送数据,发送前命令序号+1. */
@@ -298,6 +305,11 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     void onReceive(BaseSocketMessage4qz<?> recMsg);
 
     void onTimeout(BaseSocketMessage4qz<?> sendMsg);
+  }
+
+  public interface Message4qzSender {
+    public boolean send(
+        BaseSocketMessage4qz msg, OnceReceiveListener<BaseSocketMessage4qz> listener);
   }
 
   public static void main(String[] args) {

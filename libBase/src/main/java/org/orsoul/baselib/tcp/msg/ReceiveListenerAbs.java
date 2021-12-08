@@ -1,7 +1,6 @@
-package com.fanfull.libjava.io.socketClient;
+package org.orsoul.baselib.tcp.msg;
 
-import com.fanfull.libjava.io.socketClient.message1.BaseSocketMessage4qz;
-import com.fanfull.libjava.io.socketClient.message1.MessageParser4qz;
+import com.fanfull.libjava.io.socketClient.ReceiveListener;
 
 /**
  * 实现了 RecieveListener 接口 的抽象类， 继承此类可避免实现所有的接口方法，而只根据需要重写相应的方法

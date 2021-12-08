@@ -1,4 +1,4 @@
-package com.fanfull.libjava.io.socketClient.message1;
+package org.orsoul.baselib.tcp.msg;
 
 import com.fanfull.libjava.util.Logs;
 
