@@ -59,7 +59,7 @@ public class Lock3Bean {
   /** NFC内，锁片tid，也称业务tid，0x07~0x09. */
   private String tidFromPiece;
   /** NFC内，锁内UHF的tid，0x0A~0x0C. */
-  private String tidFromLock;
+  private String lockTid;
   /** 封签事件码. */
   private String coverCode;
   /** 封袋流水号. */
@@ -102,11 +102,11 @@ public class Lock3Bean {
   }
 
   public String getTidFromLock() {
-    return tidFromLock;
+    return lockTid;
   }
 
   public void setTidFromLock(String tidFromLock) {
-    this.tidFromLock = tidFromLock;
+    this.lockTid = tidFromLock;
   }
 
   public int getStatus() {
@@ -219,7 +219,7 @@ public class Lock3Bean {
         ", pieceTid='" + pieceTid + '\'' +
         ", bagId='" + bagId + '\'' +
         ", tidFromPiece='" + tidFromPiece + '\'' +
-        ", tidFromLock='" + tidFromLock + '\'' +
+        ", tidFromLock='" + lockTid + '\'' +
         ", coverCode='" + coverCode + '\'' +
         ", coverSerial='" + coverSerial + '\'' +
         ", status=" + status +
@@ -352,8 +352,8 @@ public class Lock3Bean {
           LogUtils.d("tidFromPiece:%s", tidFromPiece);
           break;
         case Lock3Bean.SA_LOCK_TID:
-          this.tidFromLock = BytesUtil.bytes2HexString(unit.buff);
-          LogUtils.d("tidFromLock:%s", tidFromLock);
+          this.lockTid = BytesUtil.bytes2HexString(unit.buff);
+          LogUtils.d("lockTid:%s", lockTid);
           break;
         case Lock3Bean.SA_KEY_NUM:
           this.keyNum = Lock3Util.parseKeyNum(unit.buff[0]);
@@ -375,7 +375,7 @@ public class Lock3Bean {
           break;
         case Lock3Bean.SA_ENABLE:
           this.enable = Lock3Util.getEnableStatus(unit.buff);
-          LogUtils.d("enable:%s", enable);
+          LogUtils.d("enable:%s", Lock3Util.getEnableDesc(this.enable));
           break;
         case Lock3Bean.SA_WORK_MODE:
           this.isTestMode = Lock3Util.MODE_DEBUG == unit.buff[0];

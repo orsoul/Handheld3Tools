@@ -79,7 +79,21 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   /** 透传. */
   public static final int FUNC_TC = 1000;
 
-  protected String macAddress;
+  /**
+   * 设置消息发送器，让所有的 BaseSocketMessage4qz的子类 都有发送消息的功能。
+   */
+  protected static Message4qzSender sender;
+
+  public static void setSender(Message4qzSender sender) {
+    BaseSocketMessage4qz.sender = sender;
+  }
+
+  /** 本机 mac地址 */
+  protected static String deviceMac;
+
+  public static void setDeviceMac(String deviceMac) {
+    BaseSocketMessage4qz.deviceMac = deviceMac;
+  }
 
   protected OnceReceiveListener<BaseSocketMessage4qz> onceReceiveListener;
 
@@ -217,12 +231,6 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
     }
   }
 
-  protected Message4qzSender sender;
-
-  public void setSender(Message4qzSender sender) {
-    this.sender = sender;
-  }
-
   /** 向前置发送数据. */
   public boolean send() {
     return send(onceReceiveListener);
@@ -230,7 +238,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
 
   /** 向前置发送数据. */
   public boolean send(OnceReceiveListener<BaseSocketMessage4qz> onceRec) {
-    return sender != null && sender.send(this, onceRec);
+    return sender != null && sender.sendMessage(this, onceRec);
   }
 
   /** 向前置发送数据,发送前命令序号+1. */
@@ -308,7 +316,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   }
 
   public interface Message4qzSender {
-    public boolean send(
+    boolean sendMessage(
         BaseSocketMessage4qz msg, OnceReceiveListener<BaseSocketMessage4qz> listener);
   }
 

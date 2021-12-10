@@ -84,9 +84,9 @@ public class ReadLockTask extends ThreadUtil.ThreadRunnable {
       }
       int res;
       if (isReadUhf) {
-        LogUtils.d("filterTid:%s", BytesUtil.bytes2HexString(tid));
         if (tidFilter != null) {
           // 以tid过滤 不再读取tid，读取成功的话 过滤tid 等同 tid
+          LogUtils.d("filterTid:%s", BytesUtil.bytes2HexString(tid));
           res = lock3Operation.readUidEpcFilterTid(uid, tid, epc);
         } else {
           res = lock3Operation.readUidAndTid(uid, tid, epc);

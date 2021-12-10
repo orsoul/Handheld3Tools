@@ -71,12 +71,26 @@ public final class MessageHelper {
 
   /** 解析 字符串. */
   public static BaseSocketMessage4qz parse(String recString) {
-    BaseSocketMessage4qz baseMsg = newInstance(recString);
-    return parse(baseMsg);
+    BaseSocketMessage4qz baseMsg = null;
+    try {
+      baseMsg = newInstance(recString);
+      return parse(baseMsg);
+    } catch (Exception e) {
+      return baseMsg;
+    }
+    //BaseSocketMessage4qz baseMsg = newInstance(recString);
+    //return parse(baseMsg);
   }
 
   public static BaseSocketMessage4qz parse(String[] recString) {
-    BaseSocketMessage4qz baseMsg = newInstance(recString);
-    return parse(baseMsg);
+    BaseSocketMessage4qz baseMsg = null;
+    try {
+      baseMsg = newInstance(recString);
+      return parse(baseMsg);
+    } catch (Exception e) {
+      return baseMsg;
+    }
+    //BaseSocketMessage4qz baseMsg = newInstance(recString);
+    //return parse(baseMsg);
   }
 }

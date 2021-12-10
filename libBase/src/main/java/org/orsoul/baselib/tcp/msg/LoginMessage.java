@@ -22,7 +22,7 @@ public class LoginMessage extends BaseSocketMessage4qz {
 
   @Override public String getMessage() {
     message = genProtocol(func, userId, pwd, "666666", "00000000000000000",
-        macAddress, msgNum);
+        deviceMac, msgNum);
     return message;
   }
 

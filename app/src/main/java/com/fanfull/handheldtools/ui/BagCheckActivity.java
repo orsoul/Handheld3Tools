@@ -251,7 +251,7 @@ public class BagCheckActivity extends InitModuleActivity {
       //return true;
     }
     if (0 < fn) {
-      boolean res = Lock3Operation.getInstance().setLockStatus(fn);
+      boolean res = Lock3Operation.getInstance().writeLockStatus(fn);
       String info;
       if (res) {
         info = String.format("更改成功， %s", Lock3Util.getStatusDesc(fn));

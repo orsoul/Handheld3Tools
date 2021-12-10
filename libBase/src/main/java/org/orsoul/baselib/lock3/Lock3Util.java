@@ -65,11 +65,14 @@ public final class Lock3Util {
   public static final byte REWRITE_EPC = 0x7B;
 
   /** 空袋检测 标志位: 空袋已检测. */
-  public static final int FLAG_CHECK_STATUS_REG = 0xDA;
+  public static final int FLAG_CHECK_STATUS_REG = 0xE1;
   /** 空袋检测 标志位: 确认 空袋已检测. */
   public static final int FLAG_CHECK_STATUS_CHECKED = FLAG_CHECK_STATUS_REG ^ 0xFF;
   /** 空袋检测 标志位: 确认 空袋未检测. */
   public static final int FLAG_CHECK_STATUS_FAILED = 0xFA;
+  /** 空袋检测 标志位: 空袋已检测. */
+  public static final int FLAG_CHECK_STATUS_CIRCULATION = 0xE2;
+  public static final int FLAG_CHECK_STATUS_DEPLETION = 0xE3;
 
   /**
    * 加密、解密标志位。1~5：对应标志位F1~F5.
