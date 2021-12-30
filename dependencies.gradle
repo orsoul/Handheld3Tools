@@ -8,13 +8,14 @@ def butterKnifeVersion = "10.1.0"
 def daggerVersion = "2.8"
 def ormLiteVersion = "4.48"
 def fastJsonVersion = "1.1.60.android"
+def roomVersion = "2.3.0"
 
 project.ext {
   android = [
-      compileSdkVersion: 29,
+      compileSdkVersion: 30,
       buildToolsVersion: "28.0.3",
       minSdkVersion: 21,
-      targetSdkVersion: 28,
+      targetSdkVersion: 30,
       versionCode: 1,
       versionName: "1.0"
   ]
@@ -77,6 +78,8 @@ project.ext {
       "gson": "com.google.code.gson:gson:2.8.5",
 
       /* db */
-      "debug-db": "com.amitshekhar.android:debug-db:1.0.6"
+      "debug-db": "com.amitshekhar.android:debug-db:1.0.6",
+      "room": "androidx.room:room-runtime:${roomVersion}",
+      "room-compiler": "androidx.room:room-compiler:${roomVersion}"
   ]
 }
