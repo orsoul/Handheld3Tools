@@ -3,11 +3,14 @@ package com.fanfull.libjava.io;
 import com.fanfull.libjava.io.socketClient.Options;
 import com.fanfull.libjava.io.socketClient.impl.BaseSocketClient;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
-import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.Logs;
+import com.fanfull.libjava.util.ThreadUtil;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SocketDemo {
 
@@ -16,11 +19,62 @@ public class SocketDemo {
   public static String cmd2 = "0000000A0000000005F5E13B2004000001C7000000008000";
 
   public static void main(String[] args) {
+    //String str =
+    //    "{\"busiInfoList\":[{\"paperTypeID\":\"3\",\"paperTypeName\":\"未清分完整券\",\"sackMoney\":\"2000000.00\",\"val\":\"100.0\",\"voucherTypeID\":\"101511\",\"voucherTypeName\":\"纸100元（05版）\"}],\"code\":65537,\"packInfoList\":[{\"sackNo\":\"050271010480613ECA9112E5\",\"val\":\"100.0\",\"voucherTypeID\":\"101001\",\"voucherTypeName\":\"纸100元\"}],\"stackInfoList\":[{\"sstackCode\":\"73201001010102\",\"sstackName\":\"南京市中支库-下库\"}]}\n";
+    //runSocketDemo();
+    runSocketClients();
+    //new Thread(new SocketServiceDemo()).start();
+  }
 
-    String str =
-        "{\"busiInfoList\":[{\"paperTypeID\":\"3\",\"paperTypeName\":\"未清分完整券\",\"sackMoney\":\"2000000.00\",\"val\":\"100.0\",\"voucherTypeID\":\"101511\",\"voucherTypeName\":\"纸100元（05版）\"}],\"code\":65537,\"packInfoList\":[{\"sackNo\":\"050271010480613ECA9112E5\",\"val\":\"100.0\",\"voucherTypeID\":\"101001\",\"voucherTypeName\":\"纸100元\"}],\"stackInfoList\":[{\"sstackCode\":\"73201001010102\",\"sstackName\":\"南京市中支库-下库\"}]}\n";
+  static void runSocketClients() {
+    ExecutorService executorService = Executors.newCachedThreadPool();
+    for (int i = 0; i < 1024; i++) {
+      Options ops = new Options();
+      ops.serverIp = "192.168.11.161";
+      ops.serverPort = 10001;
+      BaseSocketClient client = new BaseSocketClient(ops);
+      int finalI = i;
+      client.addSocketClientListener(
+          new ISocketClientListener() {
+            int total = 0;
 
-    runSocketDemo();
+            @Override
+            public void onDisconnect(String serverIp, int serverPort, boolean isActive) {
+              Logs.out("onDisconnect %s:%s", serverIp, serverPort);
+            }
+
+            @Override public void onReceive(byte[] data) {
+              Logs.out("onReceive: %s", new String(data));
+            }
+
+            @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {
+
+            }
+
+            @Override
+            public void onConnect(String serverIp, int serverPort) {
+              Logs.out("%s,onConnect %s:%s", finalI, serverIp, serverPort);
+            }
+
+            @Override
+            public void onConnectFailed(Throwable e) {
+              System.out.println(e.getClass() + "-onConnectFailed " + e.getMessage());
+            }
+          });
+      boolean connect = client.connect();
+      if (connect) {
+        String s = "hello, I am " + i;
+        client.send(s.getBytes());
+        executorService.execute(() -> {
+          for (int j = 1; j < Integer.MAX_VALUE; j++) {
+            String format = String.format("$200 {} %s#", j);
+            client.send(format.getBytes());
+            ThreadUtil.sleepSeconds(15);
+          }
+        });
+      }
+      ThreadUtil.sleepSeconds(1);
+    }
   }
 
   static void runSocketDemo() {
@@ -61,44 +115,40 @@ public class SocketDemo {
   }
 
   static class SocketServiceDemo implements Runnable {
+    public void send(Socket client, String data) throws IOException {
+      send(client, data.getBytes());
+    }
+
     public void send(Socket client, byte[] data) throws IOException {
       if (client == null || !client.isConnected() || data == null) {
         return;
       }
       client.getOutputStream().write(data);
-      System.out.println(String.format("send %s bytes", data.length));
+      Logs.out("send:%s", new String(data));
+    }
+
+    ExecutorService executorService = Executors.newCachedThreadPool();
+
+    void handler(Socket client) {
+      executorService.execute(() -> {
+        try {
+          send(client, "hello,you are " + client.getInetAddress());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      });
     }
 
     @Override
     public void run() {
-
       ServerSocket serverSocket;
       try {
-        serverSocket = new ServerSocket(12345, 3);
+        serverSocket = new ServerSocket(12345);
         System.out.println(String.format("server %s run", serverSocket.getLocalSocketAddress()));
         while (true) {
           Socket client = serverSocket.accept();
-          System.out.println(client.getInetAddress() + " connected");
-          byte[] cmdBuff1 = BytesUtil.hexString2Bytes(cmd1);
-          byte[] cmdBuff2 = BytesUtil.hexString2Bytes(cmd2);
-          //                    int total = 0;
-          //                    for (int i = 0; i < 20_0000; i++) {
-          //                        byte[] bytes = ("message " + i + ", ").getBytes();
-          //                        client.getOutputStream().write(bytes);
-          //                        total += bytes.length;
-          //                    }
-          //                    client.getOutputStream().write(cmdBuff1);
-          //                    client.getOutputStream().flush();
-          //                    ThreadUtil.sleep(5);
-          //                    client.getOutputStream().write(cmdBuff2);
-
-          send(client, BytesUtil.concatArray(cmdBuff1, cmdBuff2));
-
-          //                    client.getOutputStream().flush();
-          //                    System.out.println("server: close, send: " + total);
-          //                    System.out.println("server: close, send end");
-          client.close();
-          System.out.println("server disconnect:" + client.getInetAddress());
+          Logs.out("%s,onConnect %s", client.getInetAddress());
+          handler(client);
         }
       } catch (IOException e) {
         e.printStackTrace();

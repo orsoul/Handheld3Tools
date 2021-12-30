@@ -3,8 +3,6 @@ package com.fanfull.libjava.io.netty;
 import com.fanfull.libjava.io.netty.handler.HeadEndDecoder;
 import com.fanfull.libjava.io.netty.handler.ReconnectBeatHandler;
 import com.fanfull.libjava.io.socketClient.Options;
-import com.fanfull.libjava.io.socketClient.message1.BaseSocketMessage4qz;
-import com.fanfull.libjava.io.socketClient.message1.MessageParser4qz;
 import com.fanfull.libjava.util.Logs;
 
 import java.io.File;
@@ -42,29 +40,10 @@ public class ClientDemo {
     clientNetty = new ClientNetty(sOptions);
     clientNetty.init(new MyChannelInitializer(clientNetty));
 
-    message4qz = new BaseSocketMessage4qz(13) {
-      @Override public String getMessage() {
-        return MessageParser4qz.genProtocol(func, "base message", msgNum);
-      }
-
-      @Override public boolean send() {
-        return clientNetty.send(getMessage());
-      }
-    };
-    message4qz.setReplyListener(new BaseSocketMessage4qz.ReplyListener() {
-      @Override public void onReceive(BaseSocketMessage4qz recMsg) {
-        Logs.out("timeout");
-      }
-
-      @Override public void onTimeout(BaseSocketMessage4qz sendMsg) {
-        Logs.out("timeout");
-      }
-    });
 
     Logs.out("====== main end ======");
   }
 
-  static BaseSocketMessage4qz message4qz;
 
   public static void handle(String info, ClientNetty clientNetty) {
     Logs.out("handle msg: %s", info);
@@ -101,7 +80,6 @@ public class ClientDemo {
         clientNetty.send("send bytes".getBytes());
         break;
       case "sync":
-        message4qz.sendSync();
         break;
       case "nothing":
         break;
@@ -164,6 +142,12 @@ public class ClientDemo {
       pipeline.addLast(new StringDecoder());
       //pipeline.addLast(new MyStringDecoder());
       pipeline.addLast(new StringSimpleChannelInboundHandler());
+      pipeline.addLast(new SimpleChannelInboundHandler<String>() {
+        @Override protected void channelRead0(ChannelHandlerContext ctx, String msg)
+            throws Exception {
+
+        }
+      });
 
       pipeline.addLast(new ChannelInboundHandlerAdapter() {
         @Override public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

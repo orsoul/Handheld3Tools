@@ -5,9 +5,12 @@ public interface OnceReceiveListener<T> {
   int REC_FAILED_TIMEOUT = 2;
   int REC_FAILED_CATCH_EXCEPTION = 3;
 
+  default void onSendFailed(Object sendData) {
+  }
+
   void onReceive(T recData);
 
-  default void onRecTimeout() {
+  default void onRecTimeout(Object sendData) {
     onRecFailed(OnceReceiveListener.REC_FAILED_TIMEOUT,
         "回复超时");
   }

@@ -13,6 +13,9 @@ public class Options {
   public boolean heartBeatEnable = false;
   /** 心跳 时间隔，单位秒. */
   public int heartBeatInterval = 10;
+  public int readerIdleTimeSeconds;
+  public int writerIdleTimeSeconds = heartBeatInterval;
+  public int allIdleTimeSeconds;
   /** 心跳 失败次数，失败达到该次数后 认为连接已断开. */
   public int disconnectCount = 3;
 
