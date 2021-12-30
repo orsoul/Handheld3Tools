@@ -150,6 +150,12 @@ public class Lock3Bean {
   }
 
   public String getCoverCode() {
+    if (coverCode == null) {
+      Lock3InfoUnit infoUnit = getInfoUnit(SA_COVER_EVENT);
+      if (infoUnit != null && infoUnit.buff != null) {
+        coverCode = BytesUtil.bytes2HexString(infoUnit.buff);
+      }
+    }
     return coverCode;
   }
 

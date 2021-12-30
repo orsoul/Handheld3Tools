@@ -1,9 +1,10 @@
 package org.orsoul.baselib.tcp.msg;
 
+import com.fanfull.libjava.data.BaseJsonBean;
 import com.fanfull.libjava.util.DateFormatUtil;
 
 /** 封袋、出入库等业务 提交袋id. */
-public class BagUploadMessage extends BaseSocketMessage4qz {
+public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagUploadBean> {
 
   String userId;
   int uploadType;
@@ -20,6 +21,9 @@ public class BagUploadMessage extends BaseSocketMessage4qz {
   int bagType = 1;
 
   //BusinessTaskBean.BusiInfoBean busiInfoBean;
+  public BagUploadMessage(BaseSocketMessage4qz msg) {
+    super(msg.getFunc(), msg.getSplit(), msg.getMsgNum());
+  }
 
   public BagUploadMessage(int type, String userId, String checkerId,
       String batchId, String macAddress) {
@@ -156,9 +160,40 @@ public class BagUploadMessage extends BaseSocketMessage4qz {
     this.moneyType = moneyType;
   }
 
+  public int personNum;
+  public int totalNum;
+  public int planNum;
+
+  /**
+   * *22 2200010001999912 087101001005210401151128 05532103047A47D23E618040 009#
+   */
+  public static BagUploadMessage parse(BaseSocketMessage4qz baseMsg) {
+    if (baseMsg.getFunc() != FUNC_UPLOAD_BAG) {
+      return null;
+    }
+
+    BagUploadMessage reVal = new BagUploadMessage(baseMsg);
+    String[] split = reVal.split;
+    if (14 <= split[1].length()) {
+      String strPersonNum = split[1].substring(2, 6);// 个人完成数量
+      String strTotalNum = split[1].substring(6, 10);// 总完成数量
+      String strPlanNum = split[1].substring(10, 14);// 计划数量
+      reVal.personNum = Integer.parseInt(strPersonNum);
+      reVal.totalNum = Integer.parseInt(strTotalNum);
+      reVal.planNum = Integer.parseInt(strPlanNum);
+      reVal.success = true;
+    }
+
+    return reVal;
+  }
+
   public static void main(String[] args) {
     String s1 = "4";
     String s2 = "123456";
     System.out.println(String.format("%s%s", s1, s2));
+  }
+
+  public class BagUploadBean extends BaseJsonBean {
+
   }
 }

@@ -2,6 +2,9 @@ package org.orsoul.baselib.tcp.msg;
 
 import com.apkfuns.logutils.LogUtils;
 
+/**
+ * 前置消息 解析成 bean.
+ */
 public final class MessageHelper {
 
   /**
@@ -63,6 +66,12 @@ public final class MessageHelper {
         break;
       case BaseSocketMessage4qz.FUNC_CHANGE_PWD:
         reVal = ChangePasswordMessage.parse(baseMsg);
+        break;
+      case BaseSocketMessage4qz.FUNC_UPLOAD_BAG:
+        reVal = BagUploadMessage.parse(baseMsg);
+        break;
+      case BaseSocketMessage4qz.FUNC_PALLET_OVER:
+        reVal = PalletOverMessage.parse(baseMsg);
         break;
     }
     //LogUtils.d("%s", reVal);

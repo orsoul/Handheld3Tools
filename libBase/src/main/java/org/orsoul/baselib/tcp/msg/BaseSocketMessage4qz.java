@@ -72,6 +72,10 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_QUERY_PLAIN_NUM = 37;
   /** 提交离线数据. */
   public static final int FUNC_SUBMIT_OFFLINE_DATA = 42;
+  /** 结束当前托盘. */
+  public static final int FUNC_PALLET_OVER = 48;
+  /** 查询 库存列表、任务列表. */
+  public static final int FUNC_QUERY_STOCK = 60;
   /** 非业务进出库-二代任务. */
   public static final int FUNC_PERSON_IN_OUT = 25;
   /** 指纹相关. */
@@ -124,6 +128,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
 
   protected T jsonBean;
   protected int resCode;
+  protected boolean success;
 
   public int getFunc() {
     return func;
@@ -151,6 +156,10 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
 
   public void setJsonBean(T jsonBean) {
     this.jsonBean = jsonBean;
+  }
+
+  public boolean isSuccess() {
+    return success;
   }
 
   public BaseSocketMessage4qz() {

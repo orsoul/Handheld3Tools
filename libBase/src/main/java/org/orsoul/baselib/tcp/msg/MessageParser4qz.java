@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 前置消息 处理工具.
+ */
 public final class MessageParser4qz {
   /**
    * 检查并分段接收到的字符串，必须包含头尾标识符.会截去头尾标识符。
