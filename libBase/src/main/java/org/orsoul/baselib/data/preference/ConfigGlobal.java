@@ -4,6 +4,8 @@ package org.orsoul.baselib.data.preference;
 public final class ConfigGlobal {
   // TODO: 2020/10/29 全局配置
   /** 测试模式. */
+  public static boolean isOfflineMode;
+  /** 测试模式. */
   public static boolean isTestMode;
   /** 是否使用老袋. */
   public static boolean isUseOldBag = false;

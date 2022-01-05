@@ -78,8 +78,8 @@ public class Lock3Bean {
   /** 袋流转信息 索引. */
   private int circulationIndex;
 
-  /** 基金代启用状态. 1:已启用，0:未启用，2:已注销，-1:未定义状态 */
-  private int enable;
+  /** 基金代启用状态. 1:已启用，0:未启用，2:已注销，-1:未定义状态,-2:未读取该字段 */
+  private int enable = -2;
 
   /** 单片机工作模式. */
   private boolean isTestMode;

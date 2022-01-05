@@ -1,6 +1,7 @@
 package org.orsoul.baselib.lock3.bean;
 
 import com.apkfuns.logutils.LogUtils;
+import com.fanfull.libjava.data.BaseJsonBean;
 import com.fanfull.libjava.util.DateFormatUtil;
 import com.google.gson.Gson;
 
@@ -16,7 +17,8 @@ import java.util.List;
 public final class LoginInfo {
   /** 默认登录密码. */
   public static final String DEFAULT_LOGIN_PWD = "000000";
-  public static final LoginInfoBean LOGIN_INFO_BEAN = new LoginInfoBean();
+  public static LoginInfoBean LOGIN_INFO_BEAN_OFFLINE;
+  public static LoginInfoBean LOGIN_INFO_BEAN = new LoginInfoBean();
 
   public static String getLoginInfoJson() {
     return new Gson().toJson(LOGIN_INFO_BEAN);
@@ -46,9 +48,13 @@ public final class LoginInfo {
     LOGIN_INFO_BEAN.identStatus = identStatus;
   }
 
+  public static void setOfflineLoginInfoBean(LoginInfoBean bean) {
+    LOGIN_INFO_BEAN = bean;
+  }
+
   /** 已登录 返回true. */
   public static boolean isLogin() {
-    return LOGIN_INFO_BEAN.userId != null;
+    return LOGIN_INFO_BEAN.isLogin();
   }
 
   /** 已复核登录 返回true. */
@@ -83,6 +89,14 @@ public final class LoginInfo {
 
   public static String getUserId() {
     return LOGIN_INFO_BEAN.userId;
+  }
+
+  public static String getPwd() {
+    return LOGIN_INFO_BEAN.getPwd();
+  }
+
+  public static void setPwd(String pwd) {
+    LOGIN_INFO_BEAN.setPwd(pwd);
   }
 
   public static String getCheckerId() {
@@ -260,19 +274,24 @@ public final class LoginInfo {
     return LOGIN_INFO_BEAN.isFingerLogin;
   }
 
-  public static class LoginInfoBean {
-    /** 操作员登录id. */
+  public static class LoginInfoBean extends BaseJsonBean {
+    /** 操作员 登录id，16进制. */
     private String userId;
-    /** 复核员登录id. */
+    /** 操作员 登录id，10进制. */
+    private String userId10;
+    private String pwd;
+    /** 复核员登录id，16进制. */
     private String checkerId;
-    /** 操作员登录编号. 机构Id + 用户编号？ 002701001 + 004 */
+    /** 复核员登录id，10进制. */
+    private String checkerId10;
+    /** 操作员登录编号. 用户所属机构Id + 用户编号： 002701001 + 004 */
     private String userNum;
     /** 服务端的 机构号-机构名称 列表版本号. */
     private String orgListVersion;
 
     /** 权限. */
     private String permission;
-    /** 机构号. 002701001 */
+    /** 登录机构号. 002701001 */
     private String orgId;
     /** 是否为人行. */
     private Boolean isRh;
@@ -336,6 +355,14 @@ public final class LoginInfo {
       this.identStatus = identStatus;
     }
 
+    /** 离线登录 是否有效. */
+    public boolean isOfflineValid() {
+      long t = loginTime + loginTimeD; // 上次登录时的 本机时间t
+      t = (System.currentTimeMillis() - t) / (60 * 60 * 1000);
+      boolean offlineValid = 0 < t && t < 24;
+      return offlineValid;
+    }
+
     /** 已登录 返回true. */
     public boolean isLogin() {
       return userId != null;
@@ -373,6 +400,22 @@ public final class LoginInfo {
 
     public String getUserId() {
       return userId;
+    }
+
+    public String getUserId10() {
+      return userId10;
+    }
+
+    public String getCheckerId10() {
+      return checkerId10;
+    }
+
+    public String getPwd() {
+      return pwd;
+    }
+
+    public void setPwd(String pwd) {
+      this.pwd = pwd;
     }
 
     public String getCheckerId() {
@@ -463,8 +506,9 @@ public final class LoginInfo {
      *
      * ` 0  1      2           3          4      5   6        7             8         9     10  11
      * *01 01 1111111113 200928105902 071501001 000 16 74212001010101 中心支库-b库间 70080 登录员 {} 001#
-     * *14 03 00 1111111113 200928105902 071501001 000 16 74212001010101 中心支库-b库间 70080 登录员 cardId 001#
+     * *14 03 00 1111111113 200928105902 071501001 007 16 74212001010101 中心支库-b库间 70080 登录员 cardId 001#
      *
+     * @param cardId 刷卡登录为16进制，指纹登录为null
      * @return 返回0：解析成功，1：参数错误，2：密码错误
      */
     public int parseLoginInfo(String[] split, String cardId) {
@@ -479,8 +523,9 @@ public final class LoginInfo {
           "03".equals(split[1]) &&
           "00".equals(split[2])) {
         isFingerLogin = true;
-        cardId = split[12];
-        setFingerUserId(split[5]);
+        userId10 = split[12];
+        cardId = String.format("%08X", Long.parseLong(userId10));
+        setFingerUserId(split[6]);
         // 指纹登录
         for (int i = 3; i < split.length; i++) {
           split[i - 1] = split[i];
@@ -532,6 +577,7 @@ public final class LoginInfo {
       }
 
       this.setUserId(cardId);
+      userId10 = String.format("%08d", Long.parseLong(cardId, 16));
       return 0;
     }
 
@@ -600,7 +646,8 @@ public final class LoginInfo {
       } else if (("*14".equals(split[0]) || "14".equals(split[0]))
           && "06".equals(split[1])
           && "00".equals(split[2])) {
-        checkerId = split[8]; // 指纹登录 无卡号
+        checkerId10 = split[8];
+        checkerId = String.format("%08X", Long.parseLong(userId10));
         // 指纹复核
         for (int i = 3; i < split.length; i++) {
           split[i - 1] = split[i];
@@ -626,12 +673,15 @@ public final class LoginInfo {
       //StaticString.userIdcheck = Long.toString(Long.parseLong(checkerId, 16));
 
       this.setCheckerId(checkerId);
+      checkerId10 = String.format("%08d", Long.parseLong(checkerId, 16));
       return 0;
     }
 
     public void reset() {
       userId = null;
+      userId10 = null;
       checkerId = null;
+      checkerId10 = null;
       userNum = null;
 
       permission = null;
@@ -649,6 +699,7 @@ public final class LoginInfo {
     public String getInfoString() {
       return "LoginInfo{" +
           "userId='" + userId + '\'' +
+          "userId10='" + userId10 + '\'' +
           ", userName='" + userName + '\'' +
           ", orgId='" + orgId + '\'' +
           ", orgName='" + orgName + '\'' +
@@ -661,6 +712,7 @@ public final class LoginInfo {
           ", orgListVersion=" + orgListVersion +
           ", needUpdateOrgList=" + needUpdateOrgList +
           ", checkerId='" + checkerId + '\'' +
+          ", checkerId10='" + checkerId10 + '\'' +
           ", userName2='" + checkerName + '\'' +
           ", permission='" + permission + '\'' +
           '}';

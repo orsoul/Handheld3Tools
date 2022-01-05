@@ -64,15 +64,18 @@ public final class Lock3Util {
   /** 封袋更新nfc失败时，复写epc的字节数据. */
   public static final byte REWRITE_EPC = 0x7B;
 
-  /** 空袋检测 标志位: 空袋已检测. */
+  /** 空袋管理 标志位: 登记. */
   public static final int FLAG_CHECK_STATUS_REG = 0xE1;
   /** 空袋检测 标志位: 确认 空袋已检测. */
   public static final int FLAG_CHECK_STATUS_CHECKED = FLAG_CHECK_STATUS_REG ^ 0xFF;
   /** 空袋检测 标志位: 确认 空袋未检测. */
   public static final int FLAG_CHECK_STATUS_FAILED = 0xFA;
-  /** 空袋检测 标志位: 空袋已检测. */
+  /** 空袋管理 标志位: 转移. */
   public static final int FLAG_CHECK_STATUS_CIRCULATION = 0xE2;
+  /** 空袋管理 标志位: 减损. */
   public static final int FLAG_CHECK_STATUS_DEPLETION = 0xE3;
+  /** 空袋管理 标志位: 验袋. */
+  public static final int FLAG_CHECK_STATUS_CHECK = 0xE4;
 
   /**
    * 加密、解密标志位。1~5：对应标志位F1~F5.
@@ -179,6 +182,11 @@ public final class Lock3Util {
 
   public static boolean checkEnableCode(byte[] enableCode) {
     return Arrays.equals(ENABLE_CODE_ENABLE, enableCode);
+  }
+
+  /** 未启用(出厂状态) 返回true */
+  public static boolean isNewBag(int enableCode) {
+    return Lock3Util.ENABLE_STATUS_DISABLE == enableCode;
   }
 
   public static int getEnableStatus(byte[] enableCode) {
