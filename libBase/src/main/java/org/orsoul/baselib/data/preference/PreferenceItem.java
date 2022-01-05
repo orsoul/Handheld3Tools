@@ -12,7 +12,7 @@ public class PreferenceItem<T> {
   private final String key;
   private final T defaultValue;
 
-  private PreferenceItem(String key, T defaultValue) {
+  public PreferenceItem(String key, T defaultValue) {
     this.key = key;
     this.defaultValue = defaultValue;
   }
@@ -64,7 +64,7 @@ public class PreferenceItem<T> {
     } else if (newValue instanceof Set) {
       PreferenceUtil.put(key, (Set) newValue);
     } else {
-      return false;
+      PreferenceUtil.put(key, String.valueOf(newValue));
     }
 
     if (CONFIGURATION_LISTENERS != null && !CONFIGURATION_LISTENERS.isEmpty()) {
@@ -97,8 +97,9 @@ public class PreferenceItem<T> {
     } else if (defaultValue instanceof Set) {
       Set v = PreferenceUtil.getStringSet(key, (Set) defaultValue);
       return (T) v;
+    } else {
+      return (T) PreferenceUtil.getString(key, (String) defaultValue);
     }
-    return null;
   }
 
   public T getValue() {

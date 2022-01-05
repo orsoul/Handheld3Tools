@@ -64,18 +64,17 @@ public class BaseJsonBean<T> {
     return new Gson().fromJson(json, type);
   }
 
-  public static <T> BaseJsonBean<T> jsonString2Obj(String json, Class<T> clazz) {
-    Type type = new ParameterizedTypeImpl(BaseJsonBean.class, new Class[] { clazz });
-    return new Gson().fromJson(json, type);
-  }
-
-  public static <T> BaseJsonBean<List<T>> jsonString2List(String json, Class<T> clazz) {
-    // 生成List<T> 中的 List<T>
-    Type listType = new ParameterizedTypeImpl(List.class, new Class[] { clazz });
-    // 根据List<T>生成完整的Result<List<T>>
-    Type type = new ParameterizedTypeImpl(BaseJsonBean.class, new Type[] { listType });
-    return new Gson().fromJson(json, type);
-  }
+  //public static <T> BaseJsonBean<T> jsonString2Obj(String json, Class<T> clazz) {
+  //  Type type = new ParameterizedTypeImpl(BaseJsonBean.class, new Class[] { clazz });
+  //  return new Gson().fromJson(json, type);
+  //}
+  //public static <T> BaseJsonBean<List<T>> jsonString2List(String json, Class<T> clazz) {
+  //  // 生成List<T> 中的 List<T>
+  //  Type listType = new ParameterizedTypeImpl(List.class, new Class[] { clazz });
+  //  // 根据List<T>生成完整的Result<List<T>>
+  //  Type type = new ParameterizedTypeImpl(BaseJsonBean.class, new Type[] { listType });
+  //  return new Gson().fromJson(json, type);
+  //}
 
   /**
    * 根据json字符串生成 T<G> 类型的实体.
@@ -84,8 +83,11 @@ public class BaseJsonBean<T> {
    * @param genericClz 主类泛型的class
    */
   public static <T, G> T json2Obj(String json, Class<T> clz, Class<G> genericClz) {
+    if (json == null) {
+      return null;
+    }
     // 生成 T<G>
-    Type type = new ParameterizedTypeImpl(clz, new Class[] { genericClz });
+    Type type = new ParameterizedTypeImpl(clz, new Class[]{genericClz});
     return new Gson().fromJson(json, type);
   }
 
@@ -106,9 +108,9 @@ public class BaseJsonBean<T> {
    */
   public static <T, G> T json2ListObj(String json, Class<T> clz, Class<G> genericClz) {
     // 生成 T<List<G>> 中的 List<G>
-    Type listType = new BaseJsonBean.ParameterizedTypeImpl(List.class, new Class[] { genericClz });
+    Type listType = new BaseJsonBean.ParameterizedTypeImpl(List.class, new Class[]{genericClz});
     // 有List<G>后 生成完整的 T<List<G>>
-    Type type = new BaseJsonBean.ParameterizedTypeImpl(clz, new Type[] { listType });
+    Type type = new BaseJsonBean.ParameterizedTypeImpl(clz, new Type[]{listType});
     return new Gson().fromJson(json, type);
   }
 

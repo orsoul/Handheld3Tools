@@ -11,7 +11,7 @@ import java.util.Objects;
  * palletNum=0，结束当前托盘
  * 02=入库, 03=出库
  */
-public class PalletOverMessage extends BaseSocketMessage4qz<PalletOverMessage.PalletJsonBean> {
+public class PalletOverMessage extends BaseSocketMessage4qz1002<PalletOverMessage.PalletJsonBean> {
 
   String userId;
   String taskType;
@@ -27,12 +27,13 @@ public class PalletOverMessage extends BaseSocketMessage4qz<PalletOverMessage.Pa
   }
 
   public PalletOverMessage(BaseSocketMessage4qz msg) {
-    super(msg.getFunc(), msg.getSplit(), msg.getMsgNum());
+    super(msg);
   }
 
   @Override public String getMessage() {
     //if (message == null) {
-    message = genProtocol(func, userId, taskType, jsonBean.toJsonString(), deviceMac, msgNum);
+    message = genProtocol(FRAME, DEVICE_TYPE, IP, func, userId, taskType, jsonBean.toJsonString(),
+        deviceMac, msgNum);
     //}
     return message;
   }

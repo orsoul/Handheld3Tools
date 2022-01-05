@@ -62,6 +62,8 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_SELECT_TASK = 7;
   /** 选择任务-回复. */
   public static final int FUNC_SELECT_TASK_REC = 18;
+  /** 选择任务-回复. */
+  public static final int FUNC_SELECT_TASK_REC_08 = 8;
   /** 提交袋ID-逐个扫描. */
   public static final int FUNC_UPLOAD_BAG = 22;
   /** 提交袋ID-逐个扫描-空包登记. */
@@ -72,8 +74,6 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_QUERY_PLAIN_NUM = 37;
   /** 提交离线数据. */
   public static final int FUNC_SUBMIT_OFFLINE_DATA = 42;
-  /** 结束当前托盘. */
-  public static final int FUNC_PALLET_OVER = 48;
   /** 查询 库存列表、任务列表. */
   public static final int FUNC_QUERY_STOCK = 60;
   /** 非业务进出库-二代任务. */
@@ -82,6 +82,12 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_FINGER = 14;
   /** 透传. */
   public static final int FUNC_TC = 1000;
+
+  /* ================================ 透传1002 ==================================== */
+  /** 透传2. */
+  public static final int FUNC_TC2 = 1002;
+  /** 结束当前托盘. */
+  public static final int FUNC_PALLET_OVER = 48;
 
   /**
    * 设置消息发送器，让所有的 BaseSocketMessage4qz的子类 都有发送消息的功能。

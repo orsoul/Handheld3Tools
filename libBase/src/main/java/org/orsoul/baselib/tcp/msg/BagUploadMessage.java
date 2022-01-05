@@ -1,7 +1,6 @@
 package org.orsoul.baselib.tcp.msg;
 
 import com.fanfull.libjava.data.BaseJsonBean;
-import com.fanfull.libjava.util.DateFormatUtil;
 
 /** 封袋、出入库等业务 提交袋id. */
 public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagUploadBean> {
@@ -14,25 +13,36 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
   String moneyType;
   String checkerId;
   String batchId;
-  String macAddress;
 
   String orgId;
-  /** 0：手持登记，1:曾经登记过. */
-  int bagType = 1;
+  /** 1：登记-验袋，2:转移，3：减损 */
+  int emptyType = 1;
 
   //BusinessTaskBean.BusiInfoBean busiInfoBean;
   public BagUploadMessage(BaseSocketMessage4qz msg) {
     super(msg.getFunc(), msg.getSplit(), msg.getMsgNum());
   }
 
-  public BagUploadMessage(int type, String userId, String checkerId,
-      String batchId, String macAddress) {
+  public BagUploadMessage(int type, String userId, String checkerId, String batchId) {
     this.func = BaseSocketMessage4qz.FUNC_UPLOAD_BAG;
     this.userId = userId;
     this.uploadType = type;
     this.checkerId = checkerId;
     this.batchId = batchId;
-    this.macAddress = macAddress;
+    //this.macAddress = macAddress;
+  }
+
+  /**
+   * 空袋管理业务，提交袋信息指令。
+   *
+   * @param emptyType 1：验袋，2:转移，3：减损,4：登记
+   */
+  public BagUploadMessage(int emptyType, String userId, String batchId) {
+    this.func = BaseSocketMessage4qz.FUNC_UPLOAD_BAG_REG;
+    this.userId = userId;
+    this.emptyType = emptyType;
+    this.batchId = batchId;
+    //this.macAddress = macAddress;
   }
 
   /**
@@ -42,11 +52,10 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
    */
   @Override public String getMessage() {
     if (func == BaseSocketMessage4qz.FUNC_UPLOAD_BAG_REG) {
-      message = genProtocol(func, userId, bagType, bagId, orgId,
-          DateFormatUtil.getStringTime("yyyyMMddHHmmss"), msgNum);
+      message = genProtocol(func, userId, emptyType, bagId, batchId, deviceMac, msgNum);
     } else {
       message = genProtocol(func, userId, uploadType, bagId,
-          tid, eventCode, moneyType, checkerId, batchId, macAddress, msgNum);
+          tid, eventCode, moneyType, checkerId, batchId, deviceMac, msgNum);
     }
     return message;
   }
@@ -107,35 +116,6 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
     this.batchId = batchId;
   }
 
-  public String getMacAddress() {
-    return macAddress;
-  }
-
-  public void setMacAddress(String macAddress) {
-    this.macAddress = macAddress;
-  }
-
-  //public BusinessTaskBean.BusiInfoBean getBusiInfoBean() {
-  //  return busiInfoBean;
-  //}
-
-  //public void setBusiInfoBean(BusinessTaskBean.BusiInfoBean busiInfoBean) {
-  //  if (busiInfoBean == null) {
-  //    return;
-  //  }
-  //  this.busiInfoBean = busiInfoBean;
-  //  String paperTypeID = busiInfoBean.getPaperTypeID();
-  //  if (paperTypeID == null) {
-  //    // do nothing
-  //  } else if (paperTypeID.length() == 1) {
-  //    moneyType = String.format("0%s%s",
-  //        busiInfoBean.getPaperTypeID(), busiInfoBean.getVoucherTypeID());
-  //  } else {
-  //    moneyType = String.format("%s%s",
-  //        busiInfoBean.getPaperTypeID(), busiInfoBean.getVoucherTypeID());
-  //  }
-  //}
-
   public String getOrgId() {
     return orgId;
   }
@@ -144,12 +124,12 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
     this.orgId = orgId;
   }
 
-  public int getBagType() {
-    return bagType;
+  public int getEmptyType() {
+    return emptyType;
   }
 
-  public void setBagType(int bagType) {
-    this.bagType = bagType;
+  public void setEmptyType(int emptyType) {
+    this.emptyType = emptyType;
   }
 
   public String getMoneyType() {
@@ -166,22 +146,26 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
 
   /**
    * *22 2200010001999912 087101001005210401151128 05532103047A47D23E618040 009#
+   * *21 00 009#
    */
   public static BagUploadMessage parse(BaseSocketMessage4qz baseMsg) {
-    if (baseMsg.getFunc() != FUNC_UPLOAD_BAG) {
-      return null;
-    }
-
     BagUploadMessage reVal = new BagUploadMessage(baseMsg);
     String[] split = reVal.split;
-    if (14 <= split[1].length()) {
-      String strPersonNum = split[1].substring(2, 6);// 个人完成数量
-      String strTotalNum = split[1].substring(6, 10);// 总完成数量
-      String strPlanNum = split[1].substring(10, 14);// 计划数量
-      reVal.personNum = Integer.parseInt(strPersonNum);
-      reVal.totalNum = Integer.parseInt(strTotalNum);
-      reVal.planNum = Integer.parseInt(strPlanNum);
-      reVal.success = true;
+    if (baseMsg.getFunc() == FUNC_UPLOAD_BAG) {
+      if (14 <= split[1].length()) {
+        String strPersonNum = split[1].substring(2, 6);// 个人完成数量
+        String strTotalNum = split[1].substring(6, 10);// 总完成数量
+        String strPlanNum = split[1].substring(10, 14);// 计划数量
+        reVal.personNum = Integer.parseInt(strPersonNum);
+        reVal.totalNum = Integer.parseInt(strTotalNum);
+        reVal.planNum = Integer.parseInt(strPlanNum);
+        reVal.success = true;
+      }
+    } else if (baseMsg.getFunc() == FUNC_UPLOAD_BAG_REG) {
+      reVal.resCode = Integer.parseInt(split[1]);
+      reVal.success = reVal.resCode == 0;
+    } else {
+      return null;
     }
 
     return reVal;
