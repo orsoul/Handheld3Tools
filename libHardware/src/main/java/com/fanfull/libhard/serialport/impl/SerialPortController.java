@@ -259,7 +259,8 @@ public class SerialPortController implements ISerialPort {
           }
           if (listenerSet != null) {
             for (ISerialPortListener listener : listenerSet) {
-              listener.onReceiveData(Arrays.copyOf(buff, len));
+              //listener.onReceiveData(Arrays.copyOf(buff, len));
+              listener.onReceiveData(buff, len);
             }
           }
         } catch (IOException e) {

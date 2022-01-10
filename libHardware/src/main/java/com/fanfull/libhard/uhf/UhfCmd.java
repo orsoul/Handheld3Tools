@@ -36,7 +36,10 @@ public abstract class UhfCmd {
   public static final int RECEIVE_TYPE_SET_POWER = 0x11;
   public static final int RECEIVE_TYPE_GET_POWER = 0x13;
 
+  /** 3.3.4. 连续寻标签应答 */
   public static final int RECEIVE_TYPE_READ_LOT = 0x83;
+  /** 3.3.6. 停止连续寻标签应答 */
+  public static final int RECEIVE_TYPE_READ_LOT_STOP = 0x8D;
 
   /** 获取当前设备版本. */
   public static final byte[] CMD_GET_DEVICE_VERSION = new byte[]{
@@ -81,7 +84,7 @@ public abstract class UhfCmd {
       (byte) 0xA5, (byte) 0x5A, (byte) 0x00, (byte) 0x0A, (byte) 0x5E, (byte) 0x00, (byte) 0x00,
       (byte) 0x54, (byte) 0x0D, (byte) 0x0A,
   };
-  private static final byte[] CMD_READ_LOT = new byte[]{
+  public static final byte[] CMD_READ_LOT = new byte[]{
       (byte) 0xA5, (byte) 0x5A, 0x00,
       0x0A, (byte) 0x82, 0x00, 0x00, (byte) 0x00, 0x0D, 0x0A
   };
@@ -141,6 +144,32 @@ public abstract class UhfCmd {
         && cmd[1] == (byte) 0x5A
         && cmd[cmd.length - 2] == (byte) 0x0D
         && cmd[cmd.length - 1] == (byte) 0x0A;
+  }
+
+  static byte[] recBuff = new byte[16 * 1024];
+  static int recLen = 0;
+  static int cmdLen = 0;
+
+  public static int getHeadIndex(byte[] cmd, int len) {
+    for (int i = 0; i < len - 1; i++) {
+      if (cmd[i] == (byte) 0xA5
+          && cmd[i + 1] == (byte) 0x5A) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public static byte[] slice(byte[] cmd, int len) {
+    int i = cmdLen - recLen;
+    if (0 < i && i < len) { // 之前接收了半包
+
+    }
+
+    if (cmd[0] != (byte) 0xA5 ||
+        cmd[1] != (byte) 0x5A) {
+    }
+    return null;
   }
 
   /**
@@ -829,19 +858,26 @@ public abstract class UhfCmd {
         }
         break;
       case RECEIVE_TYPE_READ_LOT:
-        if (cmd[3] == 0x25) {
-          reVal = Arrays.copyOfRange(cmd, 7, 31);
-        } else if (cmd[3] == 0x08) {
-          // 连续寻卡 停止
-          reVal = new byte[]{1};
+        int len = cmd[3] - 13;
+        if (0 < len) {
+          reVal = Arrays.copyOfRange(cmd, 7, 7 + len);
         } else {
-          reVal = Arrays.copyOfRange(cmd, 7, 19);
+          // 连续寻卡 停止
+          reVal = new byte[0];
+        }
+        break;
+      case RECEIVE_TYPE_READ_LOT_STOP:
+        if (cmd[3] == 0x09 && cmd.length == 0x09) {
+          // 成功：0x01；失败：0x00
+          reVal = new byte[]{cmd[5]};
+        } else {
+          reVal = new byte[]{2};
         }
         break;
       case RECEIVE_TYPE_FAST_TID:
       case RECEIVE_TYPE_READ:
         if (cmd[5] == 0x01 && cmd[6] == 0x00) {
-          int len = cmd[7] & 0xFF;
+          len = cmd[7] & 0xFF;
           len <<= 8;
           len |= cmd[8] & 0xFF;
           len <<= 1;

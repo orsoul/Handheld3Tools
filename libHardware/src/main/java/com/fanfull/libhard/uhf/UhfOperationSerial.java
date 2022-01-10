@@ -20,6 +20,15 @@ public class UhfOperationSerial extends AbsUhfOperation {
   private final int BUADRATE = 115200;
   private SerialPortController serialPortController;
   private ISerialPortListener serialPortListener;
+  private byte[] halfCmd;
+
+  public int slice(byte[] cmd, int len) {
+    if (cmd[0] != (byte) 0xA5 ||
+        cmd[1] != (byte) 0x5A) {
+      return -1;
+    }
+    return 0;
+  }
 
   public UhfOperationSerial() {
   }
@@ -36,9 +45,10 @@ public class UhfOperationSerial extends AbsUhfOperation {
     try {
       serialPortController = SerialPortController.newBuilder(SERIAL_PORT_PATH, BUADRATE).build();
       serialPortListener = new ISerialPortListener() {
-        @Override public void onReceiveData(byte[] data) {
+        @Override public void onReceiveData(byte[] data, int len) {
+          //UhfCmd.
           if (uhfListener != null) {
-            uhfListener.onReceiveData(data);
+            uhfListener.onReceiveData(Arrays.copyOf(data, len));
           }
         }
       };

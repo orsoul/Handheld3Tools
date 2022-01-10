@@ -23,6 +23,7 @@ import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
 import com.fanfull.handheldtools.ui.SoundActivity;
 import com.fanfull.handheldtools.ui.UhfActivity;
+import com.fanfull.handheldtools.ui.UhfLotScanActivity;
 import com.fanfull.handheldtools.ui.ZcLockActivity;
 import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortHelper;
@@ -30,7 +31,6 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.InputConfirmPopupView;
-import com.lxj.xpopup.interfaces.OnSelectListener;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.DeviceInfoUtils;
@@ -54,6 +54,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
     findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
     findViewById(R.id.btn_main_apdu).setOnClickListener(this);
+    findViewById(R.id.btn_main_lot_scan).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -115,18 +116,19 @@ public class MainActivity extends BaseActivity {
         startActivity(new Intent(this, ZcLockActivity.class));
         break;
       case KeyEvent.KEYCODE_4:
-        new XPopup.Builder(this)
-            //.isDarkTheme(true)
-            .hasShadowBg(true)
-            //                            .hasBlurBg(true)
-            //                            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
-            .asBottomList("请选择一项", new String[]{"条目1", "条目2", "条目3", "条目4", "条目5"},
-                new OnSelectListener() {
-                  @Override
-                  public void onSelect(int position, String text) {
-                    ToastUtils.showShort("click " + text);
-                  }
-                }).show();
+        startActivity(new Intent(this, UhfLotScanActivity.class));
+        //new XPopup.Builder(this)
+        //    //.isDarkTheme(true)
+        //    .hasShadowBg(true)
+        //    //                            .hasBlurBg(true)
+        //    //                            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
+        //    .asBottomList("请选择一项", new String[]{"条目1", "条目2", "条目3", "条目4", "条目5"},
+        //        new OnSelectListener() {
+        //          @Override
+        //          public void onSelect(int position, String text) {
+        //            ToastUtils.showShort("click " + text);
+        //          }
+        //        }).show();
         //DeviceInfoUtils.reboot(this);
         //DeviceInfoUtils.reboot2(this);
         break;
@@ -220,6 +222,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_main_apdu:
         startActivity(new Intent(this, ZcLockActivity.class));
+        break;
+      case R.id.btn_main_lot_scan:
+        startActivity(new Intent(this, UhfLotScanActivity.class));
         break;
     }
   }
