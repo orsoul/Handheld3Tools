@@ -32,8 +32,12 @@
     android:theme="@style/AppTheme"
     tools:ignore="GoogleAppIndexingWarning"
     tools:replace="android:allowBackup">
-    <activity android:name=".ui.UhfLotScanActivity"></activity>
-    <activity android:name=".ui.ZcLockActivity" />
+    <activity
+      android:name=".ui.UhfLotScanActivity"
+      android:label="@string/main_uhf_lot"></activity>
+    <activity
+      android:name=".ui.ZcLockActivity"
+      android:label="@string/main_zc_lock" />
     <activity android:name=".ui.BagSearchActivity" />
     <activity
       android:name=".ui.CoverBagActivity"

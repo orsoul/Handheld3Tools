@@ -12,6 +12,10 @@ public class MapUtil<K> {
     this.map = map;
   }
 
+  public MapUtil() {
+    this.map = new HashMap<>();
+  }
+
   public Map<K, Integer> getMap() {
     return map;
   }

@@ -42,12 +42,12 @@
       android:text="设功率" />
 
     <Button
-      android:id="@+id/btn_uhf_lot_set_fast_id"
+      android:id="@+id/btn_uhf_lot_scan_stop"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:enabled="true"
-      android:text="fastId" />
+      android:text="停止" />
 
     <Button
       android:id="@+id/btn_uhf_lot_scan"

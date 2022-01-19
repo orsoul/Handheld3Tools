@@ -42,9 +42,9 @@ public abstract class LotScanUhfTask {// extends ThreadUtil.ThreadRunnable {
   }
 
   public boolean stopScan() {
-    if (!isWork) {
-      return false;
-    }
+    //if (!isWork) {
+    //  return false;
+    //}
     return uhfController.send(UhfCmd.CMD_STOP_READ_LOT);
   }
 

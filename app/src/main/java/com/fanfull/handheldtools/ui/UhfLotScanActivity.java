@@ -59,7 +59,7 @@ public class UhfLotScanActivity extends InitModuleActivity {
     tvShow = findViewById(R.id.tv_uhf_lot_show);
     tvShow.setMovementMethod(ScrollingMovementMethod.getInstance());
     btnSetPower = findViewById(R.id.btn_uhf_lot_set_power);
-    btnFastId = findViewById(R.id.btn_uhf_lot_set_fast_id);
+    btnFastId = findViewById(R.id.btn_uhf_lot_scan_stop);
     btnStart = findViewById(R.id.btn_uhf_lot_scan);
 
     tvShow.setOnClickListener(this);
@@ -120,32 +120,50 @@ public class UhfLotScanActivity extends InitModuleActivity {
         long t = 0;
         boolean b;
         bagSet.clear();
-        if (lotScanUhfTask.isWork()) {
-          b = lotScanUhfTask.stopScan();
-          info = "停止连续扫描";
-        } else {
-          b = lotScanUhfTask.startScan(0);
-          info = "开启连续扫描";
-        }
+        b = lotScanUhfTask.startScan(0);
         if (!b) {
-          info += "失败";
-          ToastUtils.showShort(info.toString());
-          ViewUtil.appendShow(info, tvShow);
-        }
-        break;
-      case R.id.btn_uhf_lot_set_fast_id:
-        byte[] tidBuff = new byte[12];
-        ClockUtil.runTime(true);
-        boolean tidLen = uhfController.readTid(tidBuff);
-        t = ClockUtil.runTime();
-        if (!tidLen) {
-          info = String.format("读tid失败,用时:%s", t);
+          info = "开启连续扫描失败!!!";
         } else {
-          buff12 = tidBuff;
-          info = String.format("tid:%s,用时:%s", BytesUtil.bytes2HexString(buff12), t);
+          info = "开启连续扫描成功";
         }
-        LogUtils.d(info);
+        ToastUtils.showShort(info.toString());
         ViewUtil.appendShow(info, tvShow);
+        //if (lotScanUhfTask.isWork()) {
+        //  b = lotScanUhfTask.stopScan();
+        //  info = "停止连续扫描";
+        //} else {
+        //  b = lotScanUhfTask.startScan(0);
+        //  info = "开启连续扫描";
+        //}
+        //if (!b) {
+        //  info += "失败!!!";
+        //} else {
+        //  info += "成功";
+        //}
+        //ToastUtils.showShort(info.toString());
+        //ViewUtil.appendShow(info, tvShow);
+        break;
+      case R.id.btn_uhf_lot_scan_stop:
+        b = lotScanUhfTask.stopScan();
+        if (!b) {
+          info = "停止连续扫描失败!!!";
+        } else {
+          info = "停止连续扫描成功";
+        }
+        ToastUtils.showShort(info.toString());
+        ViewUtil.appendShow(info, tvShow);
+        //byte[] tidBuff = new byte[12];
+        //ClockUtil.runTime(true);
+        //boolean tidLen = uhfController.readTid(tidBuff);
+        //t = ClockUtil.runTime();
+        //if (!tidLen) {
+        //  info = String.format("读tid失败,用时:%s", t);
+        //} else {
+        //  buff12 = tidBuff;
+        //  info = String.format("tid:%s,用时:%s", BytesUtil.bytes2HexString(buff12), t);
+        //}
+        //LogUtils.d(info);
+        //ViewUtil.appendShow(info, tvShow);
         break;
       case R.id.btn_uhf_lot_set_power:
         byte[] power = uhfController.getPower();
@@ -408,7 +426,7 @@ public class UhfLotScanActivity extends InitModuleActivity {
       runOnUiThread(() -> {
         SoundHelper.playToneDrop();
         //dismissLoadingView();
-        btnStart.setText("开始");
+        //btnStart.setText("开始");
         ViewUtil.appendShow(format, tvShow);
         mapUtil.clear();
         //ViewUtil.appendShow(mapUtil.getFormatString(), tvShow);
@@ -422,10 +440,10 @@ public class UhfLotScanActivity extends InitModuleActivity {
           SoundHelper.playToneSuccess();
           //showLoadingView("正在扫描...");
           ViewUtil.appendShow("正在扫描...", tvShow);
-          btnStart.setText("停止");
+          //btnStart.setText("停止");
         } else {
           SoundHelper.playToneFailed();
-          btnStart.setText("开始");
+          //btnStart.setText("开始");
         }
       });
     }

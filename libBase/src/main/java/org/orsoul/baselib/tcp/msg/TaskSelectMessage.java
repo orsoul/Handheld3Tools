@@ -13,9 +13,14 @@ public class TaskSelectMessage extends BaseSocketMessage4qz {
   int taskType;
 
   String batchId;
+  /* ============= 二代物流 接收json段 =============== */
   Integer identStatus;
   Integer mimisId;
   List<StoreIdBean> identList;
+
+  /* ============= 纯物流 接收json段 =============== */
+  Boolean needAuth;
+  Integer needNum;
 
   public TaskSelectMessage(int taskType, String userId, String batchId) {
     this.func = BaseSocketMessage4qz.FUNC_SELECT_TASK;
@@ -57,9 +62,14 @@ public class TaskSelectMessage extends BaseSocketMessage4qz {
       reVal.identStatus = fromJson.identStatus;
       reVal.mimisId = fromJson.mimisId;
       reVal.identList = fromJson.identList;
+
+      /* ============= 纯物流 接收json段 =============== */
+      reVal.needAuth = fromJson.needAuth;
+      reVal.needNum = fromJson.needNum;
     } else {
       reVal.batchId = baseMsg.getSplit()[1];
     }
+    reVal.success = true;
     //StaticString.pinumber = baseMsg.split[1];
     return reVal;
   }
