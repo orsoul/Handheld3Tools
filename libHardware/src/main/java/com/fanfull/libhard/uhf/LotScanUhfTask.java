@@ -74,7 +74,7 @@ public abstract class LotScanUhfTask {// extends ThreadUtil.ThreadRunnable {
    */
   public void onStart(boolean success, int progress, int total) {}
 
-  class MyUhfListener implements IUhfListener {
+  class MyUhfListener extends UhfSliceListener {
     @Override public void onOpen(boolean openSuccess) {
       if (listener != null) {
         listener.onOpen(openSuccess);

@@ -178,7 +178,7 @@ public class UhfLotScanActivity extends InitModuleActivity {
         break;
       case R.id.tv_uhf_lot_show:
         if (3 == ClockUtil.fastClickTimes()) {
-          ViewUtil.appendShow("", tvShow);
+          tvShow.setText(null);
         }
         break;
     }
@@ -420,7 +420,7 @@ public class UhfLotScanActivity extends InitModuleActivity {
     @Override public void onStop(int progress, int total) {
       long l = ClockUtil.runTime();
       int s = (int) (l / 1000);
-      String format = String.format("次数:%s, %ss, %s次/秒\n%s", progress, s, progress / s,
+      String format = String.format("\n次数:%s, %ss, %s次/秒\n%s", progress, s, progress / s,
           mapUtil.getFormatString());
       LogUtils.i(format);
       runOnUiThread(() -> {
