@@ -14,5 +14,9 @@ public abstract class MessageReceiveListenerAbs extends ReceiveListenerAbs {
     }
   }
 
-  protected abstract void onRecMessage(BaseSocketMessage4qz msg);
+  @Override protected void onReceive(String[] split) {
+
+  }
+
+  public abstract void onRecMessage(BaseSocketMessage4qz msg);
 }

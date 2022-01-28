@@ -67,7 +67,11 @@ public final class MessageHelper {
           reVal = TaskSelectMessage.parse(baseMsg);
           break;
         case BaseSocketMessage4qz.FUNC_PERSON_IN_OUT:
-          reVal = PersonInOutMessage.parse(baseMsg);
+          if (baseMsg.split[1].equals("5")) {
+            reVal = AuthTaskMessage.parse(baseMsg);
+          } else {
+            reVal = PersonInOutMessage.parse(baseMsg);
+          }
           break;
         case BaseSocketMessage4qz.FUNC_QUERY_PLAIN_NUM:
           reVal = QueryBagNumMessage.parse(baseMsg);

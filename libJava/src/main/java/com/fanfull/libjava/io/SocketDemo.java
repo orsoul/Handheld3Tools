@@ -43,11 +43,11 @@ public class SocketDemo {
               Logs.out("onDisconnect %s:%s", serverIp, serverPort);
             }
 
-            @Override public void onReceive(byte[] data) {
-              Logs.out("onReceive: %s", new String(data));
+            @Override public void onReceive(byte[] data, int len) {
+
             }
 
-            @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {
+            @Override public void onSend(boolean isSuccess, Object msg) {
 
             }
 
@@ -94,10 +94,11 @@ public class SocketDemo {
             System.out.println("onDisconnect");
           }
 
-          @Override public void onReceive(byte[] data) {
+          @Override public void onReceive(byte[] data, int len) {
+
           }
 
-          @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {
+          @Override public void onSend(boolean isSuccess, Object msg) {
 
           }
 

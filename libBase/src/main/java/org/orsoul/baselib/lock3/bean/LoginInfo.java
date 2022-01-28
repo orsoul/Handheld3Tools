@@ -339,6 +339,8 @@ public final class LoginInfo {
     private String fingerUserId;
     private Boolean isFingerLogin;
 
+    private List<String> authTaskList;
+
     public String getFingerUserId() {
       return fingerUserId;
     }

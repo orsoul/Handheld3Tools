@@ -1,13 +1,19 @@
 package com.fanfull.libjava.io.socketClient;
 
-import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
+import com.fanfull.libjava.io.socketClient.interf.IReceiveListener;
 
-public interface ReceiveListener extends ISocketClientListener {
-  void onConnect(String serverIp, int serverPort);
+/**
+ * 将字节数组 转成字符串
+ */
+public interface ReceiveListener extends IReceiveListener<String> {
 
-  void onReceive(String recString);
+  //void onReceive(String recString);
 
-  default void onDisconnect(String serverIp, int serverPort, boolean isActive) {
+  @Override default String convert(byte[] data, int len) {
+    return new String(data, 0, len);
+  }
+
+  @Override default void onDisconnect(String serverIp, int serverPort, boolean isActive) {
     onDisconnect();
   }
 
@@ -15,7 +21,7 @@ public interface ReceiveListener extends ISocketClientListener {
 
   void onTimeout();
 
-  default void onConnectFailed(Throwable e) {
+  @Override default void onConnectFailed(Throwable e) {
   }
 
   default void onConnectFailed(String serverIp, int serverPort) {

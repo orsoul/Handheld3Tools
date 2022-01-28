@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 
 import org.orsoul.baselib.lock3.bean.StoreIdBean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /** 选择任务消息、及回复解析. */
-public class TaskSelectMessage extends BaseSocketMessage4qz {
+public class TaskSelectMessage extends BaseSocketMessage4qz implements Serializable {
 
   String userId;
   int taskType;
@@ -74,6 +75,11 @@ public class TaskSelectMessage extends BaseSocketMessage4qz {
     return reVal;
   }
 
+  public boolean needAuth() {
+    return needAuth != null && needAuth;
+    //&& identStatus != null && identStatus == 0;
+  }
+
   public String getUserId() {
     return userId;
   }
@@ -108,5 +114,21 @@ public class TaskSelectMessage extends BaseSocketMessage4qz {
 
   public List<StoreIdBean> getIdentList() {
     return identList;
+  }
+
+  public Integer getIdentStatus() {
+    return identStatus;
+  }
+
+  public Boolean getNeedAuth() {
+    return needAuth;
+  }
+
+  public Integer getNeedNum() {
+    return needNum;
+  }
+
+  public void setNeedNum(Integer needNum) {
+    this.needNum = needNum;
   }
 }
