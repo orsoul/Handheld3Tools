@@ -21,6 +21,7 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.io.socketClient.Options;
+import com.fanfull.libjava.io.socketClient.ReceiveStringListener;
 import com.fanfull.libjava.io.socketClient.impl.BaseSocketClient;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
 import com.fanfull.libjava.io.transfer.IoTransferListener;
@@ -74,7 +75,7 @@ public class SocketActivity extends InitModuleActivity {
     opt.serverPort = serverPort;
     opt.reconnectEnable = true;
     socketClient = new BaseSocketClient(opt);
-    clientListener = new ISocketClientListener() {
+    clientListener = new ReceiveStringListener() {
       @Override public void onConnect(String serverIp, int serverPort) {
         runOnUiThread(() -> {
           dismissLoadingView();
@@ -98,8 +99,8 @@ public class SocketActivity extends InitModuleActivity {
         });
       }
 
-      @Override public void onReceive(byte[] data) {
-        String s = new String(data);
+      @Override public void onReceive(byte[] data, int len) {
+        String s = new String(data, 0, len);
         String s1 = BytesUtil.bytes2HexString(data);
         LogUtils.d("str:%s\nhex:%s", s, s1);
         String[] split = s.split(",");
@@ -119,12 +120,16 @@ public class SocketActivity extends InitModuleActivity {
         }
       }
 
-      @Override public void onSend(boolean isSuccess, byte[] data, int offset, int len) {
+      @Override public void onReceive(String rec) {
+
+      }
+
+      @Override public void onSend(boolean isSuccess, Object msg) {
         String info;
         if (isSuccess) {
-          info = String.format("send:%s", new String(data, 0, len));
+          info = String.format("send:%s", msg);
         } else {
-          info = String.format("发送失败:%s", new String(data, 0, len));
+          info = String.format("发送失败:%s", msg);
         }
         runOnUiThread(() -> {
           ViewUtil.appendShow(info, tvShow);

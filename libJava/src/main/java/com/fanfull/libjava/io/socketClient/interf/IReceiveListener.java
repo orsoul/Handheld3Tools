@@ -8,11 +8,6 @@ public interface IReceiveListener<T> extends ISocketClientListener {
     onReceive(convert(data, len));
   }
 
-  @Override default void onCatchException(Throwable throwable) {
-    onRecFailed(REC_FAILED_CATCH_EXCEPTION,
-        throwable != null ? throwable.getMessage() : "空异常");
-  }
-
   T convert(byte[] data, int len);
 
   void onReceive(T rec);
@@ -22,5 +17,16 @@ public interface IReceiveListener<T> extends ISocketClientListener {
   }
 
   default void onRecFailed(int failedCode, String msg) {
+  }
+
+  @Override default void onDisconnect(String serverIp, int serverPort, boolean isActive) {
+  }
+
+  @Override default void onConnectFailed(Throwable e) {
+  }
+
+  @Override default void onCatchException(Throwable throwable) {
+    onRecFailed(REC_FAILED_CATCH_EXCEPTION,
+        throwable != null ? throwable.getMessage() : "空异常");
   }
 }

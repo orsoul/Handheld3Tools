@@ -3,7 +3,7 @@ package com.fanfull.libjava.io.netty;
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.netty.future.SyncWriteMap;
 import com.fanfull.libjava.io.socketClient.Options;
-import com.fanfull.libjava.io.socketClient.ReceiveListener;
+import com.fanfull.libjava.io.socketClient.ReceiveStringListener;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClient;
 import com.fanfull.libjava.io.socketClient.interf.ISocketClientListener;
 import com.fanfull.libjava.util.Logs;
@@ -241,7 +241,7 @@ public class ClientNetty implements ISocketClient {
     return response;
   }
 
-  public void send(Object msg, ReceiveListener receiveListener) {
+  public void send(Object msg, ReceiveStringListener receiveListener) {
     if (channel != null) {
       channel.writeAndFlush(msg).addListener(
           new GenericFutureListener<Future<? super Void>>() {
