@@ -134,6 +134,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   protected T jsonBean;
   protected int resCode;
   protected boolean success;
+  public String recString;
 
   public int getFunc() {
     return func;

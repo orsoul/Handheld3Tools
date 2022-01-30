@@ -12,17 +12,11 @@ public final class MessageHelper {
    */
   public static BaseSocketMessage4qz newInstance(String recString) {
     String[] split = MessageParser4qz.splitRecInfo(recString);
-    if (split == null) {
-      LogUtils.w("parse failed:%s", recString);
-      return null;
-    }
-    return newInstance(split);
-  }
-
-  public static BaseSocketMessage4qz newInstance(String[] split) {
     if (!MessageParser4qz.checkSplit(split)) {
+      LogUtils.wtf("parse failed:%s", recString);
       return null;
     }
+
     String headNum = split[0];
     if (headNum.charAt(0) == '*' || headNum.charAt(0) == '$') {
       headNum = headNum.substring(1);
@@ -50,6 +44,7 @@ public final class MessageHelper {
         }
       };
     }
+    reVal.recString = recString;
     return reVal;
   }
 
@@ -96,6 +91,7 @@ public final class MessageHelper {
     } catch (Exception e) {
       LogUtils.wtf("parse Exception:%s", e.getMessage());
     }
+    reVal.recString = baseMsg.recString;
     return reVal;
   }
 
@@ -108,19 +104,15 @@ public final class MessageHelper {
     } catch (Exception e) {
       return baseMsg;
     }
-    //BaseSocketMessage4qz baseMsg = newInstance(recString);
-    //return parse(baseMsg);
   }
 
-  public static BaseSocketMessage4qz parse(String[] recString) {
-    BaseSocketMessage4qz baseMsg = null;
-    try {
-      baseMsg = newInstance(recString);
-      return parse(baseMsg);
-    } catch (Exception e) {
-      return baseMsg;
-    }
-    //BaseSocketMessage4qz baseMsg = newInstance(recString);
-    //return parse(baseMsg);
-  }
+  //public static BaseSocketMessage4qz parse(String[] recString) {
+  //  BaseSocketMessage4qz baseMsg = null;
+  //  try {
+  //    baseMsg = newInstance(recString);
+  //    return parse(baseMsg);
+  //  } catch (Exception e) {
+  //    return baseMsg;
+  //  }
+  //}
 }

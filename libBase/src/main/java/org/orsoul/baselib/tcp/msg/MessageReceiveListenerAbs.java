@@ -8,6 +8,7 @@ public abstract class MessageReceiveListenerAbs extends ReceiveStringArrayListen
     BaseSocketMessage4qz msg = MessageHelper.parse(recString);
     LogUtils.i("SocketConnect:%s", msg);
     if (msg != null) {
+      //msg.recString = recString;
       onRecMessage(msg);
     } else {
       super.onReceive(recString);
