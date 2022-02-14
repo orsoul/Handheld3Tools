@@ -4,16 +4,14 @@ import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
-import com.fanfull.libjava.util.AESCoder;
 import com.fanfull.libjava.util.BytesUtil;
-
+import java.util.Arrays;
+import java.util.List;
 import org.orsoul.baselib.lock3.Lock3Util;
+import org.orsoul.baselib.lock3.LockCoder;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 各项业务检查-更新袋锁任务.
@@ -139,7 +137,7 @@ public abstract class CoverBagTask extends ReadLockTask {
         final byte[] epcBuff = BytesUtil.hexString2Bytes(epc);
         final byte[] tidBuff = BytesUtil.hexString2Bytes(lock3Bean.getPieceTid());
         epcBuff[0] = 0x05;
-        if (!AESCoder.checkBagId6(epcBuff, tidBuff)) {
+        if (!LockCoder.checkBagId6(epcBuff, tidBuff)) {
           willStop = onCheckFailed(CHECK_RES_BAG_ID_CHECK_FAILED, lock3Bean);
         } else {
         }
@@ -257,7 +255,7 @@ public abstract class CoverBagTask extends ReadLockTask {
         key = Arrays.copyOf(unitPieceTid.buff, 6);
       }
       LogUtils.d("解密key:%s", BytesUtil.bytes2HexString(key));
-      boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
+      boolean b = LockCoder.myEncrypt(infoUnitCover.buff, key, false);
       infoUnitCover.buff[3] = (byte) (infoUnitCover.buff[3] & 0x0F);
       String eventCode = BytesUtil.bytes2HexString(infoUnitCover.buff);
       LogUtils.d("%s-解密:%s", eventCode, b);
@@ -318,7 +316,7 @@ public abstract class CoverBagTask extends ReadLockTask {
       //  ====== 封袋业务 ====== 写epc
       if (isBagIdVersion6()) {
         // TODO: 2021/5/24 06版 bagId epc
-        final byte checkByte = AESCoder.genBagIdCheck(lock3Bean.bagIdBuff, lock3Bean.pieceTidBuff);
+        final byte checkByte = LockCoder.genBagIdCheck(lock3Bean.bagIdBuff, lock3Bean.pieceTidBuff);
         final byte[] bagId06 = Arrays.copyOf(lock3Bean.bagIdBuff, lock3Bean.bagIdBuff.length);
         bagId06[0] = 0x06;
         bagId06[bagId06.length - 1] = checkByte;

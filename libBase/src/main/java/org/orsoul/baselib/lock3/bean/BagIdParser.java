@@ -1,13 +1,11 @@
 package org.orsoul.baselib.lock3.bean;
 
 import androidx.annotation.Nullable;
-
 import com.apkfuns.logutils.LogUtils;
 import com.fanfull.libjava.util.BytesUtil;
-
-import org.orsoul.baselib.lock3.EnumBagType;
-
 import java.util.Objects;
+import org.orsoul.baselib.lock3.EnumBagType;
+import org.orsoul.baselib.lock3.LockCoder;
 
 /** 锁3袋id解析工具. */
 public class BagIdParser {
@@ -125,15 +123,11 @@ public class BagIdParser {
     System.arraycopy(uidBuff, 0, bagIdBuff, 4, uidBuff.length);
 
     /* 设置 异或校验位 */
-    int crc = 0;
     int checkIndex = bagIdBuff.length - 1;
-    for (int i = 0; i < checkIndex; i++) {
-      crc ^= bagIdBuff[i];
-    }
-    bagIdBuff[checkIndex] = (byte) crc;
+    bagIdBuff[checkIndex] = (byte) LockCoder.genCheckByte(bagIdBuff);
     bagId = BytesUtil.bytes2HexString(bagIdBuff);
     checkByte = bagId.substring(22);
-    LogUtils.v("genBagIdBuff:%s", bagId);
+    //LogUtils.v("genBagIdBuff:%s", bagId);
     return bagIdBuff;
   }
 

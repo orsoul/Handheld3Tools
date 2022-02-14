@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
-
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
@@ -22,23 +21,21 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.IUhfListener;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
-import com.fanfull.libjava.util.AESCoder;
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.ClockUtil;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.interfaces.OnConfirmListener;
-
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import org.orsoul.baselib.lock3.Lock3Util;
+import org.orsoul.baselib.lock3.LockCoder;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 import org.orsoul.baselib.util.HtmlUtil;
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.util.ViewUtil;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
 public class BagCheckActivity extends InitModuleActivity {
 
@@ -331,7 +328,7 @@ public class BagCheckActivity extends InitModuleActivity {
       key = Arrays.copyOf(infoUnit.buff, 12);
     }
 
-    boolean b = AESCoder.myEncrypt(infoUnitCover.buff, key, false);
+    boolean b = LockCoder.myEncrypt(infoUnitCover.buff, key, false);
     if (b) {
       String tid1 = BytesUtil.bytes2HexString(infoUnitCover.buff);
       infoUnitCover.buff[3] = (byte) (infoUnitCover.buff[3] & 0x0F);

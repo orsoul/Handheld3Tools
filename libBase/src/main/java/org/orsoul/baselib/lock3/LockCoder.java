@@ -1,12 +1,18 @@
-package com.fanfull.libjava.util;
+package org.orsoul.baselib.lock3;
 
+import com.fanfull.libjava.util.BytesUtil;
+import com.fanfull.libjava.util.DesUtil;
+import com.fanfull.libjava.util.Logs;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class AESCoder {
+/**
+ * 锁3相关算法。袋id校验值算法、封签事件码加解密算法
+ */
+public final class LockCoder {
 
   /** 加解密封签事件码. */
   public static boolean myEncrypt(byte[] data, byte[] key, boolean isEncrypt) {
@@ -169,6 +175,16 @@ public final class AESCoder {
       //final byte[] encrypt = desUtil.encrypt(s.getKey(), s.getValue());
       Logs.out("encrypt:%s", BytesUtil.bytes2HexString(encrypt));
     }
+  }
+
+  /** 生成袋id末尾校验位，按位异或 */
+  public static int genCheckByte(byte[] bagIdBuff) {
+    int crc = 0;
+    int checkIndex = bagIdBuff.length - 1;
+    for (int i = 0; i < checkIndex; i++) {
+      crc ^= bagIdBuff[i];
+    }
+    return crc;
   }
 
   static void testBagIdCheck() {
