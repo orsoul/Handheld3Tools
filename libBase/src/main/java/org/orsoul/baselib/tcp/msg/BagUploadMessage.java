@@ -37,11 +37,12 @@ public class BagUploadMessage extends BaseSocketMessage4qz<BagUploadMessage.BagU
    *
    * @param emptyType 1：验袋，2:转移，3：减损,4：登记
    */
-  public BagUploadMessage(int emptyType, String userId, String batchId) {
+  public BagUploadMessage(String bagId, int emptyType, String userId, String batchId) {
     this.func = BaseSocketMessage4qz.FUNC_UPLOAD_BAG_REG;
     this.userId = userId;
     this.emptyType = emptyType;
     this.batchId = batchId;
+    this.bagId = bagId;
     //this.macAddress = macAddress;
   }
 
