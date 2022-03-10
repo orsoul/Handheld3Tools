@@ -5,7 +5,6 @@ import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfCmd;
 import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.util.BytesUtil;
-
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 
 public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTask.ScanLotBean> {
@@ -41,7 +40,7 @@ public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTas
     if (!readSuccess) {
       return null;
     }
-
+    //Lock3Operation.getInstance().readUidEpcTid()
     //String bagId = BytesUtil.bytes2HexString(epcBuff);
     ScanLotBean scanLotBean = null;
     if (!isReadTid) {
@@ -77,8 +76,13 @@ public abstract class ScanLotUhfOrNfcTask extends ScanLotTask<ScanLotUhfOrNfcTas
 
     String bagId = BytesUtil.bytes2HexString(epcBuff);
     ScanLotBean scanLotBean = new ScanLotBean(bagId, true);
-    scanLotBean.setTid(BytesUtil.bytes2HexString(tidBuff));
     scanLotBean.setUid(BytesUtil.bytes2HexString(uidBuff));
+    //scanLotBean.setTid(BytesUtil.bytes2HexString(tidBuff));
+
+    // 从nfc读取的tid，交换前半段与后半段的次序
+    String tid1 = BytesUtil.bytes2HexString(tidBuff, 6);
+    String tid2 = BytesUtil.bytes2HexString(tidBuff, 6, 12);
+    scanLotBean.setTid(tid2 + tid1);
 
     return scanLotBean;
   }
