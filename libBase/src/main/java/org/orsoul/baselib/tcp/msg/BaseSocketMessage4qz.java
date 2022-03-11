@@ -3,7 +3,6 @@ package org.orsoul.baselib.tcp.msg;
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
-
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -77,8 +76,11 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   public static final int FUNC_QUERY_STOCK = 60;
   /** 非业务进出库-二代任务. */
   public static final int FUNC_PERSON_IN_OUT = 25;
+  /** 锁定批. */
+  public static final int FUNC_LOCK_BATCH = 27;
   /** 指纹相关. */
   public static final int FUNC_FINGER = 14;
+
   /** 透传. */
   public static final int FUNC_TC = 1000;
 
