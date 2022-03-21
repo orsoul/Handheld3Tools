@@ -87,6 +87,9 @@ public final class MessageHelper {
         case BaseSocketMessage4qz.FUNC_PALLET_OVER:
           reVal = PalletOverMessage.parse(baseMsg);
           break;
+        case BaseSocketMessage4qz.FUNC_LOCK_BATCH:
+          reVal = LockBatchMessage.parse(baseMsg);
+          break;
       }
     } catch (Exception e) {
       LogUtils.wtf("parse Exception:%s", e.getMessage());
