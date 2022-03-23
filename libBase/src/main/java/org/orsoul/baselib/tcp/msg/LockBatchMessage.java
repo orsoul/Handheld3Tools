@@ -13,7 +13,7 @@ public class LockBatchMessage extends BaseSocketMessage4qz<LockBatchMessage> {
   }
 
   @Override public String getMessage() {
-    message = genProtocol(func, userId, " 00 0 0000000000000000000000 ", deviceMac, msgNum);
+    message = genProtocol(func, userId, "00 0 0000000000000000000000", deviceMac, msgNum);
     return message;
   }
 
