@@ -207,12 +207,16 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
 
   @Override public String toString() {
     if (message == null) {
-      return "BaseSocketMessage{" +
-          "split='" + Arrays.toString(split) + '\'' +
+      return getClass().getSimpleName() + "{" +
+          ", func=" + func +
+          ", msgNum=" + msgNum +
+          ", recString='" + recString + '\'' +
+          ", split=" + Arrays.toString(split) +
           '}';
     }
-    return "BaseSocketMessage{" +
-        "message='" + message + '\'' +
+
+    return getClass().getSimpleName() + "{" +
+        "sendMessage='" + message + '\'' +
         '}';
   }
 
