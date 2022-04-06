@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
   compileSdkVersion rootProject.ext.android.compileSdkVersion
-//  compileSdkVersion rootProject.ext.android.compileSdkVersion
-//  buildToolsVersion rootProject.ext.android.buildToolsVersion
+  //  compileSdkVersion rootProject.ext.android.compileSdkVersion
+  //  buildToolsVersion rootProject.ext.android.buildToolsVersion
   defaultConfig {
     applicationId "com.fanfull.handheldtools"
     minSdkVersion rootProject.ext.android.minSdkVersion
@@ -18,9 +18,9 @@ android {
     }
     multiDexEnabled true
 
-    javaCompileOptions{
-      annotationProcessorOptions{
-        arguments=["room.schemaLocation":"$projectDir/schemas".toString()]
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
       }
     }
   }
@@ -107,30 +107,30 @@ android {
     }
   }
 
-//  applicationVariants.all { variant ->
-//    if (variant.buildType.name != "debug") {
-//      // apk 输出路径: rootDir/apk/
-//      def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
-//
-//      // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
-//      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
-//      def projectName = "手持测试"
-//      def apkName = "${projectName}_" +
-//          "${defaultConfig.versionName}_" +
-//          "${variant.buildType.name}_" +
-//          "${releaseTime}.apk"
-//      // gradle 3.3+
-//      variant.getPackageApplicationProvider().get().outputDirectory = apkDirectory
-//      variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { apkData ->
-//        apkData.outputFileName = apkName
-//      }
-//      // gradle 3.0+
-//      //            variant.getPackageApplication().outputDirectory = apkDirectory
-//      //            variant.getPackageApplication().outputScope.apkDatas.forEach { apkData ->
-//      //                apkData.outputFileName = apkName
-//      //            }
-//    }
-//  }
+  //  applicationVariants.all { variant ->
+  //    if (variant.buildType.name != "debug") {
+  //      // apk 输出路径: rootDir/apk/
+  //      def apkDirectory = new File(project.rootDir.absolutePath + "/apk/")
+  //
+  //      // apk 输出名称: projectName_v7_1.0.0_Official_release_2019-05-20_09_56.apk
+  //      def releaseTime = new Date().format("yyyy-MM-dd_HH_mm")
+  //      def projectName = "手持测试"
+  //      def apkName = "${projectName}_" +
+  //          "${defaultConfig.versionName}_" +
+  //          "${variant.buildType.name}_" +
+  //          "${releaseTime}.apk"
+  //      // gradle 3.3+
+  //      variant.getPackageApplicationProvider().get().outputDirectory = apkDirectory
+  //      variant.getPackageApplicationProvider().get().outputScope.apkDatas.forEach { apkData ->
+  //        apkData.outputFileName = apkName
+  //      }
+  //      // gradle 3.0+
+  //      //            variant.getPackageApplication().outputDirectory = apkDirectory
+  //      //            variant.getPackageApplication().outputScope.apkDatas.forEach { apkData ->
+  //      //                apkData.outputFileName = apkName
+  //      //            }
+  //    }
+  //  }
 
   compileOptions {
     sourceCompatibility = 1.8
@@ -175,18 +175,23 @@ dependencies {
 
   /* view */
   implementation 'com.lxj:xpopup:2.2.23'
-//  implementation rootProject.ext.dependencies["xpopup"]
+  //  implementation rootProject.ext.dependencies["xpopup"]
   implementation 'com.github.niniloveyou:StateButton:v1.0.0'
-//  implementation 'com.github.medyo:android-about-page:1.3'
+  //  implementation 'com.github.medyo:android-about-page:1.3'
   implementation 'io.github.medyo:android-about-page:2.0.0'
   //  implementation 'com.github.daniel-stoneuk:material-about-library:3.1.2'
-  implementation 'com.victor:lib:1.0.4'
+
+  /* http://www.recyclerview.org/ */
+  implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
+
+  //  https://github.com/yankai-victor/Loading
+  //  implementation 'com.victor:lib:1.0.4'
 
   /* network */
-  implementation 'io.netty:netty-all:4.1.68.Final'
-//  implementation rootProject.ext.dependencies["netty"]
-  implementation 'com.google.code.gson:gson:2.8.8'
-//  implementation rootProject.ext.dependencies["gson"]
+  //  implementation 'io.netty:netty-all:4.1.68.Final'
+  implementation rootProject.ext.dependencies["netty"]
+  //  implementation 'com.google.code.gson:gson:2.8.8'
+  implementation rootProject.ext.dependencies["gson"]
 
   /* db */
   debugImplementation rootProject.ext.dependencies["debug-db"]

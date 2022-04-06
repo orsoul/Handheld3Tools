@@ -635,6 +635,7 @@ public final class LoginInfo {
     /**
      * $14 06 002701001004 010#
      * *14 06 00 1111111111 73201001010102 上库 31853 XINCHENGDU 1000000001 010#
+     * *00 01 1111110002 TreasuryNO TreasuryName POCUid o 3#
      *
      * @return 返回0：解析成功，1：参数错误，2：密码错误
      */

@@ -5,6 +5,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.fanfull.handheldtools.R;
@@ -12,11 +13,14 @@ import com.fanfull.handheldtools.ui.base.InitModuleActivity;
 import com.fanfull.libhard.lock3.task.CoverBagTask;
 import com.fanfull.libjava.util.BytesUtil;
 import com.fanfull.libjava.util.ClockUtil;
-import java.util.Arrays;
+
+import org.orsoul.baselib.lock3.LockCoder;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
 import org.orsoul.baselib.util.ViewUtil;
+
+import java.util.Arrays;
 
 public class CoverBagActivity extends InitModuleActivity {
 
@@ -114,7 +118,7 @@ public class CoverBagActivity extends InitModuleActivity {
       byte[] bagIdBuff = lock3Bean.getInfoUnit(Lock3Bean.SA_BAG_ID).buff;
       byte[] tid2 = Arrays.copyOfRange(lock3Bean.pieceTidBuff, 6, 12);
       unitEvent.buff = BytesUtil.concatArray(bagIdBuff, tid2, bagIdBuff);
-      AESCoder.myEncrypt(unitEvent.buff, tid2, true);
+      LockCoder.myEncrypt(unitEvent.buff, tid2, true);
 
       handoverBean.setTimeSecond(System.currentTimeMillis());
       Lock3Bean lock3BeanWrite = genLock3Bean2Write(lock3Bean, handoverBean, unitEvent);

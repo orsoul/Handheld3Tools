@@ -3,6 +3,7 @@ package org.orsoul.baselib.tcp.msg;
 import com.fanfull.libjava.io.netty.future.MsgFuture;
 import com.fanfull.libjava.io.socketClient.interf.ISocketMessage;
 import com.fanfull.libjava.util.ThreadUtil;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -208,7 +209,7 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
   @Override public String toString() {
     if (message == null) {
       return getClass().getSimpleName() + "{" +
-          ", func=" + func +
+          "func=" + func +
           ", msgNum=" + msgNum +
           ", recString='" + recString + '\'' +
           ", split=" + Arrays.toString(split) +
@@ -238,7 +239,6 @@ public abstract class BaseSocketMessage4qz<T> implements ISocketMessage {
       return null;
     }
     try {
-
       int func = Integer.parseInt(split[0]);
       int num = Integer.parseInt(split[split.length - 1]);
       return new BaseSocketMessage4qz(func, split, num) {

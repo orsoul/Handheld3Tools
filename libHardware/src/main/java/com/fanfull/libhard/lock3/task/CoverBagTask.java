@@ -5,13 +5,15 @@ import com.fanfull.libhard.lock3.Lock3Operation;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
 import com.fanfull.libjava.util.BytesUtil;
-import java.util.Arrays;
-import java.util.List;
+
 import org.orsoul.baselib.lock3.Lock3Util;
 import org.orsoul.baselib.lock3.LockCoder;
 import org.orsoul.baselib.lock3.bean.HandoverBean;
 import org.orsoul.baselib.lock3.bean.Lock3Bean;
 import org.orsoul.baselib.lock3.bean.Lock3InfoUnit;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 各项业务检查-更新袋锁任务.
@@ -334,7 +336,7 @@ public abstract class CoverBagTask extends ReadLockTask {
       //byte[] tid1 = Arrays.copyOf(lock3Bean.pieceTidBuff, 6);
       //byte[] tid2 = Arrays.copyOfRange(lock3Bean.pieceTidBuff, 6, 12);
       //unitEvent.buff = BytesUtil.concatArray(bagIdBuff, tid2, bagIdBuff);
-      //AESCoder.myEncrypt(unitEvent.buff, tid2, true);
+      //LockCoder.myEncrypt(unitEvent.buff, tid2, true);
       //lock3BeanWrite.add(unitEvent);
       // 3. 写入锁片tid
       byte[] tid1 = Arrays.copyOf(lock3Bean.pieceTidBuff, 6);

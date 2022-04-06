@@ -1,8 +1,24 @@
 package com.fanfull.libjava.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 public final class StringUtil {
+  public static String getFullStringFromList(Map<String, String> map57, Map<String, String> map58,
+      String subString) {
+    for (String fullString : map57.keySet()) {
+      if (fullString.contains(subString)) {
+        return fullString;
+      }
+    }
+    for (String fullString : map58.keySet()) {
+      if (fullString.contains(subString)) {
+        return fullString;
+      }
+    }
+    return null;
+  }
+
   /**
    * 根据 子字符串，从list中取得 包含 子串 的完整字符串.
    *

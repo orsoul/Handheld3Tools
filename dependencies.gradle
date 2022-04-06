@@ -67,15 +67,17 @@ project.ext {
       "butterknife": "com.jakewharton:butterknife:${butterKnifeVersion}",
       "butterknife-compiler": "com.jakewharton:butterknife-compiler:${butterKnifeVersion}",
       "retrofit2-fastjson-converter": "com.github.BaronZ88:Retrofit2-FastJson-Converter:1.2",
-      "SmartRefreshLayout": "com.scwang.smartrefresh:SmartRefreshLayout:1.0.3",
-      "SmartRefreshHeader": "com.scwang.smartrefresh:SmartRefreshHeader:1.0.3",
 
       /* view */
       "xpopup": "com.lxj:xpopup:2.2.23",
+      "SmartRefreshLayout": "com.scwang.smartrefresh:SmartRefreshLayout:1.0.3",
+      "SmartRefreshHeader": "com.scwang.smartrefresh:SmartRefreshHeader:1.0.3",
 
       /* network */
-      "netty": "io.netty:netty-all:4.1.10.Final",
-      "gson": "com.google.code.gson:gson:2.8.5",
+//      "netty": "io.netty:netty:3.10.6.Final",
+//      "netty": "io.netty:netty-all:4.0.56.Final",
+      "netty": "io.netty:netty-all:4.1.75.Final",
+      "gson": "com.google.code.gson:gson:2.8.8",
 
       /* db */
       "debug-db": "com.amitshekhar.android:debug-db:1.0.6",
