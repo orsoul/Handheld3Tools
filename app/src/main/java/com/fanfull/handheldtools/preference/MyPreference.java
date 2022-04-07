@@ -1,10 +1,11 @@
 package com.fanfull.handheldtools.preference;
 
+import org.orsoul.baselib.data.preference.PreferenceItem;
+import org.orsoul.baselib.data.preference.PreferenceUtil;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import org.orsoul.baselib.data.preference.PreferenceItem;
-import org.orsoul.baselib.data.preference.PreferenceUtil;
 
 public class MyPreference {
   static {
@@ -28,4 +29,7 @@ public class MyPreference {
       PreferenceItem.newInstance("HIS_IP", Collections.EMPTY_SET);
   public static final PreferenceItem<Set<Integer>> HIS_PORT =
       PreferenceItem.newInstance("HIS_PORT", Collections.EMPTY_SET);
+
+  public static final PreferenceItem<String> NETTY_OP =
+      PreferenceItem.newInstance("NETTY_OP", null);
 }

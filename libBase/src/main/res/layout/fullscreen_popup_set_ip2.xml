@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#fff"
+  android:paddingTop="40dp">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:orientation="vertical"
+    android:padding="0dp">
+
+    <TextView
+      android:id="@+id/textView"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="设置IP、端口"
+      android:textColor="@android:color/black"
+      android:textSize="18sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <AutoCompleteTextView
+      android:id="@+id/auto_ip"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:completionHint="历史IP"
+      android:completionThreshold="1"
+      android:dropDownWidth="match_parent"
+      android:dropDownHeight="wrap_content"
+      android:dropDownVerticalOffset="2dp"
+      android:gravity="center"
+      android:hint="输入IP"
+      android:inputType="none"
+      android:visibility="visible"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/textView" />
+
+    <AutoCompleteTextView
+      android:id="@+id/auto_port"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:completionHint="历史端口"
+      android:completionThreshold="1"
+      android:dropDownWidth="match_parent"
+      android:dropDownHeight="wrap_content"
+      android:dropDownVerticalOffset="2dp"
+      android:gravity="center"
+      android:hint="输入端口"
+      android:inputType="number"
+      android:visibility="visible"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="@id/auto_ip"
+      app:layout_constraintTop_toBottomOf="@id/auto_ip" />
+
+    <Switch
+      android:id="@+id/switch_reconnect"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="8dp"
+      android:text="重连（豪秒）"
+      app:layout_constraintStart_toStartOf="@id/auto_port"
+      app:layout_constraintTop_toBottomOf="@id/auto_port" />
+
+    <EditText
+      android:id="@+id/et_reconnect"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="16dp"
+      android:hint="重连间隔（毫秒）"
+      android:inputType="number"
+      app:layout_constraintBottom_toBottomOf="@id/switch_reconnect"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/switch_reconnect"
+      app:layout_constraintTop_toTopOf="@id/switch_reconnect" />
+
+    <Switch
+      android:id="@+id/switch_beat"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="心跳（秒）"
+      app:layout_constraintEnd_toEndOf="@+id/switch_reconnect"
+      app:layout_constraintStart_toStartOf="@id/switch_reconnect"
+      app:layout_constraintTop_toBottomOf="@id/switch_reconnect" />
+
+    <EditText
+      android:id="@+id/et_beat"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="16dp"
+      android:hint="心跳间隔（秒）"
+      android:inputType="number"
+      app:layout_constraintBottom_toBottomOf="@id/switch_beat"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/switch_beat"
+      app:layout_constraintTop_toTopOf="@id/switch_beat" />
+
+    <Button
+      android:id="@+id/btn_ip_save"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="8dp"
+      android:paddingStart="16dp"
+      android:paddingTop="5dp"
+      android:paddingEnd="16dp"
+      android:paddingBottom="5dp"
+      android:text="保 存"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="@id/auto_port"
+      app:layout_constraintTop_toBottomOf="@+id/switch_beat" />
+
+    <Button
+      android:id="@+id/btn_ip_cancel"
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:layout_marginEnd="16dp"
+      android:paddingStart="16dp"
+      android:paddingTop="5dp"
+      android:paddingEnd="16dp"
+      android:paddingBottom="5dp"
+      android:text="取 消"
+      app:layout_constraintBottom_toBottomOf="@+id/btn_ip_save"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/btn_ip_save" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

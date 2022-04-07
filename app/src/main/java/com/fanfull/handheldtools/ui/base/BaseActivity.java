@@ -147,7 +147,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         return super.onKeyDown(keyCode, event);
     }
 
-    return super.onKeyDown(keyCode, event);
+    return true;
   }
 
   protected void showRelaunchAppDialog(boolean mustRelaunch, String info) {

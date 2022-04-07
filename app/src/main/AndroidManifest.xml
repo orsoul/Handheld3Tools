@@ -32,9 +32,13 @@
     android:theme="@style/AppTheme"
     tools:ignore="GoogleAppIndexingWarning"
     tools:replace="android:allowBackup">
+    <activity android:name=".ui.NettyActivity"></activity>
+    <activity
+      android:name=".MainActivity2"
+      android:label="@string/title_activity_main2" />
     <activity
       android:name=".ui.UhfLotScanActivity"
-      android:label="@string/main_uhf_lot"></activity>
+      android:label="@string/main_uhf_lot" />
     <activity
       android:name=".ui.ZcLockActivity"
       android:label="@string/main_zc_lock" />

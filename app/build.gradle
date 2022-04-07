@@ -2,8 +2,9 @@ apply plugin: 'com.android.application'
 
 android {
   compileSdkVersion rootProject.ext.android.compileSdkVersion
-  //  compileSdkVersion rootProject.ext.android.compileSdkVersion
   //  buildToolsVersion rootProject.ext.android.buildToolsVersion
+  //  compileSdkVersion 31
+  //  buildToolsVersion "30.0.3"
   defaultConfig {
     applicationId "com.fanfull.handheldtools"
     minSdkVersion rootProject.ext.android.minSdkVersion
@@ -136,6 +137,9 @@ android {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
   }
+  buildFeatures {
+    viewBinding true
+  }
 }
 
 dependencies {
@@ -150,6 +154,10 @@ dependencies {
 
   implementation 'com.google.android.material:material:1.2.1'
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+  implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
+  implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+  implementation 'androidx.navigation:navigation-fragment:2.3.0'
+  implementation 'androidx.navigation:navigation-ui:2.3.0'
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.junit.jupiter:junit-jupiter'
   androidTestImplementation 'androidx.test.ext:junit:1.1.1'

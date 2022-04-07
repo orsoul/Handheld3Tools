@@ -18,6 +18,7 @@ import com.fanfull.handheldtools.ui.BarcodeActivity;
 import com.fanfull.handheldtools.ui.CoverBagActivity;
 import com.fanfull.handheldtools.ui.FingerActivity;
 import com.fanfull.handheldtools.ui.InitBag3Activity;
+import com.fanfull.handheldtools.ui.NettyActivity;
 import com.fanfull.handheldtools.ui.NfcActivity;
 import com.fanfull.handheldtools.ui.OldBagActivity;
 import com.fanfull.handheldtools.ui.SocketActivity;
@@ -55,6 +56,7 @@ public class MainActivity extends BaseActivity {
     findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
     findViewById(R.id.btn_main_apdu).setOnClickListener(this);
     findViewById(R.id.btn_main_lot_scan).setOnClickListener(this);
+    findViewById(R.id.btn_main_netty).setOnClickListener(this);
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -113,26 +115,14 @@ public class MainActivity extends BaseActivity {
       case KeyEvent.KEYCODE_2:
         break;
       case KeyEvent.KEYCODE_3:
-        startActivity(new Intent(this, ZcLockActivity.class));
+        //startActivity(new Intent(this, ZcLockActivity.class));
+        startActivity(new Intent(this, NettyActivity.class));
         break;
       case KeyEvent.KEYCODE_4:
         startActivity(new Intent(this, UhfLotScanActivity.class));
-        //new XPopup.Builder(this)
-        //    //.isDarkTheme(true)
-        //    .hasShadowBg(true)
-        //    //                            .hasBlurBg(true)
-        //    //                            .isDestroyOnDismiss(true) //对于只使用一次的弹窗，推荐设置这个
-        //    .asBottomList("请选择一项", new String[]{"条目1", "条目2", "条目3", "条目4", "条目5"},
-        //        new OnSelectListener() {
-        //          @Override
-        //          public void onSelect(int position, String text) {
-        //            ToastUtils.showShort("click " + text);
-        //          }
-        //        }).show();
-        //DeviceInfoUtils.reboot(this);
-        //DeviceInfoUtils.reboot2(this);
         break;
       case KeyEvent.KEYCODE_5:
+        startActivity(new Intent(this, MainActivity2.class));
         break;
       case KeyEvent.KEYCODE_6:
         //CrashLogUtil.logException(new RuntimeException("test log exception"));
@@ -167,7 +157,7 @@ public class MainActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    return super.onKeyDown(keyCode, event);
+    return true;
   }
 
   @Override protected void onDestroy() {
@@ -225,6 +215,9 @@ public class MainActivity extends BaseActivity {
         break;
       case R.id.btn_main_lot_scan:
         startActivity(new Intent(this, UhfLotScanActivity.class));
+        break;
+      case R.id.btn_main_netty:
+        startActivity(new Intent(this, NettyActivity.class));
         break;
     }
   }

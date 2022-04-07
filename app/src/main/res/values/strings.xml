@@ -15,9 +15,15 @@
   <string name="main_apdu">APDU</string>
   <string name="main_uhf_lot">超高频批量</string>
   <string name="main_zc_lock">中钞锁</string>
+  <string name="main_netty">Netty测试</string>
 
   <string name="text_click_again_quit">再次点击退出</string>
 
   <string name="v_match_finger">匹配指纹</string>
   <string name="v_add_finger">添加指纹</string>
+
+  <string name="title_activity_main2">MainActivity</string>
+  <string name="title_common">常用</string>
+  <string name="title_module">硬件</string>
+  <string name="title_other">其他</string>
 </resources>

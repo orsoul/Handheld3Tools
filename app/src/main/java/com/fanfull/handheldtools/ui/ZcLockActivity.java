@@ -60,7 +60,7 @@ public class ZcLockActivity extends InitModuleActivity {
   private MyReadWriteTask readWriteTask;
 
   @Override protected void initView() {
-    setContentView(R.layout.activity_netty);
+    setContentView(R.layout.activity_zc);
     tvShow = findViewById(R.id.tv_netty_show);
     tvShow.setMovementMethod(ScrollingMovementMethod.getInstance());
 
