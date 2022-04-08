@@ -32,4 +32,7 @@ public class MyPreference {
 
   public static final PreferenceItem<String> NETTY_OP =
       PreferenceItem.newInstance("NETTY_OP", null);
+
+  public static final PreferenceItem<String> FUNC_MAIN =
+      PreferenceItem.newInstance("FUNC_MAIN", null);
 }

@@ -6,7 +6,6 @@ import com.apkfuns.logutils.LogUtils;
 import com.simple.spiderman.SpiderMan;
 
 import org.orsoul.baselib.NetworkCallbackApplication;
-import org.orsoul.baselib.service.RestartAppService;
 import org.orsoul.baselib.util.LogHelper;
 
 public class MyApplication extends NetworkCallbackApplication {
@@ -28,7 +27,7 @@ public class MyApplication extends NetworkCallbackApplication {
   @Override protected void onCrashOnMainThread(Application context) {
     LogUtils.wtf("onCrashOnMainThread:%s", "");
     //ToastUtils.showShort("主线程发生异常，将重启APP");
-    RestartAppService.restartApp(context, 500);
+    //RestartAppService.restartApp(context, 500);
   }
 
   private void initCaocConfig() {

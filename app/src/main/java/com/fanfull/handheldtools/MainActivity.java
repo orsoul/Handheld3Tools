@@ -8,8 +8,15 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.chad.library.adapter.base.entity.node.BaseNode;
+import com.fanfull.handheldtools.main.FuncNode;
+import com.fanfull.handheldtools.main.NodeAdapter;
+import com.fanfull.handheldtools.main.RootNode;
 import com.fanfull.handheldtools.preference.MyPreference;
 import com.fanfull.handheldtools.ui.AboutActivity;
 import com.fanfull.handheldtools.ui.BagCheckActivity;
@@ -30,6 +37,7 @@ import com.fanfull.handheldtools.ui.base.BaseActivity;
 import com.fanfull.handheldtools.ui.view.SetIpPortHelper;
 import com.fanfull.libhard.rfid.RfidController;
 import com.fanfull.libhard.uhf.UhfController;
+import com.google.gson.Gson;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.impl.InputConfirmPopupView;
 
@@ -39,24 +47,30 @@ import org.orsoul.baselib.util.NetworkChangeReceiver;
 import org.orsoul.baselib.util.SoundHelper;
 import org.orsoul.baselib.view.MyInputPopupView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    findViewById(R.id.btn_uhf).setOnClickListener(this);
-    findViewById(R.id.btn_nfc).setOnClickListener(this);
-    findViewById(R.id.btn_init_bag3).setOnClickListener(this);
-    findViewById(R.id.btn_check_bag).setOnClickListener(this);
-    findViewById(R.id.btn_main_socket).setOnClickListener(this);
-    findViewById(R.id.btn_barcode).setOnClickListener(this);
-    findViewById(R.id.btn_finger).setOnClickListener(this);
-    findViewById(R.id.btn_old_bag).setOnClickListener(this);
-    findViewById(R.id.btn_sound).setOnClickListener(this);
-    findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
-    findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
-    findViewById(R.id.btn_main_apdu).setOnClickListener(this);
-    findViewById(R.id.btn_main_lot_scan).setOnClickListener(this);
-    findViewById(R.id.btn_main_netty).setOnClickListener(this);
+    //setContentView(R.layout.activity_main);
+    //findViewById(R.id.btn_uhf).setOnClickListener(this);
+    //findViewById(R.id.btn_nfc).setOnClickListener(this);
+    //findViewById(R.id.btn_init_bag3).setOnClickListener(this);
+    //findViewById(R.id.btn_check_bag).setOnClickListener(this);
+    //findViewById(R.id.btn_main_socket).setOnClickListener(this);
+    //findViewById(R.id.btn_barcode).setOnClickListener(this);
+    //findViewById(R.id.btn_finger).setOnClickListener(this);
+    //findViewById(R.id.btn_old_bag).setOnClickListener(this);
+    //findViewById(R.id.btn_sound).setOnClickListener(this);
+    //findViewById(R.id.btn_main_cover_bag).setOnClickListener(this);
+    //findViewById(R.id.btn_main_bag_search).setOnClickListener(this);
+    //findViewById(R.id.btn_main_apdu).setOnClickListener(this);
+    //findViewById(R.id.btn_main_lot_scan).setOnClickListener(this);
+    //findViewById(R.id.btn_main_netty).setOnClickListener(this);
+
+    initView();
+    initData();
 
     //SoundUtils.loadSounds(MyApplication.getInstance());
     SoundHelper.loadSounds(MyApplication.getInstance());
@@ -78,6 +92,103 @@ public class MainActivity extends BaseActivity {
 
       }
     });
+  }
+
+  RecyclerView recycler;
+  NodeAdapter funcAdapter;
+  List<BaseNode> rootNodeList;
+  List<BaseNode> allFuncList;
+  //List<Integer> useList;
+  RootNode hisRootNode;
+
+  @Override protected void initView() {
+    setContentView(R.layout.activity_main);
+    recycler = findViewById(R.id.layout_main_recycler);
+    recycler.setLayoutManager(new GridLayoutManager(this, 3));
+    funcAdapter = new NodeAdapter();
+    recycler.setAdapter(funcAdapter);
+  }
+
+  private List<BaseNode> genFuncData() {
+    rootNodeList = new ArrayList<>();
+    allFuncList = new ArrayList<>();
+
+    List<BaseNode> moduleList = FuncNode.genModuleList();
+    RootNode module = new RootNode(moduleList, "模块");
+    allFuncList.addAll(moduleList);
+
+    List<BaseNode> businessList = FuncNode.genBusinessList();
+    RootNode business = new RootNode(businessList, "业务");
+    allFuncList.addAll(businessList);
+
+    List<BaseNode> otherList = FuncNode.genOtherList();
+    RootNode other = new RootNode(otherList, "其他");
+    allFuncList.addAll(otherList);
+
+    String funcJson = MyPreference.FUNC_MAIN.getValue();
+    LogUtils.d("get FUNC_MAIN:%s", funcJson);
+    List<BaseNode> hisList = new ArrayList<>();
+    if (funcJson != null) {
+      int[] useList = new Gson().fromJson(funcJson, int[].class);
+      for (Integer integer : useList) {
+        BaseNode funcBean = allFuncList.get(integer);
+        hisList.add(funcBean);
+      }
+    }
+
+    hisRootNode = new RootNode(hisList, "最近使用");
+    if (hisRootNode.haveChildNode()) {
+      hisRootNode.setExpanded(true);
+      rootNodeList.add(hisRootNode);
+    }
+    rootNodeList.add(module);
+    rootNodeList.add(business);
+    rootNodeList.add(other);
+
+    return rootNodeList;
+  }
+
+  private void initData() {
+    genFuncData();
+    funcAdapter.setNewInstance(rootNodeList);
+    funcAdapter.setOnFuncClickListener(funcBean -> {
+      //ToastUtils.showShort("click func " + funcBean.getName());
+
+      List<BaseNode> childNode = hisRootNode.getChildNode();
+      int i = childNode.indexOf(funcBean);
+      if (i == 0) {
+      } else {
+        if (0 < i) {
+          childNode.remove(i);
+          //childNode.add(0, funcBean);
+        } else if (i < 0) {
+        }
+        childNode.add(0, funcBean);
+        if (rootNodeList.size() < 4) {
+          rootNodeList.add(0, hisRootNode);
+        }
+        funcAdapter.setNewInstance(rootNodeList);
+        saveUseList();
+      }
+
+      if (funcBean.getActivityClass() != null) {
+        startActivity(new Intent(MainActivity.this, funcBean.getActivityClass()));
+      }
+    });
+  }
+
+  private void saveUseList() {
+    List<BaseNode> childNode = hisRootNode.getChildNode();
+    if (!childNode.isEmpty()) {
+      int[] func = new int[hisRootNode.getChildNode().size()];
+      for (int i = 0; i < childNode.size(); i++) {
+        int funcIndex = allFuncList.indexOf(childNode.get(i));
+        func[i] = funcIndex;
+      }
+      String json = new Gson().toJson(func);
+      LogUtils.d("put FUNC_MAIN:%s", json);
+      MyPreference.FUNC_MAIN.put(json);
+    }
   }
 
   @Override public void onNetworkChange(boolean isConnected) {
@@ -112,8 +223,6 @@ public class MainActivity extends BaseActivity {
           return false;
         });
         break;
-      case KeyEvent.KEYCODE_2:
-        break;
       case KeyEvent.KEYCODE_3:
         //startActivity(new Intent(this, ZcLockActivity.class));
         startActivity(new Intent(this, NettyActivity.class));
@@ -145,8 +254,6 @@ public class MainActivity extends BaseActivity {
         DeviceInfoUtils.shutdown(true);
         //DeviceInfoUtils.reboot(this);
         //throw new RuntimeException("test crash");
-      case KeyEvent.KEYCODE_8:
-        break;
       case KeyEvent.KEYCODE_9:
         break;
       case KeyEvent.KEYCODE_SHIFT_LEFT:

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.text.Spanned;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,6 +29,13 @@ public class ViewUtil {
     v.setFocusableInTouchMode(false);
 
     v.clearFocus();
+  }
+
+  /** 设置 TextView 可滑动 */
+  public static void setMovementMethod(TextView tv) {
+    if (tv != null) {
+      tv.setMovementMethod(ScrollingMovementMethod.getInstance());
+    }
   }
 
   public static void appendShow(Object text, TextView tvShow, boolean l) {

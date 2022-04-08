@@ -123,6 +123,12 @@ public class BaseJsonBean<T> {
     return json2ListObj(json, clz, clz);
   }
 
+  /** 根据json字符串生成 List<E> 类型的实体. */
+  public static <E> List<E> json2List(String json, Class<E> genericClz) {
+    Type listType = new BaseJsonBean.ParameterizedTypeImpl(List.class, new Class[]{genericClz});
+    return new Gson().fromJson(json, listType);
+  }
+
   public static void main(String[] args) {
     testJson2Obj();
     testJson2ListObj();

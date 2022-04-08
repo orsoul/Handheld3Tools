@@ -63,5 +63,5 @@ dependencies {
 
   implementation rootProject.ext.dependencies["xpopup"]
 
-  implementation 'com.wanjian:cockroach:0.0.5'
+//  implementation 'com.wanjian:cockroach:0.0.5'
 }

@@ -70,6 +70,7 @@ public class NettyActivity extends BaseActivity {
   @Override protected void initView() {
     setContentView(R.layout.activity_netty);
     tvShow = findViewById(R.id.tv_netty_show);
+    ViewUtil.setMovementMethod(tvShow);
     btnConnect = findViewById(R.id.btn_netty_connect);
 
     findViewById(R.id.tv_netty_show).setOnClickListener(this);
@@ -112,7 +113,7 @@ public class NettyActivity extends BaseActivity {
             return true;
           });
     } else if (id == R.id.btn_netty_help) {
-
+      send("$1002 01 ip 99 {} 0008225025c5 25#" + Math.random());
     }
   }
 
@@ -159,12 +160,24 @@ public class NettyActivity extends BaseActivity {
   }
 
   @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+    switch (keyCode) {
+      case KeyEvent.KEYCODE_1:
+        send("hello service " + Math.random());
+        return true;
+    }
     return super.onKeyDown(keyCode, event);
   }
 
   @Override protected void onDestroy() {
     shutdownTcp();
     super.onDestroy();
+  }
+
+  private boolean send(String msg) {
+    if (clientNetty != null && clientNetty.isConnected()) {
+      return clientNetty.send(msg);
+    }
+    return false;
   }
 
   class MyChannelInitializer extends ChannelInitializer<SocketChannel> {

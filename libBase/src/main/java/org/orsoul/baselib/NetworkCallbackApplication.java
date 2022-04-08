@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi;
 
 import com.apkfuns.logutils.LogUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.wanjian.cockroach.Cockroach;
 
 import org.orsoul.baselib.util.AppUtil;
 import org.orsoul.baselib.util.CrashLogUtil;
@@ -28,7 +27,7 @@ public abstract class NetworkCallbackApplication extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
-    initNetworkCallback();
+    //initNetworkCallback();
   }
 
   /** 在主线程中 产生未捕捉的异常时 回调此方法，此时一般执行 重启 APP的操作. */
@@ -103,8 +102,8 @@ public abstract class NetworkCallbackApplication extends Application {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public static boolean addNetworkCallback(NetworkCallback callback) {
-    if (callback == null) {
-      LogUtils.d("add null");
+    if (networkCallbackSet == null || callback == null) {
+      //LogUtils.d("add null");
       return false;
     }
     boolean add = networkCallbackSet.add(callback);
@@ -115,6 +114,9 @@ public abstract class NetworkCallbackApplication extends Application {
 
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   public static boolean removeNetworkCallback(NetworkCallback callback) {
+    if (networkCallbackSet == null) {
+      return true;
+    }
     boolean add = networkCallbackSet.remove(callback);
     LogUtils.d("remove %s,%s", add, callback);
     LogUtils.v("all %s", networkCallbackSet);

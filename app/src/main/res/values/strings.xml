@@ -12,10 +12,11 @@
   <string name="main_sound">声音、音效</string>
   <string name="main_cover_bag">模拟封袋</string>
   <string name="main_bag_search">查找袋Id</string>
-  <string name="main_apdu">APDU</string>
+  <string name="main_zc">APDU</string>
   <string name="main_uhf_lot">超高频批量</string>
   <string name="main_zc_lock">中钞锁</string>
   <string name="main_netty">Netty测试</string>
+  <string name="main_about">关于</string>
 
   <string name="text_click_again_quit">再次点击退出</string>
 

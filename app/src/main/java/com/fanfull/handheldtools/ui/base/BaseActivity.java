@@ -29,8 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
   protected DialogUtil dialogUtil;
   private BroadcastReceiver broadcastReceiver;
 
-  @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     initView();
     dialogUtil = new DialogUtil(this);
